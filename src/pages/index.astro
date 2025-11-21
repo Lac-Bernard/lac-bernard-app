@@ -1,7 +1,18 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { getEntry, render } from 'astro:content';
+
+const homePage = await getEntry('pages', 'home');
+if (!homePage) {
+  throw new Error('Home page not found');
+}
+
+const { Content } = await render(homePage);
 ---
-<Layout title="Welcome – Lac Bernard Association">
-  <h1>Welcome to the Lac Bernard Association</h1>
-  <p>Home content here.</p>
+
+<Layout title={homePage.data.title}>
+  <article>
+    <h1>{homePage.data.title}</h1>
+    <Content />
+  </article>
 </Layout>

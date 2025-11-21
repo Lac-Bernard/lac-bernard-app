@@ -3,8 +3,8 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
+    "dev": "tinacms dev -c \"astro dev\"",
+    "build": "tinacms build -c \"astro build\"",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -14,6 +14,11 @@
     "@astrojs/sitemap": "^3.6.0",
     "@astrojs/vercel": "^9.0.1",
     "astro": "^5.16.0",
-    "sharp": "^0.34.3"
+    "sharp": "^0.34.3",
+    "tinacms": "^2.9.5"
+  },
+  "devDependencies": {
+    "@tinacms/cli": "^1.12.4",
+    "@types/node": "^24.10.1"
   }
 }
