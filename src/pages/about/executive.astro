@@ -1,0 +1,11 @@
+---
+import Page from '../../layouts/Page.astro';
+
+const [page] = await Astro.glob('../../../content/pages/about-executive.md');
+if (!page) throw new Error('Missing content/pages/about-executive.md');
+
+const title = page.frontmatter?.title || 'Association Executive';
+const description = page.frontmatter?.description;
+---
+
+<Page title={title} description={description} content={page} />

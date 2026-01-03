@@ -1,0 +1,42 @@
+---
+import '../styles/theme.css';
+import '../styles/components.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  content?: any;
+}
+
+const { title, description, content } = Astro.props;
+const { Content } = content || {};
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | Lac Bernard Association</title>
+    <meta
+      name="description"
+      content={description || `Learn more about ${title} at the Lac Bernard Association.`}
+    />
+  </head>
+
+  <body>
+    <SiteHeader />
+
+    <main id="main-content">
+      <section class="section">
+        <div class="container prose">
+          <h1>{title}</h1>
+          {Content && <Content />}
+        </div>
+      </section>
+    </main>
+
+    <SiteFooter />
+  </body>
+</html>

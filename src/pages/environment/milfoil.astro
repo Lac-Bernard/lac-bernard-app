@@ -1,0 +1,11 @@
+---
+import Page from '../../layouts/Page.astro';
+
+const [page] = await Astro.glob('../../../content/pages/environment-milfoil.md');
+if (!page) throw new Error('Missing content/pages/environment-milfoil.md');
+
+const title = page.frontmatter?.title || 'Eurasian Milfoil';
+const description = page.frontmatter?.description;
+---
+
+<Page title={title} description={description} content={page} />

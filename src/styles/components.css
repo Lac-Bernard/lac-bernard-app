@@ -49,20 +49,21 @@
   font-size: 17px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-items: center;
 }
 
-.nav a {
+.nav > a {
   padding: 8px 10px;
   border-radius: 12px;
   transition: all 120ms ease;
 }
 
-.nav a:hover {
+.nav > a:hover {
   background: rgba(0,0,0,.06);
   color: var(--text);
 }
 
-.nav a:focus-visible {
+.nav > a:focus-visible {
   outline: 2px solid rgba(72,196,255,.6);
   outline-offset: 2px;
 }
@@ -70,6 +71,82 @@
 .navCta {
   border: 1px solid var(--border);
   background: rgba(0,0,0,.04);
+}
+
+/* Navigation Dropdown */
+.navDropdown {
+  position: relative;
+}
+
+.navDropdownToggle {
+  padding: 8px 10px;
+  border-radius: 12px;
+  transition: all 120ms ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.navDropdownToggle::after {
+  content: '▼';
+  font-size: 10px;
+  opacity: 0.6;
+  transition: transform 120ms ease;
+}
+
+.navDropdown:hover .navDropdownToggle::after {
+  transform: rotate(180deg);
+}
+
+.navDropdown:hover .navDropdownToggle,
+.navDropdownToggle:hover {
+  background: rgba(0,0,0,.06);
+  color: var(--text);
+}
+
+.navDropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  min-width: 220px;
+  background: rgba(255,255,255,.98);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 8px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 150ms ease;
+  z-index: 100;
+}
+
+.navDropdown:hover .navDropdownMenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.navDropdownMenu a {
+  display: block;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 15px;
+  transition: all 120ms ease;
+}
+
+.navDropdownMenu a:hover {
+  background: rgba(0,0,0,.06);
+  color: var(--text);
+}
+
+.navDropdownMenu a:first-child {
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+  padding-bottom: 12px;
 }
 
 /* Buttons */
@@ -275,6 +352,28 @@
     grid-template-columns: 1fr;
     gap: 10px;
   }
+  
+  .navDropdownMenu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    margin-top: 4px;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    padding: 0;
+  }
+  
+  .navDropdown:hover .navDropdownMenu {
+    transform: none;
+  }
+  
+  .navDropdownMenu a:first-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 10px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -286,5 +385,9 @@
   
   .topbarInner {
     flex-wrap: wrap;
+  }
+  
+  .navDropdownMenu {
+    width: 100%;
   }
 }

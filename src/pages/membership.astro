@@ -1,0 +1,11 @@
+---
+import Page from '../layouts/Page.astro';
+
+const [page] = await Astro.glob('../../content/pages/membership.md');
+if (!page) throw new Error('Missing content/pages/membership.md');
+
+const title = page.frontmatter?.title || 'Membership';
+const description = page.frontmatter?.description;
+---
+
+<Page title={title} description={description} content={page} />
