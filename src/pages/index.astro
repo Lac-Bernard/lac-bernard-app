@@ -1,6 +1,8 @@
 ---
 import '../styles/theme.css';
 import '../styles/components.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 
 const [home] = await Astro.glob('../../content/pages/home.md');
 if (!home) throw new Error('Missing content/pages/home.md');
@@ -24,21 +26,7 @@ const heroSubtitle = frontmatter?.heroSubtitle ?? '';
   </head>
 
   <body>
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-    <header class="topbar">
-      <div class="container topbarInner">
-        <a class="brand" href="/">
-          <span class="brandText">Lac Bernard Association</span>
-        </a>
-        <nav class="nav">
-          <a href="/about">About</a>
-          <a href="/environment">Environment</a>
-          <a href="/community">Community</a>
-          <a href="/membership" class="navCta">Membership</a>
-          <a href="/contact">Contact</a>
-        </nav>
-      </div>
-    </header>
+    <SiteHeader />
 
     <main id="main-content">
       <section class="hero" aria-label="Homepage hero">
@@ -137,15 +125,7 @@ const heroSubtitle = frontmatter?.heroSubtitle ?? '';
       </section>
     </main>
 
-    <footer class="footer">
-      <div class="container footerInner">
-        <div class="muted">© {new Date().getFullYear()} Lac Bernard Association. All rights reserved.</div>
-        <div class="footerLinks">
-          <a href="mailto:info@lacbernard.ca">info@lacbernard.ca</a>
-          <a href="/privacy">Privacy Policy</a>
-        </div>
-      </div>
-    </footer>
+    <SiteFooter />
 
     <style>
       /* Page-specific styles for homepage */
