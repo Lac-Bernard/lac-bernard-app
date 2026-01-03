@@ -1,18 +1,284 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import { getEntry, render } from 'astro:content';
+const [home] = await Astro.glob('../../content/pages/home.md');
+if (!home) throw new Error('Missing content/pages/home.md');
 
-const homePage = await getEntry('pages', 'home');
-if (!homePage) {
-  throw new Error('Home page not found');
-}
+const { Content, frontmatter } = home;
 
-const { Content } = await render(homePage);
+const title = 'Lac Bernard Association';
+const heroTitle = frontmatter?.heroTitle ?? 'Welcome to the Lac Bernard Association';
+const heroSubtitle = frontmatter?.heroSubtitle ?? '';
 ---
 
-<Layout title={homePage.data.title}>
-  <article>
-    <h1>{homePage.data.title}</h1>
-    <Content />
-  </article>
-</Layout>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta
+      name="description"
+      content="Join the Lac Bernard Association - a volunteer-run organization dedicated to protecting our lake, building community, and promoting safety since 1979."
+    />
+  </head>
+
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <header class="topbar">
+      <div class="container topbarInner">
+        <a class="brand" href="/">
+          <span class="brandText">Lac Bernard Association</span>
+        </a>
+        <nav class="nav">
+          <a href="/about">About</a>
+          <a href="/environment">Environment</a>
+          <a href="/community">Community</a>
+          <a href="/membership" class="navCta">Membership</a>
+          <a href="/contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main-content">
+      <section class="hero" aria-label="Homepage hero">
+        <div class="container heroInner">
+          <div class="heroCopy">
+            <p class="kicker">Lac Bernard • Wakefield, Quebec</p>
+            <h1>{heroTitle}</h1>
+            {heroSubtitle && <p class="subtitle" set:html={heroSubtitle} />}
+
+            <div class="heroButtons">
+              <a class="btnPrimary" href="/membership">Join or Renew Membership</a>
+              <a class="btnGhost" href="/about">Learn More</a>
+            </div>
+          </div>
+
+          <aside class="heroPanel" aria-label="Quick actions">
+            <h2>What we do</h2>
+            <p class="muted">
+              Our dedicated volunteers work year-round to preserve the natural beauty and health of Lac Bernard for future generations.
+            </p>
+
+            <div class="cards">
+              <article class="card">
+                <div class="icon">🌊</div>
+                <h3>Safeguard the Environment</h3>
+                <p>Regular water testing, invasive species control, and shoreline protection initiatives to maintain our lake's pristine condition.</p>
+                <a href="/environment">Learn More →</a>
+              </article>
+
+              <article class="card">
+                <div class="icon">🤝</div>
+                <h3>Build Community</h3>
+                <p>Organizing events, coordinating volunteers, and providing seasonal updates to keep our community connected and informed.</p>
+                <a href="/community">Learn More →</a>
+              </article>
+
+              <article class="card">
+                <div class="icon">🛡️</div>
+                <h3>Promote Safety</h3>
+                <p>Maintaining navigation buoys, communicating with municipalities, and ensuring safe recreational activities on the lake.</p>
+                <a href="/safety">Learn More →</a>
+              </article>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container prose">
+          <Content />
+        </div>
+      </section>
+
+      <section class="section alt">
+        <div class="container ctaRow">
+          <div class="cta">
+            <h2>Join or Renew</h2>
+            <p>Support the lake for just <strong>$75/year</strong>. Multi-year discounts available for long-term supporters.</p>
+            <a class="btnPrimary" href="/membership">Join Now</a>
+          </div>
+
+          <div class="cta">
+            <h2>Milfoil & Environment</h2>
+            <p><strong>12% of the lake is now affected</strong> by invasive milfoil. Learn what you can do to help protect our waters.</p>
+            <div class="ctaButtons">
+              <a class="btnPrimary" href="/environment/milfoil">About Milfoil</a>
+              <a class="btnGhost" href="/volunteer">Volunteer</a>
+            </div>
+          </div>
+
+          <div class="cta">
+            <h2>Events & Regatta</h2>
+            <p>Join us for annual celebrations, the famous regatta, and social events that bring our community together.</p>
+            <a class="btnPrimary" href="/events">See Events</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section stats">
+        <div class="container">
+          <h2>Our Impact</h2>
+          <div class="statsGrid">
+            <div class="stat"><div class="num">92</div><div class="label">Years of Service</div></div>
+            <div class="stat"><div class="num">200+</div><div class="label">Active Members</div></div>
+            <div class="stat"><div class="num">12</div><div class="label">Annual Events</div></div>
+            <div class="stat"><div class="num">100%</div><div class="label">Volunteer Run</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section land">
+        <div class="container">
+          <h2>Land Acknowledgment</h2>
+          <p>The Association would like to acknowledge that the land on which we gather is the traditional unceded territory of the Anishinaabeg People.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footerInner">
+        <div class="muted">© {new Date().getFullYear()} Lac Bernard Association. All rights reserved.</div>
+        <div class="footerLinks">
+          <a href="mailto:info@lacbernard.ca">info@lacbernard.ca</a>
+          <a href="/privacy">Privacy Policy</a>
+        </div>
+      </div>
+    </footer>
+
+    <style>
+      :root{
+        --bg:#070A12;
+        --panel: rgba(255,255,255,.06);
+        --panel2: rgba(255,255,255,.04);
+        --text: rgba(255,255,255,.92);
+        --muted: rgba(255,255,255,.68);
+        --border: rgba(255,255,255,.12);
+        --radius: 18px;
+        --max: 1120px;
+        --shadow: 0 24px 70px rgba(0,0,0,.45);
+        --spacing-section: 44px;
+        --spacing-gap: 18px;
+      }
+      *{box-sizing:border-box}
+      body{
+        margin:0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        color:var(--text);
+        background:
+          radial-gradient(1100px 700px at 20% 10%, rgba(72,196,255,.18), transparent 60%),
+          radial-gradient(900px 600px at 80% 30%, rgba(130,87,255,.20), transparent 55%),
+          radial-gradient(700px 500px at 55% 80%, rgba(0,255,195,.10), transparent 55%),
+          var(--bg);
+        line-height:1.55;
+      }
+      a{color:inherit;text-decoration:none}
+      a:hover{opacity:.92}
+      a:focus-visible{outline:2px solid rgba(72,196,255,.8);outline-offset:2px;border-radius:4px}
+      .skip-link{
+        position:absolute;left:-9999px;z-index:999;
+        padding:8px 16px;background:var(--bg);color:var(--text);
+        border:2px solid var(--border);border-radius:8px;
+      }
+      .skip-link:focus{left:20px;top:20px}
+      .container{max-width:var(--max);margin:0 auto;padding:0 20px}
+
+      .topbar{
+        position:sticky;top:0;z-index:10;
+        backdrop-filter: blur(14px);
+        background: rgba(7,10,18,.55);
+        border-bottom: 1px solid var(--border);
+      }
+      .topbarInner{height:68px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+      .brandText{font-weight:800;letter-spacing:-.01em}
+      .nav{display:flex;gap:12px;color:var(--muted);font-size:14px;flex-wrap:wrap;justify-content:flex-end}
+      .nav a{padding:8px 10px;border-radius:12px;transition:all 120ms ease}
+      .nav a:hover{background:rgba(255,255,255,.06);color:var(--text)}
+      .nav a:focus-visible{outline:2px solid rgba(72,196,255,.8);outline-offset:2px}
+      .navCta{border:1px solid var(--border);background:rgba(255,255,255,.04)}
+
+      .hero{padding:58px 0 var(--spacing-section)}
+      .heroInner{display:grid;grid-template-columns:1fr;gap:var(--spacing-section);align-items:start}
+      .heroCopy{max-width:900px;margin:0 auto}
+      .kicker{margin:0 0 10px;color:var(--muted);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+      h1{margin:0 0 14px;font-size:clamp(34px,4vw,54px);line-height:1.06;letter-spacing:-.03em}
+      .subtitle{margin:0 0 18px;color:var(--muted);font-size:16px}
+      .heroButtons{display:flex;gap:12px;flex-wrap:wrap}
+
+      .btnPrimary,.btnGhost{
+        display:inline-flex;align-items:center;justify-content:center;
+        padding:11px 14px;border-radius:12px;font-weight:700;font-size:14px;
+        border:1px solid transparent;transition:all 120ms ease;
+      }
+      .btnPrimary{background:linear-gradient(135deg, rgba(72,196,255,.95), rgba(130,87,255,.95));color:rgba(0,0,0,.85)}
+      .btnGhost{background:rgba(255,255,255,.05);border-color:var(--border);color:var(--text)}
+      .btnPrimary:hover,.btnGhost:hover{transform:translateY(-1px);opacity:.95}
+      .btnPrimary:focus-visible,.btnGhost:focus-visible{outline:2px solid rgba(72,196,255,.8);outline-offset:2px}
+
+      .heroPanel{
+        border:1px solid var(--border);
+        background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+        border-radius: 22px;
+        box-shadow: var(--shadow);
+        padding: 20px;
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .heroPanel h2{margin:0 0 8px;font-size:16px;letter-spacing:-.01em}
+      .heroPanel .muted{margin:0 0 16px;font-size:14px;line-height:1.4}
+      .muted{color:var(--muted)}
+      .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:0}
+      .card{
+        border:1px solid rgba(255,255,255,.10);
+        background: rgba(0,0,0,.18);
+        border-radius: 16px;
+        padding: 14px;
+      }
+      .icon{font-size:20px;margin-bottom:6px}
+      .card h3{margin:0 0 6px;font-size:14px;line-height:1.3}
+      .card p{margin:0 0 8px;color:var(--muted);font-size:12.5px;line-height:1.4}
+      .card a{color:rgba(72,196,255,.95);font-weight:700;font-size:12.5px}
+
+      .section{padding:var(--spacing-section) 0}
+      .alt{background:rgba(0,0,0,.14);border-top:1px solid rgba(255,255,255,.08);border-bottom:1px solid rgba(255,255,255,.08)}
+      .prose{max-width:900px;margin:0 auto}
+      .prose :global(h2){margin:0 0 10px;font-size:22px;letter-spacing:-.02em}
+      .prose :global(p){margin:0 0 14px;color:var(--muted)}
+
+      .ctaRow{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--spacing-gap)}
+      .cta{
+        border:1px solid var(--border);
+        background: var(--panel2);
+        border-radius: var(--radius);
+        padding: 16px;
+      }
+      .cta h2{margin:0 0 8px;font-size:16px}
+      .cta p{margin:0 0 14px;color:var(--muted);font-size:13.5px}
+      .ctaButtons{display:flex;gap:10px;flex-wrap:wrap}
+
+      .stats{background:rgba(0,0,0,.18)}
+      .stats h2{margin:0 0 16px}
+      .statsGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+      .stat{border:1px solid rgba(255,255,255,.10);background:rgba(255,255,255,.04);border-radius:16px;padding:14px;text-align:center}
+      .num{font-size:28px;font-weight:900}
+      .label{color:var(--muted);font-size:13px}
+
+      .land{background:rgba(0,0,0,.22);text-align:center}
+      .land p{color:var(--muted);max-width:75ch;margin:0 auto}
+
+      .footer{padding:26px 0 40px;border-top:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.12)}
+      .footerInner{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+      .footerLinks{display:flex;gap:14px;color:var(--muted);font-size:13px}
+
+      @media (max-width: 920px){
+        .heroInner{grid-template-columns:1fr}
+        .ctaRow{grid-template-columns:1fr}
+        .statsGrid{grid-template-columns:repeat(2,1fr)}
+        .nav{font-size:13px;gap:8px}
+        .cards{grid-template-columns:1fr;gap:10px}
+      }
+      @media (max-width: 640px){
+        .nav{flex-direction:column;align-items:flex-end;gap:6px}
+        .topbarInner{flex-wrap:wrap}
+      }
+    </style>
+  </body>
+</html>
