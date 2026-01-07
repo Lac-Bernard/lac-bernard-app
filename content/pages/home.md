@@ -1,7 +1,7 @@
 ---
 title: Home
 heroTitle: Welcome to the Owners' and Residents' Association of Lac Bernard
-heroSubtitle: "We're a volunteer-run, not-for-profit organization that represents the community of Lac Bernard. Since 1933 our mission has been simple: **Build community. Protect the lake. Promote safety.**"
+heroSubtitle: "We're a volunteer-run, not-for-profit organization that represents the community of Lac Bernard. Since 1933 our mission has been simple: Build community. Protect the lake. Promote safety."
 ---
 
 ## About Our Association
