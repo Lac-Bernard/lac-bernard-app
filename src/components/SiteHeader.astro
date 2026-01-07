@@ -7,7 +7,12 @@
     <a class="brand" href="/">
       <span class="brandText">Lac Bernard Association</span>
     </a>
-    <nav class="nav">
+    <button class="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <nav class="nav" id="mainNav">
       <a href="/">Home</a>
       
       <a href="/about">About the Association</a>
@@ -22,3 +27,24 @@
     </nav>
   </div>
 </header>
+
+<script>
+  const navToggle = document.querySelector('.navToggle');
+  const nav = document.getElementById('mainNav');
+  
+  if (navToggle && nav) {
+    navToggle.addEventListener('click', () => {
+      const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
+      navToggle.setAttribute('aria-expanded', !isExpanded);
+      nav.classList.toggle('isOpen');
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!nav.contains(e.target) && !navToggle.contains(e.target)) {
+        navToggle.setAttribute('aria-expanded', 'false');
+        nav.classList.remove('isOpen');
+      }
+    });
+  }
+</script>

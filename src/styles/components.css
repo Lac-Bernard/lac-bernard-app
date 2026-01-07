@@ -34,12 +34,47 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
+  position: relative;
 }
 
 .brandText {
   font-weight: 800;
   letter-spacing: -.01em;
   font-size: 19px;
+}
+
+.navToggle {
+  display: none;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 11;
+}
+
+.navToggle span {
+  width: 100%;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: all 200ms ease;
+  transform-origin: center;
+}
+
+.navToggle[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(9px) rotate(45deg);
+}
+
+.navToggle[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+
+.navToggle[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-9px) rotate(-45deg);
 }
 
 .nav {
@@ -385,9 +420,44 @@
     grid-template-columns: repeat(2,1fr);
   }
   
+  .navToggle {
+    display: flex;
+  }
+  
   .nav {
-    font-size: 13px;
-    gap: 8px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    background: rgba(255,255,255,.98);
+    border-top: 1px solid var(--border);
+    padding: 16px 20px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 300ms ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,.1);
+  }
+  
+  .nav.isOpen {
+    max-height: 500px;
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  .nav > a {
+    width: 100%;
+    padding: 12px 14px;
+    text-align: left;
+  }
+  
+  .navCta {
+    border: none;
+    background: rgba(72,196,255,.1);
+    font-weight: 600;
   }
   
   .cards {
@@ -440,17 +510,7 @@
 }
 
 @media (max-width: 640px) {
-  .nav {
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 6px;
-  }
-  
   .topbarInner {
-    flex-wrap: wrap;
-  }
-  
-  .navDropdownMenu {
-    width: 100%;
+    flex-wrap: nowrap;
   }
 }
