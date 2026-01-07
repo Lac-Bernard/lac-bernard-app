@@ -8,10 +8,40 @@ interface Props {
   title: string;
   description?: string;
   content?: any;
+  section?: 'about' | 'environment' | 'community';
 }
 
-const { title, description, content } = Astro.props;
+const { title, description, content, section } = Astro.props;
 const { Content } = content || {};
+
+// Define navigation items for each section
+const aboutNav = [
+  { href: '/about', label: 'About the Association' },
+  { href: '/about/executive', label: 'Association Executive' },
+  { href: '/about/bylaws', label: 'Association Bylaws' },
+  { href: '/about/business-records', label: 'Recent Business Records' },
+  { href: '/about/archive', label: 'Archive Portal' },
+];
+
+const environmentNav = [
+  { href: '/environment', label: 'Environment' },
+  { href: '/environment/water-sampling', label: 'Water Sampling Program' },
+  { href: '/environment/milfoil', label: 'Eurasian Milfoil' },
+  { href: '/environment/shoreline', label: 'Protecting Our Shoreline' },
+  { href: '/environment/water', label: 'Protecting Our Water' },
+  { href: '/environment/boating', label: 'Boating on Lac Bernard' },
+  { href: '/environment/wildlife', label: 'Lake Wildlife' },
+];
+
+const communityNav = [
+  { href: '/community', label: 'Community' },
+  { href: '/community/regatta', label: 'Annual Regatta' },
+  { href: '/community/history', label: 'History' },
+  { href: '/community/security', label: 'Security' },
+];
+
+const currentPath = Astro.url.pathname;
+const navItems = section === 'about' ? aboutNav : section === 'environment' ? environmentNav : section === 'community' ? communityNav : null;
 ---
 
 <html lang="en">
@@ -30,9 +60,32 @@ const { Content } = content || {};
 
     <main id="main-content">
       <section class="section">
-        <div class="container prose">
-          <h1>{title}</h1>
-          {Content && <Content />}
+        <div class="container">
+          {navItems ? (
+            <div class="pageWithSidebar">
+              <aside class="sidebar">
+                <nav class="sidebarNav" aria-label="Section navigation">
+                  {navItems.map((item) => (
+                    <a 
+                      href={item.href} 
+                      class={currentPath === item.href ? 'active' : ''}
+                    >
+                      {item.label}
+                    </a>
+                  ))}
+                </nav>
+              </aside>
+              <div class="pageContent prose">
+                <h1>{title}</h1>
+                {Content && <Content />}
+              </div>
+            </div>
+          ) : (
+            <div class="prose">
+              <h1>{title}</h1>
+              {Content && <Content />}
+            </div>
+          )}
         </div>
       </section>
     </main>
