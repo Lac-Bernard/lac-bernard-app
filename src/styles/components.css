@@ -317,8 +317,6 @@
 
 /* Prose / Content */
 .prose {
-  max-width: 900px;
-  margin: 0 auto;
 }
 
 .prose :global(h2) {
