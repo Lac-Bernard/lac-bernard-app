@@ -5,6 +5,12 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import { getLocalizedHref, type Language } from '../utils/i18n';
 
+interface NavItem {
+  href: string;
+  label: string;
+  children?: NavItem[];
+}
+
 interface Props {
   title: string;
   description?: string;
@@ -19,7 +25,7 @@ const currentPath = Astro.url.pathname;
 const currentLang = (Astro.currentLocale || 'en') as Language;
 
 // Define navigation items for each section
-const aboutNav = {
+const aboutNav: { en: NavItem[]; fr: NavItem[] } = {
   en: [
     { href: '/about', label: 'About the Association' },
     { href: '/about/executive', label: 'Association Executive' },
@@ -36,7 +42,7 @@ const aboutNav = {
   ],
 };
 
-const environmentNav = {
+const environmentNav: { en: NavItem[]; fr: NavItem[] } = {
   en: [
     { href: '/environment', label: 'Environment' },
     { href: '/environment/water-sampling', label: 'Water Sampling Program' },
@@ -57,10 +63,26 @@ const environmentNav = {
   ],
 };
 
-const communityNav = {
+const communityNav: { en: NavItem[]; fr: NavItem[] } = {
   en: [
     { href: '/community', label: 'Community' },
     { href: '/community/regatta', label: 'Annual Regatta' },
+    { 
+      href: '/history', 
+      label: 'History',
+      children: [
+        { href: '/history/first-nations', label: 'First Nations' },
+        { href: '/history/fishing-club', label: 'Fishing Club' },
+        { href: '/history/maps', label: 'Maps' },
+        { href: '/history/ariel-photos', label: 'Ariel Photos' },
+        { href: '/history/stories-documenting-families-and-individuals', label: 'Stories: Documenting Families and Individuals' },
+        { href: '/history/stories-documenting-history-of-the-lake', label: 'Stories: Documenting History of the Lake' },
+        { href: '/history/newspaper-clippings-collection-of-lac-bernard', label: 'Newspaper Clippings Collection of Lac Bernard' },
+        { href: '/history/historical-research-and-sources', label: 'Historical Research and Sources' },
+        { href: '/history/properties-and-deeds', label: 'Properties and Deeds' },
+        { href: '/history/related-history', label: 'Related History' },
+      ]
+    },
     { 
       href: '/community/security', 
       label: 'Security',
@@ -76,6 +98,22 @@ const communityNav = {
     { href: '/fr/communaute', label: 'Communauté' },
     { href: '/fr/communaute/regate', label: 'Régate annuelle' },
     { 
+      href: '/fr/histoire', 
+      label: 'Histoire',
+      children: [
+        { href: '/fr/histoire/premieres-nations', label: 'Premières Nations' },
+        { href: '/fr/histoire/club-de-peche', label: 'Club de pêche' },
+        { href: '/fr/histoire/cartes', label: 'Cartes' },
+        { href: '/fr/histoire/photos-aeriennes', label: 'Photos aériennes' },
+        { href: '/fr/histoire/recits-familles-et-individus', label: 'Récits: Documentation des familles et individus' },
+        { href: '/fr/histoire/recits-histoire-du-lac', label: 'Récits: Documentation de l\'histoire du lac' },
+        { href: '/fr/histoire/collection-coupures-de-journaux-lac-bernard', label: 'Collection de coupures de journaux du lac Bernard' },
+        { href: '/fr/histoire/recherche-historique-et-sources', label: 'Recherche historique et sources' },
+        { href: '/fr/histoire/proprietes-et-titres', label: 'Propriétés et titres' },
+        { href: '/fr/histoire/histoire-connexe', label: 'Histoire connexe' },
+      ]
+    },
+    { 
       href: '/fr/communaute/securite', 
       label: 'Sécurité',
       children: [
@@ -88,36 +126,8 @@ const communityNav = {
   ],
 };
 
-const historyNav = {
-  en: [
-    { href: '/history', label: 'History' },
-    { href: '/history/first-nations', label: 'First Nations' },
-    { href: '/history/fishing-club', label: 'Fishing Club' },
-    { href: '/history/maps', label: 'Maps' },
-    { href: '/history/ariel-photos', label: 'Ariel Photos' },
-    { href: '/history/stories-documenting-families-and-individuals', label: 'Stories: Documenting Families and Individuals' },
-    { href: '/history/stories-documenting-history-of-the-lake', label: 'Stories: Documenting History of the Lake' },
-    { href: '/history/newspaper-clippings-collection-of-lac-bernard', label: 'Newspaper Clippings Collection of Lac Bernard' },
-    { href: '/history/historical-research-and-sources', label: 'Historical Research and Sources' },
-    { href: '/history/properties-and-deeds', label: 'Properties and Deeds' },
-    { href: '/history/related-history', label: 'Related History' },
-  ],
-  fr: [
-    { href: '/fr/histoire', label: 'Histoire' },
-    { href: '/fr/histoire/premieres-nations', label: 'Premières Nations' },
-    { href: '/fr/histoire/club-de-peche', label: 'Club de pêche' },
-    { href: '/fr/histoire/cartes', label: 'Cartes' },
-    { href: '/fr/histoire/photos-aeriennes', label: 'Photos aériennes' },
-    { href: '/fr/histoire/recits-familles-et-individus', label: 'Récits: Documentation des familles et individus' },
-    { href: '/fr/histoire/recits-histoire-du-lac', label: 'Récits: Documentation de l\'histoire du lac' },
-    { href: '/fr/histoire/collection-coupures-de-journaux-lac-bernard', label: 'Collection de coupures de journaux du lac Bernard' },
-    { href: '/fr/histoire/recherche-historique-et-sources', label: 'Recherche historique et sources' },
-    { href: '/fr/histoire/proprietes-et-titres', label: 'Propriétés et titres' },
-    { href: '/fr/histoire/histoire-connexe', label: 'Histoire connexe' },
-  ],
-};
-
-const navItems = section === 'about' ? aboutNav[currentLang] : section === 'environment' ? environmentNav[currentLang] : section === 'community' ? communityNav[currentLang] : section === 'history' ? historyNav[currentLang] : null;
+// Use community nav for both community and history sections
+const navItems = section === 'about' ? aboutNav[currentLang] : section === 'environment' ? environmentNav[currentLang] : (section === 'community' || section === 'history') ? communityNav[currentLang] : null;
 ---
 
 <html lang={currentLang}>
@@ -145,12 +155,8 @@ const navItems = section === 'about' ? aboutNav[currentLang] : section === 'envi
                     const normalizedHref = item.href.replace(/^\/fr/, '');
                     const isActive = currentPath === item.href || currentPath === normalizedHref || currentPath === getLocalizedHref(normalizedHref, currentLang);
                     const hasChildren = item.children && item.children.length > 0;
-                    const isSecurityPage = currentPath.includes('/security') || currentPath.includes('/securite');
-                    const hasActiveChild = hasChildren && item.children.some((child) => {
-                      const childNormalizedHref = child.href.replace(/^\/fr/, '');
-                      return currentPath === child.href || currentPath === childNormalizedHref || currentPath === getLocalizedHref(childNormalizedHref, currentLang);
-                    });
-                    const showChildren = hasChildren && (isActive || isSecurityPage || hasActiveChild);
+                    // Always show children if they exist
+                    const showChildren = hasChildren;
                     
                     return (
                       <div class="navItem">
@@ -160,7 +166,7 @@ const navItems = section === 'about' ? aboutNav[currentLang] : section === 'envi
                         >
                           {item.label}
                         </a>
-                        {showChildren && (
+                        {showChildren && item.children && (
                           <div class="navChildren">
                             {item.children.map((child) => {
                               const childNormalizedHref = child.href.replace(/^\/fr/, '');
