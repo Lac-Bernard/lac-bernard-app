@@ -1,0 +1,19 @@
+---
+import Page from '../../../layouts/Page.astro';
+import { type Language } from '../../../utils/i18n';
+
+const currentPath = Astro.url.pathname;
+const currentLang = (Astro.currentLocale || 'fr') as Language;
+
+const [page] = await Astro.glob('../../../../content/pages/fr/history-properties-deeds.md');
+if (!page) throw new Error('Missing content/pages/fr/history-properties-deeds.md');
+
+const titles = {
+  fr: 'Propriétés et titres',
+};
+
+const title = page.frontmatter?.title || titles[currentLang];
+const description = page.frontmatter?.description;
+---
+
+<Page title={title} description={description} content={page} section="history" />

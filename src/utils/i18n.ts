@@ -13,6 +13,7 @@ const slugMap: Record<string, string> = {
 	'about': 'a-propos',
 	'environment': 'environnement',
 	'community': 'communaute',
+	'history': 'histoire',
 	'membership': 'adhesion',
 	'contact': 'contact',
 	
@@ -32,8 +33,19 @@ const slugMap: Record<string, string> = {
 	
 	// Community sub-pages
 	'community/regatta': 'communaute/regate',
-	'community/history': 'communaute/histoire',
 	'community/security': 'communaute/securite',
+	
+	// History sub-pages
+	'history/first-nations': 'histoire/premieres-nations',
+	'history/fishing-club': 'histoire/club-de-peche',
+	'history/maps': 'histoire/cartes',
+	'history/ariel-photos': 'histoire/photos-aeriennes',
+	'history/stories-documenting-families-and-individuals': 'histoire/recits-familles-et-individus',
+	'history/stories-documenting-history-of-the-lake': 'histoire/recits-histoire-du-lac',
+	'history/newspaper-clippings-collection-of-lac-bernard': 'histoire/collection-coupures-de-journaux-lac-bernard',
+	'history/historical-research-and-sources': 'histoire/recherche-historique-et-sources',
+	'history/properties-and-deeds': 'histoire/proprietes-et-titres',
+	'history/related-history': 'histoire/histoire-connexe',
 };
 
 // Reverse mapping: French -> English

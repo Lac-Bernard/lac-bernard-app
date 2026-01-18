@@ -14,18 +14,20 @@ const alternatePath = getLocalizedPath(pathWithoutLocale, alternateLang);
 const navLabels = {
 	en: {
 		home: 'Home',
-		about: 'About the Association',
+		about: 'About',
 		membership: 'Membership',
 		environment: 'Environment',
 		community: 'Community',
+		history: 'History',
 		contact: 'Contact Us',
 	},
 	fr: {
 		home: 'Accueil',
-		about: 'À propos de l\'Association',
+		about: 'À propos',
 		membership: 'Adhésion',
 		environment: 'Environnement',
 		community: 'Communauté',
+		history: 'Histoire',
 		contact: 'Contactez-nous',
 	},
 };
@@ -47,8 +49,6 @@ const altLabels = navLabels[alternateLang];
       <span></span>
     </button>
     <nav class="nav" id="mainNav">
-      <a href={getLocalizedHref('/', currentLang)}>{labels.home}</a>
-      
       <a href={getLocalizedHref('/about', currentLang)}>{labels.about}</a>
       
       <a href={getLocalizedHref('/membership', currentLang)} class="navCta">{labels.membership}</a>
@@ -56,6 +56,8 @@ const altLabels = navLabels[alternateLang];
       <a href={getLocalizedHref('/environment', currentLang)}>{labels.environment}</a>
       
       <a href={getLocalizedHref('/community', currentLang)}>{labels.community}</a>
+      
+      <a href={getLocalizedHref('/history', currentLang)}>{labels.history}</a>
       
       <a href={getLocalizedHref('/contact', currentLang)}>{labels.contact}</a>
       

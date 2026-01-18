@@ -1,0 +1,22 @@
+---
+import Page from '../../layouts/Page.astro';
+import { type Language } from '../../utils/i18n';
+
+const currentPath = Astro.url.pathname;
+const currentLang = (Astro.currentLocale || 'en') as Language;
+
+const [page] = currentLang === 'fr' 
+  ? await Astro.glob('../../../content/pages/fr/history-first-nations.md')
+  : await Astro.glob('../../../content/pages/history-first-nations.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}history-first-nations.md`);
+
+const titles = {
+  en: 'First Nations',
+  fr: 'Premières Nations',
+};
+
+const title = page.frontmatter?.title || titles[currentLang];
+const description = page.frontmatter?.description;
+---
+
+<Page title={title} description={description} content={page} section="history" />

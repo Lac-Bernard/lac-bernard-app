@@ -1,0 +1,22 @@
+---
+import Page from '../../layouts/Page.astro';
+import { type Language } from '../../utils/i18n';
+
+const currentPath = Astro.url.pathname;
+const currentLang = (Astro.currentLocale || 'en') as Language;
+
+const [page] = currentLang === 'fr' 
+  ? await Astro.glob('../../../content/pages/fr/history-stories-families-individuals.md')
+  : await Astro.glob('../../../content/pages/history-stories-families-individuals.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}history-stories-families-individuals.md`);
+
+const titles = {
+  en: 'Stories: Documenting Families and Individuals',
+  fr: 'Récits: Documentation des familles et individus',
+};
+
+const title = page.frontmatter?.title || titles[currentLang];
+const description = page.frontmatter?.description;
+---
+
+<Page title={title} description={description} content={page} section="history" />
