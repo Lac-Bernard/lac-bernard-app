@@ -3,6 +3,7 @@ import '../styles/theme.css';
 import '../styles/components.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import { getLocalizedHref, type Language } from '../utils/i18n';
 
 interface Props {
   title: string;
@@ -14,37 +15,67 @@ interface Props {
 const { title, description, content, section } = Astro.props;
 const { Content } = content || {};
 
-// Define navigation items for each section
-const aboutNav = [
-  { href: '/about', label: 'About the Association' },
-  { href: '/about/executive', label: 'Association Executive' },
-  { href: '/about/bylaws', label: 'Association Bylaws' },
-  { href: '/about/business-records', label: 'Recent Business Records' },
-  { href: '/about/archive', label: 'Archive Portal' },
-];
-
-const environmentNav = [
-  { href: '/environment', label: 'Environment' },
-  { href: '/environment/water-sampling', label: 'Water Sampling Program' },
-  { href: '/environment/milfoil', label: 'Eurasian Milfoil' },
-  { href: '/environment/shoreline', label: 'Protecting Our Shoreline' },
-  { href: '/environment/water', label: 'Protecting Our Water' },
-  { href: '/environment/boating', label: 'Boating on Lac Bernard' },
-  { href: '/environment/wildlife', label: 'Lake Wildlife' },
-];
-
-const communityNav = [
-  { href: '/community', label: 'Community' },
-  { href: '/community/regatta', label: 'Annual Regatta' },
-  { href: '/community/history', label: 'History' },
-  { href: '/community/security', label: 'Security' },
-];
-
 const currentPath = Astro.url.pathname;
-const navItems = section === 'about' ? aboutNav : section === 'environment' ? environmentNav : section === 'community' ? communityNav : null;
+const currentLang = (Astro.currentLocale || 'en') as Language;
+
+// Define navigation items for each section
+const aboutNav = {
+  en: [
+    { href: '/about', label: 'About the Association' },
+    { href: '/about/executive', label: 'Association Executive' },
+    { href: '/about/bylaws', label: 'Association Bylaws' },
+    { href: '/about/business-records', label: 'Recent Business Records' },
+    { href: '/about/archive', label: 'Archive Portal' },
+  ],
+  fr: [
+    { href: '/fr/a-propos', label: 'À propos de l\'Association' },
+    { href: '/fr/a-propos/comite-executif', label: 'Comité exécutif' },
+    { href: '/fr/a-propos/reglements', label: 'Règlements de l\'Association' },
+    { href: '/fr/a-propos/proces-verbaux', label: 'Procès-verbaux récents' },
+    { href: '/fr/a-propos/archives', label: 'Portail d\'archives' },
+  ],
+};
+
+const environmentNav = {
+  en: [
+    { href: '/environment', label: 'Environment' },
+    { href: '/environment/water-sampling', label: 'Water Sampling Program' },
+    { href: '/environment/milfoil', label: 'Eurasian Milfoil' },
+    { href: '/environment/shoreline', label: 'Protecting Our Shoreline' },
+    { href: '/environment/water', label: 'Protecting Our Water' },
+    { href: '/environment/boating', label: 'Boating on Lac Bernard' },
+    { href: '/environment/wildlife', label: 'Lake Wildlife' },
+  ],
+  fr: [
+    { href: '/fr/environnement', label: 'Environnement' },
+    { href: '/fr/environnement/echantillonnage-eau', label: 'Programme d\'échantillonnage de l\'eau' },
+    { href: '/fr/environnement/myriophylle', label: 'Myriophylle à épi' },
+    { href: '/fr/environnement/rivage', label: 'Protéger notre rivage' },
+    { href: '/fr/environnement/eau', label: 'Protéger notre eau' },
+    { href: '/fr/environnement/navigation', label: 'Navigation sur le lac Bernard' },
+    { href: '/fr/environnement/faune', label: 'Faune du lac' },
+  ],
+};
+
+const communityNav = {
+  en: [
+    { href: '/community', label: 'Community' },
+    { href: '/community/regatta', label: 'Annual Regatta' },
+    { href: '/community/history', label: 'History' },
+    { href: '/community/security', label: 'Security' },
+  ],
+  fr: [
+    { href: '/fr/communaute', label: 'Communauté' },
+    { href: '/fr/communaute/regate', label: 'Régate annuelle' },
+    { href: '/fr/communaute/histoire', label: 'Histoire' },
+    { href: '/fr/communaute/securite', label: 'Sécurité' },
+  ],
+};
+
+const navItems = section === 'about' ? aboutNav[currentLang] : section === 'environment' ? environmentNav[currentLang] : section === 'community' ? communityNav[currentLang] : null;
 ---
 
-<html lang="en">
+<html lang={currentLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -65,14 +96,18 @@ const navItems = section === 'about' ? aboutNav : section === 'environment' ? en
             <div class="pageWithSidebar">
               <aside class="sidebar">
                 <nav class="sidebarNav" aria-label="Section navigation">
-                  {navItems.map((item) => (
-                    <a 
-                      href={item.href} 
-                      class={currentPath === item.href ? 'active' : ''}
-                    >
-                      {item.label}
-                    </a>
-                  ))}
+                  {navItems?.map((item) => {
+                    const normalizedHref = item.href.replace(/^\/fr/, '');
+                    const isActive = currentPath === item.href || currentPath === normalizedHref || currentPath === getLocalizedHref(normalizedHref, currentLang);
+                    return (
+                      <a 
+                        href={getLocalizedHref(normalizedHref, currentLang)} 
+                        class={isActive ? 'active' : ''}
+                      >
+                        {item.label}
+                      </a>
+                    );
+                  })}
                 </nav>
               </aside>
               <div class="pageContent prose">

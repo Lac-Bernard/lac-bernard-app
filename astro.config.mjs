@@ -11,4 +11,11 @@ export default defineConfig({
 	output: 'server',
 	adapter: vercel(),
 	integrations: [mdx(), sitemap()],
+	i18n: {
+		defaultLocale: 'en',
+		locales: ['en', 'fr'],
+		routing: {
+			prefixDefaultLocale: false,
+		},
+	},
 });

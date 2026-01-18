@@ -1,10 +1,21 @@
 ---
 import Page from '../../layouts/Page.astro';
+import { type Language } from '../../utils/i18n';
 
-const [page] = await Astro.glob('../../../content/pages/community-regatta.md');
-if (!page) throw new Error('Missing content/pages/community-regatta.md');
+const currentPath = Astro.url.pathname;
+const currentLang = (Astro.currentLocale || 'en') as Language;
 
-const title = page.frontmatter?.title || 'Annual Regatta';
+const [page] = currentLang === 'fr' 
+  ? await Astro.glob('../../../content/pages/fr/community-regatta.md')
+  : await Astro.glob('../../../content/pages/community-regatta.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}community-regatta.md`);
+
+const titles = {
+  en: 'Annual Regatta',
+  fr: 'Régate annuelle',
+};
+
+const title = page.frontmatter?.title || titles[currentLang];
 const description = page.frontmatter?.description;
 ---
 

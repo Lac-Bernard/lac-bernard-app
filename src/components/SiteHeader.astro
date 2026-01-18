@@ -1,10 +1,44 @@
 ---
+import { getAlternateLanguage, getLocalizedHref, getLocalizedPath, type Language } from '../utils/i18n';
+
+const currentPath = Astro.url.pathname;
+const currentLang = (Astro.currentLocale || 'en') as Language;
+const alternateLang = getAlternateLanguage(currentLang);
+
+// Get the path without locale prefix for switching
+// Match /en or /fr only when followed by / or end of string, not part of a word
+const pathWithoutLocale = currentPath.replace(/^\/(en|fr)(\/|$)/, '/') || '/';
+const alternatePath = getLocalizedPath(pathWithoutLocale, alternateLang);
+
+// Navigation labels
+const navLabels = {
+	en: {
+		home: 'Home',
+		about: 'About the Association',
+		membership: 'Membership',
+		environment: 'Environment',
+		community: 'Community',
+		contact: 'Contact Us',
+	},
+	fr: {
+		home: 'Accueil',
+		about: 'À propos de l\'Association',
+		membership: 'Adhésion',
+		environment: 'Environnement',
+		community: 'Communauté',
+		contact: 'Contactez-nous',
+	},
+};
+
+const labels = navLabels[currentLang];
+const altLabels = navLabels[alternateLang];
 ---
+
 
 <a href="#main-content" class="skip-link">Skip to main content</a>
 <header class="topbar">
   <div class="container topbarInner">
-    <a class="brand" href="/">
+    <a class="brand" href={getLocalizedHref('/', currentLang)}>
       <span class="brandText">Lac Bernard Association</span>
     </a>
     <button class="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
@@ -13,17 +47,21 @@
       <span></span>
     </button>
     <nav class="nav" id="mainNav">
-      <a href="/">Home</a>
+      <a href={getLocalizedHref('/', currentLang)}>{labels.home}</a>
       
-      <a href="/about">About the Association</a>
+      <a href={getLocalizedHref('/about', currentLang)}>{labels.about}</a>
       
-      <a href="/membership" class="navCta">Membership</a>
+      <a href={getLocalizedHref('/membership', currentLang)} class="navCta">{labels.membership}</a>
       
-      <a href="/environment">Environment</a>
+      <a href={getLocalizedHref('/environment', currentLang)}>{labels.environment}</a>
       
-      <a href="/community">Community</a>
+      <a href={getLocalizedHref('/community', currentLang)}>{labels.community}</a>
       
-      <a href="/contact">Contact Us</a>
+      <a href={getLocalizedHref('/contact', currentLang)}>{labels.contact}</a>
+      
+      <a href={alternatePath} class="langToggle" aria-label={`Switch to ${altLabels.home}`}>
+        {alternateLang.toUpperCase()}
+      </a>
     </nav>
   </div>
 </header>
@@ -48,3 +86,28 @@
     });
   }
 </script>
+
+<style>
+  .langToggle {
+    margin-left: 8px;
+    padding: 6px 12px !important;
+    border: 1px solid var(--border) !important;
+    background: rgba(0,0,0,.04) !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    min-width: 44px;
+    text-align: center;
+  }
+  
+  .langToggle:hover {
+    background: rgba(72,196,255,.1) !important;
+    border-color: rgba(72,196,255,.3) !important;
+  }
+  
+  @media (max-width: 920px) {
+    .langToggle {
+      margin-left: 0;
+      margin-top: 8px;
+    }
+  }
+</style>

@@ -1,10 +1,21 @@
 ---
 import Page from '../../layouts/Page.astro';
+import { type Language } from '../../utils/i18n';
 
-const [page] = await Astro.glob('../../../content/pages/environment-milfoil.md');
-if (!page) throw new Error('Missing content/pages/environment-milfoil.md');
+const currentPath = Astro.url.pathname;
+const currentLang = (Astro.currentLocale || 'en') as Language;
 
-const title = page.frontmatter?.title || 'Eurasian Milfoil';
+const [page] = currentLang === 'fr' 
+  ? await Astro.glob('../../../content/pages/fr/environment-milfoil.md')
+  : await Astro.glob('../../../content/pages/environment-milfoil.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}environment-milfoil.md`);
+
+const titles = {
+  en: 'Eurasian Milfoil',
+  fr: 'Myriophylle à épi',
+};
+
+const title = page.frontmatter?.title || titles[currentLang];
 const description = page.frontmatter?.description;
 ---
 

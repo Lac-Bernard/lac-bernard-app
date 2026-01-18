@@ -1,10 +1,21 @@
 ---
 import Page from '../../layouts/Page.astro';
+import { type Language } from '../../utils/i18n';
 
-const [page] = await Astro.glob('../../../content/pages/community-history.md');
-if (!page) throw new Error('Missing content/pages/community-history.md');
+const currentPath = Astro.url.pathname;
+const currentLang = (Astro.currentLocale || 'en') as Language;
 
-const title = page.frontmatter?.title || 'History';
+const [page] = currentLang === 'fr' 
+  ? await Astro.glob('../../../content/pages/fr/community-history.md')
+  : await Astro.glob('../../../content/pages/community-history.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}community-history.md`);
+
+const titles = {
+  en: 'History',
+  fr: 'Histoire',
+};
+
+const title = page.frontmatter?.title || titles[currentLang];
 const description = page.frontmatter?.description;
 ---
 
