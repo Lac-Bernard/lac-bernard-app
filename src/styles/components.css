@@ -29,7 +29,7 @@
 }
 
 .topbarInner {
-  height: 68px;
+  height: 90px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -37,10 +37,19 @@
   position: relative;
 }
 
-.brandText {
-  font-weight: 800;
-  letter-spacing: -.01em;
-  font-size: 19px;
+.brand {
+  flex-shrink: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.brandLogo {
+  height: 60px;
+  width: auto;
+  max-width: 250px;
+  object-fit: contain;
+  filter: brightness(0);
 }
 
 .navToggle {
@@ -82,15 +91,19 @@
   gap: 12px;
   color: var(--muted);
   font-size: 17px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: flex-end;
   align-items: center;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
 .nav > a {
   padding: 8px 10px;
   border-radius: 12px;
   transition: all 120ms ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav > a:hover {
@@ -376,7 +389,7 @@
 
 .sidebar {
   position: sticky;
-  top: 88px;
+  top: 110px;
 }
 
 .sidebarNav {
@@ -411,6 +424,17 @@
 }
 
 /* Responsive */
+@media (max-width: 1100px) and (min-width: 921px) {
+  .nav {
+    font-size: 16px;
+    gap: 10px;
+  }
+  
+  .nav > a {
+    padding: 8px 8px;
+  }
+}
+
 @media (max-width: 920px) {
   .ctaRow {
     grid-template-columns: 1fr;
@@ -512,5 +536,10 @@
 @media (max-width: 640px) {
   .topbarInner {
     flex-wrap: nowrap;
+  }
+  
+  .brandLogo {
+    height: 50px;
+    max-width: 200px;
   }
 }
