@@ -34,6 +34,10 @@ const slugMap: Record<string, string> = {
 	// Community sub-pages
 	'community/regatta': 'communaute/regate',
 	'community/security': 'communaute/securite',
+	'community/security/police': 'communaute/securite/police',
+	'community/security/emergency-contacts': 'communaute/securite/contacts-urgence',
+	'community/security/fire': 'communaute/securite/incendie',
+	'community/security/neighbourhood-watch': 'communaute/securite/surveillance-quartier',
 	
 	// History sub-pages
 	'history/first-nations': 'histoire/premieres-nations',

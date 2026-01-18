@@ -398,6 +398,11 @@
   gap: 4px;
 }
 
+.sidebarNav .navItem {
+  display: flex;
+  flex-direction: column;
+}
+
 .sidebarNav a {
   display: block;
   padding: 10px 14px;
@@ -417,6 +422,21 @@
   background: rgba(72,196,255,.1);
   color: var(--text);
   font-weight: 600;
+}
+
+.sidebarNav .navChildren {
+  display: flex;
+  flex-direction: column;
+  margin-left: 12px;
+  margin-top: 4px;
+  gap: 2px;
+  border-left: 2px solid rgba(0,0,0,.08);
+  padding-left: 8px;
+}
+
+.sidebarNav .navChildren a {
+  padding: 8px 12px;
+  font-size: 15px;
 }
 
 .pageContent {

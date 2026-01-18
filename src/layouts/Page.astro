@@ -61,12 +61,30 @@ const communityNav = {
   en: [
     { href: '/community', label: 'Community' },
     { href: '/community/regatta', label: 'Annual Regatta' },
-    { href: '/community/security', label: 'Security' },
+    { 
+      href: '/community/security', 
+      label: 'Security',
+      children: [
+        { href: '/community/security/police', label: 'Police' },
+        { href: '/community/security/emergency-contacts', label: 'Emergency Contacts' },
+        { href: '/community/security/fire', label: 'Fire' },
+        { href: '/community/security/neighbourhood-watch', label: 'Neighbourhood Watch Program' },
+      ]
+    },
   ],
   fr: [
     { href: '/fr/communaute', label: 'Communauté' },
     { href: '/fr/communaute/regate', label: 'Régate annuelle' },
-    { href: '/fr/communaute/securite', label: 'Sécurité' },
+    { 
+      href: '/fr/communaute/securite', 
+      label: 'Sécurité',
+      children: [
+        { href: '/fr/communaute/securite/police', label: 'Police' },
+        { href: '/fr/communaute/securite/contacts-urgence', label: 'Contacts d\'urgence' },
+        { href: '/fr/communaute/securite/incendie', label: 'Incendie' },
+        { href: '/fr/communaute/securite/surveillance-quartier', label: 'Programme de surveillance de quartier' },
+      ]
+    },
   ],
 };
 
@@ -126,13 +144,39 @@ const navItems = section === 'about' ? aboutNav[currentLang] : section === 'envi
                   {navItems?.map((item) => {
                     const normalizedHref = item.href.replace(/^\/fr/, '');
                     const isActive = currentPath === item.href || currentPath === normalizedHref || currentPath === getLocalizedHref(normalizedHref, currentLang);
+                    const hasChildren = item.children && item.children.length > 0;
+                    const isSecurityPage = currentPath.includes('/security') || currentPath.includes('/securite');
+                    const hasActiveChild = hasChildren && item.children.some((child) => {
+                      const childNormalizedHref = child.href.replace(/^\/fr/, '');
+                      return currentPath === child.href || currentPath === childNormalizedHref || currentPath === getLocalizedHref(childNormalizedHref, currentLang);
+                    });
+                    const showChildren = hasChildren && (isActive || isSecurityPage || hasActiveChild);
+                    
                     return (
-                      <a 
-                        href={getLocalizedHref(normalizedHref, currentLang)} 
-                        class={isActive ? 'active' : ''}
-                      >
-                        {item.label}
-                      </a>
+                      <div class="navItem">
+                        <a 
+                          href={getLocalizedHref(normalizedHref, currentLang)} 
+                          class={isActive ? 'active' : ''}
+                        >
+                          {item.label}
+                        </a>
+                        {showChildren && (
+                          <div class="navChildren">
+                            {item.children.map((child) => {
+                              const childNormalizedHref = child.href.replace(/^\/fr/, '');
+                              const isChildActive = currentPath === child.href || currentPath === childNormalizedHref || currentPath === getLocalizedHref(childNormalizedHref, currentLang);
+                              return (
+                                <a 
+                                  href={getLocalizedHref(childNormalizedHref, currentLang)} 
+                                  class={isChildActive ? 'active' : ''}
+                                >
+                                  {child.label}
+                                </a>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
                     );
                   })}
                 </nav>
