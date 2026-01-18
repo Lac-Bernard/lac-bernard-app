@@ -3,20 +3,63 @@ title: Membership
 description: Join or renew your membership with the Lac Bernard Association.
 ---
 
-## Join or Renew Your Membership
+# Membership
 
-Association Members have a voice in the affairs and priorities of the Association, and access to the Association's business records, lake history and various archives and are eligible to serve on the Association's Executive.
+#### Membership is $75 per year. You can renew for up to 3 years.
 
-Members also vote on critical Association issues, including electing the Association Leadership.
+**$75 – 1 year**
 
-## Membership Benefits
+**$150 – 2 years**
 
-- Vote on Association matters
-- Access to business records and archives
-- Eligibility to serve on the Executive
-- Support environmental protection initiatives
-- Participate in community events
+**$225 – 3 years** 
 
-## How to Join
+Membership is on a calendar basis – From January to December.
 
-Support the lake for just **$75/year**. Multi-year discounts available for long-term supporters.
+Anyone can be a Member of the Association, but our bylaws restrict voting to only one Primary Member per property. There can be an unlimited number of non-voting Associate Members per property.
+
+The simplest and fastest payment method is through INTERAC. You may also pay by cheque, if you prefer. We no longer use PayPal, and are not using credit cards at this time.
+
+_**Enrolling and Renewing is easy.**  Please click on either the **Enroll** or **Renewal** button below and make sure you fill in the form so we can communicate with you. Also, separately through your bank, please be sure to send your e-transfer payment to "**interac@lacbernard.ca**" The Association does not collect bank information._ 
+
+_If you prefer to pay by cheque, please send it to: **The Owners' and Residents' Association of Lac Bernard**, **C.P 1262 Succursale C**, **Gatineau, Quebec J8X 3X7**_
+
+You can also contact us directly by email at: _membership@lacbernard.ca_ 
+
+_**Enroll As A New Member**_
+
+**_Renew Your Membership_**
+
+By enrolling or renewing, you are agreeing to support our Corporate Objectives outlined below. These are core to our Letters Patent and bylaws. If you have questions regarding any of these, please reach out to president@lacbernard.ca.
+
+When you join the Owners' and Residents' Association of Lac Bernard you become a member of one of the strongest and most active lake associations in the region. Our aim is to to ensure every cottage on the lake becomes a member and actively participates in our three key objectives:
+
+* Community Building
+* Environmental Stewardship
+* Safety and Security of our Community
+
+The Association members work together to ensure the long term sustainability of our lake, as well as organizing a fantastic social calendar, anchored by the fun-family annual Regatta held in Regatta Bay!
+
+#### Corporate Objectives
+
+* Manage the Corporation in a transparent and respectful manner in both official languages wherever possible
+* Promote the preservation and enhancement of the environmental and ecological well  
+being of the lake;
+* Work with all levels of government to preserve and enhance the state of the lake and its  
+biodiversity, ensure the maintenance of access roads and support the delivery of  
+common services to residents and owners;
+* Support the recreational interests for the members of the Corporation;
+* Encourage the development of a respectful, involved and convivial community; and.
+* Ensure the Corporation is managed with fiscal responsibility, good governance and  
+probity.
+
+Your membership dues go directly to our advocacy and stewardship of the lake which includes:
+
+* advocating on your behalf with the municipalities of La Pêche and Low and the provincial government on issues that are important to you and your property
+* organizing the Annual Regatta held every year in early August in Regatta Bay
+* placing navigation buoys around the lake where there are rocks, shoals, and Eurasian Water Milfoil
+* annually test water quality for bacteria and phosphates, and monitor shoreline over-development
+* helping cottagers understand relevant bylaws and how to develop and enjoy their property without over-developing their lot
+* working with ABV des 7 and other lakes on the ongoing Eurasian Water Milfoil battle, as well as watching for other invasive species that threaten our ability to enjoy our safe and healthy lake.
+* operating www.lacbernard.ca – the bilingual Association website that provides a source for information regarding the lake. This includes Association activities, water quality reports, news, and a rich trove of archives and historical records and oral stories from our lake.
+
+## _Enroll Today!_
