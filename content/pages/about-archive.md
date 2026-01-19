@@ -3,8 +3,6 @@ title: Archive Portal
 description: Access historical Association records and archives.
 ---
 
-# Archive Portal
-
 The Archives are the official repository for the records of the Owners' and Residents' Association of Lake Bernard. It contains multiple kinds of records, including documents, photos, maps and other material, that document the rich history of our lake.
 
 You can browse the archives by navigating through the folders below or you can search based on keywords associated with the files. Simply click on a folder to navigate into the subfolders and files. Generally, the folders represent the functions and activities of the Association.

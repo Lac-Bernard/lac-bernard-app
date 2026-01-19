@@ -3,8 +3,6 @@ title: Adhésion
 description: Adhérez ou renouvelez votre adhésion à l'Association du lac Bernard.
 ---
 
-# Adhésion
-
 #### L'adhésion est de 75 $ par année. Vous pouvez renouveler jusqu'à 3 ans.
 
 **75 $ – 1 an**

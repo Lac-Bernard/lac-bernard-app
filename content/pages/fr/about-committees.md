@@ -3,8 +3,6 @@ title: Comités de l'Association
 description: Rencontrez les responsables des comités qui soutiennent les objectifs de l'Association.
 ---
 
-# Comités de l'Association
-
 Ce sont les personnes responsables d'une fonction, d'une activité continue ou d'une initiative qui soutient les objectifs de l'Association et contribue à la force et à la vitalité de la communauté du lac. En tant que responsables, ils peuvent travailler seuls ou être soutenus par des bénévoles de la communauté du lac Bernard.
 
 Rejoindre un comité est vraiment facile !! Nous recherchons toujours des bénévoles et un soutien supplémentaire. Il suffit d'envoyer un message aux responsables des comités indiqués ci-dessous et nous vous contacterons.

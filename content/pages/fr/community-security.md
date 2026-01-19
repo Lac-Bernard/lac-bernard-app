@@ -3,8 +3,6 @@ title: Sécurité
 description: Information sur la sécurité et la sûreté de la communauté.
 ---
 
-## Sécurité
-
 Pour déposer une **plainte** auprès de la police locale ou pour obtenir l'aide de la police, appelez le **819-459-9911**. Appelez le **911** pour toute **urgence**. Pour **autres préoccupations ou questions**, vous pouvez écrire à Sécurité Publique | MRC des Collines-de-l'Outaouais à securitepublique@mrcdescollines.com.
 
 La plupart des problèmes de sécurité auxquels sont confrontés les résidents du lac Bernard sont similaires à ceux partout ailleurs, mais en raison de l'emplacement de notre lac dans un environnement naturel éloigné d'un centre urbain, et du fait que la plupart des propriétés ne sont occupées qu'une petite partie du temps, certaines menaces de sécurité sont élevées. C'est pourquoi la surveillance de quartier est si importante et pourquoi nous devons prendre des précautions supplémentaires pour protéger nos biens. Les voleurs trouvent les propriétés non surveillées attrayantes, surtout pendant les périodes moins actives de l'année comme le printemps, l'automne et l'hiver.

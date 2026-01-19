@@ -3,10 +3,6 @@ title: Boating on Lac Bernard
 description: Guidelines and information for boating on Lac Bernard.
 ---
 
-# Boating on Lac Bernard
-
-# Boating Regulations
-
 Transport Canada's Office of Boating Safety offers valuable information on the safe and responsible operation of pleasure boating in Canada. It also provides information on compliance and conformity labelling, licensing, regulations, publications, and how to obtain a Pleasure Craft Operator Card.
 
 The Transport Canada boating safety website is: [Office of Boating Safety](https://tc.canada.ca/en/marine-transportation/marine-safety/office-boating-safety)

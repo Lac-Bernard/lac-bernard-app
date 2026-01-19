@@ -3,8 +3,6 @@ title: Emergency Contacts
 description: Important emergency contact numbers and information.
 ---
 
-## Emergency Contacts
-
 | Emergency                                | 9-1-1                                                                                              |
 | ---------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | Police                                   | 9-1-1                                                                                              |

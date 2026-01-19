@@ -3,8 +3,6 @@ title: Police
 description: Information sur les services de police et les procédures de signalement.
 ---
 
-## Police
-
 Veuillez signaler tous les actes criminels, tels que les effractions et les vols, ainsi que toute personne ou véhicule suspect, à la Police MRC Des Collines-de-l'Outaouais.
 
 **Urgence** 9-1-1  

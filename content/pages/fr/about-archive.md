@@ -3,8 +3,6 @@ title: Portail d'archives
 description: Accédez aux archives historiques de l'Association.
 ---
 
-# Portail d'archives
-
 Les archives sont le dépôt officiel des dossiers de l'Association des propriétaires et résidents du lac Bernard. Elles contiennent plusieurs types de dossiers, y compris des documents, photos, cartes et autres matériaux, qui documentent la riche histoire de notre lac.
 
 Vous pouvez parcourir les archives en naviguant dans les dossiers ci-dessous ou vous pouvez rechercher en fonction des mots-clés associés aux fichiers. Cliquez simplement sur un dossier pour naviguer dans les sous-dossiers et fichiers. Généralement, les dossiers représentent les fonctions et activités de l'Association.

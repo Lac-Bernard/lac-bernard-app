@@ -3,8 +3,6 @@ title: Membership
 description: Join or renew your membership with the Lac Bernard Association.
 ---
 
-# Membership
-
 #### Membership is $75 per year. You can renew for up to 3 years.
 
 **$75 – 1 year**

@@ -3,8 +3,6 @@ title: Protecting our Shoreline
 description: Learn about shoreline protection initiatives.
 ---
 
-# Protecting our Shoreline
-
   
 The shallows of a lake are crucial to the healthy habitat of fish, frogs and crayfish. To protect the shallows, please note that permanent concrete docks and retaining walls are prohibited by law, and only permanent docks allowed by Environment Quebec and holding an appropriate municipal permit can be constructed.
 

@@ -3,8 +3,6 @@ title: Protecting Our Water
 description: Learn about water protection programs and initiatives.
 ---
 
-# Protecting Our Water
-
   
 What to look out for to help protect our Lake!
 

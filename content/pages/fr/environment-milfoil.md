@@ -3,8 +3,6 @@ title: Myriophylle à épi eurasien
 description: En savoir plus sur le myriophylle à épi eurasien et son impact sur le lac Bernard.
 ---
 
-# Myriophylle à épi eurasien
-
 Le myriophylle à épi eurasien reste de loin notre plus grande préoccupation environnementale. C'est un défi à bien des égards, mais finalement le myriophylle affecte de manière critique l'utilité du lac pour la baignade, la navigation et le plaisir général. Il est maintenant l'une des plantes aquatiques envahissantes les plus largement distribuées sur le continent. Parce que de minuscules morceaux de plantes peuvent se développer en nouvelles plantes, le myriophylle à épi eurasien se propage facilement lorsque les courants d'eau, les hélices de bateaux, les remorques ou l'équipement de pêche transportent des fragments de plantes vers de nouvelles zones. L'Association travaille avec ABV des 7 pour surveiller le lac, et en 2011 le myriophylle couvrait **185 000 M2** du lac, en 2015 c'était **525 000 M2**, et en 2021 il couvrait plus de **1 100 000 M2** du lac!! Il couvre maintenant presque toutes les parties de notre lac entre 0,5 m et 7 m de profondeur, 57 hectares ou 12% du lac. Bien que notre lac fasse 900 hectares, c'est presque une saturation complète du rivage et des eaux peu profondes <4M de profondeur où il pousse. Rien ne le ralentit, et la trajectoire est une saturation complète dans les prochaines années, rejoignant le lac Gauvreau voisin et d'autres qui sont déjà terminés. 
 
 ## Mise à jour d'août 2024 du président sur le myriophylle

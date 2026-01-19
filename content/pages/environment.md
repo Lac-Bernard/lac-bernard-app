@@ -3,8 +3,6 @@ title: Our Environment
 description: Learn about our environmental protection initiatives and programs.
 ---
 
-# Our Environment
-
 ##### _Environmental Stewardship is core to the mission of the Association_. It's important that everyone on our lake recognize how critical it is to maintain proper stewardship over this precious resource!
 
 ## 2025 Eurasion Water Milfoil Strategic Management Plan and Presentation

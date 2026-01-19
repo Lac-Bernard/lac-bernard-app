@@ -3,8 +3,6 @@ title: Faune du lac
 description: En savoir plus sur la faune qui habite le lac Bernard.
 ---
 
-# Faune du lac
-
 Nous voulons tous protéger notre faune et vivre en harmonie avec la nature qui nous entoure. Mais la faune peut ne pas ressentir la même chose! Nous avons donc compilé quelques informations pour aider les propriétaires de chalets à prendre des décisions éclairées concernant la faune clé autour de notre lac. Nous interagissons régulièrement avec les castors et les huards sur notre lac. Nous avons quelques familles d'huards qui reviennent chaque année, et bien sûr les castors jouent un rôle clé à la fois dans le niveau d'eau de notre lac ainsi que leur impact le long du rivage. 
 
 # Castors

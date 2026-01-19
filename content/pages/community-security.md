@@ -3,8 +3,6 @@ title: Security
 description: Information about community security and safety.
 ---
 
-## Security
-
 To make a **complaint** to the local police, or for police assistance call **819-459-9911**. Call **911** for any **emergency**. For **other concerns or questions**, you may write to Sécurité Publique | MRC des Collines-de-l'Outaouais at securitepublique@mrcdescollines.com.
 
 Most of the security issues faced by residents at lake Bernard are similar to those everywhere, but because of the location of our lake in a natural environment removed from an urban center, and the fact that most of the properties are occupied only for a small portion of the time, certain security threats are elevated. This is why Neighbourhood Watch is so important and why we must take extra care in protecting our valuables. Thieves find unattended properties attractive, especially in less active times of the year such as the Spring, Fall and Winter.

@@ -3,8 +3,6 @@ title: Protéger notre rivage
 description: En savoir plus sur les initiatives de protection du rivage.
 ---
 
-# Protéger notre rivage
-
   
 Les eaux peu profondes d'un lac sont cruciales pour l'habitat sain des poissons, des grenouilles et des écrevisses. Pour protéger les eaux peu profondes, veuillez noter que les quais en béton permanents et les murs de soutènement sont interdits par la loi, et seuls les quais permanents autorisés par Environnement Québec et détenant un permis municipal approprié peuvent être construits.
 

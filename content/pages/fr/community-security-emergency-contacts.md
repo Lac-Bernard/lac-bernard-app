@@ -3,8 +3,6 @@ title: Contacts d'urgence
 description: Numéros de contact d'urgence importants et informations.
 ---
 
-## Contacts d'urgence
-
 | Urgence                                | 9-1-1                                                                                              |
 | -------------------------------------- | -------------------------------------------------------------------------------------------------- |
 | Police                                 | 9-1-1                                                                                              |

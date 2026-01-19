@@ -3,10 +3,6 @@ title: Navigation sur le lac Bernard
 description: Lignes directrices et informations pour la navigation sur le lac Bernard.
 ---
 
-# Navigation sur le lac Bernard
-
-# Règlements de navigation
-
 Le Bureau de la sécurité nautique de Transports Canada offre des informations précieuses sur l'exploitation sécuritaire et responsable de la navigation de plaisance au Canada. Il fournit également des informations sur l'étiquetage de conformité, les permis, les règlements, les publications et comment obtenir une carte de conducteur d'embarcation de plaisance.
 
 Le site Web de sécurité nautique de Transports Canada est: [Bureau de la sécurité nautique](https://tc.canada.ca/fr/transport-maritime/securite-maritime/bureau-securite-nautique)

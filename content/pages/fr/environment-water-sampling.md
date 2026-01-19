@@ -3,8 +3,6 @@ title: Programme d'échantillonnage de l'eau
 description: En savoir plus sur notre programme de surveillance de la qualité de l'eau.
 ---
 
-# Programme d'échantillonnage de l'eau
-
 La qualité de l'eau du lac Bernard a été régulièrement surveillée au fil des ans, le rapport le plus ancien que nous ayons datant de 1986. Cette surveillance est une partie importante de notre campagne de gestion environnementale et depuis 2018, une équipe de bénévoles a utilisé une subvention de La Pêche pour effectuer des tests semestriels. L'échantillonnage d'aujourd'hui teste les bactéries e.coli** et le phosphore total* à 24 sites autour du lac. Les sites d'échantillonnage sont indiqués sur la carte du lac ci-dessous. 
 
 #### Rapport sur l'échantillonnage de la qualité de l'eau 2023

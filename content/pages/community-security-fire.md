@@ -3,8 +3,6 @@ title: Fire
 description: Fire prevention and safety information.
 ---
 
-## Fire
-
 ### Fire Prevention
 
 In case of fire call 9-1-1.

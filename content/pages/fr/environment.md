@@ -3,8 +3,6 @@ title: Notre environnement
 description: En savoir plus sur nos initiatives environnementales pour protéger le lac Bernard.
 ---
 
-# Notre environnement
-
 ##### _La gestion environnementale est au cœur de la mission de l'Association_. Il est important que tous ceux qui vivent sur notre lac reconnaissent à quel point il est critique de maintenir une gestion appropriée de cette ressource précieuse!
 
 ## Plan stratégique de gestion du myriophylle à épi eurasien de l'eau 2025 et présentation

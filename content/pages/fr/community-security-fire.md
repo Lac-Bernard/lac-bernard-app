@@ -3,8 +3,6 @@ title: Incendie
 description: Information sur la prévention et la sécurité incendie.
 ---
 
-## Incendie
-
 ### Prévention des incendies
 
 En cas d'incendie, appelez le 9-1-1.

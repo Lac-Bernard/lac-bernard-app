@@ -3,8 +3,6 @@ title: Association Committees
 description: Meet the committee leads who support the Association's objectives.
 ---
 
-# Association Committees
-
 These are the individuals who are responsible for a function, or an ongoing activity, or initiative that supports the objectives of the Association and contributes to the strength and vitality of the lake community. As leads, they may work on their own, or be supported by volunteers from the Lac Bernard community.
 
 Joining a Committee is really easy!! We are always looking for volunteers and extra support. Just drop a line to the committee leads shown below and we'll get in touch.

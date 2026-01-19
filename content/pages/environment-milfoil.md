@@ -3,8 +3,6 @@ title: Eurasian Milfoil
 description: Information about Eurasian milfoil and our control efforts.
 ---
 
-# Eurasian Milfoil
-
 Eurasian Milfoil remains our single largest environmental concern by far. It's a challenge in many respects, but ultimately Milfoil critically impacts the usefulness of the lake for swimming, boating and general enjoyment. It is now one of the most widely distributed invasive aquatic plants on the continent. Because tiny plant pieces can develop into new plants, Eurasian water-milfoil is easily spread when water currents, boat propellers, trailers, or fishing gear carry plant fragments to new areas. The Association works with ABV des 7 to survey the lake, and in 2011 Milfoil covered **185,000 M2** of the lake, in 2015 it was **525,000 M2**, and in 2021 it covered over **1,100,000 M2** of the lake!! It now covers nearly all parts of our lake between .5m and 7 m deep, 57 hectares or 12% of the lake. While our lake is 900 hectares, it's almost a complete saturation of the shoreline and shallows <4M deep where it grows. Nothing is slowing it down, and the trajectory is full saturation in the next few years, joining nearby Lac Gauvreau and others that are already done in. 
 
 ## August 2024 Update from the President on Milfoil

@@ -3,8 +3,6 @@ title: Police
 description: Information about police services and reporting procedures.
 ---
 
-## Police
-
 Please report all criminal acts, such as break-ins and thefts, as well as any suspicious people or vehicles, to the MRC Des Collines-de-l'Outaouais Police.
 
 **Emergency** 9-1-1  

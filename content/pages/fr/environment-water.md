@@ -3,8 +3,6 @@ title: Protéger notre eau
 description: En savoir plus sur les programmes et initiatives de protection de l'eau.
 ---
 
-# Protéger notre eau
-
   
 À quoi faire attention pour aider à protéger notre lac!
 

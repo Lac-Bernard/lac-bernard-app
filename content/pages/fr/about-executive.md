@@ -3,8 +3,6 @@ title: Comité exécutif
 description: Rencontrez le comité exécutif de l'Association du lac Bernard.
 ---
 
-# Comité exécutif
-
 L'Association a un conseil d'administration élu par une majorité de membres lors de l'assemblée générale annuelle, qui a lieu au printemps de chaque année. Il y a neuf administrateurs, choisis parmi les membres de l'Association, et quatre sont ensuite choisis par les autres pour être le président, le vice-président, le secrétaire et le trésorier. Ces derniers rôles sont les dirigeants de la corporation à des fins légales. Le conseil se réunit tout au long de l'année ; mensuellement chaque fois que possible.
 
 **Gerry Yemensky**

@@ -3,8 +3,6 @@ title: Association Executive
 description: Meet the members of the Association Executive.
 ---
 
-# Association Executive
-
 The Association has a Board of Directors elected by a majority of members at the Annual General Meeting, which is held in the Spring each year. There are nine directors, drawn from the Association's membership, and four are then chosen by the others to be the President, Vice President, Secretary, and Treasurer. Those latter roles are the Officers of the Corporation for legal purposes. The Board meets throughout the year; monthly whenever possible.
 
 <img src="/images/gerry-yemensky.jpg" alt="Gerry Yemensky" style="max-width: 420px; max-height: 420px; height: auto; width: auto;" />

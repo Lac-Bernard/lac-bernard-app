@@ -3,8 +3,6 @@ title: Lake Wildlife
 description: Learn about the wildlife that calls Lac Bernard home.
 ---
 
-# Lake Wildlife
-
 We all want to protect our wildlife and live in harmony with the nature around us. But wildlife may not feel the same way! So we have compiled some information to assist cottagers in making informed decisions around the key wildlife around our lake. We interact with Beavers and Loons regularly on our lake. We have a few Loon families who return every year, and of course the beavers play a key role in both our lake water level as well as their impact along the shoreline. 
 
 # Beavers
