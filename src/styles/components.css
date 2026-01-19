@@ -379,6 +379,26 @@
   font-size: 19px;
 }
 
+.prose a {
+  color: #0066cc !important;
+  text-decoration: underline !important;
+  text-decoration-color: rgba(0,102,204,.3);
+  text-underline-offset: 2px;
+  transition: all 120ms ease;
+}
+
+.prose a:hover {
+  color: #0052a3 !important;
+  text-decoration-color: rgba(0,102,204,.6);
+  opacity: 1;
+}
+
+.prose a:focus-visible {
+  outline: 2px solid rgba(72,196,255,.6);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 /* Sidebar Navigation */
 .pageWithSidebar {
   display: grid;
