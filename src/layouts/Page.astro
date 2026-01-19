@@ -65,26 +65,39 @@ const environmentNav: { en: NavItem[]; fr: NavItem[] } = {
   ],
 };
 
+const historyNav: { en: NavItem[]; fr: NavItem[] } = {
+  en: [
+    { href: '/history', label: 'History' },
+    { href: '/history/first-nations', label: 'First Nations' },
+    { href: '/history/fishing-club', label: 'Fishing Club' },
+    { href: '/history/maps', label: 'Maps' },
+    { href: '/history/ariel-photos', label: 'Ariel Photos' },
+    { href: '/history/stories-documenting-families-and-individuals', label: 'Stories: Documenting Families and Individuals' },
+    { href: '/history/stories-documenting-history-of-the-lake', label: 'Stories: Documenting History of the Lake' },
+    { href: '/history/newspaper-clippings-collection-of-lac-bernard', label: 'Newspaper Clippings Collection of Lac Bernard' },
+    { href: '/history/historical-research-and-sources', label: 'Historical Research and Sources' },
+    { href: '/history/properties-and-deeds', label: 'Properties and Deeds' },
+    { href: '/history/related-history', label: 'Related History' },
+  ],
+  fr: [
+    { href: '/fr/histoire', label: 'Histoire' },
+    { href: '/fr/histoire/premieres-nations', label: 'Premières Nations' },
+    { href: '/fr/histoire/club-de-peche', label: 'Club de pêche' },
+    { href: '/fr/histoire/cartes', label: 'Cartes' },
+    { href: '/fr/histoire/photos-aeriennes', label: 'Photos aériennes' },
+    { href: '/fr/histoire/recits-familles-et-individus', label: 'Récits: Documentation des familles et individus' },
+    { href: '/fr/histoire/recits-histoire-du-lac', label: 'Récits: Documentation de l\'histoire du lac' },
+    { href: '/fr/histoire/collection-coupures-de-journaux-lac-bernard', label: 'Collection de coupures de journaux du lac Bernard' },
+    { href: '/fr/histoire/recherche-historique-et-sources', label: 'Recherche historique et sources' },
+    { href: '/fr/histoire/proprietes-et-titres', label: 'Propriétés et titres' },
+    { href: '/fr/histoire/histoire-connexe', label: 'Histoire connexe' },
+  ],
+};
+
 const communityNav: { en: NavItem[]; fr: NavItem[] } = {
   en: [
     { href: '/community', label: 'Community' },
     { href: '/community/regatta', label: 'Annual Regatta' },
-    { 
-      href: '/history', 
-      label: 'History',
-      children: [
-        { href: '/history/first-nations', label: 'First Nations' },
-        { href: '/history/fishing-club', label: 'Fishing Club' },
-        { href: '/history/maps', label: 'Maps' },
-        { href: '/history/ariel-photos', label: 'Ariel Photos' },
-        { href: '/history/stories-documenting-families-and-individuals', label: 'Stories: Documenting Families and Individuals' },
-        { href: '/history/stories-documenting-history-of-the-lake', label: 'Stories: Documenting History of the Lake' },
-        { href: '/history/newspaper-clippings-collection-of-lac-bernard', label: 'Newspaper Clippings Collection of Lac Bernard' },
-        { href: '/history/historical-research-and-sources', label: 'Historical Research and Sources' },
-        { href: '/history/properties-and-deeds', label: 'Properties and Deeds' },
-        { href: '/history/related-history', label: 'Related History' },
-      ]
-    },
     { 
       href: '/community/security', 
       label: 'Security',
@@ -100,22 +113,6 @@ const communityNav: { en: NavItem[]; fr: NavItem[] } = {
     { href: '/fr/communaute', label: 'Communauté' },
     { href: '/fr/communaute/regate', label: 'Régate annuelle' },
     { 
-      href: '/fr/histoire', 
-      label: 'Histoire',
-      children: [
-        { href: '/fr/histoire/premieres-nations', label: 'Premières Nations' },
-        { href: '/fr/histoire/club-de-peche', label: 'Club de pêche' },
-        { href: '/fr/histoire/cartes', label: 'Cartes' },
-        { href: '/fr/histoire/photos-aeriennes', label: 'Photos aériennes' },
-        { href: '/fr/histoire/recits-familles-et-individus', label: 'Récits: Documentation des familles et individus' },
-        { href: '/fr/histoire/recits-histoire-du-lac', label: 'Récits: Documentation de l\'histoire du lac' },
-        { href: '/fr/histoire/collection-coupures-de-journaux-lac-bernard', label: 'Collection de coupures de journaux du lac Bernard' },
-        { href: '/fr/histoire/recherche-historique-et-sources', label: 'Recherche historique et sources' },
-        { href: '/fr/histoire/proprietes-et-titres', label: 'Propriétés et titres' },
-        { href: '/fr/histoire/histoire-connexe', label: 'Histoire connexe' },
-      ]
-    },
-    { 
       href: '/fr/communaute/securite', 
       label: 'Sécurité',
       children: [
@@ -128,8 +125,8 @@ const communityNav: { en: NavItem[]; fr: NavItem[] } = {
   ],
 };
 
-// Use community nav for both community and history sections
-const navItems = section === 'about' ? aboutNav[currentLang] : section === 'environment' ? environmentNav[currentLang] : (section === 'community' || section === 'history') ? communityNav[currentLang] : null;
+// Select navigation based on section
+const navItems = section === 'about' ? aboutNav[currentLang] : section === 'environment' ? environmentNav[currentLang] : section === 'history' ? historyNav[currentLang] : section === 'community' ? communityNav[currentLang] : null;
 ---
 
 <html lang={currentLang}>
