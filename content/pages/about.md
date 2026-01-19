@@ -1,9 +1,7 @@
 ---
-title: About the Association
+title: About the Owners' and Residents' Association of Lac Bernard
 description: Learn about the Lac Bernard Association, our mission, and our history.
 ---
-
-# About the Owners' and Residents' Association of Lac Bernard
 
 The Owners' and Residents' Association of Lake Bernard is a non-profit corporation created under Part 3 of the Quebec Companies Act. It was incorporated in 1979 as a successor to the Lac Bernard Cottager's Association which started back in the 1930's. Today we have an average membership of about 250-300 property owners, and even some enthusiastic non-residents who care about our lake! We work across our community and with the municipalities of La Peche and Low, as well as the MRC Des Collines-de-l'Outaouais to further the safe development and environmental protection of our beautiful lake. 
 

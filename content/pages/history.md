@@ -3,8 +3,6 @@ title: History
 description: Learn about the rich history of Lac Bernard and the Association.
 ---
 
-## History
-
 Lac Bernard has a rich history starting with first nations of the Anishinaabe and leading to today's vibrant and diverse community.
 
 We can learn much from what has happened before… 

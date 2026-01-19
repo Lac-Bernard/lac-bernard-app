@@ -3,8 +3,6 @@ title: Histoire
 description: Découvrez la riche histoire du lac Bernard et de l'Association.
 ---
 
-## Histoire
-
 Le lac Bernard a une riche histoire qui commence avec les premières nations des Anishinaabe et mène à la communauté dynamique et diversifiée d'aujourd'hui.
 
 Nous pouvons apprendre beaucoup de ce qui s'est passé auparavant… 

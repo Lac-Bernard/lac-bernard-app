@@ -1,9 +1,7 @@
 ---
-title: À propos de l'Association
+title: À propos de l'Association des propriétaires et résidents du lac Bernard
 description: Apprenez-en plus sur l'Association du lac Bernard, notre mission et notre histoire.
 ---
-
-# À propos de l'Association des propriétaires et résidents du lac Bernard
 
 L'Association des propriétaires et résidents du lac Bernard est une corporation à but non lucratif créée en vertu de la partie 3 de la Loi sur les compagnies du Québec. Elle a été constituée en 1979 comme successeur de l'Association des propriétaires de chalets du lac Bernard qui a commencé dans les années 1930. Aujourd'hui, nous avons une adhésion moyenne d'environ 250 à 300 propriétaires, et même quelques non-résidents enthousiastes qui se soucient de notre lac ! Nous travaillons dans notre communauté et avec les municipalités de La Pêche et Low, ainsi qu'avec la MRC des Collines-de-l'Outaouais pour promouvoir le développement sécuritaire et la protection environnementale de notre magnifique lac.
 
