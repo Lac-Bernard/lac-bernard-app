@@ -189,12 +189,14 @@ const navItems = section === 'about' ? aboutNav[currentLang] : section === 'envi
               <div class="pageContent prose">
                 <h1>{title}</h1>
                 {Content && <Content />}
+                <slot name="extra" />
               </div>
             </div>
           ) : (
             <div class="prose">
               <h1>{title}</h1>
               {Content && <Content />}
+              <slot name="extra" />
             </div>
           )}
         </div>

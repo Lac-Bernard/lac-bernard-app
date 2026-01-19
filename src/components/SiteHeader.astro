@@ -34,6 +34,37 @@ const navLabels = {
 
 const labels = navLabels[currentLang];
 const altLabels = navLabels[alternateLang];
+
+// Determine which section is currently active based on the path
+function getActiveSection(path: string): string | null {
+	// Normalize path - remove locale prefix and trailing slash
+	const normalizedPath = path.replace(/^\/(en|fr)(\/|$)/, '/').replace(/\/$/, '') || '/';
+	
+	// Check each section (including subpages)
+	// Note: order matters - check more specific paths first
+	if (normalizedPath.startsWith('/about') || normalizedPath.startsWith('/a-propos')) {
+		return 'about';
+	}
+	if (normalizedPath.startsWith('/membership') || normalizedPath.startsWith('/adhesion')) {
+		return 'membership';
+	}
+	if (normalizedPath.startsWith('/environment') || normalizedPath.startsWith('/environnement')) {
+		return 'environment';
+	}
+	if (normalizedPath.startsWith('/community') || normalizedPath.startsWith('/communaute')) {
+		return 'community';
+	}
+	if (normalizedPath.startsWith('/history') || normalizedPath.startsWith('/histoire')) {
+		return 'history';
+	}
+	if (normalizedPath.startsWith('/contact')) {
+		return 'contact';
+	}
+	
+	return null;
+}
+
+const activeSection = getActiveSection(currentPath);
 ---
 
 
@@ -49,17 +80,17 @@ const altLabels = navLabels[alternateLang];
       <span></span>
     </button>
     <nav class="nav" id="mainNav">
-      <a href={getLocalizedHref('/about', currentLang)}>{labels.about}</a>
+      <a href={getLocalizedHref('/about', currentLang)} class={activeSection === 'about' ? 'navCta' : ''}>{labels.about}</a>
       
-      <a href={getLocalizedHref('/membership', currentLang)} class="navCta">{labels.membership}</a>
+      <a href={getLocalizedHref('/membership', currentLang)} class={activeSection === 'membership' ? 'navCta' : ''}>{labels.membership}</a>
       
-      <a href={getLocalizedHref('/environment', currentLang)}>{labels.environment}</a>
+      <a href={getLocalizedHref('/environment', currentLang)} class={activeSection === 'environment' ? 'navCta' : ''}>{labels.environment}</a>
       
-      <a href={getLocalizedHref('/community', currentLang)}>{labels.community}</a>
+      <a href={getLocalizedHref('/community', currentLang)} class={activeSection === 'community' ? 'navCta' : ''}>{labels.community}</a>
 
-      <a href={getLocalizedHref('/history', currentLang)}>{labels.history}</a>
+      <a href={getLocalizedHref('/history', currentLang)} class={activeSection === 'history' ? 'navCta' : ''}>{labels.history}</a>
       
-      <a href={getLocalizedHref('/contact', currentLang)}>{labels.contact}</a>
+      <a href={getLocalizedHref('/contact', currentLang)} class={activeSection === 'contact' ? 'navCta' : ''}>{labels.contact}</a>
       
       <a href={alternatePath} class="langToggle" aria-label={`Switch to ${altLabels.home}`}>
         {alternateLang.toUpperCase()}
@@ -75,13 +106,14 @@ const altLabels = navLabels[alternateLang];
   if (navToggle && nav) {
     navToggle.addEventListener('click', () => {
       const isExpanded = navToggle.getAttribute('aria-expanded') === 'true';
-      navToggle.setAttribute('aria-expanded', !isExpanded);
+      navToggle.setAttribute('aria-expanded', String(!isExpanded));
       nav.classList.toggle('isOpen');
     });
     
     // Close menu when clicking outside
     document.addEventListener('click', (e) => {
-      if (!nav.contains(e.target) && !navToggle.contains(e.target)) {
+      const target = e.target as Node | null;
+      if (target && !nav.contains(target) && !navToggle.contains(target)) {
         navToggle.setAttribute('aria-expanded', 'false');
         nav.classList.remove('isOpen');
       }
