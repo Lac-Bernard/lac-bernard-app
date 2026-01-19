@@ -19,6 +19,7 @@ const slugMap: Record<string, string> = {
 	
 	// About sub-pages
 	'about/executive': 'a-propos/comite-executif',
+	'about/committees': 'a-propos/comites',
 	'about/bylaws': 'a-propos/reglements',
 	'about/business-records': 'a-propos/proces-verbaux',
 	'about/archive': 'a-propos/archives',
