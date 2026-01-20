@@ -1,0 +1,11 @@
+---
+import Page from '../../../layouts/Page.astro';
+
+const [page] = await Astro.glob('../../../../content/pages/environment-boating-water-sports.md');
+if (!page) throw new Error('Missing content/pages/environment-boating-water-sports.md');
+
+const title = page.frontmatter?.title || 'Boating and Water Sports Safety';
+const description = page.frontmatter?.description;
+---
+
+<Page title={title} description={description} content={page} section="environment" />
