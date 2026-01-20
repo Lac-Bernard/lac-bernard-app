@@ -3,8 +3,6 @@ title: Membership
 description: Join or renew your membership with the Lac Bernard Association.
 ---
 
-<img src="/images/hahsexfw1m0.jpg" alt="Membership" style="max-width: 400px; width: 100%; height: auto; margin: 1.5rem 0; display: block;" />
-
 #### Membership is $75 per year. You can renew for up to 3 years.
 
 **$75 – 1 year**
@@ -25,9 +23,10 @@ _If you prefer to pay by cheque, please send it to: **The Owners' and Residents'
 
 You can also contact us directly by email at: _membership@lacbernard.ca_ 
 
-[**Enroll As A New Member**](/membership/enrollment)
-
-[**Renew Your Membership**](/membership/renewal)
+<div class="membership-actions">
+<a href="/membership/enrollment" class="btnPrimary">Enroll As A New Member</a>
+<a href="/membership/renewal" class="btnPrimary">Renew Your Membership</a>
+</div>
 
 By enrolling or renewing, you are agreeing to support our Corporate Objectives outlined below. These are core to our Letters Patent and bylaws. If you have questions regarding any of these, please reach out to [president@lacbernard.ca](mailto:president@lacbernard.ca).
 
@@ -62,4 +61,6 @@ Your membership dues go directly to our advocacy and stewardship of the lake whi
 * working with ABV des 7 and other lakes on the ongoing Eurasian Water Milfoil battle, as well as watching for other invasive species that threaten our ability to enjoy our safe and healthy lake.
 * operating www.lacbernard.ca – the bilingual Association website that provides a source for information regarding the lake. This includes Association activities, water quality reports, news, and a rich trove of archives and historical records and oral stories from our lake.
 
-## _Enroll Today!_
+<div style="text-align: center; margin: 32px 0;">
+<a href="/membership/enrollment" class="btnPrimary">Enroll Today</a>
+</div>

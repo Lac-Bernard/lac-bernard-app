@@ -3,8 +3,6 @@ title: Adhésion
 description: Adhérez ou renouvelez votre adhésion à l'Association du lac Bernard.
 ---
 
-<img src="/images/hahsexfw1m0.jpg" alt="Adhésion" style="max-width: 400px; width: 100%; height: auto; margin: 1.5rem 0; display: block;" />
-
 #### L'adhésion est de 75 $ par année. Vous pouvez renouveler jusqu'à 3 ans.
 
 **75 $ – 1 an**
@@ -25,9 +23,10 @@ _Si vous préférez payer par chèque, veuillez l'envoyer à: **L'Association de
 
 Vous pouvez également nous contacter directement par courriel à: _membership@lacbernard.ca_ 
 
-[**Inscrivez-vous comme nouveau membre**](/fr/membership/enrollment)
-
-[**Renouvelez votre adhésion**](/fr/membership/renewal)
+<div class="membership-actions">
+<a href="/fr/membership/enrollment" class="btnPrimary">Inscrivez-vous comme nouveau membre</a>
+<a href="/fr/membership/renewal" class="btnPrimary">Renouvelez votre adhésion</a>
+</div>
 
 En vous inscrivant ou en renouvelant, vous acceptez de soutenir nos objectifs corporatifs décrits ci-dessous. Ceux-ci sont au cœur de nos lettres patentes et règlements. Si vous avez des questions concernant l'un de ceux-ci, veuillez contacter [president@lacbernard.ca](mailto:president@lacbernard.ca).
 
@@ -58,4 +57,6 @@ Vos cotisations d'adhésion vont directement à notre plaidoyer et à notre gest
 * travailler avec ABV des 7 et d'autres lacs sur la bataille continue du myriophylle à épi eurasien, ainsi que surveiller d'autres espèces envahissantes qui menacent notre capacité à profiter de notre lac sûr et sain.
 * exploiter www.lacbernard.ca – le site Web bilingue de l'Association qui fournit une source d'information concernant le lac. Cela comprend les activités de l'Association, les rapports sur la qualité de l'eau, les nouvelles, et un riche trésor d'archives et de documents historiques et de récits oraux de notre lac.
 
-## _Inscrivez-vous aujourd'hui!_
+<div style="text-align: center; margin: 32px 0;">
+<a href="/fr/membership/enrollment" class="btnPrimary">Inscrivez-vous aujourd'hui</a>
+</div>
