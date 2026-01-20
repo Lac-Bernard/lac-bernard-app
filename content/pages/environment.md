@@ -5,7 +5,7 @@ description: Learn about our environmental protection initiatives and programs.
 
 ##### _Environmental Stewardship is core to the mission of the Association_. It's important that everyone on our lake recognize how critical it is to maintain proper stewardship over this precious resource!
 
-## 2025 Eurasion Water Milfoil Strategic Management Plan and Presentation
+## 2025 Eurasion Water Milfoil <a href="/documents/2025%20Milfoil%20Strategic%20Management%20Plan.pdf" target="_blank" rel="noopener noreferrer">Strategic Management Plan</a> and <a href="/documents/2025%20Milfoil%20AGM%20Presentation.pdf" target="_blank" rel="noopener noreferrer">Presentation</a>
 
 ##### Water Sampling
 
@@ -34,6 +34,8 @@ _Co-existing with local wildlife is a key concern for our Association._
 Lake Bernard, along with most lakes in our region and across North America, has come under stress not just from our immediate actions in and around the lake, but also the impact of global warming and the increased mobility of invasive species. Top of our concern is the dramatic and accelerating spread of **_Eurasian Milfoil_** in Lac Bernard. This invasive species has already choked out nearby lakes and is proceeding to do so at Lac Bernard. We also pay close attention to the **_water quality_** in the lake and perform regular testing to ensure phosphates are properly controlled. We also work to educate owners about maintaining their **_shoreline_** in as natural state as possible as shorelines have a direct impact on lake health. The good news is we can all have a positive impact in these areas by following some pretty simple do's and don'ts, and these efforts are paying dividends. With a focus on septic tanks improvement, lake phosphate and e-coli levels have been dramatically reduced since the 1990's. Now however, we face the great challenge of milfoil control and eradication. 
 
 ## Reports
+
+<a href="https://drive.google.com/drive/folders/1pLhabTA7ZbPmijuT2lexmZd8AmXvjcyY" target="_blank" rel="noopener noreferrer" class="drive-link-button">View Environment Reports in Google Drive →</a>
 
 ## What the association is doing
 

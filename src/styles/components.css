@@ -234,6 +234,35 @@
   outline-offset: 2px;
 }
 
+/* Google Drive Link Button */
+.drive-link-button,
+.prose .drive-link-button,
+.prose a.drive-link-button {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: #4285f4;
+  color: white !important;
+  text-decoration: none !important;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.drive-link-button:hover,
+.prose .drive-link-button:hover,
+.prose a.drive-link-button:hover {
+  background: #357ae8;
+  color: white !important;
+  text-decoration: none !important;
+}
+
+.drive-link-button:focus-visible,
+.prose .drive-link-button:focus-visible,
+.prose a.drive-link-button:focus-visible {
+  outline: 2px solid rgba(72, 196, 255, 0.6);
+  outline-offset: 2px;
+}
+
 /* Cards */
 .card {
   border: 1px solid var(--border);

@@ -10,3 +10,5 @@ Les documents produits durant l'année 1 sont conservés jusqu'à la fin de l'an
 Dès qu'un document est disponible dans cette section, il est copié aux Archives. Ainsi, même s'il sera éventuellement supprimé de la section des dossiers récents, il restera accessible dans les Archives.
 
 Nous espérons que cette section vous sera utile pour vous procurer rapidement les informations essentielles afin de rester engagé dans le travail de l'Association et de participer activement à l'orientation stratégique de ses actions.
+
+<a href="https://drive.google.com/drive/folders/1dBOjaQn37pO5-445XgENTO4VHI620ozB" target="_blank" rel="noopener noreferrer" class="drive-link-button">Ouvrir le dossier des procès-verbaux dans Google Drive →</a>

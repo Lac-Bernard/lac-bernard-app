@@ -3,9 +3,11 @@ title: Water Sampling Program
 description: Learn about our water quality monitoring program.
 ---
 
-The water quality at Lake Bernard has been regularly monitored over the years with the earliest report we have dating from 1986. This monitoring is an important part of our Environmental Stewardship campaign and since 2018 a team of volunteers has used a grant from La Peche to conduct bi-annual testing. Today's sampling tests for e.coli bacteria** and total phosphorous* at 24 sites around the lake. The sampling sites are shown on teh lake map below. 
+The water quality at Lake Bernard has been regularly monitored over the years with the earliest report we have dating from 1986. This monitoring is an important part of our Environmental Stewardship campaign and since 2018 a team of volunteers has used a grant from La Peche to conduct bi-annual testing. Today's sampling tests for e.coli bacteria** and total phosphorous* at 24 sites around the lake. The sampling sites are shown on the lake map below.
 
-#### Report on Water Quality Sampling 2023
+<img src="/images/sampling-sites-map.jpg" alt="Water sampling sites map" style="width: 100%; height: auto; margin: 1.5rem 0;" />
+
+#### <a href="https://drive.google.com/file/d/1iNJkFO9-qVhDt90Z3GDX2TpI6j94Bmse/view?usp=sharing" target="_blank" rel="noopener noreferrer">Report on Water Quality Sampling 2023</a>
 
 ## Historical Water Quality Results
 

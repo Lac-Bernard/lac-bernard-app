@@ -5,7 +5,7 @@ description: En savoir plus sur nos initiatives environnementales pour protéger
 
 ##### _La gestion environnementale est au cœur de la mission de l'Association_. Il est important que tous ceux qui vivent sur notre lac reconnaissent à quel point il est critique de maintenir une gestion appropriée de cette ressource précieuse!
 
-## Plan stratégique de gestion du myriophylle à épi eurasien de l'eau 2025 et présentation
+## Plan stratégique de gestion du myriophylle à épi eurasien de l'eau 2025 : <a href="/documents/2025%20Milfoil%20Strategic%20Management%20Plan.pdf" target="_blank" rel="noopener noreferrer">Plan stratégique de gestion</a> et <a href="/documents/2025%20Milfoil%20AGM%20Presentation.pdf" target="_blank" rel="noopener noreferrer">Présentation</a>
 
 ##### Échantillonnage de l'eau
 
@@ -34,6 +34,8 @@ _Coexister avec la faune locale est une préoccupation clé pour notre Associati
 Le lac Bernard, avec la plupart des lacs de notre région et à travers l'Amérique du Nord, a subi des stress non seulement de nos actions immédiates dans et autour du lac, mais aussi de l'impact du réchauffement climatique et de la mobilité accrue des espèces envahissantes. Au sommet de nos préoccupations se trouve la propagation dramatique et accélérée du **_myriophylle à épi eurasien_** dans le lac Bernard. Cette espèce envahissante a déjà étouffé les lacs voisins et procède à le faire au lac Bernard. Nous portons également une attention particulière à la **_qualité de l'eau_** dans le lac et effectuons des tests réguliers pour nous assurer que les phosphates sont correctement contrôlés. Nous travaillons également à éduquer les propriétaires sur le maintien de leur **_rivage_** dans un état aussi naturel que possible car les rivages ont un impact direct sur la santé du lac. La bonne nouvelle est que nous pouvons tous avoir un impact positif dans ces domaines en suivant quelques règles simples à faire et à ne pas faire, et ces efforts portent leurs fruits. Avec un accent sur l'amélioration des fosses septiques, les niveaux de phosphate et d'e-coli du lac ont été considérablement réduits depuis les années 1990. Maintenant cependant, nous faisons face au grand défi du contrôle et de l'éradication du myriophylle. 
 
 ## Rapports
+
+<a href="https://drive.google.com/drive/folders/1pLhabTA7ZbPmijuT2lexmZd8AmXvjcyY" target="_blank" rel="noopener noreferrer" class="drive-link-button">Voir les rapports environnementaux dans Google Drive →</a>
 
 ## Ce que l'association fait
 
