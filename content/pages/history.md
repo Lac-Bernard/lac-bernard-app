@@ -16,7 +16,7 @@ We can learn much from what has happened before…
 
 **The history section aims to promote knowledge of the rich and fascinating history of Lac Bernard among members of the lake community.** 
 
-**The Archives are the official repository for the records of the Owners' and Residents' Association of Lake Bernard. It contains multiple kinds of records, including documents, photos, maps and other material, that document the rich history of our lake. The Archives can be accessed at this link.**
+**The Archives are the official repository for the records of the Owners' and Residents' Association of Lake Bernard. It contains multiple kinds of records, including documents, photos, maps and other material, that document the rich history of our lake. [The Archives can be accessed at this link.](/about/archive)**
 
 **Sections of the Archives that will be of particular interest to those researching the history of the lake can be accessed through the following links:** 
 
@@ -47,5 +47,7 @@ We can learn much from what has happened before…
 #### You can Contribute!
 
 **We hope that by sharing the historical information available on this website, we will encourage you and other members of the lake community to contribute to a collective memory of life on the lake that we can pass along to future generations. Contact the** **archives@lacbernard.ca** **to connect with the ORALB archivist who can advise you on how you can contribute your written stories, oral histories, and interesting documents and photos.**
+
+<img src="/images/Rear_of_Rowes_boathouse_1955_jpg.jpg" alt="1955 – Barbara Rowe Gregory at Frank Rowe's boathouse" style="max-width: 600px; width: 100%; height: auto; margin: 1.5rem 0; display: block;" />
 
 1955 – Barbara Rowe Gregory at Frank Rowe's boathouse 

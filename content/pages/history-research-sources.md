@@ -1,6 +1,8 @@
 ---
 title: Historical Research and Sources
-description: Historical research and sources related to Lac Bernard.
+description: Historical research sources for Lac Bernard.
 ---
 
-Content coming soon.
+From time to time, members of the History Committee engage in research on various aspects of the history of the lake. Such research can take them from national, provincial, and local archives to the homes of cottagers who are keen to share their family stories and the photos, correspondence, diaries, and other documents that have informed those stories. Recognizing that sources for this research can be of value to others, the Committee has decided to share them in this section. Over time we hope that cottagers will want to contribute the sources they come across as they conduct their own historical research.
+
+<a href="https://drive.google.com/drive/folders/1MOfJlKun72Muq-G29fwzYfIa99G7AVmt?usp=sharing" target="_blank" rel="noopener noreferrer" class="drive-link-button">View Historical Research and Sources in Google Drive →</a>
