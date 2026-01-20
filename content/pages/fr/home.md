@@ -14,4 +14,4 @@ Les membres de l'Association ont voix au chapitre dans les affaires et les prior
 
 Veuillez vous joindre à nous pour soutenir cette fantastique communauté résidentielle et de chalets du lac Bernard. L'adhésion est de 75 $ par année.
 
-<a href="/adhesion" class="btnPrimary">Devenez membre</a>
+<a href="/fr/adhesion" class="btnPrimary">Devenez membre</a>
