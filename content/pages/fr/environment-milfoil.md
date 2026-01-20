@@ -19,7 +19,7 @@ _Le myriophylle à épi eurasien préfère les eaux peu profondes d'un à trois 
 
 _La plante peut s'hybrider avec les myriophylles indigènes, créant une forme plus agressive de l'espèce envahissante. Parce que de minuscules morceaux de plantes peuvent se développer en nouvelles plantes, le myriophylle à épi eurasien se propage facilement lorsque les courants d'eau, les hélices de bateaux, les remorques ou l'équipement de pêche transportent des fragments de plantes vers de nouvelles zones."_
 
-Le site Web de notre propre association du lac contient des informations approfondies sur le myriophylle à épi eurasien dans le lac Bernard. (https://lacbernard.ca/environment/milfoil-2/) Il se propage très rapidement comme nous le savons tous. Veuillez prendre le temps de le lire et vous verrez que l'Association des propriétaires et résidents a travaillé avec ABV des 7, une entreprise de biologistes, pendant plusieurs années. Voici les résultats de trois études qu'ils ont menées:
+Le site Web de notre propre association du lac contient des informations approfondies sur le myriophylle à épi eurasien dans le lac Bernard. Il se propage très rapidement comme nous le savons tous. L'Association des propriétaires et résidents a travaillé avec ABV des 7, une entreprise de biologistes, pendant plusieurs années. Voici les résultats de trois études qu'ils ont menées:
 
 ### La propagation de la couverture du myriophylle à épi eurasien dans le lac Bernard
 

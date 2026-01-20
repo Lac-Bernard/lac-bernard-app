@@ -11,23 +11,18 @@ The water quality at Lake Bernard has been regularly monitored over the years wi
 
 ## Historical Water Quality Results
 
-Water Quality Monitoring Results 2013-2023 (PDF)
+[Water Quality Monitoring Results 2013-2023](/documents/Water-Sampling-Results-2013-2023.pdf) (PDF)
 
 ### Earlier Results
 
-2012
-
-2011
-
-2010
-
-2009
-
-2008
-
-2007
-
-1986
+- [2023](/environment/water-sampling/2023)
+- [2012](/environment/water-sampling/2012)
+- [2011](/environment/water-sampling/2011)
+- [2010](/environment/water-sampling/2010)
+- [2009](/environment/water-sampling/2009)
+- [2008](/environment/water-sampling/2008)
+- [2007](/environment/water-sampling/2007)
+- [1986](/environment/water-sampling/1986)
 
 ## Background on Water Sampling and Three key Objectives
 
@@ -35,11 +30,11 @@ Water Quality Monitoring Results 2013-2023 (PDF)
 
 Knowing total phosphorous levels in a lake is critical to tracking changes in a lake ecosystem. If total phosphorous levels are too high in a lake ecosystem, the lake can have blue green algae blooms and weeds will grow more easily.
 
-In 2008, the Lake Association joined the Quebec government's Volunteer Lake-Monitoring Program (VLMP/RSVL) in order to establish what the level of total phosphorous should be at Lake Bernard to ensure long-term water quality health. (The program's acronym is "RSVL" in French.)Through the results of extensive sampling for the RSVL conducted by our Association's over a period of three years, the Environment Committee was able to establish what the level of total phosphorous at Lake Bernard should be to remain healthy over the long term. The cost of sampling results were covered by the RSVL and reported on the RSVL website and the Lake Association website.
+In 2008, the Lake Association joined the Quebec government's [Volunteer Lake-Monitoring Program (VLMP/RSVL)](http://www.environnement.gouv.qc.ca/eau/rsvl/index-en.htm) in order to establish what the level of total phosphorous should be at Lake Bernard to ensure long-term water quality health. (The program's acronym is "RSVL" in French.)Through the results of extensive sampling for the RSVL conducted by our Association's over a period of three years, the Environment Committee was able to establish what the level of total phosphorous at Lake Bernard should be to remain healthy over the long term. The cost of sampling results were covered by the RSVL and reported on the RSVL website and the Lake Association website.
 
-Lake water is warm in the top layer and cold in the bottom, and these layers only mix when the temperature of the water is the same – at "ice-out" in April and "freeze-up" in November. To be able to see what the total phosphorous levels were from top to bottom, the Lake Association's Environment Committee sampled for total phosphorus at three deep spots on the lake near Dome Island, Horseshoe Island and Partridge Island using the Reynold's Protocol. The Lake Association paid for this sampling analysis and reported it on the Association website.
+Lake water is warm in the top layer and cold in the bottom, and these layers only mix when the temperature of the water is the same – at "ice-out" in April and "freeze-up" in November. To be able to see what the total phosphorous levels were from top to bottom, the Lake Association's Environment Committee sampled for total phosphorus at three deep spots on the lake near Dome Island, Horseshoe Island and Partridge Island using the [Reynold's Protocol](/documents/reynolds.pdf). The Lake Association paid for this sampling analysis and reported it on the Association website.
 
-Since total phosphorous levels in a lake are affected by how much phosphorous comes into the water from the shore, the Lake Association issued the 2012 Shoreline report to show where the shoreline of the lake was developed and where it remained in its natural state. Plants and trees along the shoreline will prevent phosphorous from being washed into the lake from the land.
+Since total phosphorous levels in a lake are affected by how much phosphorous comes into the water from the shore, the Lake Association issued the [2012 Shoreline report](/documents/2012-ShorelineReport.doc) to show where the shoreline of the lake was developed and where it remained in its natural state. Plants and trees along the shoreline will prevent phosphorous from being washed into the lake from the land.
 
 Finally, the RSVL also asks that Lake Associations monitor every year the transparency levels of their lakes since these levels can be used to track changes in water quality over time. Factors which reduce transparency are algae, zooplankton, water colour and silt. Measuring transparency indirectly also measures algae growth. The Lake Association's Environment Committee continued to monitor transparency levels in the lake for the RSVL 10 times each summer until 2014, and results were reported on the RSVL website. In 2018, the transparency test was done twice and reported on the RSVL website.
 

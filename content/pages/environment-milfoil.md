@@ -19,7 +19,7 @@ _Eurasian Water Milfoil prefers shallow water one to three metres deep, but can 
 
 _The plant can interbreed with native milfoils, creating a more aggressive form of the invasive species. Because tiny plant pieces can develop into new plants, Eurasian water-milfoil is easily spread when water currents, boat propellers, trailers or fishing gear carry plant fragments to new areas."_
 
-Our own lake Association's website has extensive information about Eurasian Water Milfoil in Lac Bernard. (https://lacbernard.ca/environment/milfoil-2/) It is spreading very quickly as we all know. Please, take some time to read it and you'll see that the Owners' and Residents' Association has worked with ABV des 7, a company of biologists, for a number of years. Here are the results from three studies they have conducted:
+Our own lake Association's website has extensive information about Eurasian Water Milfoil in Lac Bernard. It is spreading very quickly as we all know. The Owners' and Residents' Association has worked with ABV des 7, a company of biologists, for a number of years. Here are the results from three studies they have conducted:
 
 ### The Spread of Eurasian Water Milfoil Coverage in Lac Bernard
 
