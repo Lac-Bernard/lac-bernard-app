@@ -3,6 +3,8 @@ title: Membership
 description: Join or renew your membership with the Lac Bernard Association.
 ---
 
+<img src="/images/hahsexfw1m0.jpg" alt="Membership" style="max-width: 400px; width: 100%; height: auto; margin: 1.5rem 0; display: block;" />
+
 #### Membership is $75 per year. You can renew for up to 3 years.
 
 **$75 – 1 year**
@@ -23,11 +25,11 @@ _If you prefer to pay by cheque, please send it to: **The Owners' and Residents'
 
 You can also contact us directly by email at: _membership@lacbernard.ca_ 
 
-_**Enroll As A New Member**_
+[**Enroll As A New Member**](/membership/enrollment)
 
-**_Renew Your Membership_**
+[**Renew Your Membership**](/membership/renewal)
 
-By enrolling or renewing, you are agreeing to support our Corporate Objectives outlined below. These are core to our Letters Patent and bylaws. If you have questions regarding any of these, please reach out to president@lacbernard.ca.
+By enrolling or renewing, you are agreeing to support our Corporate Objectives outlined below. These are core to our Letters Patent and bylaws. If you have questions regarding any of these, please reach out to [president@lacbernard.ca](mailto:president@lacbernard.ca).
 
 When you join the Owners' and Residents' Association of Lac Bernard you become a member of one of the strongest and most active lake associations in the region. Our aim is to to ensure every cottage on the lake becomes a member and actively participates in our three key objectives:
 

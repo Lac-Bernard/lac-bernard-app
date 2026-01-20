@@ -3,6 +3,8 @@ title: Adhésion
 description: Adhérez ou renouvelez votre adhésion à l'Association du lac Bernard.
 ---
 
+<img src="/images/hahsexfw1m0.jpg" alt="Adhésion" style="max-width: 400px; width: 100%; height: auto; margin: 1.5rem 0; display: block;" />
+
 #### L'adhésion est de 75 $ par année. Vous pouvez renouveler jusqu'à 3 ans.
 
 **75 $ – 1 an**
@@ -23,11 +25,11 @@ _Si vous préférez payer par chèque, veuillez l'envoyer à: **L'Association de
 
 Vous pouvez également nous contacter directement par courriel à: _membership@lacbernard.ca_ 
 
-_**Inscrivez-vous comme nouveau membre**_
+[**Inscrivez-vous comme nouveau membre**](/fr/membership/enrollment)
 
-**_Renouvelez votre adhésion_**
+[**Renouvelez votre adhésion**](/fr/membership/renewal)
 
-En vous inscrivant ou en renouvelant, vous acceptez de soutenir nos objectifs corporatifs décrits ci-dessous. Ceux-ci sont au cœur de nos lettres patentes et règlements. Si vous avez des questions concernant l'un de ceux-ci, veuillez contacter president@lacbernard.ca.
+En vous inscrivant ou en renouvelant, vous acceptez de soutenir nos objectifs corporatifs décrits ci-dessous. Ceux-ci sont au cœur de nos lettres patentes et règlements. Si vous avez des questions concernant l'un de ceux-ci, veuillez contacter [president@lacbernard.ca](mailto:president@lacbernard.ca).
 
 Lorsque vous rejoignez l'Association des propriétaires et résidents du lac Bernard, vous devenez membre de l'une des associations de lacs les plus fortes et les plus actives de la région. Notre objectif est de nous assurer que chaque chalet sur le lac devient membre et participe activement à nos trois objectifs clés:
 
