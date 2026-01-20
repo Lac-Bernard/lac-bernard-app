@@ -21,4 +21,4 @@ description: Numéros de contact d'urgence importants et informations.
 | MRC des Collines-de-l'Outaouais (Police) | 819-459-2422                                                                                       |
 | MRC des Collines-de-l'Outaouais (Bureau) | 819-827-0516                                                                                       |
 | Courriel de la police                  | [securitepublique@mrcdescollines.com](mailto:securitepublique@mrcdescollines.com)                  |
-| Site Web de la police                  | <http://sp.mrcdescollinesdeloutaouais.qc.ca/fr>
+| Site Web de la police                  | [http://sp.mrcdescollinesdeloutaouais.qc.ca/fr](http://sp.mrcdescollinesdeloutaouais.qc.ca/fr) / [http://www.mrcdescollines.com/securitepublique/](http://www.mrcdescollines.com/securitepublique/)

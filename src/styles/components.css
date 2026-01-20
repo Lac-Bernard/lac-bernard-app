@@ -203,34 +203,48 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 14px 20px;
-  border-radius: 12px;
-  font-weight: 700;
-  font-size: 17px;
-  border: 1px solid transparent;
-  transition: all 120ms ease;
+  padding: 14px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 150ms ease;
+  line-height: 1.5;
 }
 
 .btnPrimary {
-  background: var(--color-primary);
-  color: rgba(0,0,0,.85);
+  background: #2563eb;
+  color: white;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.btnPrimary:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btnPrimary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
 .btnGhost {
-  background: rgba(0,0,0,.04);
-  border-color: var(--border);
+  background: transparent;
+  border: 1px solid var(--border);
   color: var(--text);
 }
 
-.btnPrimary:hover,
 .btnGhost:hover {
+  background: rgba(0,0,0,.04);
   transform: translateY(-1px);
-  opacity: .95;
 }
 
 .btnPrimary:focus-visible,
 .btnGhost:focus-visible {
-  outline: 2px solid rgba(72,196,255,.6);
+  outline: 2px solid rgba(37, 99, 235, 0.5);
   outline-offset: 2px;
 }
 
@@ -420,6 +434,18 @@
   color: #0052a3 !important;
   text-decoration-color: rgba(0,102,204,.6);
   opacity: 1;
+}
+
+.prose .btnPrimary {
+  color: white !important;
+  text-decoration: none !important;
+  display: inline-block;
+  margin-top: 16px;
+}
+
+.prose .btnPrimary:hover {
+  color: white !important;
+  text-decoration: none !important;
 }
 
 .prose a:focus-visible {

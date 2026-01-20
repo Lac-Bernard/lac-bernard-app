@@ -4,6 +4,8 @@ import '../../styles/components.css';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { getLocalizedHref, type Language } from '../../utils/i18n';
+import { getCollection } from 'astro:content';
+import FormattedDate from '../../components/FormattedDate.astro';
 
 const currentLang = (Astro.currentLocale || 'fr') as Language;
 
@@ -13,32 +15,17 @@ if (!home) throw new Error('Missing content/pages/fr/home.md');
 
 const { Content, frontmatter } = home;
 
+// Get latest blog post (July update)
+const allPosts = await getCollection('blog');
+const latestPost = allPosts
+  .filter(post => post.id === 'july-update')
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())[0];
+
 const titles = {
   fr: {
     site: 'Association du lac Bernard',
     hero: frontmatter?.heroTitle ?? 'Bienvenue à l\'Association du lac Bernard',
     subtitle: frontmatter?.heroSubtitle ?? '',
-    kicker: 'Lac Bernard • Wakefield, Québec',
-    joinRenew: 'Adhérer ou renouveler',
-    learnMore: 'En savoir plus',
-    whatWeDo: 'Ce que nous faisons',
-    whatWeDoDesc: 'Nos bénévoles dévoués travaillent toute l\'année pour préserver la beauté naturelle et la santé du lac Bernard pour les générations futures.',
-    safeguard: 'Protéger l\'environnement',
-    safeguardDesc: 'Tests d\'eau réguliers, contrôle des espèces envahissantes et initiatives de protection du rivage pour maintenir l\'état vierge de notre lac.',
-    build: 'Construire la communauté',
-    buildDesc: 'Organiser des événements, coordonner les bénévoles et fournir des mises à jour saisonnières pour garder notre communauté connectée et informée.',
-    promote: 'Promouvoir la sécurité',
-    promoteDesc: 'Maintenir les bouées de navigation, communiquer avec les municipalités et assurer des activités récréatives sécuritaires sur le lac.',
-    joinRenewTitle: 'Adhérer ou renouveler',
-    joinRenewDesc: 'Soutenez le lac pour seulement 75 $/an. Des rabais pluriannuels sont disponibles pour les partisans à long terme.',
-    joinNow: 'Adhérer maintenant',
-    milfoilTitle: 'Myriophylle et environnement',
-    milfoilDesc: '12 % du lac est maintenant affecté par le myriophylle envahissant. Découvrez ce que vous pouvez faire pour aider à protéger nos eaux.',
-    aboutMilfoil: 'À propos du myriophylle',
-    volunteer: 'Bénévole',
-    eventsTitle: 'Événements et régate',
-    eventsDesc: 'Rejoignez-nous pour les célébrations annuelles, la célèbre régate et les événements sociaux qui rassemblent notre communauté.',
-    seeEvents: 'Voir les événements',
     impact: 'Notre impact',
     years: 'Années de service',
     members: 'Membres actifs',
@@ -46,6 +33,8 @@ const titles = {
     volunteerRun: 'Géré par des bénévoles',
     landAck: 'Reconnaissance du territoire',
     landAckText: 'L\'Association souhaite reconnaître que le territoire sur lequel nous nous rassemblons est le territoire traditionnel non cédé du peuple Anishinaabeg.',
+    latestNews: 'Dernières nouvelles',
+    readMore: 'Lire la suite',
   },
 };
 
@@ -73,45 +62,9 @@ const heroSubtitle = t.subtitle;
       <section class="hero" aria-label="Hero de la page d'accueil">
         <div class="container heroInner">
           <div class="heroCopy">
-            <p class="kicker">{t.kicker}</p>
             <h1>{heroTitle}</h1>
             {heroSubtitle && <p class="subtitle" set:html={heroSubtitle} />}
-
-            <div class="heroButtons">
-              <a class="btnPrimary" href={getLocalizedHref('/membership', currentLang)}>{t.joinRenew}</a>
-              <a class="btnGhost" href={getLocalizedHref('/about', currentLang)}>{t.learnMore}</a>
-            </div>
           </div>
-
-          <aside class="heroPanel" aria-label="Actions rapides">
-            <h2>{t.whatWeDo}</h2>
-            <p class="muted">
-              {t.whatWeDoDesc}
-            </p>
-
-            <div class="cards">
-              <article class="card">
-                <div class="icon">🌊</div>
-                <h3>{t.safeguard}</h3>
-                <p>{t.safeguardDesc}</p>
-                <a href={getLocalizedHref('/environment', currentLang)}>{t.learnMore} →</a>
-              </article>
-
-              <article class="card">
-                <div class="icon">🤝</div>
-                <h3>{t.build}</h3>
-                <p>{t.buildDesc}</p>
-                <a href={getLocalizedHref('/community', currentLang)}>{t.learnMore} →</a>
-              </article>
-
-              <article class="card">
-                <div class="icon">🛡️</div>
-                <h3>{t.promote}</h3>
-                <p>{t.promoteDesc}</p>
-                <a href={getLocalizedHref('/safety', currentLang)}>{t.learnMore} →</a>
-              </article>
-            </div>
-          </aside>
         </div>
       </section>
 
@@ -121,30 +74,28 @@ const heroSubtitle = t.subtitle;
         </div>
       </section>
 
-      <section class="section alt">
-        <div class="container ctaRow">
-          <div class="cta">
-            <h2>{t.joinRenewTitle}</h2>
-            <p>{t.joinRenewDesc}</p>
-            <a class="btnPrimary" href={getLocalizedHref('/membership', currentLang)}>{t.joinNow}</a>
+      {latestPost && (
+        <section class="section">
+          <div class="container">
+            <h2>{t.latestNews}</h2>
+            <ul class="newsList">
+              <li>
+                <a href={`/news/${latestPost.id}/`}>
+                  <h3>{latestPost.data.title}</h3>
+                  <div class="newsDate">
+                    <FormattedDate date={latestPost.data.pubDate} />
+                  </div>
+                  <p class="excerpt">
+                    {latestPost.data.description}
+                    {' '}
+                    <span class="readMore">{t.readMore}: {latestPost.data.title}</span>
+                  </p>
+                </a>
+              </li>
+            </ul>
           </div>
-
-          <div class="cta">
-            <h2>{t.milfoilTitle}</h2>
-            <p><strong>{t.milfoilDesc}</strong></p>
-            <div class="ctaButtons">
-              <a class="btnPrimary" href={getLocalizedHref('/environment/milfoil', currentLang)}>{t.aboutMilfoil}</a>
-              <a class="btnGhost" href={getLocalizedHref('/volunteer', currentLang)}>{t.volunteer}</a>
-            </div>
-          </div>
-
-          <div class="cta">
-            <h2>{t.eventsTitle}</h2>
-            <p>{t.eventsDesc}</p>
-            <a class="btnPrimary" href={getLocalizedHref('/events', currentLang)}>{t.seeEvents}</a>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section class="section stats">
         <div class="container">
@@ -172,63 +123,55 @@ const heroSubtitle = t.subtitle;
       /* Page-specific styles for homepage */
       .hero {
         padding: 72px 0 var(--spacing-section);
+        position: relative;
+        background-image: url('/images/mirrorlake_jeffstubbins-2.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: white;
+      }
+      
+      .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 0;
+      }
+      
+      .hero .container {
+        position: relative;
+        z-index: 1;
       }
       
       .heroInner {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: var(--spacing-section);
-        align-items: start;
+        display: block;
       }
       
       .heroCopy {
+        color: white;
       }
       
-      .kicker {
-        margin: 0 0 12px;
-        color: var(--muted);
-        font-size: 16px;
-        letter-spacing: .14em;
-        text-transform: uppercase;
-      }
-      
-      h1 {
+      .hero h1 {
         margin: 0 0 18px;
         font-size: clamp(40px, 5vw, 64px);
         line-height: 1.06;
         letter-spacing: -.03em;
+        color: white;
       }
       
-      .subtitle {
+      .hero .subtitle {
         margin: 0 0 22px;
-        color: var(--muted);
+        color: rgba(255, 255, 255, 0.9);
         font-size: 19px;
       }
       
-      .heroButtons {
-        display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-      
-      .heroPanel {
-        border: 1px solid var(--border);
-        background: rgba(255,255,255,.95);
-        border-radius: 22px;
-        box-shadow: var(--shadow);
-        padding: 20px;
-      }
-      
-      .heroPanel h2 {
-        margin: 0 0 10px;
-        font-size: 20px;
-        letter-spacing: -.01em;
-      }
-      
-      .heroPanel .muted {
-        margin: 0 0 20px;
-        font-size: 17px;
-        line-height: 1.4;
+      .prose .btnPrimary {
+        margin-top: 20px;
+        display: inline-block;
       }
       
       .land {
@@ -245,6 +188,56 @@ const heroSubtitle = t.subtitle;
         font-size: 19px;
         max-width: 75ch;
         margin: 0 auto;
+      }
+      
+      .newsList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .newsList li {
+        margin: 0;
+      }
+      
+      .newsList a {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      
+      .newsList a:hover {
+        color: var(--accent);
+      }
+      
+      .newsList h3 {
+        margin: 0 0 8px;
+        font-size: 24px;
+        font-weight: 600;
+      }
+      
+      .newsList .newsDate {
+        display: block;
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+      
+      .newsList .newsDate time {
+        color: inherit;
+      }
+      
+      .newsList .excerpt {
+        margin: 0;
+        color: var(--text);
+        line-height: 1.6;
+      }
+      
+      .newsList .readMore {
+        color: var(--accent);
+        font-weight: 500;
       }
       
       @media (max-width: 920px) {
