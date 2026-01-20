@@ -3,41 +3,52 @@ title: Notre environnement
 description: En savoir plus sur nos initiatives environnementales pour protéger le lac Bernard.
 ---
 
-##### _La gestion environnementale est au cœur de la mission de l'Association_. Il est important que tous ceux qui vivent sur notre lac reconnaissent à quel point il est critique de maintenir une gestion appropriée de cette ressource précieuse!
+> _La gestion environnementale est au cœur de la mission de l'Association_. Il est important que tous ceux qui vivent sur notre lac reconnaissent à quel point il est critique de maintenir une gestion appropriée de cette ressource précieuse!
 
-## Plan stratégique de gestion du myriophylle à épi eurasien de l'eau 2025 : <a href="/documents/2025%20Milfoil%20Strategic%20Management%20Plan.pdf" target="_blank" rel="noopener noreferrer">Plan stratégique de gestion</a> et <a href="/documents/2025%20Milfoil%20AGM%20Presentation.pdf" target="_blank" rel="noopener noreferrer">Présentation</a>
+## Plan stratégique de gestion du myriophylle à épi eurasien de l'eau 2025
 
-##### Échantillonnage de l'eau
+- [Plan stratégique de gestion](/documents/2025%20Milfoil%20Strategic%20Management%20Plan.pdf) (PDF)
+- [Présentation](/documents/2025%20Milfoil%20AGM%20Presentation.pdf) (PDF)
 
-_L'Association travaille avec La Pêche et des bénévoles pour tester régulièrement notre lac pour les phosphates, les bactéries et d'autres mesures clés. Les résultats de 2023 sont [ici](/fr/environnement/echantillonnage-eau)._
+## Sujets environnementaux clés
 
-##### Menace du myriophylle
+### Échantillonnage de l'eau
 
-_La plus grande menace pour notre lac aujourd'hui est le myriophylle à épi eurasien. Apprenez-en plus [ici](/fr/environnement/myriophylle)._ 
+L'Association travaille avec La Pêche et des bénévoles pour tester régulièrement notre lac pour les phosphates, les bactéries et d'autres mesures clés. [Les résultats de 2023 sont ici.](/fr/environnement/echantillonnage-eau)
 
-##### Protéger notre rivage
+### Menace du myriophylle
 
-_Garder notre rivage en santé profite directement à la santé de notre lac. Apprenez ce que vous pouvez faire [ici](/fr/environnement/rivage) et vérifiez l'évaluation de votre zone du lac._
+La plus grande menace pour notre lac aujourd'hui est le myriophylle à épi eurasien. [Apprenez-en plus ici.](/fr/environnement/myriophylle)
 
-##### Protéger notre eau
+### Protéger notre rivage
 
-_Le myriophylle n'est pas notre seule menace. Surveiller d'autres espèces envahissantes et savoir quoi rechercher est une partie critique du maintien de la santé de notre lac, tout aussi important que le maintien d'un système sceptique sûr et opérationnel._ 
+Garder notre rivage en santé profite directement à la santé de notre lac. [Apprenez ce que vous pouvez faire ici](/fr/environnement/rivage) et vérifiez l'évaluation de votre zone du lac.
 
-##### Navigation et marqueurs de bouées critiques
+### Protéger notre eau
 
-_L'Association et son armée de bénévoles du lac ont marqué les zones critiques sur le lac. La navigation sécuritaire et le respect de ces zones marquées sont essentiels à la durabilité de notre lac._ 
+Le myriophylle n'est pas notre seule menace. Surveiller d'autres espèces envahissantes et savoir quoi rechercher est une partie critique du maintien de la santé de notre lac, tout aussi important que le maintien d'un système septique sûr et opérationnel. [Apprenez-en plus sur la protection de notre eau.](/fr/environnement/eau)
 
-##### Protéger la faune
+### Navigation et marqueurs de bouées critiques
 
-_Coexister avec la faune locale est une préoccupation clé pour notre Association._ 
+L'Association et son armée de bénévoles du lac ont marqué les zones critiques sur le lac. La navigation sécuritaire et le respect de ces zones marquées sont essentiels à la durabilité de notre lac. [Apprenez-en plus sur la navigation sur le lac Bernard.](/fr/environnement/navigation)
 
-Le lac Bernard, avec la plupart des lacs de notre région et à travers l'Amérique du Nord, a subi des stress non seulement de nos actions immédiates dans et autour du lac, mais aussi de l'impact du réchauffement climatique et de la mobilité accrue des espèces envahissantes. Au sommet de nos préoccupations se trouve la propagation dramatique et accélérée du **_myriophylle à épi eurasien_** dans le lac Bernard. Cette espèce envahissante a déjà étouffé les lacs voisins et procède à le faire au lac Bernard. Nous portons également une attention particulière à la **_qualité de l'eau_** dans le lac et effectuons des tests réguliers pour nous assurer que les phosphates sont correctement contrôlés. Nous travaillons également à éduquer les propriétaires sur le maintien de leur **_rivage_** dans un état aussi naturel que possible car les rivages ont un impact direct sur la santé du lac. La bonne nouvelle est que nous pouvons tous avoir un impact positif dans ces domaines en suivant quelques règles simples à faire et à ne pas faire, et ces efforts portent leurs fruits. Avec un accent sur l'amélioration des fosses septiques, les niveaux de phosphate et d'e-coli du lac ont été considérablement réduits depuis les années 1990. Maintenant cependant, nous faisons face au grand défi du contrôle et de l'éradication du myriophylle. 
+### Protéger la faune
+
+Coexister avec la faune locale est une préoccupation clé pour notre Association. [Apprenez-en plus sur la faune du lac.](/fr/environnement/faune) 
+
+## Les défis de notre lac
+
+Le lac Bernard, avec la plupart des lacs de notre région et à travers l'Amérique du Nord, a subi des stress non seulement de nos actions immédiates dans et autour du lac, mais aussi de l'impact du réchauffement climatique et de la mobilité accrue des espèces envahissantes. Au sommet de nos préoccupations se trouve la propagation dramatique et accélérée du **myriophylle à épi eurasien** dans le lac Bernard. Cette espèce envahissante a déjà étouffé les lacs voisins et procède à le faire au lac Bernard.
+
+Nous portons également une attention particulière à la **qualité de l'eau** dans le lac et effectuons des tests réguliers pour nous assurer que les phosphates sont correctement contrôlés. Nous travaillons également à éduquer les propriétaires sur le maintien de leur **rivage** dans un état aussi naturel que possible car les rivages ont un impact direct sur la santé du lac.
+
+La bonne nouvelle est que nous pouvons tous avoir un impact positif dans ces domaines en suivant quelques règles simples à faire et à ne pas faire, et ces efforts portent leurs fruits. Avec un accent sur l'amélioration des fosses septiques, les niveaux de phosphate et d'e-coli du lac ont été considérablement réduits depuis les années 1990. Maintenant cependant, nous faisons face au grand défi du contrôle et de l'éradication du myriophylle. 
 
 ## Rapports
 
 <a href="https://drive.google.com/drive/folders/1pLhabTA7ZbPmijuT2lexmZd8AmXvjcyY" target="_blank" rel="noopener noreferrer" class="drive-link-button">Voir les rapports environnementaux dans Google Drive →</a>
 
-## Ce que l'association fait
+## Ce que l'Association fait
 
 ### Surveiller
 
@@ -49,7 +60,7 @@ Les mauvaises herbes envahissantes et autres espèces envahissantes grâce à de
 
 ### Corriger
 
-Lorsque les systèmes septiques échouent, nous introduisons du phosphate et de l'e-coli dans le lac. Lorsque nous sur-développons le rivage du lac, nous privons le lac de charges nutritives critiques. **La chose la plus importante que nous puissions faire est de préserver notre rivage dans un état non perturbé et de nous assurer que nos systèmes septiques sont à jour et bien entretenus.** 
+Lorsque les systèmes septiques échouent, nous introduisons du phosphate et de l'e-coli dans le lac. Lorsque nous sur-développons le rivage du lac, nous privons le lac de charges nutritives critiques. **La chose la plus importante que nous puissions faire est de préserver notre rivage dans un état non perturbé et de nous assurer que nos systèmes septiques sont à jour et bien entretenus.**
 
 ### Communiquer et éduquer
 
@@ -59,9 +70,9 @@ Nous avons appris que de nombreux nouveaux propriétaires de chalets et proprié
 > 
 > Comité exécutif
 
-_Il y a 100 ans, le lac Bernard regorgeait de truites de lac et de truites mouchetées. L'eau était assez propre pour boire, et nous avons la chance qu'à bien des égards, elle le soit encore._ Mais cela nécessite que nous travaillions tous ensemble pour nous assurer que nous sommes des gestionnaires efficaces de notre lac pour les générations à venir
+_Il y a 100 ans, le lac Bernard regorgeait de truites de lac et de truites mouchetées. L'eau était assez propre pour boire, et nous avons la chance qu'à bien des égards, elle le soit encore._ Mais cela nécessite que nous travaillions tous ensemble pour nous assurer que nous sommes des gestionnaires efficaces de notre lac pour les générations à venir.
 
-### Les efforts individuels _collectivement_ ont un impact **énorme**
+## Les efforts individuels collectivement ont un impact énorme
 
 * Si chaque chalet retirait quatre brouettes de boutures de myriophylle près du rivage, nous aurions retiré environ 160 000 livres de mauvaises herbes du lac.
 * Si chaque fois qu'un plaisancier attrapait des boutures de mauvaises herbes en traversant un tapis dense de myriophylle, il y aurait des milliers de possibilités en moins pour que les mauvaises herbes se propagent
