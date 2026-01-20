@@ -2,27 +2,13 @@
 import { type Language } from '../utils/i18n';
 
 const currentLang = (Astro.currentLocale || 'en') as Language;
-
-const footerText = {
-  en: {
-    rights: 'All rights reserved.',
-    privacy: 'Privacy Policy',
-  },
-  fr: {
-    rights: 'Tous droits réservés.',
-    privacy: 'Politique de confidentialité',
-  },
-};
-
-const t = footerText[currentLang];
 ---
 
 <footer class="footer">
   <div class="container footerInner">
-    <div class="muted">© {new Date().getFullYear()} {currentLang === 'fr' ? 'Association du lac Bernard' : 'Lac Bernard Association'}. {t.rights}</div>
+    <div class="muted">© {new Date().getFullYear()} Owners’ and Residents’ Association of Lac Bernard.</div>
     <div class="footerLinks">
-      <a href="mailto:info@lacbernard.ca">info@lacbernard.ca</a>
-      <a href="/privacy">{t.privacy}</a>
+      
     </div>
   </div>
 </footer>
