@@ -3,7 +3,10 @@ title: Protecting our Shoreline
 description: Learn about shoreline protection initiatives.
 ---
 
-  
+<div style="text-align: center; margin: 1.5rem 0;">
+  <img src="/images/Screenshot-2023-10-17-134443.jpg" alt="Shoreline protection" style="max-width: 800px; width: 100%; height: auto;" />
+</div>
+
 The shallows of a lake are crucial to the healthy habitat of fish, frogs and crayfish. To protect the shallows, please note that permanent concrete docks and retaining walls are prohibited by law, and only permanent docks allowed by Environment Quebec and holding an appropriate municipal permit can be constructed.
 
 The native grasses, shrubs and trees that grow along the first 5 meters of shoreline of a lake or waterway serve as an excellent and essential barrier to curb erosion and to trap nutrients during run-off. Naturally occurring nutrients and those from human activities (such as phosphates) can cause serious deterioration in lake water quality.

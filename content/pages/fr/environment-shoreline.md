@@ -3,7 +3,10 @@ title: Protéger notre rivage
 description: En savoir plus sur les initiatives de protection du rivage.
 ---
 
-  
+<div style="text-align: center; margin: 1.5rem 0;">
+  <img src="/images/Screenshot-2023-10-17-134443.jpg" alt="Protection du rivage" style="max-width: 800px; width: 100%; height: auto;" />
+</div>
+
 Les eaux peu profondes d'un lac sont cruciales pour l'habitat sain des poissons, des grenouilles et des écrevisses. Pour protéger les eaux peu profondes, veuillez noter que les quais en béton permanents et les murs de soutènement sont interdits par la loi, et seuls les quais permanents autorisés par Environnement Québec et détenant un permis municipal approprié peuvent être construits.
 
 Les herbes, arbustes et arbres indigènes qui poussent le long des 5 premiers mètres du rivage d'un lac ou d'un cours d'eau servent de barrière excellente et essentielle pour freiner l'érosion et piéger les nutriments pendant le ruissellement. Les nutriments naturellement présents et ceux provenant des activités humaines (tels que les phosphates) peuvent causer une détérioration grave de la qualité de l'eau du lac.
