@@ -9,7 +9,7 @@ On this page, you'll see information regarding the activities sponsored by the A
 
 ## Annual Regatta
 
-Check out some great photos of Regatta 2023
+[Check out some great photos of Regatta 2023](/community/regatta)
 
 On the Saturday or Sunday of the August long weekend, friends and families gather at Regatta Bay for a fun afternoon of friendly aquatic competitions adapted for all ages. A fantastic BBQ, great prizes of all types await you. Lac Bernard merchandise is for sale , when available, and our mobile book library is there too! Regardless of age, expose your hidden athletic prowess through the various swimming, canoeing, waterboarding or kayaking races. You can also be a spectator or cheerleader to drum up the excitement. The Annual Regatta is our signature summer event, organized by dedicated volunteers and donors. This event is always an annual hit!
 
@@ -25,4 +25,4 @@ The Lac Bernard Watersports Day is organized by local residents and has become a
 
 The lake association wouldn't be active without the engagement of its members. We salute all members who organize or support activities that help build a better lake community for us all!
 
-## History of Our Lake
+## [History of Our Lake](/history)
