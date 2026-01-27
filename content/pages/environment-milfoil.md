@@ -59,7 +59,7 @@ _"It is basically the usual market value rule of supply and demand. If you have 
 
  It is my hope that this note has been helpful. I have highlighted some facts about EWM, linked you to some articles and websites with more information about the invader, and let you know how you can help.
 
-You are also warmly invited to join or renew your membership in the Owners' and Residents' Association of Lac Bernard. Your $50 fee helps fund the fight…and indicates that you stand with more than 200 of your neighbours and friends. (Use interac@lacbernard.ca to join or renew.)
+You are also warmly invited to join or renew your membership in the Owners' and Residents' Association of Lac Bernard. Your $75 fee helps fund the fight…and indicates that you stand with more than 200 of your neighbours and friends. (Use interac@lacbernard.ca to join or renew.)
 
 Peppering our conversations and salting our vocabulary will do absolutely nothing to stop Eurasian Water Milfoil. Only our collective best efforts stand any chance of success.
 

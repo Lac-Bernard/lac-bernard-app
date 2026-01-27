@@ -59,7 +59,7 @@ _"C'est fondamentalement la règle habituelle de la valeur marchande de l'offre 
 
  J'espère que cette note a été utile. J'ai mis en évidence quelques faits sur le MEE, vous ai lié à quelques articles et sites Web avec plus d'informations sur l'envahisseur, et vous ai fait savoir comment vous pouvez aider.
 
-Vous êtes également chaleureusement invités à rejoindre ou renouveler votre adhésion à l'Association des propriétaires et résidents du lac Bernard. Vos 50 $ aident à financer le combat… et indiquent que vous vous tenez avec plus de 200 de vos voisins et amis. (Utilisez interac@lacbernard.ca pour rejoindre ou renouveler.)
+Vous êtes également chaleureusement invités à rejoindre ou renouveler votre adhésion à l'Association des propriétaires et résidents du lac Bernard. Vos 75 $ aident à financer le combat… et indiquent que vous vous tenez avec plus de 200 de vos voisins et amis. (Utilisez interac@lacbernard.ca pour rejoindre ou renouveler.)
 
 Poivrer nos conversations et saler notre vocabulaire ne fera absolument rien pour arrêter le myriophylle à épi eurasien. Seuls nos meilleurs efforts collectifs ont une chance de succès.
 
