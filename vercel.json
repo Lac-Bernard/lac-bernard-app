@@ -191,11 +191,6 @@
       "permanent": true
     },
     {
-      "source": "/contact",
-      "destination": "/en/contact",
-      "permanent": true
-    },
-    {
       "source": "/news",
       "destination": "/en/news",
       "permanent": true
