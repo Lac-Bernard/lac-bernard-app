@@ -1,9 +1,12 @@
 ---
+import type { Language } from '../utils/i18n';
+
 interface Props {
 	date: Date | string | undefined;
+	lang?: Language;
 }
 
-const { date } = Astro.props;
+const { date, lang } = Astro.props;
 
 if (!date) {
 	throw new Error('FormattedDate: date prop is required');
@@ -15,14 +18,37 @@ const dateObj = date instanceof Date ? date : new Date(date);
 if (isNaN(dateObj.getTime())) {
 	throw new Error(`FormattedDate: Invalid date: ${date}`);
 }
+
+// Determine language - use prop if provided, otherwise detect from URL
+let currentLang: Language = lang || 'fr';
+if (!lang) {
+	const pathname = Astro.url.pathname;
+	currentLang = pathname.startsWith('/en/') ? 'en' : 'fr';
+}
+
+// Format date based on language
+let formattedDate: string;
+if (currentLang === 'fr') {
+	// Quebec French format: "1er juillet 2025" or "2 juillet 2025"
+	const day = dateObj.getDate();
+	const month = dateObj.toLocaleDateString('fr-CA', { month: 'long' });
+	const year = dateObj.getFullYear();
+	
+	// Use "1er" for the 1st, otherwise just the number
+	const dayStr = day === 1 ? '1er' : day.toString();
+	
+	// Month names should be lowercase in Quebec French
+	formattedDate = `${dayStr} ${month.toLowerCase()} ${year}`;
+} else {
+	// English format: "Jul 1, 2025"
+	formattedDate = dateObj.toLocaleDateString('en-us', {
+		year: 'numeric',
+		month: 'short',
+		day: 'numeric',
+	});
+}
 ---
 
 <time datetime={dateObj.toISOString()}>
-	{
-		dateObj.toLocaleDateString('en-us', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric',
-		})
-	}
+	{formattedDate}
 </time>

@@ -143,7 +143,7 @@ const heroSubtitle = t.subtitle;
                 <a href={`/en/news/${latestPost.id}/`}>
                   <h3>{latestPost.data.title}</h3>
                   <div class="newsDate">
-                    <FormattedDate date={latestPost.data.pubDate} />
+                    <FormattedDate date={latestPost.data.pubDate} lang={currentLang} />
                   </div>
                   <p class="excerpt">
                     {latestPost.data.description}

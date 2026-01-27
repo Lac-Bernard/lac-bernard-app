@@ -87,10 +87,10 @@ const latestPosts = allPosts
 								<div class="prose">
 									<div class="post-header">
 										<div class="post-date">
-											<FormattedDate date={pubDateObj} />
+											<FormattedDate date={pubDateObj} lang={lang} />
 											{updatedDateObj && (
 												<div class="last-updated-on">
-													{lang === 'fr' ? 'Dernière mise à jour le' : 'Last updated on'} <FormattedDate date={updatedDateObj} />
+													{lang === 'fr' ? 'Dernière mise à jour le' : 'Last updated on'} <FormattedDate date={updatedDateObj} lang={lang} />
 												</div>
 											)}
 										</div>
