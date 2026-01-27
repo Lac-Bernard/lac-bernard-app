@@ -27,21 +27,26 @@ if (isNaN(pubDateObj.getTime())) {
 
 const updatedDateObj = updatedDate ? (updatedDate instanceof Date ? updatedDate : new Date(updatedDate)) : null;
 
-// Get latest 10 blog posts for sidebar
-const allPosts = await getCollection('blog');
-const latestPosts = allPosts
-	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 10);
-
 // Get current post ID from props or URL
 const postId = currentPostId || Astro.url.pathname.split('/').filter(Boolean).pop() || '';
+
+// Determine language based on URL path (/en/ = English, otherwise French)
+const isFrench = !Astro.url.pathname.startsWith('/en/');
+const lang = isFrench ? 'fr' : 'en';
+
+// Get latest 10 blog posts for sidebar (filter by language)
+const allPosts = await getCollection('blog');
+const latestPosts = allPosts
+	.filter(post => isFrench ? post.id.endsWith('-fr') : !post.id.endsWith('-fr'))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 10);
 ---
 
-<html lang="en">
+<html lang={lang}>
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>{title} – Lac Bernard Association</title>
+		<title>{title} – {lang === 'fr' ? 'Association du lac Bernard' : 'Lac Bernard Association'}</title>
 		<meta name="description" content={description} />
 	</head>
 
@@ -53,20 +58,23 @@ const postId = currentPostId || Astro.url.pathname.split('/').filter(Boolean).po
 				<div class="container">
 					<div class="pageWithSidebar">
 						<aside class="sidebar">
-							<nav class="sidebarNav" aria-label="Blog navigation">
-								<h2 class="sidebarTitle">Recent Posts</h2>
+							<nav class="sidebarNav" aria-label={lang === 'fr' ? 'Navigation du blog' : 'Blog navigation'}>
+								<h2 class="sidebarTitle">{lang === 'fr' ? 'Publications récentes' : 'Recent Posts'}</h2>
 								{latestPosts.map((post) => {
-									const isActive = post.id === postId;
+									// Use base slug (without -fr) for URL
+									const baseSlug = post.id.replace(/-fr$/, '');
+									const isActive = baseSlug === postId || post.id === postId;
+									const postPath = lang === 'fr' ? `/news/${baseSlug}/` : `/en/news/${baseSlug}/`;
 									return (
 										<a 
-											href={`/news/${post.id}/`}
+											href={postPath}
 											class={isActive ? 'active' : ''}
 										>
 											{post.data.title}
 										</a>
 									);
 								})}
-								<a href="/news/" class="seeAllLink">See all posts →</a>
+								<a href={lang === 'fr' ? '/news/' : '/en/news/'} class="seeAllLink">{lang === 'fr' ? 'Voir toutes les publications →' : 'See all posts →'}</a>
 							</nav>
 						</aside>
 						<div class="pageContent">
@@ -82,7 +90,7 @@ const postId = currentPostId || Astro.url.pathname.split('/').filter(Boolean).po
 											<FormattedDate date={pubDateObj} />
 											{updatedDateObj && (
 												<div class="last-updated-on">
-													Last updated on <FormattedDate date={updatedDateObj} />
+													{lang === 'fr' ? 'Dernière mise à jour le' : 'Last updated on'} <FormattedDate date={updatedDateObj} />
 												</div>
 											)}
 										</div>

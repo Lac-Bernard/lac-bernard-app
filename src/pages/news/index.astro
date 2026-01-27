@@ -1,27 +1,27 @@
 ---
 import { Image } from 'astro:assets';
 import { getCollection } from 'astro:content';
-import '../../../styles/theme.css';
-import '../../../styles/components.css';
-import SiteHeader from '../../../components/SiteHeader.astro';
-import SiteFooter from '../../../components/SiteFooter.astro';
-import FormattedDate from '../../../components/FormattedDate.astro';
+import '../../styles/theme.css';
+import '../../styles/components.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import FormattedDate from '../../components/FormattedDate.astro';
 
-// English news page - only show English posts (those NOT ending with -fr)
+// French news page - only show French posts (those ending with -fr)
 const allPosts = await getCollection('blog');
 const posts = allPosts
-	.filter(post => !post.id.endsWith('-fr'))
+	.filter(post => post.id.endsWith('-fr'))
 	.sort(
 		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 	);
 ---
 
-<html lang="en">
+<html lang="fr">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>News | Lac Bernard Association</title>
-		<meta name="description" content="Latest news and updates from the Lac Bernard Association" />
+		<title>Nouvelles | Association du lac Bernard</title>
+		<meta name="description" content="Dernières nouvelles et mises à jour de l'Association du lac Bernard" />
 	</head>
 
 	<body>
@@ -31,14 +31,14 @@ const posts = allPosts
 			<section class="section">
 				<div class="container">
 					<div class="blogHeader">
-						<h1>Latest News</h1>
-						<p class="muted">Stay up to date with the latest news and updates from the Lac Bernard Association.</p>
+						<h1>Dernières nouvelles</h1>
+						<p class="muted">Restez informé des dernières nouvelles et mises à jour de l'Association du lac Bernard.</p>
 					</div>
 					
 					<div class="postsList">
 						{posts.map((post) => (
 							<article class="postCard">
-								<a href={`/en/news/${post.id}/`} class="postLink">
+								<a href={`/news/${post.id.replace(/-fr$/, '')}/`} class="postLink">
 									{post.data.heroImage && (
 										<div class="postImage">
 											<Image width={720} height={360} src={post.data.heroImage} alt="" />

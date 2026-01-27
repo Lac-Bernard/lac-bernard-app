@@ -80,8 +80,15 @@ function translatePath(pathWithoutLocale: string, fromLang: Language, toLang: La
 	if (fromLang === toLang) return pathWithoutLocale;
 	if (pathWithoutLocale === '/') return '/';
 	
-	// Remove leading slash for processing
-	const cleanPath = pathWithoutLocale.replace(/^\//, '');
+	// Remove leading and trailing slashes for processing
+	const cleanPath = pathWithoutLocale.replace(/^\/+|\/+$/g, '');
+	
+	// News/blog posts use the same slug in both languages, so no translation needed
+	// The language is determined by the URL path (/en/ or not)
+	if (cleanPath.startsWith('news/')) {
+		// Just return the path as-is (language is determined by URL prefix)
+		return pathWithoutLocale;
+	}
 	
 	// Try to translate the full path first (for nested paths)
 	if (fromLang === 'en' && toLang === 'fr') {

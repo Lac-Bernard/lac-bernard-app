@@ -1,25 +1,26 @@
 ---
 import { type CollectionEntry, getCollection, render } from 'astro:content';
-import BlogPost from '../../../layouts/BlogPost.astro';
+import BlogPost from '../../layouts/BlogPost.astro';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
-	// English posts don't end with -fr, use the base slug in the URL
+	// French posts end with -fr, but we use the base slug (without -fr) in the URL
 	return posts
-		.filter(post => !post.id.endsWith('-fr'))
+		.filter(post => post.id.endsWith('-fr'))
 		.map((post) => ({
-			params: { slug: post.id },
+			params: { slug: post.id.replace(/-fr$/, '') },
 		}));
 }
 
-// Get the slug from params and look up the English post
+// Get the slug from params and look up the French post
 const slug = Astro.params.slug;
 if (!slug) {
 	throw new Error('Slug parameter is missing');
 }
 
 const posts = await getCollection('blog');
-const post = posts.find((p) => p.id === slug);
+// Find the French version (slug + -fr)
+const post = posts.find((p) => p.id === `${slug}-fr`);
 
 if (!post) {
 	throw new Error(`Post not found for slug: ${slug}`);

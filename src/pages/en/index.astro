@@ -17,10 +17,10 @@ if (!home) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/'
 
 const { Content, frontmatter } = home;
 
-// Get latest blog post (July update)
+// Get latest blog post (English version - doesn't end with -fr)
 const allPosts = await getCollection('blog');
 const latestPost = allPosts
-  .filter(post => post.id === 'july-update')
+  .filter(post => post.id === 'july-2025-update')
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())[0];
 
 const titles = {
@@ -140,7 +140,7 @@ const heroSubtitle = t.subtitle;
             <h2>{t.latestNews}</h2>
             <ul class="newsList">
               <li>
-                <a href={`/news/${latestPost.id}/`}>
+                <a href={`/en/news/${latestPost.id}/`}>
                   <h3>{latestPost.data.title}</h3>
                   <div class="newsDate">
                     <FormattedDate date={latestPost.data.pubDate} />
