@@ -17,6 +17,14 @@ const titles = {
 
 const title = page.frontmatter?.title || titles[currentLang];
 const description = page.frontmatter?.description;
+
+const pdfFallbackText = currentLang === 'fr' 
+  ? 'Votre navigateur ne peut pas afficher les PDF. ' 
+  : 'Your browser cannot display PDFs. ';
+const pdfDownloadText = currentLang === 'fr' 
+  ? 'Télécharger les règlements' 
+  : 'Download the bylaws';
+const pdfTitle = currentLang === 'fr' ? 'Règlements de 2022' : '2022 Bylaws';
 ---
 
 <Page title={title} description={description} content={page} section="about">
@@ -25,16 +33,12 @@ const description = page.frontmatter?.description;
       src="/documents/20220512final_bylaws.pdf" 
       type="application/pdf"
       class="pdf-embed"
-      title={currentLang === 'fr' ? 'Règlements de 2022' : '2022 Bylaws'}
+      title={pdfTitle}
     >
       <p>
-        {currentLang === 'fr' 
-          ? 'Votre navigateur ne peut pas afficher les PDF. ' 
-          : 'Your browser cannot display PDFs. '}
+        {pdfFallbackText}
         <a href="/documents/20220512final_bylaws.pdf">
-          {currentLang === 'fr' 
-            ? 'Télécharger les règlements' 
-            : 'Download the bylaws'}
+          {pdfDownloadText}
         </a>
       </p>
     </iframe>
