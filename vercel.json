@@ -1,0 +1,214 @@
+{
+  "redirects": [
+    {
+      "source": "/about",
+      "destination": "/en/about",
+      "permanent": true
+    },
+    {
+      "source": "/about/executive",
+      "destination": "/en/about/executive",
+      "permanent": true
+    },
+    {
+      "source": "/about/committees",
+      "destination": "/en/about/committees",
+      "permanent": true
+    },
+    {
+      "source": "/about/bylaws",
+      "destination": "/en/about/bylaws",
+      "permanent": true
+    },
+    {
+      "source": "/about/business-records",
+      "destination": "/en/about/business-records",
+      "permanent": true
+    },
+    {
+      "source": "/about/archive",
+      "destination": "/en/about/archive",
+      "permanent": true
+    },
+    {
+      "source": "/environment",
+      "destination": "/en/environment",
+      "permanent": true
+    },
+    {
+      "source": "/environment/water-sampling",
+      "destination": "/en/environment/water-sampling",
+      "permanent": true
+    },
+    {
+      "source": "/environment/water-sampling/:year",
+      "destination": "/en/environment/water-sampling/:year",
+      "permanent": true
+    },
+    {
+      "source": "/environment/milfoil",
+      "destination": "/en/environment/milfoil",
+      "permanent": true
+    },
+    {
+      "source": "/environment/shoreline",
+      "destination": "/en/environment/shoreline",
+      "permanent": true
+    },
+    {
+      "source": "/environment/water",
+      "destination": "/en/environment/water",
+      "permanent": true
+    },
+    {
+      "source": "/environment/boating",
+      "destination": "/en/environment/boating",
+      "permanent": true
+    },
+    {
+      "source": "/environment/boating/milfoil-marker-buoys",
+      "destination": "/en/environment/boating/milfoil-marker-buoys",
+      "permanent": true
+    },
+    {
+      "source": "/environment/boating/shoal-marker-buoys",
+      "destination": "/en/environment/boating/shoal-marker-buoys",
+      "permanent": true
+    },
+    {
+      "source": "/environment/boating/water-sports",
+      "destination": "/en/environment/boating/water-sports",
+      "permanent": true
+    },
+    {
+      "source": "/environment/wildlife",
+      "destination": "/en/environment/wildlife",
+      "permanent": true
+    },
+    {
+      "source": "/community",
+      "destination": "/en/community",
+      "permanent": true
+    },
+    {
+      "source": "/community/regatta",
+      "destination": "/en/community/regatta",
+      "permanent": true
+    },
+    {
+      "source": "/community/security",
+      "destination": "/en/community/security",
+      "permanent": true
+    },
+    {
+      "source": "/community/security/police",
+      "destination": "/en/community/security/police",
+      "permanent": true
+    },
+    {
+      "source": "/community/security/emergency-contacts",
+      "destination": "/en/community/security/emergency-contacts",
+      "permanent": true
+    },
+    {
+      "source": "/community/security/fire",
+      "destination": "/en/community/security/fire",
+      "permanent": true
+    },
+    {
+      "source": "/community/security/neighbourhood-watch",
+      "destination": "/en/community/security/neighbourhood-watch",
+      "permanent": true
+    },
+    {
+      "source": "/history",
+      "destination": "/en/history",
+      "permanent": true
+    },
+    {
+      "source": "/history/first-nations",
+      "destination": "/en/history/first-nations",
+      "permanent": true
+    },
+    {
+      "source": "/history/fishing-club",
+      "destination": "/en/history/fishing-club",
+      "permanent": true
+    },
+    {
+      "source": "/history/maps",
+      "destination": "/en/history/maps",
+      "permanent": true
+    },
+    {
+      "source": "/history/aerial-photos",
+      "destination": "/en/history/aerial-photos",
+      "permanent": true
+    },
+    {
+      "source": "/history/stories-documenting-families-and-individuals",
+      "destination": "/en/history/stories-documenting-families-and-individuals",
+      "permanent": true
+    },
+    {
+      "source": "/history/stories-documenting-history-of-the-lake",
+      "destination": "/en/history/stories-documenting-history-of-the-lake",
+      "permanent": true
+    },
+    {
+      "source": "/history/newspaper-clippings-collection-of-lac-bernard",
+      "destination": "/en/history/newspaper-clippings-collection-of-lac-bernard",
+      "permanent": true
+    },
+    {
+      "source": "/history/historical-research-and-sources",
+      "destination": "/en/history/historical-research-and-sources",
+      "permanent": true
+    },
+    {
+      "source": "/history/properties-and-deeds",
+      "destination": "/en/history/properties-and-deeds",
+      "permanent": true
+    },
+    {
+      "source": "/history/related-history",
+      "destination": "/en/history/related-history",
+      "permanent": true
+    },
+    {
+      "source": "/membership",
+      "destination": "/en/membership",
+      "permanent": true
+    },
+    {
+      "source": "/membership/enrollment",
+      "destination": "/en/membership/enrollment",
+      "permanent": true
+    },
+    {
+      "source": "/membership/renewal",
+      "destination": "/en/membership/renewal",
+      "permanent": true
+    },
+    {
+      "source": "/contact",
+      "destination": "/en/contact",
+      "permanent": true
+    },
+    {
+      "source": "/news",
+      "destination": "/en/news",
+      "permanent": true
+    },
+    {
+      "source": "/news/:slug",
+      "destination": "/en/news/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/rss.xml",
+      "destination": "/en/rss.xml",
+      "permanent": true
+    }
+  ]
+}
