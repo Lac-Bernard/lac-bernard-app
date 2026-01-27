@@ -22,7 +22,7 @@ Sections of the Archives that will be of particular interest to those researchin
 - [First Nations](/en/history/first-nations)
 - [The Fishing Club](/en/history/fishing-club)
 - [Historical Maps](/en/history/maps)
-- [Historical Aerial Photos](/en/history/ariel-photos)
+- [Historical Aerial Photos](/en/history/aerial-photos)
 - [Stories Documenting Families and Individuals](/en/history/stories-documenting-families-and-individuals)
 - [Stories Documenting History of the Lake](/en/history/stories-documenting-history-of-the-lake)
 - [Newspaper Clippings Collection of Lac Bernard](/en/history/newspaper-clippings-collection-of-lac-bernard)

@@ -44,7 +44,7 @@ const slugMap: Record<string, string> = {
 	'history/first-nations': 'histoire/premieres-nations',
 	'history/fishing-club': 'histoire/club-de-peche',
 	'history/maps': 'histoire/cartes',
-	'history/ariel-photos': 'histoire/photos-aeriennes',
+	'history/aerial-photos': 'histoire/photos-aeriennes',
 	'history/stories-documenting-families-and-individuals': 'histoire/recits-familles-et-individus',
 	'history/stories-documenting-history-of-the-lake': 'histoire/recits-histoire-du-lac',
 	'history/newspaper-clippings-collection-of-lac-bernard': 'histoire/collection-coupures-de-journaux-lac-bernard',

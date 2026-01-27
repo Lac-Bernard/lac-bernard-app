@@ -5,8 +5,8 @@ import { type Language } from '../../utils/i18n';
 const currentPath = Astro.url.pathname;
 const currentLang = (Astro.currentLocale || 'fr') as Language;
 
-const [page] = await Astro.glob('../../../content/pages/fr/history-ariel-photos.md');
-if (!page) throw new Error('Missing content/pages/fr/history-ariel-photos.md');
+const [page] = await Astro.glob('../../../content/pages/fr/history-aerial-photos.md');
+if (!page) throw new Error('Missing content/pages/fr/history-aerial-photos.md');
 
 const titles = {
   fr: 'Photos aériennes',
