@@ -7,7 +7,7 @@ description: En savoir plus sur les initiatives de protection du rivage.
   <img src="/images/Screenshot-2023-10-17-134443.jpg" alt="Protection du rivage" style="max-width: 800px; width: 100%; height: auto;" />
 </div>
 
-Les eaux peu profondes d'un lac sont cruciales pour l'habitat sain des poissons, des grenouilles et des écrevisses. Pour protéger les eaux peu profondes, veuillez noter que les quais en béton permanents et les murs de soutènement sont interdits par la loi, et seuls les quais permanents autorisés par Environnement Québec et détenant un permis municipal approprié peuvent être construits.
+Les eaux peu profondes d'un lac sont cruciales pour l'habitat sain des poissons, des grenouilles et des écrevisses. Pour protéger les eaux peu profondes, veuillez noter que les quais en béton permanents et les murs de soutènement sont interdits par la loi, et seuls les quais permanents autorisés par le ministère de l'Environnement du Québec et détenant un permis municipal approprié peuvent être construits.
 
 Les herbes, arbustes et arbres indigènes qui poussent le long des 5 premiers mètres du rivage d'un lac ou d'un cours d'eau servent de barrière excellente et essentielle pour freiner l'érosion et piéger les nutriments pendant le ruissellement. Les nutriments naturellement présents et ceux provenant des activités humaines (tels que les phosphates) peuvent causer une détérioration grave de la qualité de l'eau du lac.
 
@@ -24,4 +24,4 @@ Nous décourageons fortement les propriétaires de chalets de construire des mur
 * Encouragez la régénération du rivage
 * Fournissez une vue du lac depuis nos chalets, non pas en abattant ou en étêtant les arbres, mais plutôt en permettant aux arbres de pousser et en ne coupant que les branches qui restreignent notre vue
 
-Le règlement de contrôle n° 137-09 de la MRC des Collines de l'Outaouais établit des dispositions pour protéger les rivages des lacs et des cours d'eau. L'objectif principal du règlement de contrôle n° 137-09 est d'amener les propriétaires de rivage à re-naturaliser les rivages des lacs et des cours d'eau. Nous voulons faire notre part dans cet effort!
+Le règlement de contrôle n° 137-09 de la MRC des Collines-de-l'Outaouais établit des dispositions pour protéger les rivages des lacs et des cours d'eau. L'objectif principal du règlement de contrôle n° 137-09 est d'amener les propriétaires de rivage à re-naturaliser les rivages des lacs et des cours d'eau. Nous voulons faire notre part dans cet effort!

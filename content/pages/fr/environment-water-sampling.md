@@ -3,7 +3,7 @@ title: Programme d'échantillonnage de l'eau
 description: En savoir plus sur notre programme de surveillance de la qualité de l'eau.
 ---
 
-La qualité de l'eau du lac Bernard a été régulièrement surveillée au fil des ans, le rapport le plus ancien que nous ayons datant de 1986. Cette surveillance est une partie importante de notre campagne de gestion environnementale et depuis 2018, une équipe de bénévoles a utilisé une subvention de La Pêche pour effectuer des tests semestriels. L'échantillonnage d'aujourd'hui teste les bactéries e.coli** et le phosphore total* à 24 sites autour du lac. Les sites d'échantillonnage sont indiqués sur la carte du lac ci-dessous.
+La qualité de l'eau du lac Bernard a été régulièrement surveillée au fil des ans, le rapport le plus ancien que nous ayons datant de 1986. Cette surveillance est une partie importante de notre campagne de gestion environnementale et depuis 2018, une équipe de bénévoles a utilisé une subvention de La Pêche pour effectuer des tests semestriels. L'échantillonnage d'aujourd'hui teste les bactéries E. coli** et le phosphore total* à 24 sites autour du lac. Les sites d'échantillonnage sont indiqués sur la carte du lac ci-dessous.
 
 <img src="/images/sampling-sites-map.jpg" alt="Carte des sites d'échantillonnage" style="width: 100%; height: auto; margin: 1.5rem 0;" />
 
@@ -40,12 +40,12 @@ Enfin, le RSVL demande également que les Associations de lacs surveillent chaqu
 
 ### 2. Surveiller la qualité de l'eau à des fins récréatives
 
-Les propriétaires de chalets veulent être assurés que le lac est sûr pour la baignade et la navigation. À ce titre, des échantillons ont été prélevés par le Comité de l'environnement de l'Association du lac trois fois chaque été à 24 sites indiqués sur la carte des sites d'échantillonnage. Des échantillons ont été prélevés pour vérifier les coliformes fécaux ou e.coli, le phosphore total et la transparence. L'analyse de ces tests a été couverte grâce à une subvention environnementale de la municipalité de La Pêche, et les résultats ont été rapportés sur le site Web de l'Association du lac.
+Les propriétaires de chalets veulent être assurés que le lac est sûr pour la baignade et la navigation. À ce titre, des échantillons ont été prélevés par le Comité de l'environnement de l'Association du lac trois fois chaque été à 24 sites indiqués sur la carte des sites d'échantillonnage. Des échantillons ont été prélevés pour vérifier les coliformes fécaux ou E. coli, le phosphore total et la transparence. L'analyse de ces tests a été couverte grâce à une subvention environnementale de la municipalité de La Pêche, et les résultats ont été rapportés sur le site Web de l'Association du lac.
 
 ### 3. Surveiller les effets des sources de pollution sur la qualité de l'eau
 
-La pollution des systèmes septiques peut s'infiltrer dans l'eau où les propriétaires de chalets nagent. Pour surveiller cette pollution, l'Association du lac a vérifié les niveaux d'e.coli le long du rivage devant près de 400 chalets en 2008. En 2011, et pour les trois années suivantes, l'eau a été échantillonnée à nouveau devant un quart des propriétés sur le lac. Cet échantillonnage a été payé par l'Association du lac et rapporté sur le site Web de l'Association du lac.
+La pollution des systèmes septiques peut s'infiltrer dans l'eau où les propriétaires de chalets nagent. Pour surveiller cette pollution, l'Association du lac a vérifié les niveaux d'E. coli le long du rivage devant près de 400 chalets en 2008. En 2011, et pour les trois années suivantes, l'eau a été échantillonnée à nouveau devant un quart des propriétés sur le lac. Cet échantillonnage a été payé par l'Association du lac et rapporté sur le site Web de l'Association du lac.
 
 \* Le phosphore total (TP) au lac Bernard devrait être entre 0,00 – 0,010 milligrammes par litre (mg/l). À 0,015 mg/l et plus, les proliférations d'algues sont possibles et la croissance des mauvaises herbes augmentera.
 
-\*\* Les bactéries E. coli sont surveillées pour la baignade et non pour la qualité de l'eau potable. Le Québec classe la qualité de l'eau comme excellente lorsque les niveaux d'e. coli sont de 0-20 et toutes les activités récréatives sont permises. Les coliformes fécaux incluent e.coli ainsi que d'autres bactéries.
+\*\* Les bactéries E. coli sont surveillées pour la baignade et non pour la qualité de l'eau potable. Le Québec classe la qualité de l'eau comme excellente lorsque les niveaux d'E. coli sont de 0-20 et toutes les activités récréatives sont permises. Les coliformes fécaux incluent E. coli ainsi que d'autres bactéries.

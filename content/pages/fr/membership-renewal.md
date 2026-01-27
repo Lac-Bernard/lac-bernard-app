@@ -5,7 +5,7 @@ description: Renouvelez votre adhésion à l'Association du lac Bernard.
 
 ## Instructions de paiement
 
-Veuillez envoyer votre paiement INTERAC de 75 $, 150 $ ou 225 $ à: [interac@lacbernard.ca](mailto:interac@lacbernard.ca)
+Veuillez envoyer votre paiement Interac de 75 $, 150 $ ou 225 $ à : [interac@lacbernard.ca](mailto:interac@lacbernard.ca)
 
 Remplir le formulaire ci-dessous nous aide à garder nos dossiers à jour et à valider votre paiement.
 

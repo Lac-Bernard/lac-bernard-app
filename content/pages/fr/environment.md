@@ -38,7 +38,7 @@ Coexister avec la faune locale est une préoccupation clé pour notre Associatio
 
 ## Les défis de notre lac
 
-Le lac Bernard, avec la plupart des lacs de notre région et à travers l'Amérique du Nord, a subi des stress non seulement de nos actions immédiates dans et autour du lac, mais aussi de l'impact du réchauffement climatique et de la mobilité accrue des espèces envahissantes. Au sommet de nos préoccupations se trouve la propagation dramatique et accélérée du **myriophylle à épi eurasien** dans le lac Bernard. Cette espèce envahissante a déjà étouffé les lacs voisins et procède à le faire au lac Bernard.
+Le lac Bernard, comme la plupart des lacs de notre région et à travers l'Amérique du Nord, a subi des stress non seulement de nos actions immédiates dans et autour du lac, mais aussi de l'impact du réchauffement climatique et de la mobilité accrue des espèces envahissantes. Au sommet de nos préoccupations se trouve la propagation dramatique et accélérée du **myriophylle à épi eurasien** dans le lac Bernard. Cette espèce envahissante a déjà étouffé les lacs voisins et continue de le faire au lac Bernard.
 
 Nous portons également une attention particulière à la **qualité de l'eau** dans le lac et effectuons des tests réguliers pour nous assurer que les phosphates sont correctement contrôlés. Nous travaillons également à éduquer les propriétaires sur le maintien de leur **rivage** dans un état aussi naturel que possible car les rivages ont un impact direct sur la santé du lac.
 
@@ -64,7 +64,7 @@ Lorsque les systèmes septiques échouent, nous introduisons du phosphate et de 
 
 ### Communiquer et éduquer
 
-Nous avons appris que de nombreux nouveaux propriétaires de chalets et propriétaires ne sont pas conscients de certaines de ces meilleures pratiques. Même certains des chalets de longue durée! Donc dans l'année à venir, nous établirons une communication pour partager les meilleures pratiques pour la gestion du rivage, la gestion des mauvaises herbes et d'autres questions qui affectent l'environnement que nous partageons et aimons. **La chose la plus importante que nous puissions faire est de nous éduquer mutuellement, alors veuillez lire les règles à faire et à ne pas faire et faites-nous savoir où nous pouvons les améliorer.** 
+Nous avons appris que de nombreux nouveaux propriétaires de chalets et propriétaires ne sont pas conscients de certaines de ces meilleures pratiques. Même certains des chalets de longue date! Donc dans l'année à venir, nous établirons une communication pour partager les meilleures pratiques pour la gestion du rivage, la gestion des mauvaises herbes et d'autres questions qui affectent l'environnement que nous partageons et aimons. **La chose la plus importante que nous puissions faire est de nous éduquer mutuellement, alors veuillez lire les règles à faire et à ne pas faire et faites-nous savoir où nous pouvons les améliorer.** 
 
 > Nous aimons notre lac. Nous aimons y jouer, y nager, attraper ses poissons. Nous aimons regarder les loutres, les huards et les hérons, et entendre le chant des oiseaux. Nous aimons regarder comment il change au fil des saisons et reflète l'humeur de la météo. Être les gestionnaires efficaces de notre lac pour les générations à venir est notre façon de penser à l'environnement du lac et à notre place dans celui-ci. Nous croyons qu'un environnement lacustre sain a des avantages en soi, et parce qu'un environnement sain améliore notre capacité à profiter du lac que nous aimons.
 > 
@@ -75,7 +75,7 @@ _Il y a 100 ans, le lac Bernard regorgeait de truites de lac et de truites mouch
 ## Les efforts individuels collectivement ont un impact énorme
 
 * Si chaque chalet retirait quatre brouettes de boutures de myriophylle près du rivage, nous aurions retiré environ 160 000 livres de mauvaises herbes du lac.
-* Si chaque fois qu'un plaisancier attrapait des boutures de mauvaises herbes en traversant un tapis dense de myriophylle, il y aurait des milliers de possibilités en moins pour que les mauvaises herbes se propagent
+* Si chaque fois qu'un plaisancier attrapait des boutures de mauvaises herbes en traversant un tapis dense de myriophylle, il y aurait des milliers de possibilités en moins pour que les mauvaises herbes se propagent.
 * Si ces chalets qui ont de l'herbe jusqu'au lac, ou un sol non protégé par des plantes, des milliers de livres de sédiments et de nutriments seraient gardés hors du lac.
-* Si les chalets restants (il y en a très peu) corrigeaient leurs problèmes septiques, nous pourrions complètement priver le lac de charges nutritives et de bactéries humaines
+* Si les chalets restants (il y en a très peu) corrigeaient leurs problèmes septiques, nous pourrions complètement priver le lac de charges nutritives et de bactéries humaines.
 * Si nous nettoyons nos bateaux avant de les mettre dans l'eau, et JAMAIS déverser des espèces qui n'appartiennent pas au lac (poissons rouges, écrevisses, palourdes, moules, carpes, plantes et poissons d'aquarium, etc.), nous pourrions freiner le flux d'espèces envahissantes.

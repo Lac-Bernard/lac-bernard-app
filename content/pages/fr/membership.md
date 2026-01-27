@@ -19,11 +19,11 @@ N'importe qui peut être membre de l'Association, mais nos règlements restreign
 
 ## Méthodes de paiement
 
-La méthode de paiement la plus simple et la plus rapide est par INTERAC. Vous pouvez également payer par chèque, si vous préférez. Nous n'utilisons plus PayPal et n'utilisons pas de cartes de crédit pour le moment.
+La méthode de paiement la plus simple et la plus rapide est par virement Interac. Vous pouvez également payer par chèque, si vous préférez. Nous n'utilisons plus PayPal et n'utilisons pas de cartes de crédit pour le moment.
 
 ### Inscription et renouvellement
 
-L'inscription et le renouvellement sont faciles. Veuillez cliquer sur le bouton **Inscription** ou **Renouvellement** ci-dessous et assurez-vous de remplir le formulaire afin que nous puissions communiquer avec vous. Aussi, séparément par votre banque, veuillez vous assurer d'envoyer votre paiement par virement électronique à [interac@lacbernard.ca](mailto:interac@lacbernard.ca). L'Association ne collecte pas d'informations bancaires.
+L'inscription et le renouvellement sont faciles. Veuillez cliquer sur le bouton **Inscription** ou **Renouvellement** ci-dessous et assurez-vous de remplir le formulaire afin que nous puissions communiquer avec vous. Aussi, séparément par votre banque, veuillez vous assurer d'envoyer votre paiement par virement Interac à [interac@lacbernard.ca](mailto:interac@lacbernard.ca). L'Association ne collecte pas d'informations bancaires.
 
 Si vous préférez payer par chèque, veuillez l'envoyer à:
 
