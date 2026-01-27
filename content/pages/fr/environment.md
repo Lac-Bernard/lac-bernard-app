@@ -14,27 +14,27 @@ description: En savoir plus sur nos initiatives environnementales pour protéger
 
 ### Échantillonnage de l'eau
 
-L'Association travaille avec La Pêche et des bénévoles pour tester régulièrement notre lac pour les phosphates, les bactéries et d'autres mesures clés. [Les résultats de 2023 sont ici.](/fr/environnement/echantillonnage-eau)
+L'Association travaille avec La Pêche et des bénévoles pour tester régulièrement notre lac pour les phosphates, les bactéries et d'autres mesures clés. [Les résultats de 2023 sont ici.](/environnement/echantillonnage-eau)
 
 ### Menace du myriophylle
 
-La plus grande menace pour notre lac aujourd'hui est le myriophylle à épi eurasien. [Apprenez-en plus ici.](/fr/environnement/myriophylle)
+La plus grande menace pour notre lac aujourd'hui est le myriophylle à épi eurasien. [Apprenez-en plus ici.](/environnement/myriophylle)
 
 ### Protéger notre rivage
 
-Garder notre rivage en santé profite directement à la santé de notre lac. [Apprenez ce que vous pouvez faire ici](/fr/environnement/rivage) et vérifiez l'évaluation de votre zone du lac.
+Garder notre rivage en santé profite directement à la santé de notre lac. [Apprenez ce que vous pouvez faire ici](/environnement/rivage) et vérifiez l'évaluation de votre zone du lac.
 
 ### Protéger notre eau
 
-Le myriophylle n'est pas notre seule menace. Surveiller d'autres espèces envahissantes et savoir quoi rechercher est une partie critique du maintien de la santé de notre lac, tout aussi important que le maintien d'un système septique sûr et opérationnel. [Apprenez-en plus sur la protection de notre eau.](/fr/environnement/eau)
+Le myriophylle n'est pas notre seule menace. Surveiller d'autres espèces envahissantes et savoir quoi rechercher est une partie critique du maintien de la santé de notre lac, tout aussi important que le maintien d'un système septique sûr et opérationnel. [Apprenez-en plus sur la protection de notre eau.](/environnement/eau)
 
 ### Navigation et marqueurs de bouées critiques
 
-L'Association et son armée de bénévoles du lac ont marqué les zones critiques sur le lac. La navigation sécuritaire et le respect de ces zones marquées sont essentiels à la durabilité de notre lac. [Apprenez-en plus sur la navigation sur le lac Bernard.](/fr/environnement/navigation)
+L'Association et son armée de bénévoles du lac ont marqué les zones critiques sur le lac. La navigation sécuritaire et le respect de ces zones marquées sont essentiels à la durabilité de notre lac. [Apprenez-en plus sur la navigation sur le lac Bernard.](/environnement/navigation)
 
 ### Protéger la faune
 
-Coexister avec la faune locale est une préoccupation clé pour notre Association. [Apprenez-en plus sur la faune du lac.](/fr/environnement/faune) 
+Coexister avec la faune locale est une préoccupation clé pour notre Association. [Apprenez-en plus sur la faune du lac.](/environnement/faune) 
 
 ## Les défis de notre lac
 

@@ -13,7 +13,7 @@ president@lacbernard.ca
 
 ## Contacting Association Executives
 
-To view list of [The Executive](/about/executive).
+To view list of [The Executive](/en/about/executive).
 
 ## Committees, Volunteering, Questions and Concerns
 

@@ -25,7 +25,7 @@ Beavers have a number of protections in the province of Quebec and it's importan
 
 ### Impact on our Water Levels
 
-Beavers move around and from time to time they build lodges which become dams in our lake inlet and outlet areas. This can have a marked impact on lake water levels. The Association is keeping a close eye on water levels and what is causing them. If you see beaver lodge in those areas, please send us a note through the [Contact form](/contact) on this website. We work very closely with La Peche and the MRC on our water levels, especially when beavers are involved. We've had a lot of success with the MRC working directly with the property owner and the Association on what steps can be taken.   **It's important that you do not take any steps to remove the dam yourself… again, the dams are protected and are on private property.** 
+Beavers move around and from time to time they build lodges which become dams in our lake inlet and outlet areas. This can have a marked impact on lake water levels. The Association is keeping a close eye on water levels and what is causing them. If you see beaver lodge in those areas, please send us a note through the [Contact form](/en/contact) on this website. We work very closely with La Peche and the MRC on our water levels, especially when beavers are involved. We've had a lot of success with the MRC working directly with the property owner and the Association on what steps can be taken.   **It's important that you do not take any steps to remove the dam yourself… again, the dams are protected and are on private property.** 
 
 ### Damage to your trees
 

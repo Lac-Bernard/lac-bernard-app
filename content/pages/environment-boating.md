@@ -9,12 +9,12 @@ The Transport Canada boating safety website is: [Office of Boating Safety](https
 
 ## Shoal Marker Buoys
 
-At Lake Bernard the underwater hazards are distributed throughout the lake. Those rocks located on the main boating channels are marked by white coloured buoys that carry red and yellow reflective tape. [Click here for details.](/environment/boating/shoal-marker-buoys)
+At Lake Bernard the underwater hazards are distributed throughout the lake. Those rocks located on the main boating channels are marked by white coloured buoys that carry red and yellow reflective tape. [Click here for details.](/en/environment/boating/shoal-marker-buoys)
 
 ## Eurasian Milfoil Buoys/Markers
 
-Yellow marker buoys (yellow balls) remind boaters where to avoid Eurasian milfoil beds as much as possible. [Click here for details.](/environment/boating/milfoil-marker-buoys)
+Yellow marker buoys (yellow balls) remind boaters where to avoid Eurasian milfoil beds as much as possible. [Click here for details.](/en/environment/boating/milfoil-marker-buoys)
 
 ## Boating and Water Sports Safety
 
-This is why we are at Lac Bernard – boating, and enjoying the water and peaceful lake atmosphere. Let's be sure to share and protect that! [Click here for details.](/environment/boating/water-sports)
+This is why we are at Lac Bernard – boating, and enjoying the water and peaceful lake atmosphere. Let's be sure to share and protect that! [Click here for details.](/en/environment/boating/water-sports)

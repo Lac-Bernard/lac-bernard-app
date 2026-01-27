@@ -1,0 +1,66 @@
+---
+import Page from '../../../layouts/Page.astro';
+import { type Language } from '../../../utils/i18n';
+
+const currentPath = Astro.url.pathname;
+const currentLang = (Astro.currentLocale || 'en') as Language;
+
+const [page] = currentLang === 'fr' 
+  ? await Astro.glob('../../../../content/pages/fr/about-bylaws.md')
+  : await Astro.glob('../../../../content/pages/about-bylaws.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}about-bylaws.md`);
+
+const titles = {
+  en: 'Association Bylaws',
+  fr: 'Règlements de l\'Association',
+};
+
+const title = page.frontmatter?.title || titles[currentLang];
+const description = page.frontmatter?.description;
+---
+
+<Page title={title} description={description} content={page} section="about">
+  <div slot="extra" class="pdf-embed-container">
+    <iframe 
+      src="/documents/20220512final_bylaws.pdf" 
+      type="application/pdf"
+      class="pdf-embed"
+      title={currentLang === 'fr' ? 'Règlements de 2022' : '2022 Bylaws'}
+    >
+      <p>
+        {currentLang === 'fr' 
+          ? 'Votre navigateur ne peut pas afficher les PDF. ' 
+          : 'Your browser cannot display PDFs. '}
+        <a href="/documents/20220512final_bylaws.pdf">
+          {currentLang === 'fr' 
+            ? 'Télécharger les règlements' 
+            : 'Download the bylaws'}
+        </a>
+      </p>
+    </iframe>
+  </div>
+</Page>
+
+<style>
+  .pdf-embed-container {
+    margin-top: 2em;
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .pdf-embed {
+    width: 100%;
+    height: 800px;
+    border: none;
+    display: block;
+  }
+
+  @media (max-width: 920px) {
+    .pdf-embed {
+      height: 600px;
+    }
+  }
+</style>

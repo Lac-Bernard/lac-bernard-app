@@ -13,7 +13,7 @@ president@lacbernard.ca
 
 ## Contacter les membres du comité exécutif
 
-Pour consulter la liste du [comité exécutif](/fr/about/executive).
+Pour consulter la liste du [comité exécutif](/a-propos/comite-executif).
 
 ## Comités, bénévolat, questions et préoccupations
 

@@ -15,20 +15,20 @@ The history section aims to promote knowledge of the rich and fascinating histor
 
 ## The Archives
 
-The Archives are the official repository for the records of the Owners' and Residents' Association of Lake Bernard. It contains multiple kinds of records, including documents, photos, maps and other material, that document the rich history of our lake. [The Archives can be accessed at this link.](/about/archive)
+The Archives are the official repository for the records of the Owners' and Residents' Association of Lake Bernard. It contains multiple kinds of records, including documents, photos, maps and other material, that document the rich history of our lake. [The Archives can be accessed at this link.](/en/about/archive)
 
 Sections of the Archives that will be of particular interest to those researching the history of the lake can be accessed through the following links:
 
-- [First Nations](/history/first-nations)
-- [The Fishing Club](/history/fishing-club)
-- [Historical Maps](/history/maps)
-- [Historical Aerial Photos](/history/ariel-photos)
-- [Stories Documenting Families and Individuals](/history/stories-documenting-families-and-individuals)
-- [Stories Documenting History of the Lake](/history/stories-documenting-history-of-the-lake)
-- [Newspaper Clippings Collection of Lac Bernard](/history/newspaper-clippings-collection-of-lac-bernard)
-- [Historical Research and Sources](/history/historical-research-and-sources)
-- [Properties and Deeds](/history/properties-and-deeds)
-- [Related History](/history/related-history)
+- [First Nations](/en/history/first-nations)
+- [The Fishing Club](/en/history/fishing-club)
+- [Historical Maps](/en/history/maps)
+- [Historical Aerial Photos](/en/history/ariel-photos)
+- [Stories Documenting Families and Individuals](/en/history/stories-documenting-families-and-individuals)
+- [Stories Documenting History of the Lake](/en/history/stories-documenting-history-of-the-lake)
+- [Newspaper Clippings Collection of Lac Bernard](/en/history/newspaper-clippings-collection-of-lac-bernard)
+- [Historical Research and Sources](/en/history/historical-research-and-sources)
+- [Properties and Deeds](/en/history/properties-and-deeds)
+- [Related History](/en/history/related-history)
 
 ## Facebook History Group
 

@@ -14,4 +14,4 @@ Association Members have a voice in the affairs and priorities of the Associatio
 
 Please join us in supporting this fantastic Lac Bernard residential and cottage community. Membership is $75 per year.
 
-<a href="/membership" class="btnPrimary">Become a Member</a>
+<a href="/en/membership" class="btnPrimary">Become a Member</a>

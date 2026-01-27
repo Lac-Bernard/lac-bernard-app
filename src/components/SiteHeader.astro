@@ -2,7 +2,7 @@
 import { getAlternateLanguage, getLocalizedHref, getLocalizedPath, type Language } from '../utils/i18n';
 
 const currentPath = Astro.url.pathname;
-const currentLang = (Astro.currentLocale || 'en') as Language;
+const currentLang = (Astro.currentLocale || 'fr') as Language;
 const alternateLang = getAlternateLanguage(currentLang);
 
 // Get the path without locale prefix for switching

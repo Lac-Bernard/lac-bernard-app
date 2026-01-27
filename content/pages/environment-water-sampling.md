@@ -15,14 +15,14 @@ The water quality at Lake Bernard has been regularly monitored over the years wi
 
 ### Earlier Results
 
-- [2023](/environment/water-sampling/2023)
-- [2012](/environment/water-sampling/2012)
-- [2011](/environment/water-sampling/2011)
-- [2010](/environment/water-sampling/2010)
-- [2009](/environment/water-sampling/2009)
-- [2008](/environment/water-sampling/2008)
-- [2007](/environment/water-sampling/2007)
-- [1986](/environment/water-sampling/1986)
+- [2023](/en/environment/water-sampling/2023)
+- [2012](/en/environment/water-sampling/2012)
+- [2011](/en/environment/water-sampling/2011)
+- [2010](/en/environment/water-sampling/2010)
+- [2009](/en/environment/water-sampling/2009)
+- [2008](/en/environment/water-sampling/2008)
+- [2007](/en/environment/water-sampling/2007)
+- [1986](/en/environment/water-sampling/1986)
 
 ## Background on Water Sampling and Three key Objectives
 

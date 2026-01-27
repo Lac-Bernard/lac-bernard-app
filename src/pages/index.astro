@@ -7,13 +7,11 @@ import { getLocalizedHref, type Language } from '../utils/i18n';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../components/FormattedDate.astro';
 
-const currentLang = (Astro.currentLocale || 'en') as Language;
+const currentLang = (Astro.currentLocale || 'fr') as Language;
 
-// Load content based on language - Astro.glob requires literal strings
-const [home] = currentLang === 'fr' 
-  ? await Astro.glob('../../content/pages/fr/home.md')
-  : await Astro.glob('../../content/pages/home.md');
-if (!home) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}home.md`);
+// Load content based on language
+const [home] = await Astro.glob('../../content/pages/fr/home.md');
+if (!home) throw new Error('Missing content/pages/fr/home.md');
 
 const { Content, frontmatter } = home;
 
@@ -24,68 +22,10 @@ const latestPost = allPosts
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())[0];
 
 const titles = {
-  en: {
-    site: 'Lac Bernard Association',
-    hero: frontmatter?.heroTitle ?? 'Welcome to the Lac Bernard Association',
-    subtitle: frontmatter?.heroSubtitle ?? '',
-    kicker: 'Lac Bernard • Wakefield, Quebec',
-    joinRenew: 'Join or Renew Membership',
-    learnMore: 'Learn More',
-    becomeMember: 'Become a Member Today',
-    whatWeDo: 'What we do',
-    whatWeDoDesc: 'Our dedicated volunteers work year-round to preserve the natural beauty and health of Lac Bernard for future generations.',
-    safeguard: 'Safeguard the Environment',
-    safeguardDesc: 'Regular water testing, invasive species control, and shoreline protection initiatives to maintain our lake\'s pristine condition.',
-    build: 'Build Community',
-    buildDesc: 'Organizing events, coordinating volunteers, and providing seasonal updates to keep our community connected and informed.',
-    promote: 'Promote Safety',
-    promoteDesc: 'Maintaining navigation buoys, communicating with municipalities, and ensuring safe recreational activities on the lake.',
-    joinRenewTitle: 'Join or Renew',
-    joinRenewDesc: 'Support the lake for just $75/year. Multi-year discounts available for long-term supporters.',
-    joinNow: 'Join Now',
-    milfoilTitle: 'Milfoil & Environment',
-    milfoilDesc: '12% of the lake is now affected by invasive milfoil. Learn what you can do to help protect our waters.',
-    aboutMilfoil: 'About Milfoil',
-    volunteer: 'Volunteer',
-    eventsTitle: 'Events & Regatta',
-    eventsDesc: 'Join us for annual celebrations, the famous regatta, and social events that bring our community together.',
-    seeEvents: 'See Events',
-    impact: 'Our Impact',
-    years: 'Years of Service',
-    members: 'Active Members',
-    events: 'Annual Events',
-    volunteerRun: 'Volunteer Run',
-    landAck: 'Land Acknowledgment',
-    landAckText: 'The Association would like to acknowledge that the land on which we gather is the traditional unceded territory of the Anishinaabeg People.',
-    latestNews: 'Latest News',
-    readMore: 'Read more',
-  },
   fr: {
     site: 'Association du lac Bernard',
     hero: frontmatter?.heroTitle ?? 'Bienvenue à l\'Association du lac Bernard',
     subtitle: frontmatter?.heroSubtitle ?? '',
-    kicker: 'Lac Bernard • Wakefield, Québec',
-    joinRenew: 'Adhérer ou renouveler',
-    learnMore: 'En savoir plus',
-    becomeMember: 'Devenez membre aujourd\'hui',
-    whatWeDo: 'Ce que nous faisons',
-    whatWeDoDesc: 'Nos bénévoles dévoués travaillent toute l\'année pour préserver la beauté naturelle et la santé du lac Bernard pour les générations futures.',
-    safeguard: 'Protéger l\'environnement',
-    safeguardDesc: 'Tests d\'eau réguliers, contrôle des espèces envahissantes et initiatives de protection du rivage pour maintenir l\'état vierge de notre lac.',
-    build: 'Construire la communauté',
-    buildDesc: 'Organiser des événements, coordonner les bénévoles et fournir des mises à jour saisonnières pour garder notre communauté connectée et informée.',
-    promote: 'Promouvoir la sécurité',
-    promoteDesc: 'Maintenir les bouées de navigation, communiquer avec les municipalités et assurer des activités récréatives sécuritaires sur le lac.',
-    joinRenewTitle: 'Adhérer ou renouveler',
-    joinRenewDesc: 'Soutenez le lac pour seulement 75 $/an. Des rabais pluriannuels sont disponibles pour les partisans à long terme.',
-    joinNow: 'Adhérer maintenant',
-    milfoilTitle: 'Myriophylle et environnement',
-    milfoilDesc: '12 % du lac est maintenant affecté par le myriophylle envahissant. Découvrez ce que vous pouvez faire pour aider à protéger nos eaux.',
-    aboutMilfoil: 'À propos du myriophylle',
-    volunteer: 'Bénévole',
-    eventsTitle: 'Événements et régate',
-    eventsDesc: 'Rejoignez-nous pour les célébrations annuelles, la célèbre régate et les événements sociaux qui rassemblent notre communauté.',
-    seeEvents: 'Voir les événements',
     impact: 'Notre impact',
     years: 'Années de service',
     members: 'Membres actifs',
@@ -111,7 +51,7 @@ const heroSubtitle = t.subtitle;
     <title>{title}</title>
     <meta
       name="description"
-      content="Join the Lac Bernard Association - a volunteer-run organization dedicated to protecting our lake, building community, and promoting safety since 1979."
+      content="Rejoignez l'Association du lac Bernard - une organisation gérée par des bénévoles dédiée à la protection de notre lac, à la construction de la communauté et à la promotion de la sécurité depuis 1979."
     />
   </head>
 
@@ -119,7 +59,7 @@ const heroSubtitle = t.subtitle;
     <SiteHeader />
 
     <main id="main-content">
-      <section class="hero" aria-label="Homepage hero">
+      <section class="hero" aria-label="Hero de la page d'accueil">
         <div class="container heroInner">
           <div class="heroCopy">
             <h1>{heroTitle}</h1>
@@ -213,14 +153,6 @@ const heroSubtitle = t.subtitle;
       
       .heroCopy {
         color: white;
-      }
-      
-      .kicker {
-        margin: 0 0 12px;
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 16px;
-        letter-spacing: .14em;
-        text-transform: uppercase;
       }
       
       .hero h1 {

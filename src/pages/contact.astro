@@ -3,15 +3,12 @@ import Page from '../layouts/Page.astro';
 import { type Language } from '../utils/i18n';
 
 const currentPath = Astro.url.pathname;
-const currentLang = (Astro.currentLocale || 'en') as Language;
+const currentLang = (Astro.currentLocale || 'fr') as Language;
 
-const [page] = currentLang === 'fr' 
-  ? await Astro.glob('../../content/pages/fr/contact.md')
-  : await Astro.glob('../../content/pages/contact.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}contact.md`);
+const [page] = await Astro.glob('../../content/pages/fr/contact.md');
+if (!page) throw new Error('Missing content/pages/fr/contact.md');
 
 const titles = {
-  en: 'Contact Us',
   fr: 'Contactez-nous',
 };
 

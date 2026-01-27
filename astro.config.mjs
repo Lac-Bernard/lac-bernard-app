@@ -13,8 +13,8 @@ export default defineConfig({
 	adapter: vercel(),
 	integrations: [mdx(), sitemap()],
 	i18n: {
-		defaultLocale: 'en',
-		locales: ['en', 'fr'],
+		defaultLocale: 'fr',
+		locales: ['fr', 'en'],
 		routing: {
 			prefixDefaultLocale: false,
 		},

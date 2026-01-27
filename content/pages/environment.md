@@ -14,27 +14,27 @@ description: Learn about our environmental protection initiatives and programs.
 
 ### Water Sampling
 
-The Association works with La Peche and volunteers to regularly test our lake for phosphates, bacteria and other key measures. [The results from 2023 are here.](/environment/water-sampling)
+The Association works with La Peche and volunteers to regularly test our lake for phosphates, bacteria and other key measures. [The results from 2023 are here.](/en/environment/water-sampling)
 
 ### Milfoil Threat
 
-The biggest threat to our lake today is Eurasian Milfoil. [Learn more about that here.](/environment/milfoil)
+The biggest threat to our lake today is Eurasian Milfoil. [Learn more about that here.](/en/environment/milfoil)
 
 ### Protecting our Shoreline
 
-Keeping our Shoreline healthy directly benefits the health of our lake. [Learn what you can do about it here](/environment/shoreline), and check the assessment of your area of the lake.
+Keeping our Shoreline healthy directly benefits the health of our lake. [Learn what you can do about it here](/en/environment/shoreline), and check the assessment of your area of the lake.
 
 ### Protecting our Water
 
-Milfoil isn't our only threat. Guarding for other invasive species and knowing what to look for is a critical part of keeping our lake healthy, just as important as maintaining a safe and operational septic system. [Learn more about protecting our water.](/environment/water)
+Milfoil isn't our only threat. Guarding for other invasive species and knowing what to look for is a critical part of keeping our lake healthy, just as important as maintaining a safe and operational septic system. [Learn more about protecting our water.](/en/environment/water)
 
 ### Boating and Critical Buoy Markers
 
-The Association and its army of lake volunteers have marked critical areas on the lake. Safe boating and respecting these marked areas is critical to the sustainability of our lake. [Learn more about boating on Lac Bernard.](/environment/boating)
+The Association and its army of lake volunteers have marked critical areas on the lake. Safe boating and respecting these marked areas is critical to the sustainability of our lake. [Learn more about boating on Lac Bernard.](/en/environment/boating)
 
 ### Protecting Wildlife
 
-Co-existing with local wildlife is a key concern for our Association. [Learn more about lake wildlife.](/environment/wildlife) 
+Co-existing with local wildlife is a key concern for our Association. [Learn more about lake wildlife.](/en/environment/wildlife) 
 
 ## Our Lake's Challenges
 

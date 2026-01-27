@@ -9,7 +9,7 @@ Sur cette page, vous trouverez des informations concernant les activités parrai
 
 ## Régate annuelle
 
-[Découvrez de superbes photos de la Régate 2023](/fr/communaute/regate)
+[Découvrez de superbes photos de la Régate 2023](/communaute/regate)
 
 Le samedi ou le dimanche de la fin de semaine de la fête du Travail en août, amis et familles se rassemblent à Regatta Bay pour un après-midi amusant de compétitions aquatiques amicales adaptées à tous les âges. Un BBQ fantastique, de superbes prix de tous types vous attendent. Les produits du lac Bernard sont en vente, lorsqu'ils sont disponibles, et notre bibliothèque mobile de livres est également là! Peu importe l'âge, exposez votre prouesse athlétique cachée à travers les diverses courses de natation, canoë, planche à eau ou kayak. Vous pouvez également être spectateur ou supporter pour susciter l'excitation. La Régate annuelle est notre événement estival phare, organisé par des bénévoles et des donateurs dévoués. Cet événement est toujours un succès annuel!
 
@@ -25,4 +25,4 @@ La Journée des sports nautiques du lac Bernard est organisée par les résident
 
 L'association du lac ne serait pas active sans l'engagement de ses membres. Nous saluons tous les membres qui organisent ou soutiennent des activités qui aident à construire une meilleure communauté du lac pour nous tous!
 
-## [Histoire de notre lac](/fr/histoire)
+## [Histoire de notre lac](/histoire)

@@ -18,7 +18,7 @@ securitepublique@mrcdescollines.com
 **Police Liaison**
 
 * Most break-ins occur at cottages from Sunday evening to Tuesday and criminals take their time because they know people will not be returning during this time frame.
-* Permanent residents are important as is [neighbourhood watch](/community/security/neighbourhood-watch) as deterrents for property crime.
+* Permanent residents are important as is [neighbourhood watch](/en/community/security/neighbourhood-watch) as deterrents for property crime.
 
 Constable Fournel stressed the importance of keeping the police informed of strangers and/or unusual events in our area. This helps the police to establish trends and links to other crimes.  
 He asked members to call the police if they see any criminal or unusual behaviour. Constable Fournel outlined other MRC police services available to members:

@@ -34,8 +34,8 @@ If you prefer to pay by cheque, please send it to:
 You can also contact us directly by email at: [membership@lacbernard.ca](mailto:membership@lacbernard.ca) 
 
 <div class="membership-actions">
-<a href="/membership/enrollment" class="btnPrimary">Enroll As A New Member</a>
-<a href="/membership/renewal" class="btnPrimary">Renew Your Membership</a>
+<a href="/en/membership/enrollment" class="btnPrimary">Enroll As A New Member</a>
+<a href="/en/membership/renewal" class="btnPrimary">Renew Your Membership</a>
 </div>
 
 ## Why Join?
@@ -72,5 +72,5 @@ Your membership dues go directly to our advocacy and stewardship of the lake whi
 - Operating www.lacbernard.ca – the bilingual Association website that provides a source for information regarding the lake. This includes Association activities, water quality reports, news, and a rich trove of archives and historical records and oral stories from our lake
 
 <div style="text-align: center; margin: 32px 0;">
-<a href="/membership/enrollment" class="btnPrimary">Enroll Today</a>
+<a href="/en/membership/enrollment" class="btnPrimary">Enroll Today</a>
 </div>

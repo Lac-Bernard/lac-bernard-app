@@ -15,14 +15,14 @@ La qualité de l'eau du lac Bernard a été régulièrement surveillée au fil d
 
 ### Résultats antérieurs
 
-- [2023](/fr/environnement/echantillonnage-eau/2023)
-- [2012](/fr/environnement/echantillonnage-eau/2012)
-- [2011](/fr/environnement/echantillonnage-eau/2011)
-- [2010](/fr/environnement/echantillonnage-eau/2010)
-- [2009](/fr/environnement/echantillonnage-eau/2009)
-- [2008](/fr/environnement/echantillonnage-eau/2008)
-- [2007](/fr/environnement/echantillonnage-eau/2007)
-- [1986](/fr/environnement/echantillonnage-eau/1986)
+- [2023](/environnement/echantillonnage-eau/2023)
+- [2012](/environnement/echantillonnage-eau/2012)
+- [2011](/environnement/echantillonnage-eau/2011)
+- [2010](/environnement/echantillonnage-eau/2010)
+- [2009](/environnement/echantillonnage-eau/2009)
+- [2008](/environnement/echantillonnage-eau/2008)
+- [2007](/environnement/echantillonnage-eau/2007)
+- [1986](/environnement/echantillonnage-eau/1986)
 
 ## Contexte sur l'échantillonnage de l'eau et trois objectifs clés
 

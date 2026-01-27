@@ -5,7 +5,7 @@ description: Learn about the Lac Bernard Association, our mission, and our histo
 
 The Owners' and Residents' Association of Lake Bernard is a non-profit corporation created under Part 3 of the Quebec Companies Act. It was incorporated in 1979 as a successor to the Lac Bernard Cottager's Association which started back in the 1930's. Today we have an average membership of about 250-300 property owners, and even some enthusiastic non-residents who care about our lake! We work across our community and with the municipalities of La Peche and Low, as well as the MRC Des Collines-de-l'Outaouais to further the safe development and environmental protection of our beautiful lake.
 
-[Our history is a rich one which you can check out on this site.](/history)
+[Our history is a rich one which you can check out on this site.](/en/history)
 
 ## Our Priorities
 
@@ -21,15 +21,15 @@ The Association is governed by a **Board of Directors**, elected at the annual g
 
 ### Association Bylaws
 
-The Association is governed under the laws of the Province of Quebec through Association By-laws that were last updated in 2021. [Association Bylaws can be found here.](/about/bylaws)
+The Association is governed under the laws of the Province of Quebec through Association By-laws that were last updated in 2021. [Association Bylaws can be found here.](/en/about/bylaws)
 
 ### Recent Business Records
 
-The Association maintains minutes of both Board of Director meetings as well as the Annual General Meeting and a Fall update to Members. The most recent 2 years of minutes are located here, whereas minutes dating from the current year back to 1950 can be found in the Association Archives. [Recent business records such as meeting minutes can be found here.](/about/business-records)
+The Association maintains minutes of both Board of Director meetings as well as the Annual General Meeting and a Fall update to Members. The most recent 2 years of minutes are located here, whereas minutes dating from the current year back to 1950 can be found in the Association Archives. [Recent business records such as meeting minutes can be found here.](/en/about/business-records)
 
 ### The Archives
 
-You can explore the rich history of our lake through the Archives where you can access the multiple kinds of records, including documents, photos, maps and other material, documenting the history of Lac Bernard and its community. The Archives are also the official repository for the business records of the Owners' and Residents' Association of Lac Bernard. [The Archives can be found here.](/about/archive)
+You can explore the rich history of our lake through the Archives where you can access the multiple kinds of records, including documents, photos, maps and other material, documenting the history of Lac Bernard and its community. The Archives are also the official repository for the business records of the Owners' and Residents' Association of Lac Bernard. [The Archives can be found here.](/en/about/archive)
 
 ## Membership is Important but Volunteering is Too!
 
@@ -40,7 +40,7 @@ The Association is made up of a team of volunteers who work to preserve the ongo
 - History and Archives
 - Lake Navigation
 
-The Association is always in search of new ideas as well as new volunteers. You can make a difference by joining a committee and getting involved in your lake community! [Contact us and we'll help you get started.](/contact)
+The Association is always in search of new ideas as well as new volunteers. You can make a difference by joining a committee and getting involved in your lake community! [Contact us and we'll help you get started.](/en/contact)
 
 Along with becoming a member or renewing your membership, this site provides information on our activities, upcoming events and what our main challenges are today and what we are doing about them. It is also a channel for communication. 
 

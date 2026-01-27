@@ -1,0 +1,45 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import BlogPost from '../../../layouts/BlogPost.astro';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+	return posts.map((post) => ({
+		params: { slug: post.id },
+	}));
+}
+
+// Get the slug from params and look up the post
+const slug = Astro.params.slug;
+if (!slug) {
+	throw new Error('Slug parameter is missing');
+}
+
+const posts = await getCollection('blog');
+const post = posts.find((p) => p.id === slug);
+
+if (!post) {
+	throw new Error(`Post not found for slug: ${slug}`);
+}
+
+if (!post.data) {
+	throw new Error(`Post data is missing for post: ${post.id}`);
+}
+
+if (!post.data.pubDate) {
+	throw new Error(`pubDate is missing for post: ${post.id}. Available keys: ${Object.keys(post.data).join(', ')}`);
+}
+
+const { Content } = await render(post);
+---
+
+<BlogPost 
+	title={post.data.title}
+	description={post.data.description}
+	pubDate={post.data.pubDate}
+	updatedDate={post.data.updatedDate}
+	heroImage={post.data.heroImage}
+	currentPostId={post.id}
+>
+	<Content />
+</BlogPost>

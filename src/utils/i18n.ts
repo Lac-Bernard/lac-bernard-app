@@ -124,10 +124,10 @@ function translatePath(pathWithoutLocale: string, fromLang: Language, toLang: La
 export function getLanguageFromPath(pathname: string): Language {
 	if (pathHasLocale(pathname)) {
 		const locale = getLocaleByPath(pathname);
-		return (locale || 'en') as Language;
+		return (locale || 'fr') as Language;
 	}
-	// If no locale in path, it's the default locale (en)
-	return 'en';
+	// If no locale in path, it's the default locale (fr)
+	return 'fr';
 }
 
 export function getAlternateLanguage(currentLang: Language): Language {
@@ -139,16 +139,16 @@ export function getLocalizedPath(pathname: string, lang: Language): string {
 	let normalizedPath = pathname.startsWith('/') ? pathname : `/${pathname}`;
 	
 	// Detect the source language from the path
-	let sourceLang: Language = 'en';
+	let sourceLang: Language = 'fr';
 	let pathWithoutLocale = normalizedPath;
 	
 	// Check if path has a locale prefix
-	if (normalizedPath.startsWith('/fr/') || normalizedPath === '/fr') {
-		sourceLang = 'fr';
-		pathWithoutLocale = normalizedPath.replace(/^\/fr(\/|$)/, '/');
-	} else if (normalizedPath.startsWith('/en/') || normalizedPath === '/en') {
+	if (normalizedPath.startsWith('/en/') || normalizedPath === '/en') {
 		sourceLang = 'en';
 		pathWithoutLocale = normalizedPath.replace(/^\/en(\/|$)/, '/');
+	} else if (normalizedPath.startsWith('/fr/') || normalizedPath === '/fr') {
+		sourceLang = 'fr';
+		pathWithoutLocale = normalizedPath.replace(/^\/fr(\/|$)/, '/');
 	}
 	
 	// Normalize: remove double slashes and ensure it starts with /
@@ -158,17 +158,17 @@ export function getLocalizedPath(pathname: string, lang: Language): string {
 	}
 	
 	// If no locale prefix was detected, try to detect the language from the slug itself
-	if (sourceLang === 'en' && pathWithoutLocale !== '/') {
+	if (sourceLang === 'fr' && pathWithoutLocale !== '/') {
 		const cleanPath = pathWithoutLocale.replace(/^\//, '');
-		// Check if this is a French slug (exists in reverse map)
-		// Try full path first, then check if any segment is French
-		if (reverseSlugMap[cleanPath]) {
-			sourceLang = 'fr';
+		// Check if this is an English slug (exists in slug map)
+		// Try full path first, then check if any segment is English
+		if (slugMap[cleanPath]) {
+			sourceLang = 'en';
 		} else {
-			// Check if the first segment is a French slug
+			// Check if the first segment is an English slug
 			const firstSegment = cleanPath.split('/')[0];
-			if (reverseSlugMap[firstSegment]) {
-				sourceLang = 'fr';
+			if (slugMap[firstSegment]) {
+				sourceLang = 'en';
 			}
 		}
 	}
@@ -178,13 +178,13 @@ export function getLocalizedPath(pathname: string, lang: Language): string {
 		pathWithoutLocale = translatePath(pathWithoutLocale, sourceLang, lang);
 	}
 	
-	// If default locale (en) and prefixDefaultLocale is false, return path as-is
-	if (lang === 'en') {
+	// If default locale (fr) and prefixDefaultLocale is false, return path as-is
+	if (lang === 'fr') {
 		return pathWithoutLocale;
 	}
 	
 	// For non-default locale, add prefix
-	// Handle root path specially - return /fr instead of /fr/
+	// Handle root path specially - return /en instead of /en/
 	if (pathWithoutLocale === '/') {
 		return `/${lang}`;
 	}
