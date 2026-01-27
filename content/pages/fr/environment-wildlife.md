@@ -33,7 +33,7 @@ Si vous êtes préoccupé par les castors abattant des arbres qui peuvent endomm
 
 ### Retrait des castors
 
-En termes très simples, vous avez besoin d'un permis de la MRC des Collines. Ils vous guideront à partir de là. Les informations sur l'obtention d'un permis peuvent être trouvées sur le [site Web de la MRC](https://www.mrcdescollines.qc.ca). 
+En termes très simples, vous avez besoin d'un permis de la MRC des Collines. Ils vous guideront à partir de là. Les informations sur l'obtention d'un permis peuvent être trouvées sur le [site Web de la MRC](https://mrcdescollinesdeloutaouais.qc.ca). 
 
 # Le Huard commun
 

@@ -33,7 +33,7 @@ If you're concerned about beavers felling trees which may damage your property, 
 
 ### Removal of Beavers
 
-In very simple terms, you need a permit from the MRC des Collines. They will guide you from there. Information on getting a permit can be found on the [MRC website](https://www.mrcdescollines.qc.ca). 
+In very simple terms, you need a permit from the MRC des Collines. They will guide you from there. Information on getting a permit can be found on the [MRC website](https://mrcdescollinesdeloutaouais.qc.ca/en/). 
 
 # The Common Loon
 
