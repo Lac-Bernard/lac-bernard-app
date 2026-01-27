@@ -2,10 +2,15 @@
 import { type Language } from '../utils/i18n';
 
 const currentLang = (Astro.currentLocale || 'en') as Language;
+
+const footerText = {
+  en: `© ${new Date().getFullYear()} Owners' and Residents' Association of Lac Bernard.`,
+  fr: `© ${new Date().getFullYear()} Association des propriétaires et résidents du Lac Bernard.`,
+};
 ---
 
 <footer class="footer">
   <div class="container footerInner">
-    <div class="muted">© {new Date().getFullYear()} Owners' and Residents' Association of Lac Bernard.</div>
+    <div class="muted">{footerText[currentLang]}</div>
   </div>
 </footer>
