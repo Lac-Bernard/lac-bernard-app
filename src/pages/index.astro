@@ -18,7 +18,7 @@ const { Content, frontmatter } = home;
 // Get latest blog post (French version - ends with -fr)
 const allPosts = await getCollection('blog');
 const latestPost = allPosts
-  .filter(post => post.id === 'july-2025-update-fr')
+  .filter(post => post.id === 'winter-2026-newsletter-fr')
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())[0];
 
 const titles = {
