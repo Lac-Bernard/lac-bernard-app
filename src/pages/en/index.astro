@@ -17,10 +17,10 @@ if (!home) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/'
 
 const { Content, frontmatter } = home;
 
-// Get latest blog post (English version - doesn't end with -fr)
+// Get latest blog post by pubDate (English version - doesn't end with -fr)
 const allPosts = await getCollection('blog');
 const latestPost = allPosts
-  .filter(post => post.id === 'winter-2026-newsletter')
+  .filter(post => !post.id.endsWith('-fr'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())[0];
 
 const titles = {
