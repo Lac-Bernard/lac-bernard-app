@@ -1,30 +1,11 @@
 ---
 import Page from '../../../layouts/Page.astro';
-import { type Language } from '../../../utils/i18n';
 
-const currentPath = Astro.url.pathname;
-const currentLang = (Astro.currentLocale || 'en') as Language;
+const [page] = await Astro.glob('../../../../content/pages/about-bylaws.md');
+if (!page) throw new Error('Missing content/pages/about-bylaws.md');
 
-const [page] = currentLang === 'fr' 
-  ? await Astro.glob('../../../../content/pages/fr/about-bylaws.md')
-  : await Astro.glob('../../../../content/pages/about-bylaws.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}about-bylaws.md`);
-
-const titles = {
-  en: 'Association Bylaws',
-  fr: 'Règlements de l\'Association',
-};
-
-const title = page.frontmatter?.title || titles[currentLang];
+const title = page.frontmatter?.title || 'Association Bylaws';
 const description = page.frontmatter?.description;
-
-const pdfFallbackText = currentLang === 'fr' 
-  ? 'Votre navigateur ne peut pas afficher les PDF. ' 
-  : 'Your browser cannot display PDFs. ';
-const pdfDownloadText = currentLang === 'fr' 
-  ? 'Télécharger les règlements' 
-  : 'Download the bylaws';
-const pdfTitle = currentLang === 'fr' ? 'Règlements de 2025' : '2025 Bylaws';
 ---
 
 <Page title={title} description={description} content={page} section="about">
@@ -33,12 +14,12 @@ const pdfTitle = currentLang === 'fr' ? 'Règlements de 2025' : '2025 Bylaws';
       src="/documents/2025-05-21-bylaws.pdf" 
       type="application/pdf"
       class="pdf-embed"
-      title={pdfTitle}
+      title="2025 Bylaws"
     >
       <p>
-        {pdfFallbackText}
+        Your browser cannot display PDFs. 
         <a href="/documents/2025-05-21-bylaws.pdf">
-          {pdfDownloadText}
+          Download the bylaws
         </a>
       </p>
     </iframe>
