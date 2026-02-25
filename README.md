@@ -1,6 +1,6 @@
 # Lac Bernard Association Website
 
-A modern, content-managed website built with Astro and TinaCMS for the Lac Bernard Association.
+A bilingual (French/English) website built with Astro and TinaCMS for the Lac Bernard Association.
 
 ## 🚀 Tech Stack
 
@@ -12,10 +12,11 @@ A modern, content-managed website built with Astro and TinaCMS for the Lac Berna
 
 ## ✨ Features
 
+- ✅ **Bilingual Support** - Full French and English versions of all pages
 - ✅ **Content Management** - Edit content directly in the browser with TinaCMS
-- ✅ **Blog System** - Full-featured blog with Markdown and MDX support
+- ✅ **News/Blog System** - Full-featured news section with Markdown and MDX support
 - ✅ **SEO Optimized** - Canonical URLs, OpenGraph data, and sitemap support
-- ✅ **RSS Feed** - Automatic RSS feed generation for blog posts
+- ✅ **RSS Feed** - Automatic RSS feed generation for news posts
 - ✅ **Performance** - Optimized for 100/100 Lighthouse scores
 - ✅ **Type Safety** - Type-checked content collections with Zod schemas
 - ✅ **Server-Side Rendering** - Dynamic content with Astro's SSR capabilities
@@ -70,17 +71,28 @@ A modern, content-managed website built with Astro and TinaCMS for the Lac Berna
 
 ```
 ├── public/                 # Static assets (images, fonts, etc.)
-│   ├── admin/             # TinaCMS admin interface (generated)
 │   └── fonts/             # Custom fonts
-├── content/               # TinaCMS-managed content
-│   └── pages/            # Page content (Markdown)
 ├── src/
 │   ├── assets/           # Image assets
-│   ├── components/       # Astro components
+│   ├── components/       # Astro components (BaseHead, Header, Footer, etc.)
 │   ├── content/          # Astro content collections
-│   │   └── blog/        # Blog posts (Markdown/MDX)
+│   │   └── blog/        # News posts (Markdown/MDX) - bilingual
 │   ├── layouts/          # Page layouts
-│   ├── pages/            # Astro pages and API routes
+│   ├── pages/            # Astro pages (French at root)
+│   │   ├── en/          # English pages
+│   │   │   ├── about/       # About section
+│   │   │   ├── community/   # Community & security
+│   │   │   ├── environment/ # Environment & water sampling
+│   │   │   ├── history/     # Lake history
+│   │   │   ├── membership/  # Membership enrollment/renewal
+│   │   │   └── news/        # News articles
+│   │   ├── a-propos/        # À propos (French about)
+│   │   ├── adhesion/        # Adhésion (French membership)
+│   │   ├── communaute/      # Communauté (French community)
+│   │   ├── environnement/   # Environnement (French)
+│   │   ├── histoire/        # Histoire (French history)
+│   │   ├── news/            # Nouvelles (French news)
+│   │   └── api/             # API routes
 │   └── styles/           # Global styles
 ├── tina/                 # TinaCMS configuration
 │   └── config.ts         # CMS schema and settings
@@ -96,17 +108,16 @@ A modern, content-managed website built with Astro and TinaCMS for the Lac Berna
 1. Start the dev server: `npm run dev`
 2. Navigate to `http://localhost:4321/admin`
 3. Log in with your TinaCMS credentials
-4. Edit pages and blog posts directly in the browser
+4. Edit pages and news posts directly in the browser
 5. Changes are saved to your Git repository
 
 ### Content Collections
 
-- **Blog Posts** (`src/content/blog/`) - Blog articles with frontmatter (title, description, dates, hero images)
-- **Pages** (`content/pages/`) - Static pages managed through TinaCMS
+- **News Posts** (`src/content/blog/`) - News articles with frontmatter (title, description, dates, hero images). Create separate files for each language (e.g., `winter-2026-newsletter.md` and `winter-2026-newsletter-fr.md`).
 
-### Adding New Blog Posts
+### Adding New News Posts
 
-Blog posts can be added either:
+News posts can be added either:
 - Through the TinaCMS admin interface
 - Manually by creating `.md` or `.mdx` files in `src/content/blog/`
 
@@ -120,6 +131,12 @@ updatedDate: 2024-01-02  # optional
 heroImage: ./path/to/image.jpg  # optional
 ---
 ```
+
+### Bilingual Content
+
+- French pages are at the root (`/`, `/a-propos`, `/environnement`, etc.)
+- English pages are under `/en/` (`/en/`, `/en/about`, `/en/environment`, etc.)
+- News posts use a `-fr` suffix convention for French versions
 
 ## 🚢 Deployment
 
@@ -168,6 +185,14 @@ Edit `src/content.config.ts` to:
 - [TinaCMS Documentation](https://tina.io/docs)
 - [MDX Documentation](https://mdxjs.com)
 
-## 📄 License
+## 🌐 Site Sections
 
-[Add your license here]
+The site includes the following main sections (available in both French and English):
+
+- **About** - Association information, bylaws, executive committee, committees, archives
+- **Membership** - Enrollment and renewal information
+- **Environment** - Water quality, shoreline protection, wildlife, boating, milfoil management
+- **History** - Lake history, maps, photos, fishing club, First Nations history
+- **Community** - Security information, emergency contacts, regatta
+- **News** - Association news and updates
+- **Contact** - Contact information
