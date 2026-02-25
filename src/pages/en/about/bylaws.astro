@@ -24,20 +24,20 @@ const pdfFallbackText = currentLang === 'fr'
 const pdfDownloadText = currentLang === 'fr' 
   ? 'Télécharger les règlements' 
   : 'Download the bylaws';
-const pdfTitle = currentLang === 'fr' ? 'Règlements de 2022' : '2022 Bylaws';
+const pdfTitle = currentLang === 'fr' ? 'Règlements de 2025' : '2025 Bylaws';
 ---
 
 <Page title={title} description={description} content={page} section="about">
   <div slot="extra" class="pdf-embed-container">
     <iframe 
-      src="/documents/20220512final_bylaws.pdf" 
+      src="/documents/2025-05-21-bylaws.pdf" 
       type="application/pdf"
       class="pdf-embed"
       title={pdfTitle}
     >
       <p>
         {pdfFallbackText}
-        <a href="/documents/20220512final_bylaws.pdf">
+        <a href="/documents/2025-05-21-bylaws.pdf">
           {pdfDownloadText}
         </a>
       </p>
