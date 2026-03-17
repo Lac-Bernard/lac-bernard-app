@@ -15,11 +15,12 @@ if (!home) throw new Error('Missing content/pages/fr/home.md');
 
 const { Content, frontmatter } = home;
 
-// Get latest blog post by pubDate (French version - ends with -fr)
+// Get latest 3 blog posts by pubDate (French version - ends with -fr)
 const allPosts = await getCollection('blog');
-const latestPost = allPosts
+const latestPosts = allPosts
   .filter(post => post.id.endsWith('-fr'))
-  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())[0];
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 3);
 
 const titles = {
   fr: {
@@ -74,24 +75,26 @@ const heroSubtitle = t.subtitle;
         </div>
       </section>
 
-      {latestPost && (
+      {latestPosts.length > 0 && (
         <section class="section">
           <div class="container">
             <h2>{t.latestNews}</h2>
             <ul class="newsList">
-              <li>
-                <a href={`/news/${latestPost.id.replace(/-fr$/, '')}/`}>
-                  <h3>{latestPost.data.title}</h3>
-                  <div class="newsDate">
-                    <FormattedDate date={latestPost.data.pubDate} lang={currentLang} />
-                  </div>
-                  <p class="excerpt">
-                    {latestPost.data.description}
-                    {' '}
-                    <span class="readMore">{t.readMore}: {latestPost.data.title}</span>
-                  </p>
-                </a>
-              </li>
+              {latestPosts.map((post) => (
+                <li>
+                  <a href={`/news/${post.id.replace(/-fr$/, '')}/`}>
+                    <h3>{post.data.title}</h3>
+                    <div class="newsDate">
+                      <FormattedDate date={post.data.pubDate} lang={currentLang} />
+                    </div>
+                    <p class="excerpt">
+                      {post.data.description}
+                      {' '}
+                      <span class="readMore">{t.readMore}: {post.data.title}</span>
+                    </p>
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
         </section>
