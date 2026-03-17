@@ -4,90 +4,78 @@ description: 'Save the date for the AGM on May 19, 2026. Updates on membership r
 pubDate: '2026-03-17'
 ---
 
-### Save the Date
+## Save the date
 
-The Annual General Meeting of the Owners and Residents Association of Lac Bernard will take place on **May 19, 2026 at 7:30 PM**.
+The Annual general Meeting of the Owners and Residents Association of Lac Bernard shall take place on May 19, 2026, commencing at 7:30 PM.
 
-Further information regarding the agenda and documents for review (finances and budget) will be sent in mid-April.
+Further information with regards to the agenda, and documents for the membership to review relating to finances and budget shall be sent to you in mid April.
 
-> Note: You must be a member in good standing to participate.
-
----
-
-### 2026 ORALB Membership
-
-Please **hold off on renewing your 2026 membership** for now.
-
-A new online membership renewal system is expected by the **end of March 2026**. Once available, you will be able to:
-- Renew online بسهولة (quick and painless)
-- Update your contact information
-
-**Fees remain:**
-- General Membership: $75
-- Associate Membership: $25 (new for 2026)
+Note that to participate in the AGM you must be a member of the Association in good standing.
 
 ---
 
-### Why Membership Matters
+## 2026 ORALB membership
 
-The Association supports many visible and behind-the-scenes activities, including:
-- Annual Regatta (August long weekend)
-- Installation/removal of navigation buoys
-- Milfoil monitoring and control
+As per our recent winter newsletter we would ask that you hold off on renewing your 2026 membership at this time.
 
-Additionally, ORALB acts as a liaison with government and regulatory bodies on:
-- Roads and infrastructure
-- Emergency services and security
-- Waste management
-- Water testing and pollution control
-- Septic systems
-- Shoreline preservation
-- Navigation and water management
+We are on schedule to have a new membership renewal system online by the end of March 2026.
 
-> The more members we have, the stronger our voice.
+We shall advise you as soon as that process is in place. You will then be able to go online and painlessly renew your membership and bring your contact information up to date . Please note that membership renewal fees remain at $75.00 for 2026.
+
+At the fall meeting of the Association on December 9 2025, the membership approved a proposal to open up the ORALB to include Associate Memberships at a fee of $25 per person commencing in 2026.
+
+Membership in our Association is critical to enhancing our voice with Municipal, Federal and Provincial governments.
 
 ---
 
-### Associate Memberships
+The Association engages in many activities which are obvious to every resident on the lake: the annual Regatta on the August long weekend, installation and removal of seasonal navigation buoys marking shoals and maintenance of the ever more prevalent yellow buoys marking areas of milfoil infestation.
 
-Associate memberships allow more people in the community to participate.
+Though these are some of the obvious examples of the responsibilities assumed by the Association, it is the mere tip of the iceberg of the services and representation provided by the ORALB.
 
-**Benefits:**
-- Participate in committees
-- Serve on the Board of Directors
-- Engage in meetings and discussions
+Increasingly the Association is the liaison between our lake community and various regulatory authorities as well as other lake associations in the Province of Quebec, addressing issues including the maintenance of roads, emergency services, security, waste management and collection, water testing, pollution control, septic issues, shoreline preservation, milfoil abatement, and navigation and water management.
 
-**Key difference:**
-- Only General Members (tied to a property) can vote at the AGM
+It’s simple math: the more members we have, the greater and more powerful our voice when speaking on these issues.
 
----
+Associate Memberships are the key to increasing our volume and providing more of our community with the opportunity to participate and support the work of the Association.
 
-### Board of Directors – 2026
+To that end, we encourage multiple members of the families who enjoy our beautiful lake to become Associate Members.
 
-At the upcoming AGM:
-- **Wendy Carr** will seek re-election
-- **Glynnis French** is stepping down (thank you for major contributions, especially digitization)
+Associate Members share all the benefits of participation in the Association including service on any and all committees, including the Board of Directors.
 
-We are actively looking for members interested in:
-- Communications
-- Newsletters
-- Social media
-- Community engagement
+The only difference between an Associate Membership and a General Membership is that the latter is tied to an individual property of Lac Bernard and is entitled to vote on issues raised at the Annual General Meeting. This does not preclude Associate Members from voicing their thoughts, opinions and concerns on any issue faced by our community and fully participating in all Association meetings.
+
+Your participation and membership enhance and support the many facets of work engaged by the ORALB.
+
+Our voice is an important component of our community and the louder it is, the more likely to be heard.
+
+At $25 per membership, the cost is small, but the impact is huge.
 
 ---
 
-### Contact the Board
+## ORALB Board of Directors
 
-- Mike Hubert — membership@lacbernard.ca  
-- Glynnis French — secretary@lacbernard.ca  
-- Will Lockhart — will.lockhart@lacbernard.ca  
-- Colleen Forer — vice-president@lacbernard.ca  
-- Fatima Hoekstra — treasurer@lacbernard.ca  
-- Gerry Yemensky — president@lacbernard.ca  
-- Charles Topp — history@lacbernard.ca  
-- Kevin Radford — environment@lacbernard.ca  
-- Wendy Carr — regatta@lacbernard.ca  
+At the 2026 AGM, there will be two positions on the board of directors to be reviewed and elected by the membership.
+
+Wendy Carr will be seeking re-election for a further two-year term.
+
+Glynnis French has announced her resignation from the Board. Glynnis has acted as Secretary to the Association and has been instrumental in steering us through the daunting task of bringing Association records into the 21st century through digitization. Her contributions have been monumental and she will be sorely missed.
 
 ---
 
-Stay tuned for the launch of the online renewal system, and remember the AGM on **May 19 at 7:30 PM**.
+Any member of the Association, whether a full member or an associate member is eligible to serve on the Board of Directors. This is a dynamic opportunity to enhance our lake’s community.
+
+Of specific interest would be persons whose talents are available to contribute towards more effective communication strategies and techniques through the use of newsletters, social media and imagination to promote the work of the Association and enhance communication with our Members.
+
+Any of the current Board of directors would be happy to discuss this with anyone who may be interested:
+
+Mike Hubert membership@lacbernard.ca  
+Glynnis French secretary@lacbernard.ca  
+Will Lockhart will.lockhart@lacbernard.ca  
+Colleen Forer vice-president@lacbernard.ca  
+Fatima Hoekstra treasurer@lacbernard.ca  
+Gerry Yemensky president@lacbernard.ca  
+Charles Topp history@lacbernard.ca  
+Kevin Radford environment@lacbernard.ca  
+Wendy Carr regatta@lacbernard.ca  
+
+So watch for an upcoming announcement on when our online renewal system becomes active, and remember our Spring AGM scheduled for May 19 at 7:30PM.
