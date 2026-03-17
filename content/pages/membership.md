@@ -3,27 +3,36 @@ title: Membership
 description: Join or renew your membership with the Lac Bernard Association.
 ---
 
-## Membership Fees
+## Membership Types and Fees
 
-Membership is $75 per year. You can renew for up to 3 years.
+Our bylaws restrict voting to only one Primary Member per property. There can be an unlimited number of non-voting Associate Members per property.
 
-- **$75** – 1 year
-- **$150** – 2 years
-- **$225** – 3 years
+- **General Membership** — $75/year. For property owners on Lac Bernard. One voting member per property. General members are entitled to vote at the Annual General Meeting.
+- **Associate Membership** — $25/year. For anyone who wants to support the Association — family members, friends, or non-residents. Associate members participate fully in all Association activities but do not have voting rights. You can have multiple Associate Members per property.
 
 Membership is on a calendar basis – from January to December.
 
-## Membership Types
-
-Anyone can be a Member of the Association, but our bylaws restrict voting to only one Primary Member per property. There can be an unlimited number of non-voting Associate Members per property.
-
 ## Payment Methods
 
-The simplest and fastest payment method is through INTERAC. You may also pay by cheque, if you prefer. We no longer use PayPal, and are not using credit cards at this time.
+### E-transfer (INTERAC)
 
-### Enrolling and Renewing
+The simplest and fastest payment method is through INTERAC. Enrolling and renewing is easy. Please click on either the **Enroll** or **Renewal** button below and make sure you fill in the form so we can communicate with you. Also, separately through your bank, please be sure to send your e-transfer payment to [interac@lacbernard.ca](mailto:interac@lacbernard.ca). The Association does not collect bank information.
 
-Enrolling and renewing is easy. Please click on either the **Enroll** or **Renewal** button below and make sure you fill in the form so we can communicate with you. Also, separately through your bank, please be sure to send your e-transfer payment to [interac@lacbernard.ca](mailto:interac@lacbernard.ca). The Association does not collect bank information.
+<div class="membership-actions">
+<a href="/en/membership/enrollment" class="btnPrimary">Enroll As A New Member</a>
+<a href="/en/membership/renewal" class="btnPrimary">Renew Your Membership</a>
+</div>
+
+### Credit or Debit Card (Stripe)
+
+If you prefer to pay by credit or debit card, the process is the same: first fill out the **Enroll** or **Renewal** form above so we have your information, then complete your payment using the link below for your membership type. Payment is processed securely through Stripe.
+
+<div class="membership-actions">
+<a href="https://buy.stripe.com/test_3cIaEY2mV5Q58IZanfgbm00" class="btnPrimary" target="_blank" rel="noopener noreferrer">General Membership — $75</a>
+<a href="https://buy.stripe.com/test_4gMbJ26Db1zP9N366Zgbm01" class="btnPrimary" target="_blank" rel="noopener noreferrer">Associate Membership — $25</a>
+</div>
+
+### Cheque
 
 If you prefer to pay by cheque, please send it to:
 
@@ -31,12 +40,7 @@ If you prefer to pay by cheque, please send it to:
 **C.P 1262 Succursale C**  
 **Gatineau, Quebec J8X 3X7**
 
-You can also contact us directly by email at: [membership@lacbernard.ca](mailto:membership@lacbernard.ca) 
-
-<div class="membership-actions">
-<a href="/en/membership/enrollment" class="btnPrimary">Enroll As A New Member</a>
-<a href="/en/membership/renewal" class="btnPrimary">Renew Your Membership</a>
-</div>
+You can also contact us directly by email at: [membership@lacbernard.ca](mailto:membership@lacbernard.ca)
 
 ## Why Join?
 
@@ -73,4 +77,5 @@ Your membership dues go directly to our advocacy and stewardship of the lake whi
 
 <div style="text-align: center; margin: 32px 0;">
 <a href="/en/membership/enrollment" class="btnPrimary">Enroll Today</a>
+<a href="/en/membership/renewal" class="btnPrimary">Renew Your Membership</a>
 </div>

@@ -3,50 +3,54 @@ title: Adhésion
 description: Adhérez ou renouvelez votre adhésion à l'Association du lac Bernard.
 ---
 
-## Frais d'adhésion
+## Types d'adhésion et frais
 
-L'adhésion est de 75 $ par année. Vous pouvez renouveler jusqu'à 3 ans.
+Nos règlements restreignent le vote à un seul membre principal par propriété. Il peut y avoir un nombre illimité de membres associés non votants par propriété.
 
-- **75 $** – 1 an
-- **150 $** – 2 ans
-- **225 $** – 3 ans
+- **Adhésion générale** — 75 $/an. Pour les propriétaires sur le lac Bernard. Un membre votant par propriété. Les membres généraux ont le droit de vote à l'assemblée générale annuelle.
+- **Adhésion associée** — 25 $/an. Pour toute personne qui souhaite soutenir l'Association — membres de la famille, amis ou non-résidents. Les membres associés participent pleinement à toutes les activités de l'Association mais n'ont pas de droit de vote. Vous pouvez avoir plusieurs membres associés par propriété.
 
 L'adhésion est sur une base calendaire – de janvier à décembre.
 
-## Types d'adhésion
-
-N'importe qui peut être membre de l'Association, mais nos règlements restreignent le vote à un seul membre principal par propriété. Il peut y avoir un nombre illimité de membres associés non votants par propriété.
-
 ## Méthodes de paiement
 
-La méthode de paiement la plus simple et la plus rapide est par virement Interac. Vous pouvez également payer par chèque, si vous préférez. Nous n'utilisons plus PayPal et n'utilisons pas de cartes de crédit pour le moment.
+### Virement Interac
 
-### Inscription et renouvellement
-
-L'inscription et le renouvellement sont faciles. Veuillez cliquer sur le bouton **Inscription** ou **Renouvellement** ci-dessous et assurez-vous de remplir le formulaire afin que nous puissions communiquer avec vous. Aussi, séparément par votre banque, veuillez vous assurer d'envoyer votre paiement par virement Interac à [interac@lacbernard.ca](mailto:interac@lacbernard.ca). L'Association ne collecte pas d'informations bancaires.
-
-Si vous préférez payer par chèque, veuillez l'envoyer à:
-
-**L'Association des propriétaires et résidents du lac Bernard**  
-**C.P 1262 Succursale C**  
-**Gatineau, Québec J8X 3X7**
-
-Vous pouvez également nous contacter directement par courriel à: [membership@lacbernard.ca](mailto:membership@lacbernard.ca) 
+La méthode de paiement la plus simple et la plus rapide est par virement Interac. L'inscription et le renouvellement sont faciles. Veuillez cliquer sur le bouton **Inscription** ou **Renouvellement** ci-dessous et assurez-vous de remplir le formulaire afin que nous puissions communiquer avec vous. Aussi, séparément par votre banque, veuillez vous assurer d'envoyer votre paiement par virement Interac à [interac@lacbernard.ca](mailto:interac@lacbernard.ca). L'Association ne collecte pas d'informations bancaires.
 
 <div class="membership-actions">
 <a href="/adhesion/enrollment" class="btnPrimary">Inscrivez-vous comme nouveau membre</a>
 <a href="/adhesion/renewal" class="btnPrimary">Renouvelez votre adhésion</a>
 </div>
 
+### Carte de crédit ou de débit (Stripe)
+
+Si vous préférez payer par carte de crédit ou de débit, le processus est le même : remplissez d'abord le formulaire **Inscription** ou **Renouvellement** ci-dessus afin que nous ayons vos informations, puis complétez votre paiement en utilisant le lien ci-dessous correspondant à votre type d'adhésion. Le paiement est traité de manière sécurisée par Stripe.
+
+<div class="membership-actions">
+<a href="https://buy.stripe.com/test_3cIaEY2mV5Q58IZanfgbm00" class="btnPrimary" target="_blank" rel="noopener noreferrer">Adhésion générale — 75 $</a>
+<a href="https://buy.stripe.com/test_4gMbJ26Db1zP9N366Zgbm01" class="btnPrimary" target="_blank" rel="noopener noreferrer">Adhésion associée — 25 $</a>
+</div>
+
+### Chèque
+
+Si vous préférez payer par chèque, veuillez l'envoyer à :
+
+**L'Association des propriétaires et résidents du lac Bernard**  
+**C.P 1262 Succursale C**  
+**Gatineau, Québec J8X 3X7**
+
+Vous pouvez également nous contacter directement par courriel à : [membership@lacbernard.ca](mailto:membership@lacbernard.ca)
+
 ## Pourquoi adhérer?
 
-Lorsque vous rejoignez l'Association des propriétaires et résidents du lac Bernard, vous devenez membre de l'une des associations de lacs les plus fortes et les plus actives de la région. Notre objectif est de nous assurer que chaque chalet sur le lac devient membre et participe activement à nos trois objectifs clés:
+Lorsque vous rejoignez l'Association des propriétaires et résidents du lac Bernard, vous devenez membre de l'une des associations de lacs les plus fortes et les plus actives de la région. Notre objectif est de nous assurer que chaque chalet sur le lac devient membre et participe activement à nos trois objectifs clés :
 
 - Construction communautaire
 - Gestion environnementale
 - Sécurité et sûreté de notre communauté
 
-Les membres de l'Association travaillent ensemble pour assurer la durabilité à long terme de notre lac, ainsi que d'organiser un calendrier social fantastique, ancré par la Régate annuelle amusante et familiale tenue à Regatta Bay!
+Les membres de l'Association travaillent ensemble pour assurer la durabilité à long terme de notre lac, ainsi qu'organiser un calendrier social fantastique, ancré par la Régate annuelle amusante et familiale tenue à Regatta Bay!
 
 ## Objectifs corporatifs
 
@@ -61,7 +65,7 @@ En vous inscrivant ou en renouvelant, vous acceptez de soutenir nos objectifs co
 
 ## Ce que votre adhésion soutient
 
-Vos cotisations d'adhésion vont directement à notre plaidoyer et à notre gestion du lac, ce qui comprend:
+Vos cotisations d'adhésion vont directement à notre plaidoyer et à notre gestion du lac, ce qui comprend :
 
 - Plaider en votre nom auprès des municipalités de La Pêche et Low et du gouvernement provincial sur des questions qui sont importantes pour vous et votre propriété
 - Organiser la Régate annuelle tenue chaque année au début d'août à Regatta Bay
@@ -73,4 +77,5 @@ Vos cotisations d'adhésion vont directement à notre plaidoyer et à notre gest
 
 <div style="text-align: center; margin: 32px 0;">
 <a href="/adhesion/enrollment" class="btnPrimary">Inscrivez-vous aujourd'hui</a>
+<a href="/adhesion/renewal" class="btnPrimary">Renouvelez votre adhésion</a>
 </div>

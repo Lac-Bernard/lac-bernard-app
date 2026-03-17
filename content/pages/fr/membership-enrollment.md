@@ -13,7 +13,13 @@ En vous inscrivant comme membre, vous acceptez de soutenir nos objectifs corpora
 
 ## Instructions de paiement
 
-Veuillez envoyer votre paiement Interac de 75 $, 150 $ ou 225 $ à : [interac@lacbernard.ca](mailto:interac@lacbernard.ca)
+Après avoir rempli le formulaire ci-dessous, veuillez payer en utilisant l'une de ces méthodes :
+
+**Virement Interac :** Envoyez votre paiement à [interac@lacbernard.ca](mailto:interac@lacbernard.ca) — Générale : 75 $, Associée : 25 $
+
+**Carte de crédit ou de débit :** Utilisez le lien de paiement correspondant à votre type d'adhésion :
+- [Adhésion générale — 75 $](https://buy.stripe.com/test_3cIaEY2mV5Q58IZanfgbm00)
+- [Adhésion associée — 25 $](https://buy.stripe.com/test_4gMbJ26Db1zP9N366Zgbm01)
 
 <iframe data-tally-src="https://tally.so/embed/lbOPao?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" width="100%" height="1000" frameborder="0" marginheight="0" marginwidth="0" title="Inscription de nouveaux membres"></iframe>
 

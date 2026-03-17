@@ -13,7 +13,13 @@ By enrolling as a Member you are agreeing to support our Corporate Objectives.
 
 ## Payment Instructions
 
-Please send your INTERAC payment of $75, $150 or $225 to: [interac@lacbernard.ca](mailto:interac@lacbernard.ca)
+After completing the form below, please pay using one of these methods:
+
+**E-transfer:** Send your payment to [interac@lacbernard.ca](mailto:interac@lacbernard.ca) — General: $75, Associate: $25
+
+**Credit or debit card:** Use the payment link for your membership type:
+- [General Membership — $75](https://buy.stripe.com/test_3cIaEY2mV5Q58IZanfgbm00)
+- [Associate Membership — $25](https://buy.stripe.com/test_4gMbJ26Db1zP9N366Zgbm01)
 
 <iframe data-tally-src="https://tally.so/embed/lbOPao?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1" width="100%" height="1000" frameborder="0" marginheight="0" marginwidth="0" title="New Membership Enrollment"></iframe>
 
