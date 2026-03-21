@@ -1,0 +1,164 @@
+---
+import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
+import {
+	memberCopy,
+	memberPaths,
+	membershipTierLabel,
+	type MemberLocale,
+} from '../../lib/members/i18n';
+import type { MemberAccountPayload } from '../../lib/members/accountData';
+
+interface Props {
+	locale: MemberLocale;
+	email: string;
+	currentYear: number;
+	accountData: MemberAccountPayload;
+}
+
+const { locale, email, currentYear, accountData } = Astro.props;
+const t = memberCopy[locale];
+const paths = memberPaths[locale];
+const heroSubtitle = email ? `${t.signedInAs} ${email}` : '';
+const { member, currentMemberships, historicalMemberships } = accountData;
+
+const noCurrentYearMsg = t.noMembershipThisYear.replace('{{year}}', String(currentYear));
+
+function membershipRows(rows: typeof currentMemberships) {
+	return rows.map((row) => ({
+		...row,
+		tierLabel: membershipTierLabel(row.tier, locale),
+	}));
+}
+
+const currentRows = membershipRows(currentMemberships);
+const historyRows = membershipRows(historicalMemberships);
+---
+
+<MemberAppLayout
+  lang={locale}
+  title={t.homeTitle}
+  description={t.homeDescription}
+  heroAriaLabel={t.homeHero}
+  heroTitle={t.homeHero}
+  heroSubtitle={heroSubtitle}
+>
+  <section class="section">
+    <div class="container prose">
+      <p>{t.homeIntro}</p>
+
+      {
+        !member ? (
+          <p class="muted">{t.noMemberForEmail}</p>
+        ) : (
+          <>
+            <p class="memberName">
+              {member.first_name ? `${member.first_name} ` : ''}
+              {member.last_name}
+            </p>
+
+            <h2 class="sectionHeading">{t.membershipActiveSection}</h2>
+            {currentRows.length > 0 ? (
+              <div class="tableWrap">
+                <table class="memberTable">
+                  <thead>
+                    <tr>
+                      <th scope="col">{t.membershipTableYear}</th>
+                      <th scope="col">{t.membershipTableType}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {currentRows.map((row) => (
+                      <tr>
+                        <td>{row.year}</td>
+                        <td>{row.tierLabel}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : historyRows.length > 0 ? (
+              <p class="muted">{noCurrentYearMsg}</p>
+            ) : (
+              <p class="muted">{t.noMembershipsRecorded}</p>
+            )}
+
+            {historyRows.length > 0 && (
+              <>
+                <h2 class="sectionHeading">{t.membershipHistorySection}</h2>
+                <div class="tableWrap">
+                  <table class="memberTable">
+                    <thead>
+                      <tr>
+                        <th scope="col">{t.membershipTableYear}</th>
+                        <th scope="col">{t.membershipTableType}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historyRows.map((row) => (
+                        <tr>
+                          <td>{row.year}</td>
+                          <td>{row.tierLabel}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </>
+        )
+      }
+
+      <form method="POST" action="/api/auth/sign-out">
+        <input type="hidden" name="redirect_to" value={paths.signIn} />
+        <button type="submit" class="btnGhost">{t.signOut}</button>
+      </form>
+    </div>
+  </section>
+</MemberAppLayout>
+
+<style>
+  .prose form {
+    margin-top: 1.5rem;
+  }
+
+  .muted {
+    color: var(--color-muted, #555);
+  }
+
+  .memberName {
+    font-weight: 600;
+    margin-bottom: 1.25rem;
+  }
+
+  .sectionHeading {
+    font-size: 1.25rem;
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  .tableWrap {
+    overflow-x: auto;
+    margin-bottom: 0.5rem;
+  }
+
+  .memberTable {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 28rem;
+  }
+
+  .memberTable th,
+  .memberTable td {
+    text-align: left;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .memberTable th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-muted, #555);
+  }
+</style>

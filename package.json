@@ -6,19 +6,24 @@
     "dev": "tinacms dev -c \"astro dev\"",
     "build": "tinacms build -c \"astro build\"",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "db:seed": "node scripts/generate-dummy-seeds.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.12",
     "@astrojs/rss": "^4.0.14",
     "@astrojs/sitemap": "^3.6.0",
     "@astrojs/vercel": "^9.0.1",
+    "@supabase/ssr": "^0.9.0",
+    "@supabase/supabase-js": "^2.99.3",
     "astro": "^5.16.0",
+    "cookie": "^1.1.1",
     "sharp": "^0.34.3",
     "tinacms": "^2.9.5"
   },
   "devDependencies": {
     "@tinacms/cli": "^1.12.4",
-    "@types/node": "^24.10.1"
+    "@types/node": "^24.10.1",
+    "supabase": "^2.83.0"
   }
 }

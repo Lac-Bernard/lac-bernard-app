@@ -1,0 +1,140 @@
+---
+import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
+import { memberCopy, safeMemberNext, type MemberLocale } from '../../lib/members/i18n';
+
+interface Props {
+	locale: MemberLocale;
+}
+
+const { locale } = Astro.props;
+const t = memberCopy[locale];
+const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
+---
+
+<MemberAppLayout
+  lang={locale}
+  title={t.signInTitle}
+  description={t.signInDescription}
+  heroAriaLabel={t.signInHeroAria}
+  heroTitle={t.signInHero}
+  heroSubtitle={t.signInLead}
+>
+  <section class="section">
+    <div class="container narrow">
+      <div class="card">
+        <form id="sign-in-form" class="signInForm" novalidate>
+          <input type="hidden" name="next" value={next} />
+          <label class="fieldLabel" for="email">{t.emailLabel}</label>
+          <input
+            class="fieldInput"
+            id="email"
+            name="email"
+            type="email"
+            autocomplete="email"
+            required
+            placeholder={t.emailPlaceholder}
+          />
+          <p id="form-message" class="formMessage" role="status" aria-live="polite"></p>
+          <button type="submit" class="btnPrimary" id="submit-btn">{t.sendMagicLink}</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</MemberAppLayout>
+
+<script
+  define:vars={{
+    next,
+    errGeneric: t.errorGeneric,
+    errNetwork: t.errorNetwork,
+    checkEmail: t.checkEmail,
+  }}
+>
+  const form = document.getElementById('sign-in-form');
+  const messageEl = document.getElementById('form-message');
+  const submitBtn = document.getElementById('submit-btn');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!messageEl || !submitBtn) return;
+
+    const fd = new FormData(form);
+    const email = String(fd.get('email') ?? '').trim();
+    const n = String(fd.get('next') ?? next);
+
+    messageEl.textContent = '';
+    submitBtn.setAttribute('disabled', 'true');
+
+    try {
+      const res = await fetch('/api/auth/sign-in', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, next: n }),
+      });
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        messageEl.textContent = data.error || errGeneric;
+        return;
+      }
+
+      messageEl.textContent = checkEmail;
+    } catch {
+      messageEl.textContent = errNetwork;
+    } finally {
+      submitBtn.removeAttribute('disabled');
+    }
+  });
+</script>
+
+<style>
+  .narrow {
+    max-width: 480px;
+  }
+
+  .card {
+    padding: 28px 24px;
+    border-radius: 12px;
+    background: var(--color-surface, #fff);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .signInForm {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .fieldLabel {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .fieldInput {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+
+  .fieldInput:focus {
+    outline: 2px solid var(--color-accent, #1a5f4a);
+    outline-offset: 2px;
+  }
+
+  .formMessage {
+    margin: 4px 0 0;
+    min-height: 1.25em;
+    font-size: 0.95rem;
+    color: var(--color-muted, #444);
+  }
+
+  .signInForm .btnPrimary {
+    margin-top: 8px;
+    justify-content: center;
+    width: 100%;
+  }
+</style>

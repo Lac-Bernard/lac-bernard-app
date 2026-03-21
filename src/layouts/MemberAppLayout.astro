@@ -1,0 +1,90 @@
+---
+import '../styles/theme.css';
+import '../styles/components.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import type { MemberLocale } from '../lib/members/i18n';
+
+interface Props {
+  lang: MemberLocale;
+  title: string;
+  description: string;
+  heroAriaLabel: string;
+  heroTitle: string;
+  heroSubtitle?: string;
+}
+
+const { lang, title, description, heroAriaLabel, heroTitle, heroSubtitle } = Astro.props;
+---
+
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+  </head>
+
+  <body>
+    <SiteHeader />
+
+    <main id="main-content">
+      <section class="hero" aria-label={heroAriaLabel}>
+        <div class="container heroInner">
+          <div class="heroCopy">
+            <h1>{heroTitle}</h1>
+            {heroSubtitle !== undefined && heroSubtitle !== '' && (
+              <p class="heroLead">{heroSubtitle}</p>
+            )}
+          </div>
+        </div>
+      </section>
+      <slot />
+    </main>
+
+    <SiteFooter />
+  </body>
+</html>
+
+<style>
+  .hero {
+    padding: 72px 0 var(--spacing-section);
+    position: relative;
+    background-image: url('/images/hahsexfw1m0.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 0;
+  }
+
+  .hero .container {
+    position: relative;
+    z-index: 1;
+  }
+
+  .heroCopy {
+    color: white;
+  }
+
+  .hero h1 {
+    margin: 0 0 12px;
+    font-size: clamp(36px, 4.5vw, 56px);
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+  }
+
+  .heroLead {
+    margin: 0;
+    font-size: 1.125rem;
+    opacity: 0.95;
+    max-width: 36rem;
+  }
+</style>
