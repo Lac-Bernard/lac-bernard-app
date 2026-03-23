@@ -7,8 +7,8 @@ const currentLang = (Astro.currentLocale || 'en') as Language;
 
 const [page] = currentLang === 'fr' 
   ? await Astro.glob('../../../../content/pages/fr/history-fishing-club.md')
-  : await Astro.glob('../../../../content/pages/history-fishing-club.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}history-fishing-club.md`);
+  : await Astro.glob('../../../../content/pages/en/history-fishing-club.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}history-fishing-club.md`);
 
 const titles = {
   en: 'Fishing Club',

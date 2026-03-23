@@ -4,6 +4,7 @@ import '../../styles/components.css';
 import SiteHeader from '../../components/SiteHeader.astro';
 import SiteFooter from '../../components/SiteFooter.astro';
 import { getLocalizedHref, type Language } from '../../utils/i18n';
+import { blogPostSlug } from '../../utils/blog';
 import { getCollection } from 'astro:content';
 import FormattedDate from '../../components/FormattedDate.astro';
 
@@ -12,15 +13,14 @@ const currentLang = (Astro.currentLocale || 'en') as Language;
 // Load content based on language - Astro.glob requires literal strings
 const [home] = currentLang === 'fr' 
   ? await Astro.glob('../../../content/pages/fr/home.md')
-  : await Astro.glob('../../../content/pages/home.md');
-if (!home) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}home.md`);
+  : await Astro.glob('../../../content/pages/en/home.md');
+if (!home) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}home.md`);
 
 const { Content, frontmatter } = home;
 
-// Get latest 3 blog posts by pubDate (English version - doesn't end with -fr)
 const allPosts = await getCollection('blog');
 const latestPosts = allPosts
-  .filter(post => !post.id.endsWith('-fr'))
+  .filter((post) => post.id.startsWith('en/'))
   .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
   .slice(0, 3);
 
@@ -142,7 +142,7 @@ const heroSubtitle = t.subtitle;
             <ul class="newsList">
               {latestPosts.map((post) => (
                 <li>
-                  <a href={`/en/news/${post.id}/`}>
+                  <a href={`/en/news/${blogPostSlug(post.id)}/`}>
                     <h3>{post.data.title}</h3>
                     <div class="newsDate">
                       <FormattedDate date={post.data.pubDate} lang={currentLang} />

@@ -15,20 +15,20 @@ La section histoire vise à promouvoir la connaissance de la riche et fascinante
 
 ## Les Archives
 
-Les Archives sont le dépôt officiel des dossiers de l'Association des propriétaires et résidents du lac Bernard. Elles contiennent plusieurs types de documents, y compris des documents, des photos, des cartes et d'autres matériaux, qui documentent la riche histoire de notre lac. [Les Archives peuvent être consultées à ce lien.](/a-propos/archives)
+Les Archives sont le dépôt officiel des dossiers de l'Association des propriétaires et résidents du lac Bernard. Elles contiennent plusieurs types de documents, y compris des documents, des photos, des cartes et d'autres matériaux, qui documentent la riche histoire de notre lac. [Les Archives peuvent être consultées à ce lien.](/fr/about/archive)
 
 Les sections des Archives qui seront d'un intérêt particulier pour ceux qui recherchent l'histoire du lac peuvent être consultées via les liens suivants:
 
-- [Premières Nations](/histoire/premieres-nations)
-- [Le Club de pêche](/histoire/club-de-peche)
-- [Cartes historiques](/histoire/cartes)
-- [Photos aériennes historiques](/histoire/photos-aeriennes)
-- [Récits documentant les familles et les individus](/histoire/recits-familles-et-individus)
-- [Récits documentant l'histoire du lac](/histoire/recits-histoire-du-lac)
-- [Collection de coupures de journaux du lac Bernard](/histoire/collection-coupures-de-journaux-lac-bernard)
-- [Recherche historique et sources](/histoire/recherche-historique-et-sources)
-- [Propriétés et titres](/histoire/proprietes-et-titres)
-- [Histoire connexe](/histoire/histoire-connexe)
+- [Premières Nations](/fr/history/first-nations)
+- [Le Club de pêche](/fr/history/fishing-club)
+- [Cartes historiques](/fr/history/maps)
+- [Photos aériennes historiques](/fr/history/aerial-photos)
+- [Récits documentant les familles et les individus](/fr/history/stories-documenting-families-and-individuals)
+- [Récits documentant l'histoire du lac](/fr/history/stories-documenting-history-of-the-lake)
+- [Collection de coupures de journaux du lac Bernard](/fr/history/newspaper-clippings-collection-of-lac-bernard)
+- [Recherche historique et sources](/fr/history/historical-research-and-sources)
+- [Propriétés et titres](/fr/history/properties-and-deeds)
+- [Histoire connexe](/fr/history/related-history)
 
 ## Groupe Facebook Histoire
 

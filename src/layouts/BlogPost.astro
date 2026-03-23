@@ -7,6 +7,8 @@ import '../styles/components.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import { getLocalizedPath, languageFromAstro } from '../utils/i18n';
+import { blogPostSlug, isBlogPostInLocale } from '../utils/blog';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	currentPostId?: string;
@@ -30,14 +32,13 @@ const updatedDateObj = updatedDate ? (updatedDate instanceof Date ? updatedDate 
 // Get current post ID from props or URL
 const postId = currentPostId || Astro.url.pathname.split('/').filter(Boolean).pop() || '';
 
-// Determine language based on URL path (/en/ = English, otherwise French)
-const isFrench = !Astro.url.pathname.startsWith('/en/');
-const lang = isFrench ? 'fr' : 'en';
+const lang = languageFromAstro(Astro);
+const isFrench = lang === 'fr';
 
 // Get latest 10 blog posts for sidebar (filter by language)
 const allPosts = await getCollection('blog');
 const latestPosts = allPosts
-	.filter(post => isFrench ? post.id.endsWith('-fr') : !post.id.endsWith('-fr'))
+	.filter((post) => isBlogPostInLocale(post.id, isFrench ? 'fr' : 'en'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 10);
 ---
@@ -61,10 +62,9 @@ const latestPosts = allPosts
 							<nav class="sidebarNav" aria-label={lang === 'fr' ? 'Navigation du blog' : 'Blog navigation'}>
 								<h2 class="sidebarTitle">{lang === 'fr' ? 'Publications récentes' : 'Recent Posts'}</h2>
 								{latestPosts.map((post) => {
-									// Use base slug (without -fr) for URL
-									const baseSlug = post.id.replace(/-fr$/, '');
+									const baseSlug = blogPostSlug(post.id);
 									const isActive = baseSlug === postId || post.id === postId;
-									const postPath = lang === 'fr' ? `/news/${baseSlug}/` : `/en/news/${baseSlug}/`;
+									const postPath = `${getLocalizedPath(`/news/${baseSlug}`, lang)}/`;
 									return (
 										<a 
 											href={postPath}
@@ -74,7 +74,7 @@ const latestPosts = allPosts
 										</a>
 									);
 								})}
-								<a href={lang === 'fr' ? '/news/' : '/en/news/'} class="seeAllLink">{lang === 'fr' ? 'Voir toutes les publications →' : 'See all posts →'}</a>
+								<a href={`${getLocalizedPath('/news', lang)}/`} class="seeAllLink">{lang === 'fr' ? 'Voir toutes les publications →' : 'See all posts →'}</a>
 							</nav>
 						</aside>
 						<div class="pageContent">

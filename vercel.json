@@ -1,6 +1,206 @@
 {
   "redirects": [
     {
+      "source": "/",
+      "destination": "/fr/",
+      "permanent": true
+    },
+    {
+      "source": "/a-propos",
+      "destination": "/fr/about",
+      "permanent": true
+    },
+    {
+      "source": "/a-propos/comite-executif",
+      "destination": "/fr/about/executive",
+      "permanent": true
+    },
+    {
+      "source": "/a-propos/comites",
+      "destination": "/fr/about/committees",
+      "permanent": true
+    },
+    {
+      "source": "/a-propos/reglements",
+      "destination": "/fr/about/bylaws",
+      "permanent": true
+    },
+    {
+      "source": "/a-propos/proces-verbaux",
+      "destination": "/fr/about/business-records",
+      "permanent": true
+    },
+    {
+      "source": "/a-propos/archives",
+      "destination": "/fr/about/archive",
+      "permanent": true
+    },
+    {
+      "source": "/environnement",
+      "destination": "/fr/environment",
+      "permanent": true
+    },
+    {
+      "source": "/environnement/echantillonnage-eau",
+      "destination": "/fr/environment/water-sampling",
+      "permanent": true
+    },
+    {
+      "source": "/environnement/echantillonnage-eau/:year",
+      "destination": "/fr/environment/water-sampling/:year",
+      "permanent": true
+    },
+    {
+      "source": "/environnement/myriophylle",
+      "destination": "/fr/environment/milfoil",
+      "permanent": true
+    },
+    {
+      "source": "/environnement/rivage",
+      "destination": "/fr/environment/shoreline",
+      "permanent": true
+    },
+    {
+      "source": "/environnement/eau",
+      "destination": "/fr/environment/water",
+      "permanent": true
+    },
+    {
+      "source": "/environnement/navigation",
+      "destination": "/fr/environment/boating",
+      "permanent": true
+    },
+    {
+      "source": "/environnement/navigation/securite-navigation-sports-nautiques",
+      "destination": "/fr/environment/boating",
+      "permanent": true
+    },
+    {
+      "source": "/environnement/faune",
+      "destination": "/fr/environment/wildlife",
+      "permanent": true
+    },
+    {
+      "source": "/communaute",
+      "destination": "/fr/community",
+      "permanent": true
+    },
+    {
+      "source": "/communaute/regate",
+      "destination": "/fr/community/regatta",
+      "permanent": true
+    },
+    {
+      "source": "/communaute/securite",
+      "destination": "/fr/community/security",
+      "permanent": true
+    },
+    {
+      "source": "/communaute/securite/police",
+      "destination": "/fr/community/security/police",
+      "permanent": true
+    },
+    {
+      "source": "/communaute/securite/contacts-urgence",
+      "destination": "/fr/community/security/emergency-contacts",
+      "permanent": true
+    },
+    {
+      "source": "/communaute/securite/incendie",
+      "destination": "/fr/community/security/fire",
+      "permanent": true
+    },
+    {
+      "source": "/communaute/securite/surveillance-quartier",
+      "destination": "/fr/community/security/neighbourhood-watch",
+      "permanent": true
+    },
+    {
+      "source": "/histoire",
+      "destination": "/fr/history",
+      "permanent": true
+    },
+    {
+      "source": "/histoire/premieres-nations",
+      "destination": "/fr/history/first-nations",
+      "permanent": true
+    },
+    {
+      "source": "/histoire/club-de-peche",
+      "destination": "/fr/history/fishing-club",
+      "permanent": true
+    },
+    {
+      "source": "/histoire/cartes",
+      "destination": "/fr/history/maps",
+      "permanent": true
+    },
+    {
+      "source": "/histoire/photos-aeriennes",
+      "destination": "/fr/history/aerial-photos",
+      "permanent": true
+    },
+    {
+      "source": "/histoire/recits-familles-et-individus",
+      "destination": "/fr/history/stories-documenting-families-and-individuals",
+      "permanent": true
+    },
+    {
+      "source": "/histoire/recits-histoire-du-lac",
+      "destination": "/fr/history/stories-documenting-history-of-the-lake",
+      "permanent": true
+    },
+    {
+      "source": "/histoire/collection-coupures-de-journaux-lac-bernard",
+      "destination": "/fr/history/newspaper-clippings-collection-of-lac-bernard",
+      "permanent": true
+    },
+    {
+      "source": "/histoire/recherche-historique-et-sources",
+      "destination": "/fr/history/historical-research-and-sources",
+      "permanent": true
+    },
+    {
+      "source": "/histoire/proprietes-et-titres",
+      "destination": "/fr/history/properties-and-deeds",
+      "permanent": true
+    },
+    {
+      "source": "/histoire/histoire-connexe",
+      "destination": "/fr/history/related-history",
+      "permanent": true
+    },
+    {
+      "source": "/adhesion",
+      "destination": "/fr/membership",
+      "permanent": true
+    },
+    {
+      "source": "/adhesion/enrollment",
+      "destination": "/fr/membership/enrollment",
+      "permanent": true
+    },
+    {
+      "source": "/adhesion/renewal",
+      "destination": "/fr/membership/renewal",
+      "permanent": true
+    },
+    {
+      "source": "/contact",
+      "destination": "/fr/contact",
+      "permanent": true
+    },
+    {
+      "source": "/news",
+      "destination": "/fr/news",
+      "permanent": true
+    },
+    {
+      "source": "/news/:slug",
+      "destination": "/fr/news/:slug",
+      "permanent": true
+    },
+    {
       "source": "/about",
       "destination": "/en/about",
       "permanent": true
@@ -188,16 +388,6 @@
     {
       "source": "/membership/renewal",
       "destination": "/en/membership/renewal",
-      "permanent": true
-    },
-    {
-      "source": "/news",
-      "destination": "/en/news",
-      "permanent": true
-    },
-    {
-      "source": "/news/:slug",
-      "destination": "/en/news/:slug",
       "permanent": true
     },
     {

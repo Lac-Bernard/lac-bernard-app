@@ -7,8 +7,8 @@ const currentLang = (Astro.currentLocale || 'en') as Language;
 
 const [page] = currentLang === 'fr' 
   ? await Astro.glob('../../../../content/pages/fr/about-archive.md')
-  : await Astro.glob('../../../../content/pages/about-archive.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}about-archive.md`);
+  : await Astro.glob('../../../../content/pages/en/about-archive.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}about-archive.md`);
 
 const titles = {
   en: 'Archive Portal',

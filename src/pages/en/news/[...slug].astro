@@ -1,28 +1,28 @@
 ---
-import { type CollectionEntry, getCollection, render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BlogPost from '../../../layouts/BlogPost.astro';
+import { blogCollectionId, blogPostSlug } from '../../../utils/blog';
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
-	// English posts don't end with -fr, use the base slug in the URL
 	return posts
-		.filter(post => !post.id.endsWith('-fr'))
+		.filter((post) => post.id.startsWith('en/'))
 		.map((post) => ({
-			params: { slug: post.id },
+			params: { slug: blogPostSlug(post.id) },
 		}));
 }
 
-// Get the slug from params and look up the English post
-const slug = Astro.params.slug;
-if (!slug) {
+const raw = Astro.params.slug;
+const slugPath = Array.isArray(raw) ? raw.join('/') : (raw ?? '');
+if (!slugPath) {
 	throw new Error('Slug parameter is missing');
 }
 
 const posts = await getCollection('blog');
-const post = posts.find((p) => p.id === slug);
+const post = posts.find((p) => p.id === blogCollectionId('en', slugPath));
 
 if (!post) {
-	throw new Error(`Post not found for slug: ${slug}`);
+	throw new Error(`Post not found for slug: ${slugPath}`);
 }
 
 if (!post.data) {
@@ -36,7 +36,7 @@ if (!post.data.pubDate) {
 const { Content } = await render(post);
 ---
 
-<BlogPost 
+<BlogPost
 	title={post.data.title}
 	description={post.data.description}
 	pubDate={post.data.pubDate}

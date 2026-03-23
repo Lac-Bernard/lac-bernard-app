@@ -34,8 +34,8 @@ Si vous préférez payer par chèque, veuillez l'envoyer à:
 Vous pouvez également nous contacter directement par courriel à: [membership@lacbernard.ca](mailto:membership@lacbernard.ca) 
 
 <div class="membership-actions">
-<a href="/adhesion/enrollment" class="btnPrimary">Inscrivez-vous comme nouveau membre</a>
-<a href="/adhesion/renewal" class="btnPrimary">Renouvelez votre adhésion</a>
+<a href="/fr/membership/enrollment" class="btnPrimary">Inscrivez-vous comme nouveau membre</a>
+<a href="/fr/membership/renewal" class="btnPrimary">Renouvelez votre adhésion</a>
 </div>
 
 ## Pourquoi adhérer?
@@ -72,5 +72,5 @@ Vos cotisations d'adhésion vont directement à notre plaidoyer et à notre gest
 - Exploiter www.lacbernard.ca – le site Web bilingue de l'Association qui fournit une source d'information concernant le lac. Cela comprend les activités de l'Association, les rapports sur la qualité de l'eau, les nouvelles, et un riche trésor d'archives et de documents historiques et de récits oraux de notre lac
 
 <div style="text-align: center; margin: 32px 0;">
-<a href="/adhesion/enrollment" class="btnPrimary">Inscrivez-vous aujourd'hui</a>
+<a href="/fr/membership/enrollment" class="btnPrimary">Inscrivez-vous aujourd'hui</a>
 </div>

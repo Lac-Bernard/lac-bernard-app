@@ -76,23 +76,18 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 │   ├── assets/           # Image assets
 │   ├── components/       # Astro components (BaseHead, Header, Footer, etc.)
 │   ├── content/          # Astro content collections
-│   │   └── blog/        # News posts (Markdown/MDX) - bilingual
+│   │   └── blog/        # News: `en/*.md` and `fr/*.md` (paired slugs)
 │   ├── layouts/          # Page layouts
-│   ├── pages/            # Astro pages (French at root)
-│   │   ├── en/          # English pages
-│   │   │   ├── about/       # About section
-│   │   │   ├── community/   # Community & security
-│   │   │   ├── environment/ # Environment & water sampling
-│   │   │   ├── history/     # Lake history
-│   │   │   ├── membership/  # Membership enrollment/renewal
-│   │   │   └── news/        # News articles
-│   │   ├── a-propos/        # À propos (French about)
-│   │   ├── adhesion/        # Adhésion (French membership)
-│   │   ├── communaute/      # Communauté (French community)
-│   │   ├── environnement/   # Environnement (French)
-│   │   ├── histoire/        # Histoire (French history)
-│   │   ├── news/            # Nouvelles (French news)
-│   │   └── api/             # API routes
+│   ├── pages/            # Astro routes (`/en/*`, `/fr/*`; root redirects to `/fr/`)
+│   │   ├── en/          # English pages (same path slugs as `fr/`)
+│   │   │   ├── about/
+│   │   │   ├── community/
+│   │   │   ├── environment/
+│   │   │   ├── history/
+│   │   │   ├── membership/
+│   │   │   └── news/
+│   │   ├── fr/          # French pages (same English slugs as `en/`)
+│   │   └── api/         # API routes
 │   └── styles/           # Global styles
 ├── tina/                 # TinaCMS configuration
 │   └── config.ts         # CMS schema and settings
@@ -113,13 +108,13 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 
 ### Content Collections
 
-- **News Posts** (`src/content/blog/`) - News articles with frontmatter (title, description, dates, hero images). Create separate files for each language (e.g., `winter-2026-newsletter.md` and `winter-2026-newsletter-fr.md`).
+- **News Posts** (`src/content/blog/en/` and `src/content/blog/fr/`) - Same filename in each folder for a bilingual pair (e.g. `en/winter-2026-newsletter.md` and `fr/winter-2026-newsletter.md`). Collection entry ids are `en/<slug>` and `fr/<slug>`.
 
 ### Adding New News Posts
 
 News posts can be added either:
 - Through the TinaCMS admin interface
-- Manually by creating `.md` or `.mdx` files in `src/content/blog/`
+- Manually by creating `.md` or `.mdx` files in `src/content/blog/en/` and/or `src/content/blog/fr/`
 
 Required frontmatter:
 ```yaml
@@ -134,9 +129,10 @@ heroImage: ./path/to/image.jpg  # optional
 
 ### Bilingual Content
 
-- French pages are at the root (`/`, `/a-propos`, `/environnement`, etc.)
-- English pages are under `/en/` (`/en/`, `/en/about`, `/en/environment`, etc.)
-- News posts use a `-fr` suffix convention for French versions
+- **Site page copy (Markdown)** lives in `content/pages/en/` and `content/pages/fr/` (mirrored filenames, e.g. `about.md` in each folder). Astro pages load them via `Astro.glob(...)`.
+- Both locales use the same English URL slugs; pages live under `/fr/...` and `/en/...` (for example `/fr/about`, `/en/about`)
+- The site root `/` redirects to `/fr/`; `vercel.json` lists permanent redirects from legacy French slugs (for example `/a-propos` → `/fr/about`)
+- News posts are stored per locale under `src/content/blog/en/` and `src/content/blog/fr/`; public URLs are `/en/news/<slug>` and `/fr/news/<slug>` with the same `<slug>` in both languages when both exist
 
 ## 🚢 Deployment
 

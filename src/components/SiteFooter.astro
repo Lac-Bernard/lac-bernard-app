@@ -1,7 +1,7 @@
 ---
-import { type Language } from '../utils/i18n';
+import { languageFromAstro } from '../utils/i18n';
 
-const currentLang = (Astro.currentLocale || 'en') as Language;
+const currentLang = languageFromAstro(Astro);
 
 const footerText = {
   en: `© ${new Date().getFullYear()} Owners' and Residents' Association of Lac Bernard.`,

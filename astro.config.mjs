@@ -8,7 +8,7 @@ import { defineConfig } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
 	// TODO: Update with actual production site URL
-	site: 'https://example.com',
+	site: 'https://lacbernard.ca',
 	output: 'server',
 	adapter: vercel(),
 	integrations: [mdx(), sitemap()],
@@ -16,7 +16,7 @@ export default defineConfig({
 		defaultLocale: 'fr',
 		locales: ['fr', 'en'],
 		routing: {
-			prefixDefaultLocale: false,
+			prefixDefaultLocale: true,
 		},
 	},
 });

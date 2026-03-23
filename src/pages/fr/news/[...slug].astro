@@ -1,0 +1,48 @@
+---
+import { getCollection, render } from 'astro:content';
+import BlogPost from '../../../layouts/BlogPost.astro';
+import { blogCollectionId, blogPostSlug } from '../../../utils/blog';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+	return posts
+		.filter((post) => post.id.startsWith('fr/'))
+		.map((post) => ({
+			params: { slug: blogPostSlug(post.id) },
+		}));
+}
+
+const raw = Astro.params.slug;
+const slugPath = Array.isArray(raw) ? raw.join('/') : (raw ?? '');
+if (!slugPath) {
+	throw new Error('Slug parameter is missing');
+}
+
+const posts = await getCollection('blog');
+const post = posts.find((p) => p.id === blogCollectionId('fr', slugPath));
+
+if (!post) {
+	throw new Error(`Post not found for slug: ${slugPath}`);
+}
+
+if (!post.data) {
+	throw new Error(`Post data is missing for post: ${post.id}`);
+}
+
+if (!post.data.pubDate) {
+	throw new Error(`pubDate is missing for post: ${post.id}. Available keys: ${Object.keys(post.data).join(', ')}`);
+}
+
+const { Content } = await render(post);
+---
+
+<BlogPost
+	title={post.data.title}
+	description={post.data.description}
+	pubDate={post.data.pubDate}
+	updatedDate={post.data.updatedDate}
+	heroImage={post.data.heroImage}
+	currentPostId={post.id}
+>
+	<Content />
+</BlogPost>

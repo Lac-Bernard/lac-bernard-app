@@ -7,8 +7,8 @@ const currentLang = (Astro.currentLocale || 'en') as Language;
 
 const [page] = currentLang === 'fr' 
   ? await Astro.glob('../../../../content/pages/fr/history-stories-lake.md')
-  : await Astro.glob('../../../../content/pages/history-stories-lake.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}history-stories-lake.md`);
+  : await Astro.glob('../../../../content/pages/en/history-stories-lake.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}history-stories-lake.md`);
 
 const titles = {
   en: 'Stories: Documenting History of the Lake',

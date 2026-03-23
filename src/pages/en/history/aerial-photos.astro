@@ -7,8 +7,8 @@ const currentLang = (Astro.currentLocale || 'en') as Language;
 
 const [page] = currentLang === 'fr' 
   ? await Astro.glob('../../../../content/pages/fr/history-aerial-photos.md')
-  : await Astro.glob('../../../../content/pages/history-aerial-photos.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}history-aerial-photos.md`);
+  : await Astro.glob('../../../../content/pages/en/history-aerial-photos.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}history-aerial-photos.md`);
 
 const titles = {
   en: 'Aerial Photos',

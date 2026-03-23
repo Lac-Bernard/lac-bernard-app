@@ -7,8 +7,8 @@ const currentLang = (Astro.currentLocale || 'en') as Language;
 
 const [page] = currentLang === 'fr' 
   ? await Astro.glob('../../../../content/pages/fr/environment-milfoil.md')
-  : await Astro.glob('../../../../content/pages/environment-milfoil.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}environment-milfoil.md`);
+  : await Astro.glob('../../../../content/pages/en/environment-milfoil.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}environment-milfoil.md`);
 
 const titles = {
   en: 'Eurasian Milfoil',
