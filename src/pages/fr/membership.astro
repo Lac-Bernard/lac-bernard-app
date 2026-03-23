@@ -1,0 +1,117 @@
+---
+import '../../styles/theme.css';
+import '../../styles/components.css';
+import SiteHeader from '../../components/SiteHeader.astro';
+import SiteFooter from '../../components/SiteFooter.astro';
+import { type Language } from '../../utils/i18n';
+
+const currentPath = Astro.url.pathname;
+const currentLang = (Astro.currentLocale || 'fr') as Language;
+
+const [page] = await Astro.glob('../../../content/pages/fr/membership.md');
+if (!page) throw new Error('Missing ../../../content/pages/fr/membership.md');
+
+const titles = {
+  en: 'Membership',
+  fr: 'Adhésion',
+};
+
+const title = page.frontmatter?.title || titles[currentLang];
+const description = page.frontmatter?.description;
+const { Content } = page;
+---
+
+<html lang={currentLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | Lac Bernard Association</title>
+    <meta
+      name="description"
+      content={description || `Learn more about ${title} at the Lac Bernard Association.`}
+    />
+    <script async src="https://tally.so/widgets/embed.js"></script>
+  </head>
+
+  <body>
+    <SiteHeader />
+
+    <main id="main-content">
+      <section class="hero" aria-label="Membership hero">
+        <div class="container heroInner">
+          <div class="heroCopy">
+            <h1>{title}</h1>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container">
+          <div class="prose">
+            {Content && <Content />}
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <SiteFooter />
+  </body>
+</html>
+
+<style>
+  /* Page-specific styles for membership page */
+  .hero {
+    padding: 72px 0 var(--spacing-section);
+    position: relative;
+    background-image: url('/images/hahsexfw1m0.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+  }
+  
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 0;
+  }
+  
+  .hero .container {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .heroInner {
+    display: block;
+  }
+  
+  .heroCopy {
+    color: white;
+  }
+  
+  .hero h1 {
+    margin: 0 0 18px;
+    font-size: clamp(40px, 5vw, 64px);
+    line-height: 1.06;
+    letter-spacing: -.03em;
+    color: white;
+  }
+  
+  .membership-actions {
+    display: flex;
+    gap: 14px;
+    margin: 24px 0;
+    flex-wrap: wrap;
+  }
+  
+  .membership-actions .btnPrimary {
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+  }
+</style>

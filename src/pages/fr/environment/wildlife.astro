@@ -1,0 +1,11 @@
+---
+import Page from '../../../layouts/Page.astro';
+
+const [page] = await Astro.glob('../../../../content/pages/fr/environment-wildlife.md');
+if (!page) throw new Error('Missing content/pages/en/environment-wildlife.md');
+
+const title = page.frontmatter?.title || 'Lake Wildlife';
+const description = page.frontmatter?.description;
+---
+
+<Page title={title} description={description} content={page} section="environment" />

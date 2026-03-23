@@ -7,8 +7,8 @@ const currentLang = (Astro.currentLocale || 'en') as Language;
 
 const [page] = currentLang === 'fr' 
   ? await Astro.glob('../../../../../content/pages/fr/environment-water-sampling-2008.md')
-  : await Astro.glob('../../../../../content/pages/environment-water-sampling-2008.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}environment-water-sampling-2008.md`);
+  : await Astro.glob('../../../../../content/pages/en/environment-water-sampling-2008.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}environment-water-sampling-2008.md`);
 
 const titles = {
   en: 'Water Quality Results – 2008',

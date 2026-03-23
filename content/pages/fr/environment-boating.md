@@ -9,12 +9,12 @@ Le site Web de sécurité nautique de Transports Canada est : [Bureau de la séc
 
 ## Bouées marqueurs de hauts-fonds
 
-Au lac Bernard, les dangers sous-marins sont répartis dans tout le lac. Ces roches situées sur les principaux chenaux de navigation sont marquées par des bouées blanches qui portent du ruban réfléchissant rouge et jaune. [Cliquez ici pour plus de détails.](/environment/boating/shoal-marker-buoys)
+Au lac Bernard, les dangers sous-marins sont répartis dans tout le lac. Ces roches situées sur les principaux chenaux de navigation sont marquées par des bouées blanches qui portent du ruban réfléchissant rouge et jaune. [Cliquez ici pour plus de détails.](/fr/environment/boating/shoal-marker-buoys)
 
 ## Bouées/Marqueurs de myriophylle à épi eurasien
 
-Les bouées marqueurs jaunes (boules jaunes) rappellent aux plaisanciers où éviter les lits de myriophylle à épi eurasien autant que possible. [Cliquez ici pour plus de détails.](/environment/boating/milfoil-marker-buoys)
+Les bouées marqueurs jaunes (boules jaunes) rappellent aux plaisanciers où éviter les lits de myriophylle à épi eurasien autant que possible. [Cliquez ici pour plus de détails.](/fr/environment/boating/milfoil-marker-buoys)
 
 ## Sécurité de la navigation et des sports nautiques
 
-C'est pourquoi nous sommes au lac Bernard – la navigation, et profiter de l'eau et de l'atmosphère paisible du lac. Assurons-nous de partager et de protéger cela! [Cliquez ici pour plus de détails.](/environment/boating/water-sports)
+C'est pourquoi nous sommes au lac Bernard – la navigation, et profiter de l'eau et de l'atmosphère paisible du lac. Assurons-nous de partager et de protéger cela! [Cliquez ici pour plus de détails.](/fr/environment/boating/water-sports)

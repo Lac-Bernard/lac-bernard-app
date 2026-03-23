@@ -7,8 +7,8 @@ const currentLang = (Astro.currentLocale || 'en') as Language;
 
 const [page] = currentLang === 'fr' 
   ? await Astro.glob('../../../../content/pages/fr/history-research-sources.md')
-  : await Astro.glob('../../../../content/pages/history-research-sources.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}history-research-sources.md`);
+  : await Astro.glob('../../../../content/pages/en/history-research-sources.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}history-research-sources.md`);
 
 const titles = {
   en: 'Historical Research and Sources',

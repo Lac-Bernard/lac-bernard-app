@@ -2,8 +2,8 @@ import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
 const blog = defineCollection({
-	// Load Markdown and MDX files in the `src/content/blog/` directory.
-	loader: glob({ base: './src/content/blog', pattern: '**/*.{md,mdx}' }),
+	// `src/content/blog/en/*.md` and `src/content/blog/fr/*.md` — id is `en/<slug>` or `fr/<slug>`.
+	loader: glob({ base: './src/content/blog', pattern: '{en,fr}/**/*.{md,mdx}' }),
 	// Type-check frontmatter using a schema
 	schema: ({ image }) =>
 		z.object({
@@ -17,7 +17,7 @@ const blog = defineCollection({
 });
 
 const pages = defineCollection({
-	// Load Markdown and MDX files in the `content/pages/` directory.
+	// Load Markdown and MDX files under `content/pages/en/` and `content/pages/fr/`.
 	loader: glob({ base: './content/pages', pattern: '**/*.{md,mdx}' }),
 	// Type-check frontmatter using a schema
 	schema: z.object({

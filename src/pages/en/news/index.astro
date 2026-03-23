@@ -6,11 +6,11 @@ import '../../../styles/components.css';
 import SiteHeader from '../../../components/SiteHeader.astro';
 import SiteFooter from '../../../components/SiteFooter.astro';
 import FormattedDate from '../../../components/FormattedDate.astro';
+import { blogPostSlug } from '../../../utils/blog';
 
-// English news page - only show English posts (those NOT ending with -fr)
 const allPosts = await getCollection('blog');
 const posts = allPosts
-	.filter(post => !post.id.endsWith('-fr'))
+	.filter((post) => post.id.startsWith('en/'))
 	.sort(
 		(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 	);
@@ -38,7 +38,7 @@ const posts = allPosts
 					<div class="postsList">
 						{posts.map((post) => (
 							<article class="postCard">
-								<a href={`/en/news/${post.id}/`} class="postLink">
+								<a href={`/en/news/${blogPostSlug(post.id)}/`} class="postLink">
 									{post.data.heroImage && (
 										<div class="postImage">
 											<Image width={720} height={360} src={post.data.heroImage} alt="" />

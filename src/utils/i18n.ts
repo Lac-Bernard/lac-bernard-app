@@ -1,5 +1,8 @@
-import { getLocaleByPath, pathHasLocale } from 'astro:i18n';
-
+/**
+ * Bilingual site: `astro.config` `i18n` matches `src/pages/en|fr/`, blog Markdown in `src/content/blog/en|fr/`.
+ * Use `languageFromAstro(Astro)` in layouts so `Astro.currentLocale` is primary; URL parsing is the fallback.
+ * Do not pass full pathnames to `astro:i18n`’s `getLocaleByPath` — it expects the locale segment only (e.g. `"en"`).
+ */
 export const languages = {
 	en: 'English',
 	fr: 'Français',
@@ -7,134 +10,123 @@ export const languages = {
 
 export type Language = keyof typeof languages;
 
-// Slug mapping: English -> French
-const slugMap: Record<string, string> = {
-	// Main pages
-	'about': 'a-propos',
-	'environment': 'environnement',
-	'community': 'communaute',
-	'history': 'histoire',
-	'membership': 'adhesion',
-	'contact': 'contact',
-	
-	// About sub-pages
-	'about/executive': 'a-propos/comite-executif',
-	'about/committees': 'a-propos/comites',
-	'about/bylaws': 'a-propos/reglements',
-	'about/business-records': 'a-propos/proces-verbaux',
-	'about/archive': 'a-propos/archives',
-	
-	// Environment sub-pages
-	'environment/water-sampling': 'environnement/echantillonnage-eau',
-	'environment/milfoil': 'environnement/myriophylle',
-	'environment/shoreline': 'environnement/rivage',
-	'environment/water': 'environnement/eau',
-	'environment/boating': 'environnement/navigation',
-	'environment/wildlife': 'environnement/faune',
-	
-	// Community sub-pages
-	'community/regatta': 'communaute/regate',
-	'community/security': 'communaute/securite',
-	'community/security/police': 'communaute/securite/police',
-	'community/security/emergency-contacts': 'communaute/securite/contacts-urgence',
-	'community/security/fire': 'communaute/securite/incendie',
-	'community/security/neighbourhood-watch': 'communaute/securite/surveillance-quartier',
-	
-	// History sub-pages
-	'history/first-nations': 'histoire/premieres-nations',
-	'history/fishing-club': 'histoire/club-de-peche',
-	'history/maps': 'histoire/cartes',
-	'history/aerial-photos': 'histoire/photos-aeriennes',
-	'history/stories-documenting-families-and-individuals': 'histoire/recits-familles-et-individus',
-	'history/stories-documenting-history-of-the-lake': 'histoire/recits-histoire-du-lac',
-	'history/newspaper-clippings-collection-of-lac-bernard': 'histoire/collection-coupures-de-journaux-lac-bernard',
-	'history/historical-research-and-sources': 'histoire/recherche-historique-et-sources',
-	'history/properties-and-deeds': 'histoire/proprietes-et-titres',
-	'history/related-history': 'histoire/histoire-connexe',
+/** Normalize a single path segment for locale comparison (lowercase, `_` → `-`). */
+function normalizeLocaleSegment(segment: string): string {
+	return segment.replaceAll('_', '-').toLowerCase();
+}
+
+/** French URL paths (legacy) → canonical path under `/fr/` with English slugs */
+export const legacyFrenchPathToEnglishPath: Record<string, string> = {
+	'/': '/',
+	'a-propos': 'about',
+	'a-propos/comite-executif': 'about/executive',
+	'a-propos/comites': 'about/committees',
+	'a-propos/reglements': 'about/bylaws',
+	'a-propos/proces-verbaux': 'about/business-records',
+	'a-propos/archives': 'about/archive',
+	environnement: 'environment',
+	'environnement/echantillonnage-eau': 'environment/water-sampling',
+	'environnement/myriophylle': 'environment/milfoil',
+	'environnement/rivage': 'environment/shoreline',
+	'environnement/eau': 'environment/water',
+	'environnement/navigation': 'environment/boating',
+	'environnement/navigation/securite-navigation-sports-nautiques': 'environment/boating',
+	'environnement/faune': 'environment/wildlife',
+	communaute: 'community',
+	'communaute/regate': 'community/regatta',
+	'communaute/securite': 'community/security',
+	'communaute/securite/police': 'community/security/police',
+	'communaute/securite/contacts-urgence': 'community/security/emergency-contacts',
+	'communaute/securite/incendie': 'community/security/fire',
+	'communaute/securite/surveillance-quartier': 'community/security/neighbourhood-watch',
+	histoire: 'history',
+	'histoire/premieres-nations': 'history/first-nations',
+	'histoire/club-de-peche': 'history/fishing-club',
+	'histoire/cartes': 'history/maps',
+	'histoire/photos-aeriennes': 'history/aerial-photos',
+	'histoire/recits-familles-et-individus': 'history/stories-documenting-families-and-individuals',
+	'histoire/recits-histoire-du-lac': 'history/stories-documenting-history-of-the-lake',
+	'histoire/collection-coupures-de-journaux-lac-bernard':
+		'history/newspaper-clippings-collection-of-lac-bernard',
+	'histoire/recherche-historique-et-sources': 'history/historical-research-and-sources',
+	'histoire/proprietes-et-titres': 'history/properties-and-deeds',
+	'histoire/histoire-connexe': 'history/related-history',
+	adhesion: 'membership',
+	'adhesion/enrollment': 'membership/enrollment',
+	'adhesion/renewal': 'membership/renewal',
+	contact: 'contact',
+	news: 'news',
 };
 
-// Reverse mapping: French -> English
-const reverseSlugMap: Record<string, string> = Object.fromEntries(
-	Object.entries(slugMap).map(([en, fr]) => [fr, en])
-);
-
-/**
- * Translate a path segment from English to French or vice versa
- */
-function translateSlug(pathSegment: string, fromLang: Language, toLang: Language): string {
-	if (fromLang === toLang) return pathSegment;
-	
-	if (fromLang === 'en' && toLang === 'fr') {
-		return slugMap[pathSegment] || pathSegment;
-	} else if (fromLang === 'fr' && toLang === 'en') {
-		return reverseSlugMap[pathSegment] || pathSegment;
-	}
-	
-	return pathSegment;
+function stripTrailingSlash(p: string): string {
+	if (p.length > 1 && p.endsWith('/')) return p.slice(0, -1);
+	return p;
 }
 
 /**
- * Translate a full path (without locale prefix) between languages
+ * Path without locale prefix, using English slugs (e.g. `/about`, `/news/foo`).
  */
-function translatePath(pathWithoutLocale: string, fromLang: Language, toLang: Language): string {
-	if (fromLang === toLang) return pathWithoutLocale;
-	if (pathWithoutLocale === '/') return '/';
-	
-	// Remove leading and trailing slashes for processing
-	const cleanPath = pathWithoutLocale.replace(/^\/+|\/+$/g, '');
-	
-	// News/blog posts use the same slug in both languages, so no translation needed
-	// The language is determined by the URL path (/en/ or not)
-	if (cleanPath.startsWith('news/')) {
-		// Just return the path as-is (language is determined by URL prefix)
-		return pathWithoutLocale;
+export function getEnglishPathFromPathname(pathname: string): string {
+	let p = pathname.startsWith('/') ? pathname : `/${pathname}`;
+	p = stripTrailingSlash(p);
+	const withoutLocale = p.replace(/^\/(en|fr)(\/|$)/, '/');
+	const normalized = withoutLocale === '' ? '/' : withoutLocale;
+	if (normalized === '/') return '/';
+
+	const noLeading = normalized.replace(/^\//, '');
+	const segments = noLeading.split('/').filter(Boolean);
+
+	if (segments[0] === 'news' && segments.length >= 2) {
+		return `/${segments.join('/')}`;
 	}
-	
-	// Try to translate the full path first (for nested paths)
-	if (fromLang === 'en' && toLang === 'fr') {
-		const translated = slugMap[cleanPath];
-		if (translated) return '/' + translated;
-	} else if (fromLang === 'fr' && toLang === 'en') {
-		const translated = reverseSlugMap[cleanPath];
-		if (translated) return '/' + translated;
+	if (segments[0] === 'news') {
+		return '/news';
 	}
-	
-	// If no full path match, translate segment by segment
-	const segments = cleanPath.split('/');
-	const translatedSegments: string[] = [];
-	
-	for (let i = 0; i < segments.length; i++) {
-		const segment = segments[i];
-		const pathSoFar = segments.slice(0, i + 1).join('/');
-		
-		// Try to translate the path up to this point
-		let translated: string | undefined;
-		if (fromLang === 'en' && toLang === 'fr') {
-			translated = slugMap[pathSoFar];
-		} else if (fromLang === 'fr' && toLang === 'en') {
-			translated = reverseSlugMap[pathSoFar];
-		}
-		
-		if (translated) {
-			// Use the last segment of the translated path
-			translatedSegments.push(translated.split('/').pop() || segment);
-		} else {
-			// Try translating just this segment
-			const segmentTranslated = translateSlug(segment, fromLang, toLang);
-			translatedSegments.push(segmentTranslated);
-		}
+
+	if (
+		segments[0] === 'environnement' &&
+		segments[1] === 'echantillonnage-eau' &&
+		segments.length === 3 &&
+		/^\d{4}$/.test(segments[2])
+	) {
+		return `/environment/water-sampling/${segments[2]}`;
 	}
-	
-	return '/' + translatedSegments.join('/');
+
+	const legacyKey = segments.join('/');
+	const mapped = legacyFrenchPathToEnglishPath[legacyKey];
+	if (mapped) {
+		return mapped === '' ? '/' : `/${mapped}`;
+	}
+
+	// Already English-slug paths under no locale (legacy) or after /fr|/en
+	return normalized;
 }
 
+function normalizePathSegment(segment: string): string {
+	return segment.endsWith('.html') ? segment.slice(0, -5) : segment;
+}
+
+/** First URL segment when it is `en` or `fr` (prefix routing); default French. */
 export function getLanguageFromPath(pathname: string): Language {
-	if (pathHasLocale(pathname)) {
-		const locale = getLocaleByPath(pathname);
-		return (locale || 'fr') as Language;
-	}
-	// If no locale in path, it's the default locale (fr)
+	const segments = pathname
+		.split('/')
+		.map(normalizePathSegment)
+		.filter(Boolean);
+	if (segments.length === 0) return 'fr';
+
+	const n = normalizeLocaleSegment(segments[0]);
+	if (n === normalizeLocaleSegment('en')) return 'en';
+	if (n === normalizeLocaleSegment('fr')) return 'fr';
 	return 'fr';
+}
+
+type AstroLocaleContext = { currentLocale?: string | undefined; url: { pathname: string } };
+
+/** Prefer `Astro.currentLocale` from built-in i18n; fall back to pathname if unset. */
+export function languageFromAstro(astro: AstroLocaleContext): Language {
+	const c = astro.currentLocale;
+	if (c === 'en' || c === 'fr') return c;
+	return getLanguageFromPath(astro.url.pathname);
 }
 
 export function getAlternateLanguage(currentLang: Language): Language {
@@ -142,67 +134,16 @@ export function getAlternateLanguage(currentLang: Language): Language {
 }
 
 export function getLocalizedPath(pathname: string, lang: Language): string {
-	// Normalize path - ensure it starts with /
-	let normalizedPath = pathname.startsWith('/') ? pathname : `/${pathname}`;
-	
-	// Detect the source language from the path
-	let sourceLang: Language = 'fr';
-	let pathWithoutLocale = normalizedPath;
-	
-	// Check if path has a locale prefix
-	if (normalizedPath.startsWith('/en/') || normalizedPath === '/en') {
-		sourceLang = 'en';
-		pathWithoutLocale = normalizedPath.replace(/^\/en(\/|$)/, '/');
-	} else if (normalizedPath.startsWith('/fr/') || normalizedPath === '/fr') {
-		sourceLang = 'fr';
-		pathWithoutLocale = normalizedPath.replace(/^\/fr(\/|$)/, '/');
-	}
-	
-	// Normalize: remove double slashes and ensure it starts with /
-	pathWithoutLocale = pathWithoutLocale.replace(/\/+/g, '/');
-	if (pathWithoutLocale !== '/' && !pathWithoutLocale.startsWith('/')) {
-		pathWithoutLocale = `/${pathWithoutLocale}`;
-	}
-	
-	// If no locale prefix was detected, try to detect the language from the slug itself
-	if (sourceLang === 'fr' && pathWithoutLocale !== '/') {
-		const cleanPath = pathWithoutLocale.replace(/^\//, '');
-		// Check if this is an English slug (exists in slug map)
-		// Try full path first, then check if any segment is English
-		if (slugMap[cleanPath]) {
-			sourceLang = 'en';
-		} else {
-			// Check if the first segment is an English slug
-			const firstSegment = cleanPath.split('/')[0];
-			if (slugMap[firstSegment]) {
-				sourceLang = 'en';
-			}
-		}
-	}
-	
-	// Translate the path if switching languages
-	if (sourceLang !== lang && pathWithoutLocale !== '/') {
-		pathWithoutLocale = translatePath(pathWithoutLocale, sourceLang, lang);
-	}
-	
-	// If default locale (fr) and prefixDefaultLocale is false, return path as-is
-	if (lang === 'fr') {
-		return pathWithoutLocale;
-	}
-	
-	// For non-default locale, add prefix
-	// Handle root path specially - return /en instead of /en/
-	if (pathWithoutLocale === '/') {
+	const englishPath = getEnglishPathFromPathname(pathname);
+	if (englishPath === '/') {
 		return `/${lang}`;
 	}
-	return `/${lang}${pathWithoutLocale}`;
+	return `/${lang}${englishPath}`;
 }
 
 export function getLocalizedHref(href: string, currentLang: Language): string {
-	// Handle absolute URLs
 	if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('mailto:') || href.startsWith('#')) {
 		return href;
 	}
-	
 	return getLocalizedPath(href, currentLang);
 }

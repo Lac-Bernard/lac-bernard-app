@@ -3,7 +3,7 @@ import '../styles/theme.css';
 import '../styles/components.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
-import { getLocalizedHref, type Language } from '../utils/i18n';
+import { getLocalizedHref, languageFromAstro, type Language } from '../utils/i18n';
 
 interface NavItem {
   href: string;
@@ -22,105 +22,106 @@ const { title, description, content, section } = Astro.props;
 const { Content } = content || {};
 
 const currentPath = Astro.url.pathname;
-const currentLang = (Astro.currentLocale || 'fr') as Language;
+const currentLang = languageFromAstro(Astro);
 
-// Define navigation items for each section
+// Sidebar links: `href` is locale-agnostic (no `/en` or `/fr`). Labels differ per language.
+// Rendering strips any accidental locale prefix, then `getLocalizedHref` adds the active locale.
 const aboutNav: { en: NavItem[]; fr: NavItem[] } = {
   en: [
-    { href: '/en/about', label: 'About the Association' },
-    { href: '/en/about/executive', label: 'Association Executive' },
-    { href: '/en/about/committees', label: 'Association Committees' },
-    { href: '/en/about/bylaws', label: 'Association Bylaws' },
-    { href: '/en/about/business-records', label: 'Recent Business Records' },
-    { href: '/en/about/archive', label: 'Archive Portal' },
+    { href: '/about', label: 'About the Association' },
+    { href: '/about/executive', label: 'Association Executive' },
+    { href: '/about/committees', label: 'Association Committees' },
+    { href: '/about/bylaws', label: 'Association Bylaws' },
+    { href: '/about/business-records', label: 'Recent Business Records' },
+    { href: '/about/archive', label: 'Archive Portal' },
   ],
   fr: [
-    { href: '/a-propos', label: 'À propos de l\'Association' },
-    { href: '/a-propos/comite-executif', label: 'Comité exécutif' },
-    { href: '/a-propos/comites', label: 'Comités de l\'Association' },
-    { href: '/a-propos/reglements', label: 'Règlements de l\'Association' },
-    { href: '/a-propos/proces-verbaux', label: 'Procès-verbaux récents' },
-    { href: '/a-propos/archives', label: 'Portail d\'archives' },
+    { href: '/about', label: 'À propos de l\'Association' },
+    { href: '/about/executive', label: 'Comité exécutif' },
+    { href: '/about/committees', label: 'Comités de l\'Association' },
+    { href: '/about/bylaws', label: 'Règlements de l\'Association' },
+    { href: '/about/business-records', label: 'Procès-verbaux récents' },
+    { href: '/about/archive', label: 'Portail d\'archives' },
   ],
 };
 
 const environmentNav: { en: NavItem[]; fr: NavItem[] } = {
   en: [
-    { href: '/en/environment', label: 'Environment' },
-    { href: '/en/environment/water-sampling', label: 'Water Sampling Program' },
-    { href: '/en/environment/milfoil', label: 'Eurasian Milfoil' },
-    { href: '/en/environment/shoreline', label: 'Protecting Our Shoreline' },
-    { href: '/en/environment/water', label: 'Protecting Our Water' },
-    { href: '/en/environment/boating', label: 'Boating on Lac Bernard' },
-    { href: '/en/environment/wildlife', label: 'Lake Wildlife' },
+    { href: '/environment', label: 'Environment' },
+    { href: '/environment/water-sampling', label: 'Water Sampling Program' },
+    { href: '/environment/milfoil', label: 'Eurasian Milfoil' },
+    { href: '/environment/shoreline', label: 'Protecting Our Shoreline' },
+    { href: '/environment/water', label: 'Protecting Our Water' },
+    { href: '/environment/boating', label: 'Boating on Lac Bernard' },
+    { href: '/environment/wildlife', label: 'Lake Wildlife' },
   ],
   fr: [
-    { href: '/environnement', label: 'Environnement' },
-    { href: '/environnement/echantillonnage-eau', label: 'Programme d\'échantillonnage de l\'eau' },
-    { href: '/environnement/myriophylle', label: 'Myriophylle à épi' },
-    { href: '/environnement/rivage', label: 'Protéger notre rivage' },
-    { href: '/environnement/eau', label: 'Protéger notre eau' },
-    { href: '/environnement/navigation', label: 'Navigation sur le lac Bernard' },
-    { href: '/environnement/faune', label: 'Faune du lac' },
+    { href: '/environment', label: 'Environnement' },
+    { href: '/environment/water-sampling', label: 'Programme d\'échantillonnage de l\'eau' },
+    { href: '/environment/milfoil', label: 'Myriophylle à épi' },
+    { href: '/environment/shoreline', label: 'Protéger notre rivage' },
+    { href: '/environment/water', label: 'Protéger notre eau' },
+    { href: '/environment/boating', label: 'Navigation sur le lac Bernard' },
+    { href: '/environment/wildlife', label: 'Faune du lac' },
   ],
 };
 
 const historyNav: { en: NavItem[]; fr: NavItem[] } = {
   en: [
-    { href: '/en/history', label: 'History' },
-    { href: '/en/history/first-nations', label: 'First Nations' },
-    { href: '/en/history/fishing-club', label: 'Fishing Club' },
-    { href: '/en/history/maps', label: 'Maps' },
-    { href: '/en/history/aerial-photos', label: 'Aerial Photos' },
-    { href: '/en/history/stories-documenting-families-and-individuals', label: 'Stories: Documenting Families and Individuals' },
-    { href: '/en/history/stories-documenting-history-of-the-lake', label: 'Stories: Documenting History of the Lake' },
-    { href: '/en/history/newspaper-clippings-collection-of-lac-bernard', label: 'Newspaper Clippings Collection of Lac Bernard' },
-    { href: '/en/history/historical-research-and-sources', label: 'Historical Research and Sources' },
-    { href: '/en/history/properties-and-deeds', label: 'Properties and Deeds' },
-    { href: '/en/history/related-history', label: 'Related History' },
+    { href: '/history', label: 'History' },
+    { href: '/history/first-nations', label: 'First Nations' },
+    { href: '/history/fishing-club', label: 'Fishing Club' },
+    { href: '/history/maps', label: 'Maps' },
+    { href: '/history/aerial-photos', label: 'Aerial Photos' },
+    { href: '/history/stories-documenting-families-and-individuals', label: 'Stories: Documenting Families and Individuals' },
+    { href: '/history/stories-documenting-history-of-the-lake', label: 'Stories: Documenting History of the Lake' },
+    { href: '/history/newspaper-clippings-collection-of-lac-bernard', label: 'Newspaper Clippings Collection of Lac Bernard' },
+    { href: '/history/historical-research-and-sources', label: 'Historical Research and Sources' },
+    { href: '/history/properties-and-deeds', label: 'Properties and Deeds' },
+    { href: '/history/related-history', label: 'Related History' },
   ],
   fr: [
-    { href: '/histoire', label: 'Histoire' },
-    { href: '/histoire/premieres-nations', label: 'Premières Nations' },
-    { href: '/histoire/club-de-peche', label: 'Club de pêche' },
-    { href: '/histoire/cartes', label: 'Cartes' },
-    { href: '/histoire/photos-aeriennes', label: 'Photos aériennes' },
-    { href: '/histoire/recits-familles-et-individus', label: 'Récits: Documentation des familles et individus' },
-    { href: '/histoire/recits-histoire-du-lac', label: 'Récits: Documentation de l\'histoire du lac' },
-    { href: '/histoire/collection-coupures-de-journaux-lac-bernard', label: 'Collection de coupures de journaux du lac Bernard' },
-    { href: '/histoire/recherche-historique-et-sources', label: 'Recherche historique et sources' },
-    { href: '/histoire/proprietes-et-titres', label: 'Propriétés et titres' },
-    { href: '/histoire/histoire-connexe', label: 'Histoire connexe' },
+    { href: '/history', label: 'Histoire' },
+    { href: '/history/first-nations', label: 'Premières Nations' },
+    { href: '/history/fishing-club', label: 'Club de pêche' },
+    { href: '/history/maps', label: 'Cartes' },
+    { href: '/history/aerial-photos', label: 'Photos aériennes' },
+    { href: '/history/stories-documenting-families-and-individuals', label: 'Récits: Documentation des familles et individus' },
+    { href: '/history/stories-documenting-history-of-the-lake', label: 'Récits: Documentation de l\'histoire du lac' },
+    { href: '/history/newspaper-clippings-collection-of-lac-bernard', label: 'Collection de coupures de journaux du lac Bernard' },
+    { href: '/history/historical-research-and-sources', label: 'Recherche historique et sources' },
+    { href: '/history/properties-and-deeds', label: 'Propriétés et titres' },
+    { href: '/history/related-history', label: 'Histoire connexe' },
   ],
 };
 
 const communityNav: { en: NavItem[]; fr: NavItem[] } = {
   en: [
-    { href: '/en/community', label: 'Community' },
-    { href: '/en/community/regatta', label: 'Annual Regatta' },
-    { 
-      href: '/en/community/security', 
+    { href: '/community', label: 'Community' },
+    { href: '/community/regatta', label: 'Annual Regatta' },
+    {
+      href: '/community/security',
       label: 'Security',
       children: [
-        { href: '/en/community/security/police', label: 'Police' },
-        { href: '/en/community/security/emergency-contacts', label: 'Emergency Contacts' },
-        { href: '/en/community/security/fire', label: 'Fire' },
-        { href: '/en/community/security/neighbourhood-watch', label: 'Neighbourhood Watch Program' },
-      ]
+        { href: '/community/security/police', label: 'Police' },
+        { href: '/community/security/emergency-contacts', label: 'Emergency Contacts' },
+        { href: '/community/security/fire', label: 'Fire' },
+        { href: '/community/security/neighbourhood-watch', label: 'Neighbourhood Watch Program' },
+      ],
     },
   ],
   fr: [
-    { href: '/communaute', label: 'Communauté' },
-    { href: '/communaute/regate', label: 'Régate annuelle' },
-    { 
-      href: '/communaute/securite', 
+    { href: '/community', label: 'Communauté' },
+    { href: '/community/regatta', label: 'Régate annuelle' },
+    {
+      href: '/community/security',
       label: 'Sécurité',
       children: [
-        { href: '/communaute/securite/police', label: 'Police' },
-        { href: '/communaute/securite/contacts-urgence', label: 'Contacts d\'urgence' },
-        { href: '/communaute/securite/incendie', label: 'Incendie' },
-        { href: '/communaute/securite/surveillance-quartier', label: 'Programme de surveillance de quartier' },
-      ]
+        { href: '/community/security/police', label: 'Police' },
+        { href: '/community/security/emergency-contacts', label: 'Contacts d\'urgence' },
+        { href: '/community/security/fire', label: 'Incendie' },
+        { href: '/community/security/neighbourhood-watch', label: 'Programme de surveillance de quartier' },
+      ],
     },
   ],
 };

@@ -10,8 +10,8 @@ const currentLang = (Astro.currentLocale || 'en') as Language;
 
 const [page] = currentLang === 'fr' 
   ? await Astro.glob('../../../content/pages/fr/membership.md')
-  : await Astro.glob('../../../content/pages/membership.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}membership.md`);
+  : await Astro.glob('../../../content/pages/en/membership.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}membership.md`);
 
 const titles = {
   en: 'Membership',

@@ -5,7 +5,7 @@ description: Apprenez-en plus sur l'Association du lac Bernard, notre mission et
 
 L'Association des propriétaires et résidents du lac Bernard est une corporation à but non lucratif créée en vertu de la partie 3 de la Loi sur les compagnies du Québec. Elle a été constituée en 1979 comme successeur de l'Association des propriétaires de chalets du lac Bernard qui a commencé dans les années 1930. Aujourd'hui, nous avons une adhésion moyenne d'environ 250 à 300 propriétaires, et même quelques non-résidents enthousiastes qui se soucient de notre lac ! Nous travaillons dans notre communauté et avec les municipalités de La Pêche et Low, ainsi qu'avec la MRC des Collines-de-l'Outaouais pour promouvoir le développement sécuritaire et la protection environnementale de notre magnifique lac.
 
-[Notre histoire est riche et vous pouvez la consulter sur ce site.](/histoire)
+[Notre histoire est riche et vous pouvez la consulter sur ce site.](/fr/history)
 
 ## Nos priorités
 
@@ -21,15 +21,15 @@ L'Association est gouvernée par un **conseil d'administration**, élu lors de l
 
 ### Règlements de l'Association
 
-L'Association est régie par les lois de la province de Québec par le biais des règlements de l'Association qui ont été mis à jour pour la dernière fois en 2021. [Les règlements de l'Association peuvent être consultés ici.](/a-propos/reglements)
+L'Association est régie par les lois de la province de Québec par le biais des règlements de l'Association qui ont été mis à jour pour la dernière fois en 2021. [Les règlements de l'Association peuvent être consultés ici.](/fr/about/bylaws)
 
 ### Procès-verbaux récents
 
-L'Association conserve les procès-verbaux des réunions du conseil d'administration ainsi que de l'assemblée générale annuelle et d'une mise à jour automnale aux membres. Les 2 années les plus récentes de procès-verbaux se trouvent ici, tandis que les procès-verbaux datant de l'année en cours jusqu'en 1950 peuvent être trouvés dans les archives de l'Association. [Les procès-verbaux récents tels que les procès-verbaux de réunions peuvent être consultés ici.](/a-propos/proces-verbaux)
+L'Association conserve les procès-verbaux des réunions du conseil d'administration ainsi que de l'assemblée générale annuelle et d'une mise à jour automnale aux membres. Les 2 années les plus récentes de procès-verbaux se trouvent ici, tandis que les procès-verbaux datant de l'année en cours jusqu'en 1950 peuvent être trouvés dans les archives de l'Association. [Les procès-verbaux récents tels que les procès-verbaux de réunions peuvent être consultés ici.](/fr/about/business-records)
 
 ### Les archives
 
-Vous pouvez explorer la riche histoire de notre lac grâce aux archives où vous pouvez accéder aux multiples types de documents, y compris les documents, photos, cartes et autres matériaux, documentant l'histoire du lac Bernard et de sa communauté. Les archives sont également le dépôt officiel des dossiers d'affaires de l'Association des propriétaires et résidents du lac Bernard. [Les archives peuvent être consultées ici.](/a-propos/archives)
+Vous pouvez explorer la riche histoire de notre lac grâce aux archives où vous pouvez accéder aux multiples types de documents, y compris les documents, photos, cartes et autres matériaux, documentant l'histoire du lac Bernard et de sa communauté. Les archives sont également le dépôt officiel des dossiers d'affaires de l'Association des propriétaires et résidents du lac Bernard. [Les archives peuvent être consultées ici.](/fr/about/archive)
 
 ## L'adhésion est importante mais le bénévolat aussi !
 
@@ -40,7 +40,7 @@ L'Association est composée d'une équipe de bénévoles qui travaillent pour pr
 - Histoire et archives
 - Navigation sur le lac
 
-L'Association est toujours à la recherche de nouvelles idées ainsi que de nouveaux bénévoles. Vous pouvez faire une différence en rejoignant un comité et en vous impliquant dans votre communauté du lac ! [Contactez-nous et nous vous aiderons à commencer.](/contact)
+L'Association est toujours à la recherche de nouvelles idées ainsi que de nouveaux bénévoles. Vous pouvez faire une différence en rejoignant un comité et en vous impliquant dans votre communauté du lac ! [Contactez-nous et nous vous aiderons à commencer.](/fr/contact)
 
 En plus de devenir membre ou de renouveler votre adhésion, ce site fournit des informations sur nos activités, les événements à venir et quels sont nos principaux défis aujourd'hui et ce que nous faisons à leur sujet. C'est également un canal de communication. 
 

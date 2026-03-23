@@ -7,8 +7,8 @@ const currentLang = (Astro.currentLocale || 'en') as Language;
 
 const [page] = currentLang === 'fr' 
   ? await Astro.glob('../../../content/pages/fr/contact.md')
-  : await Astro.glob('../../../content/pages/contact.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}contact.md`);
+  : await Astro.glob('../../../content/pages/en/contact.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}contact.md`);
 
 const titles = {
   en: 'Contact Us',

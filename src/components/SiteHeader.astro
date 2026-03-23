@@ -1,8 +1,15 @@
 ---
-import { getAlternateLanguage, getLocalizedHref, getLocalizedPath, type Language } from '../utils/i18n';
+import {
+	getAlternateLanguage,
+	getEnglishPathFromPathname,
+	getLocalizedHref,
+	getLocalizedPath,
+	languageFromAstro,
+	type Language,
+} from '../utils/i18n';
 
 const currentPath = Astro.url.pathname;
-const currentLang = (Astro.currentLocale || 'fr') as Language;
+const currentLang = languageFromAstro(Astro);
 const alternateLang = getAlternateLanguage(currentLang);
 
 // Get the path without locale prefix for switching
@@ -37,30 +44,27 @@ const altLabels = navLabels[alternateLang];
 
 // Determine which section is currently active based on the path
 function getActiveSection(path: string): string | null {
-	// Normalize path - remove locale prefix and trailing slash
-	const normalizedPath = path.replace(/^\/(en|fr)(\/|$)/, '/').replace(/\/$/, '') || '/';
-	
-	// Check each section (including subpages)
-	// Note: order matters - check more specific paths first
-	if (normalizedPath.startsWith('/about') || normalizedPath.startsWith('/a-propos')) {
+	const englishPath = getEnglishPathFromPathname(path).replace(/\/$/, '') || '/';
+
+	if (englishPath.startsWith('/about')) {
 		return 'about';
 	}
-	if (normalizedPath.startsWith('/membership') || normalizedPath.startsWith('/adhesion')) {
+	if (englishPath.startsWith('/membership')) {
 		return 'membership';
 	}
-	if (normalizedPath.startsWith('/environment') || normalizedPath.startsWith('/environnement')) {
+	if (englishPath.startsWith('/environment')) {
 		return 'environment';
 	}
-	if (normalizedPath.startsWith('/community') || normalizedPath.startsWith('/communaute')) {
+	if (englishPath.startsWith('/community')) {
 		return 'community';
 	}
-	if (normalizedPath.startsWith('/history') || normalizedPath.startsWith('/histoire')) {
+	if (englishPath.startsWith('/history')) {
 		return 'history';
 	}
-	if (normalizedPath.startsWith('/contact')) {
+	if (englishPath.startsWith('/contact')) {
 		return 'contact';
 	}
-	
+
 	return null;
 }
 

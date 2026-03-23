@@ -7,8 +7,8 @@ const currentLang = (Astro.currentLocale || 'en') as Language;
 
 const [page] = currentLang === 'fr' 
   ? await Astro.glob('../../../../content/pages/fr/community-regatta.md')
-  : await Astro.glob('../../../../content/pages/community-regatta.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : ''}community-regatta.md`);
+  : await Astro.glob('../../../../content/pages/en/community-regatta.md');
+if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}community-regatta.md`);
 
 const titles = {
   en: 'Annual Regatta',

@@ -18,7 +18,7 @@ securitepublique@mrcdescollines.com
 **Liaison policière**
 
 * La plupart des effractions se produisent dans les chalets du dimanche soir au mardi et les criminels prennent leur temps car ils savent que les gens ne reviendront pas pendant cette période.
-* Les résidents permanents sont importants tout comme la [surveillance de quartier](/communaute/securite/surveillance-quartier) comme moyens de dissuasion contre les crimes contre les biens.
+* Les résidents permanents sont importants tout comme la [surveillance de quartier](/fr/community/security/neighbourhood-watch) comme moyens de dissuasion contre les crimes contre les biens.
 
 L'agent Fournel a souligné l'importance de tenir la police informée des étrangers et/ou des événements inhabituels dans notre région. Cela aide la police à établir des tendances et des liens avec d'autres crimes.  
 Il a demandé aux membres d'appeler la police s'ils voient tout comportement criminel ou inhabituel. L'agent Fournel a décrit d'autres services de la police MRC disponibles aux membres:

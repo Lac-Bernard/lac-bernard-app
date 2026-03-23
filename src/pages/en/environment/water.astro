@@ -1,8 +1,8 @@
 ---
 import Page from '../../../layouts/Page.astro';
 
-const [page] = await Astro.glob('../../../../content/pages/environment-water.md');
-if (!page) throw new Error('Missing content/pages/environment-water.md');
+const [page] = await Astro.glob('../../../../content/pages/en/environment-water.md');
+if (!page) throw new Error('Missing content/pages/en/environment-water.md');
 
 const title = page.frontmatter?.title || 'Protecting Our Water';
 const description = page.frontmatter?.description;
