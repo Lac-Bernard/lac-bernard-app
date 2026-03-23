@@ -58,6 +58,30 @@ export const legacyFrenchPathToEnglishPath: Record<string, string> = {
 	news: 'news',
 };
 
+/**
+ * Old site used French slugs at the host root (e.g. `/environnement/eau`). Maps to canonical `/fr/...`
+ * with English slugs. Returns `null` if the path is not a legacy French URL or is already under `/en/` or `/fr/`.
+ */
+export function getLegacyFrenchRedirect(pathname: string): string | null {
+	const p = pathname.startsWith('/') ? pathname : `/${pathname}`;
+	if (p.startsWith('/en/') || p.startsWith('/fr/') || p === '/en' || p === '/fr') {
+		return null;
+	}
+	if (p.startsWith('/_') || p.startsWith('/api') || p.startsWith('/admin')) {
+		return null;
+	}
+	const stripped = p.length > 1 && p.endsWith('/') ? p.slice(0, -1) : p;
+	const lookupKey = stripped === '/' ? '/' : stripped.slice(1);
+	if (!Object.prototype.hasOwnProperty.call(legacyFrenchPathToEnglishPath, lookupKey)) {
+		return null;
+	}
+	const mapped = legacyFrenchPathToEnglishPath[lookupKey as keyof typeof legacyFrenchPathToEnglishPath];
+	if (mapped === '/') {
+		return '/fr/';
+	}
+	return `/fr/${mapped}`;
+}
+
 function stripTrailingSlash(p: string): string {
 	if (p.length > 1 && p.endsWith('/')) return p.slice(0, -1);
 	return p;
