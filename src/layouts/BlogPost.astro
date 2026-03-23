@@ -7,6 +7,7 @@ import '../styles/components.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import FormattedDate from '../components/FormattedDate.astro';
+import { siteUi } from '../i18n/site';
 import { getLocalizedPath, languageFromAstro } from '../utils/i18n';
 import { blogPostSlug, isBlogPostInLocale } from '../utils/blog';
 
@@ -33,6 +34,7 @@ const updatedDateObj = updatedDate ? (updatedDate instanceof Date ? updatedDate 
 const postId = currentPostId || Astro.url.pathname.split('/').filter(Boolean).pop() || '';
 
 const lang = languageFromAstro(Astro);
+const site = siteUi[lang];
 const isFrench = lang === 'fr';
 
 // Get latest 10 blog posts for sidebar (filter by language)
@@ -47,7 +49,7 @@ const latestPosts = allPosts
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>{title} – {lang === 'fr' ? 'Association du lac Bernard' : 'Lac Bernard Association'}</title>
+		<title>{title} – {site.siteNameSuffix}</title>
 		<meta name="description" content={description} />
 	</head>
 

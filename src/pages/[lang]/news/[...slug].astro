@@ -1,15 +1,28 @@
 ---
+import type { Language } from '@/utils/i18n';
 import { getCollection, render } from 'astro:content';
-import BlogPost from '../../../layouts/BlogPost.astro';
-import { blogCollectionId, blogPostSlug } from '../../../utils/blog';
+import BlogPost from '@/layouts/BlogPost.astro';
+import { blogCollectionId, blogPostSlug } from '@/utils/blog';
+
+const locales: Language[] = ['en', 'fr'];
 
 export async function getStaticPaths() {
 	const posts = await getCollection('blog');
-	return posts
-		.filter((post) => post.id.startsWith('fr/'))
-		.map((post) => ({
-			params: { slug: blogPostSlug(post.id) },
-		}));
+	return locales.flatMap((lang) =>
+		posts
+			.filter((post) => post.id.startsWith(`${lang}/`))
+			.map((post) => ({
+				params: {
+					lang,
+					slug: blogPostSlug(post.id),
+				},
+			})),
+	);
+}
+
+const lang = Astro.params.lang as Language;
+if (lang !== 'en' && lang !== 'fr') {
+	throw new Error(`Invalid language: ${Astro.params.lang}`);
 }
 
 const raw = Astro.params.slug;
@@ -19,7 +32,7 @@ if (!slugPath) {
 }
 
 const posts = await getCollection('blog');
-const post = posts.find((p) => p.id === blogCollectionId('fr', slugPath));
+const post = posts.find((p) => p.id === blogCollectionId(lang, slugPath));
 
 if (!post) {
 	throw new Error(`Post not found for slug: ${slugPath}`);
@@ -30,7 +43,9 @@ if (!post.data) {
 }
 
 if (!post.data.pubDate) {
-	throw new Error(`pubDate is missing for post: ${post.id}. Available keys: ${Object.keys(post.data).join(', ')}`);
+	throw new Error(
+		`pubDate is missing for post: ${post.id}. Available keys: ${Object.keys(post.data).join(', ')}`,
+	);
 }
 
 const { Content } = await render(post);
