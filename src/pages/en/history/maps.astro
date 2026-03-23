@@ -1,21 +1,9 @@
 ---
-import Page from '../../../layouts/Page.astro';
-import { type Language } from '../../../utils/i18n';
+import Page from '@/layouts/Page.astro';
+import { loadContentPage } from '@/utils/loadContentPage';
 
-const currentPath = Astro.url.pathname;
-const currentLang = (Astro.currentLocale || 'en') as Language;
-
-const [page] = currentLang === 'fr' 
-  ? await Astro.glob('../../../../content/pages/fr/history-maps.md')
-  : await Astro.glob('../../../../content/pages/en/history-maps.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}history-maps.md`);
-
-const titles = {
-  en: 'Maps',
-  fr: 'Cartes',
-};
-
-const title = page.frontmatter?.title || titles[currentLang];
+const page = await loadContentPage('en', 'history-maps');
+const title = page.frontmatter?.title ?? "Maps";
 const description = page.frontmatter?.description;
 ---
 

@@ -1,18 +1,17 @@
 ---
 import '../../styles/theme.css';
 import '../../styles/components.css';
-import SiteHeader from '../../components/SiteHeader.astro';
-import SiteFooter from '../../components/SiteFooter.astro';
-import { type Language } from '../../utils/i18n';
-import { blogPostSlug } from '../../utils/blog';
+import SiteHeader from '@/components/SiteHeader.astro';
+import SiteFooter from '@/components/SiteFooter.astro';
+import type { Language } from '@/utils/i18n';
+import { blogPostSlug } from '@/utils/blog';
 import { getCollection } from 'astro:content';
-import FormattedDate from '../../components/FormattedDate.astro';
+import FormattedDate from '@/components/FormattedDate.astro';
+import { loadContentPage } from '@/utils/loadContentPage';
 
-const currentLang = (Astro.currentLocale || 'fr') as Language;
+const currentLang: Language = 'fr';
 
-const [home] = await Astro.glob('../../../content/pages/fr/home.md');
-if (!home) throw new Error('Missing ../../../content/pages/fr/home.md');
-
+const home = await loadContentPage('fr', 'home');
 const { Content, frontmatter } = home;
 
 const allPosts = await getCollection('blog');

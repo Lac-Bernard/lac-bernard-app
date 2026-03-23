@@ -1,21 +1,9 @@
 ---
-import Page from '../../../layouts/Page.astro';
-import { type Language } from '../../../utils/i18n';
+import Page from '@/layouts/Page.astro';
+import { loadContentPage } from '@/utils/loadContentPage';
 
-const currentPath = Astro.url.pathname;
-const currentLang = (Astro.currentLocale || 'en') as Language;
-
-const [page] = currentLang === 'fr' 
-  ? await Astro.glob('../../../../content/pages/fr/environment-water-sampling.md')
-  : await Astro.glob('../../../../content/pages/en/environment-water-sampling.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}environment-water-sampling.md`);
-
-const titles = {
-  en: 'Water Sampling Program',
-  fr: 'Programme d\'échantillonnage de l\'eau',
-};
-
-const title = page.frontmatter?.title || titles[currentLang];
+const page = await loadContentPage('en', 'environment-water-sampling');
+const title = page.frontmatter?.title ?? "Water Sampling Program";
 const description = page.frontmatter?.description;
 ---
 

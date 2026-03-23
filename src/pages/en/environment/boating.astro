@@ -1,10 +1,9 @@
 ---
-import Page from '../../../layouts/Page.astro';
+import Page from '@/layouts/Page.astro';
+import { loadContentPage } from '@/utils/loadContentPage';
 
-const [page] = await Astro.glob('../../../../content/pages/en/environment-boating.md');
-if (!page) throw new Error('Missing content/pages/en/environment-boating.md');
-
-const title = page.frontmatter?.title || 'Boating on Lac Bernard';
+const page = await loadContentPage('en', 'environment-boating');
+const title = page.frontmatter?.title ?? "Boating on Lac Bernard";
 const description = page.frontmatter?.description;
 ---
 

@@ -1,10 +1,9 @@
 ---
-import Page from '../../../layouts/Page.astro';
+import Page from '@/layouts/Page.astro';
+import { loadContentPage } from '@/utils/loadContentPage';
 
-const [page] = await Astro.glob('../../../../content/pages/en/about-bylaws.md');
-if (!page) throw new Error('Missing content/pages/en/about-bylaws.md');
-
-const title = page.frontmatter?.title || 'Association Bylaws';
+const page = await loadContentPage('en', 'about-bylaws');
+const title = page.frontmatter?.title ?? "Association Bylaws";
 const description = page.frontmatter?.description;
 ---
 

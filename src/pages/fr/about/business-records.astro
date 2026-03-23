@@ -1,19 +1,9 @@
 ---
-import Page from '../../../layouts/Page.astro';
-import { type Language } from '../../../utils/i18n';
+import Page from '@/layouts/Page.astro';
+import { loadContentPage } from '@/utils/loadContentPage';
 
-const currentPath = Astro.url.pathname;
-const currentLang = (Astro.currentLocale || 'fr') as Language;
-
-const [page] = await Astro.glob('../../../../content/pages/fr/about-business-records.md');
-if (!page) throw new Error('Missing ../../../../content/pages/fr/about-business-records.md');
-
-const titles = {
-  en: 'Recent Business Records',
-  fr: 'Procès-verbaux récents',
-};
-
-const title = page.frontmatter?.title || titles[currentLang];
+const page = await loadContentPage('fr', 'about-business-records');
+const title = page.frontmatter?.title ?? "Procès-verbaux récents";
 const description = page.frontmatter?.description;
 ---
 
