@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { getPublicRequestOrigin } from '../../../lib/http/public-origin';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import { defaultMemberAccountPath } from '../../../lib/members/i18n';
 
@@ -25,7 +26,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		});
 	}
 
-	const origin = new URL(request.url).origin;
+	const origin = getPublicRequestOrigin(request);
 	const supabase = createSupabaseServerClient(request, cookies);
 
 	const { error } = await supabase.auth.signInWithOtp({
