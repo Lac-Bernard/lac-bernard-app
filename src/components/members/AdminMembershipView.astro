@@ -1,0 +1,39 @@
+---
+import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
+import { memberCopy, memberPaths, type MemberLocale } from '../../lib/members/i18n';
+
+interface Props {
+	locale: MemberLocale;
+	email: string;
+}
+
+const { locale, email } = Astro.props;
+const t = memberCopy[locale];
+const paths = memberPaths[locale];
+const heroSubtitle = email;
+---
+
+<MemberAppLayout
+  lang={locale}
+  title={t.adminTitle}
+  description={t.adminDescription}
+  heroAriaLabel={t.adminHeroAria}
+  heroTitle={t.adminHero}
+  heroSubtitle={heroSubtitle}
+>
+  <section class="section">
+    <div class="container prose">
+      <p>{t.adminBody}</p>
+      <form method="POST" action="/api/auth/sign-out">
+        <input type="hidden" name="redirect_to" value={paths.signIn} />
+        <button type="submit" class="btnGhost">{t.signOut}</button>
+      </form>
+    </div>
+  </section>
+</MemberAppLayout>
+
+<style>
+  .prose form {
+    margin-top: 1.5rem;
+  }
+</style>

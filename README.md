@@ -9,6 +9,7 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 - **[TypeScript](https://www.typescriptlang.org/)** - Type-safe development
 - **[MDX](https://mdxjs.com/)** - Markdown with JSX components
 - **[Vercel](https://vercel.com)** - Deployment platform
+- **[Supabase](https://supabase.com)** - Auth and Postgres for the member account area (optional locally)
 
 ## ✨ Features
 
@@ -20,12 +21,14 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 - ✅ **Performance** - Optimized for 100/100 Lighthouse scores
 - ✅ **Type Safety** - Type-checked content collections with Zod schemas
 - ✅ **Server-Side Rendering** - Dynamic content with Astro's SSR capabilities
+- ✅ **Member area** - Magic-link sign-in; account and admin routes under `/en/membership/...` and `/fr/membership/...` (backed by Supabase)
 
 ## 📋 Prerequisites
 
 - Node.js 18+ and npm
 - A TinaCMS account (for content editing)
 - Git repository (for TinaCMS content versioning)
+- [Supabase CLI](https://supabase.com/docs/guides/cli) and Docker (only if you want a **local** Supabase stack for the member area)
 
 ## 🛠️ Setup
 
@@ -42,11 +45,7 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 
 3. **Configure environment variables**
    
-   Create a `.env` file in the root directory with your TinaCMS credentials:
-   ```env
-   TINA_CLIENT_ID=your_client_id
-   TINA_TOKEN=your_token
-   ```
+   Copy `.env.example` to `.env` and fill in values. At minimum you need **TinaCMS** credentials for `npm run dev`. For the **member** pages (sign-in, account), set `SUPABASE_URL` and `SUPABASE_ANON_KEY` from your Supabase project (or from `supabase status` when using local Supabase—see below).
 
 4. **Start the development server**
    ```bash
@@ -66,6 +65,20 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 | `npm run build`           | Builds production site to `./dist/` with TinaCMS |
 | `npm run preview`         | Preview production build locally                  |
 | `npm run astro ...`       | Run Astro CLI commands (e.g., `astro check`)     |
+| `npm run db:seed`         | Regenerate `supabase/seed.sql` with dummy member data (run before `supabase db reset` if you change the script) |
+
+## 🗄️ Supabase (optional, local)
+
+For local member auth and data without touching production:
+
+1. Install the [Supabase CLI](https://supabase.com/docs/guides/cli) and Docker.
+2. From the repo root: `supabase link` (to your hosted project) if you use remote config, or just `supabase start` for a fully local stack.
+3. `supabase db reset` — applies `supabase/migrations/` and then `supabase/seed.sql`.
+4. Regenerate dummy seed data when needed: `npm run db:seed`, then `supabase db reset` again.
+
+Use `supabase status` for the local **API URL** and **anon key** to put in `.env`. Magic-link emails in dev are captured by the local mail UI (Inbucket), usually at `http://127.0.0.1:54324`—open the message there and click the link. Redirect URLs for the app are configured in `supabase/config.toml` under `[auth]` (defaults include `http://localhost:4321` for Astro).
+
+To match a real sign-in email to a seeded member row, update `primary_email` (or `secondary_email`) in the `members` table in your local DB (Table Editor in local Studio, or SQL).
 
 ## 📁 Project Structure
 
@@ -91,6 +104,7 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 │   └── styles/           # Global styles
 ├── tina/                 # TinaCMS configuration
 │   └── config.ts         # CMS schema and settings
+├── supabase/             # Supabase CLI: migrations, seed.sql, local config
 ├── astro.config.mjs       # Astro configuration
 ├── src/content.config.ts # Content collection schemas
 └── package.json
@@ -142,9 +156,9 @@ This project is configured for deployment on Vercel with server-side rendering e
 
 1. Push your code to GitHub/GitLab/Bitbucket
 2. Import the project in Vercel
-3. Add environment variables:
-   - `TINA_CLIENT_ID`
-   - `TINA_TOKEN`
+3. Add environment variables (see `.env.example`):
+   - `TINA_CLIENT_ID`, `TINA_TOKEN`
+   - `SUPABASE_URL`, `SUPABASE_ANON_KEY` (for member sign-in and account)
 4. Deploy!
 
 The build process will:
@@ -186,7 +200,7 @@ Edit `src/content.config.ts` to:
 The site includes the following main sections (available in both French and English):
 
 - **About** - Association information, bylaws, executive committee, committees, archives
-- **Membership** - Enrollment and renewal information
+- **Membership** - Enrollment and renewal information; member **account** and sign-in at `/en/membership/account` and `/fr/membership/account` (Supabase)
 - **Environment** - Water quality, shoreline protection, wildlife, boating, milfoil management
 - **History** - Lake history, maps, photos, fishing club, First Nations history
 - **Community** - Security information, emergency contacts, regatta
