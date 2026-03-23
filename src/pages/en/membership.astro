@@ -1,27 +1,19 @@
 ---
 import '../../styles/theme.css';
 import '../../styles/components.css';
-import SiteHeader from '../../components/SiteHeader.astro';
-import SiteFooter from '../../components/SiteFooter.astro';
-import { type Language } from '../../utils/i18n';
+import SiteHeader from '@/components/SiteHeader.astro';
+import SiteFooter from '@/components/SiteFooter.astro';
+import type { Language } from '@/utils/i18n';
+import { loadContentPage } from '@/utils/loadContentPage';
 
-const currentPath = Astro.url.pathname;
-const currentLang = (Astro.currentLocale || 'en') as Language;
+const currentLang: Language = 'en';
 
-const [page] = currentLang === 'fr' 
-  ? await Astro.glob('../../../content/pages/fr/membership.md')
-  : await Astro.glob('../../../content/pages/en/membership.md');
-if (!page) throw new Error(`Missing content/pages/${currentLang === 'fr' ? 'fr/' : 'en/'}membership.md`);
-
-const titles = {
-  en: 'Membership',
-  fr: 'Adhésion',
-};
-
-const title = page.frontmatter?.title || titles[currentLang];
+const page = await loadContentPage('en', 'membership');
+const title = page.frontmatter?.title ?? "Membership";
 const description = page.frontmatter?.description;
 const { Content } = page;
 ---
+
 
 <html lang={currentLang}>
   <head>

@@ -1,19 +1,9 @@
 ---
-import Page from '../../../layouts/Page.astro';
-import { type Language } from '../../../utils/i18n';
+import Page from '@/layouts/Page.astro';
+import { loadContentPage } from '@/utils/loadContentPage';
 
-const currentPath = Astro.url.pathname;
-const currentLang = (Astro.currentLocale || 'fr') as Language;
-
-const [page] = await Astro.glob('../../../../content/pages/fr/history-first-nations.md');
-if (!page) throw new Error('Missing ../../../../content/pages/fr/history-first-nations.md');
-
-const titles = {
-  en: 'First Nations',
-  fr: 'Premières Nations',
-};
-
-const title = page.frontmatter?.title || titles[currentLang];
+const page = await loadContentPage('fr', 'history-first-nations');
+const title = page.frontmatter?.title ?? "Premières Nations";
 const description = page.frontmatter?.description;
 ---
 

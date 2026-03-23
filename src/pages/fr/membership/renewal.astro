@@ -1,19 +1,9 @@
 ---
-import Page from '../../../layouts/Page.astro';
-import { type Language } from '../../../utils/i18n';
+import Page from '@/layouts/Page.astro';
+import { loadContentPage } from '@/utils/loadContentPage';
 
-const currentPath = Astro.url.pathname;
-const currentLang = (Astro.currentLocale || 'fr') as Language;
-
-const [page] = await Astro.glob('../../../../content/pages/fr/membership-renewal.md');
-if (!page) throw new Error('Missing ../../../../content/pages/fr/membership-renewal.md');
-
-const titles = {
-  en: 'Membership Renewal',
-  fr: 'Renouvellement d\'adhésion',
-};
-
-const title = page.frontmatter?.title || titles[currentLang];
+const page = await loadContentPage('fr', 'membership-renewal');
+const title = page.frontmatter?.title ?? "Renouvellement d'adhésion";
 const description = page.frontmatter?.description;
 ---
 

@@ -1,19 +1,9 @@
 ---
-import Page from '../../../layouts/Page.astro';
-import { type Language } from '../../../utils/i18n';
+import Page from '@/layouts/Page.astro';
+import { loadContentPage } from '@/utils/loadContentPage';
 
-const currentPath = Astro.url.pathname;
-const currentLang = (Astro.currentLocale || 'fr') as Language;
-
-const [page] = await Astro.glob('../../../../content/pages/fr/history-newspaper-clippings.md');
-if (!page) throw new Error('Missing ../../../../content/pages/fr/history-newspaper-clippings.md');
-
-const titles = {
-  en: 'Newspaper Clippings Collection of Lac Bernard',
-  fr: 'Collection de coupures de journaux du lac Bernard',
-};
-
-const title = page.frontmatter?.title || titles[currentLang];
+const page = await loadContentPage('fr', 'history-newspaper-clippings');
+const title = page.frontmatter?.title ?? "Collection de coupures de journaux du lac Bernard";
 const description = page.frontmatter?.description;
 ---
 
