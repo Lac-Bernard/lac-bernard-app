@@ -7,7 +7,6 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	// TODO: Update with actual production site URL
 	site: 'https://lacbernard.ca',
 	output: 'server',
 	adapter: vercel(),
