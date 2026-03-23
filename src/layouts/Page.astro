@@ -3,6 +3,7 @@ import '../styles/theme.css';
 import '../styles/components.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import { siteUi } from '../i18n/site';
 import { getLocalizedHref, languageFromAstro, type Language } from '../utils/i18n';
 
 interface NavItem {
@@ -23,6 +24,7 @@ const { Content } = content || {};
 
 const currentPath = Astro.url.pathname;
 const currentLang = languageFromAstro(Astro);
+const site = siteUi[currentLang];
 
 // Sidebar links: `href` is locale-agnostic (no `/en` or `/fr`). Labels differ per language.
 // Rendering strips any accidental locale prefix, then `getLocalizedHref` adds the active locale.
@@ -134,10 +136,10 @@ const navItems = section === 'about' ? aboutNav[currentLang] : section === 'envi
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title} | Lac Bernard Association</title>
+    <title>{title} | {site.siteNameSuffix}</title>
     <meta
       name="description"
-      content={description || `Learn more about ${title} at the Lac Bernard Association.`}
+      content={description || site.pageMetaDescriptionFallback(title)}
     />
     <script async src="https://tally.so/widgets/embed.js"></script>
   </head>

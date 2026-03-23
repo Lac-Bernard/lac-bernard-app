@@ -1,0 +1,246 @@
+---
+import '../styles/theme.css';
+import '../styles/components.css';
+import SiteHeader from '@/components/SiteHeader.astro';
+import SiteFooter from '@/components/SiteFooter.astro';
+import type { Language } from '@/utils/i18n';
+import { blogPostSlug } from '@/utils/blog';
+import { getCollection } from 'astro:content';
+import FormattedDate from '@/components/FormattedDate.astro';
+import { loadContentPage } from '@/utils/loadContentPage';
+import { homeUi } from '@/i18n/home';
+
+interface Props {
+	lang: Language;
+}
+
+const { lang } = Astro.props;
+const ui = homeUi[lang];
+
+const home = await loadContentPage(lang, 'home');
+const { Content, frontmatter } = home;
+
+const fm = frontmatter as { heroTitle?: string; heroSubtitle?: string } | undefined;
+const heroTitle = fm?.heroTitle ?? ui.defaultHeroTitle;
+const heroSubtitle = fm?.heroSubtitle ?? '';
+
+const allPosts = await getCollection('blog');
+const latestPosts = allPosts
+	.filter((post) => post.id.startsWith(`${lang}/`))
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+	.slice(0, 3);
+
+const title = ui.siteTitle;
+---
+
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={ui.metaDescription} />
+  </head>
+
+  <body>
+    <SiteHeader />
+
+    <main id="main-content">
+      <section class="hero" aria-label={ui.heroAriaLabel}>
+        <div class="container heroInner">
+          <div class="heroCopy">
+            <h1>{heroTitle}</h1>
+            {heroSubtitle && <p class="subtitle" set:html={heroSubtitle} />}
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="container prose">
+          <Content />
+        </div>
+      </section>
+
+      {latestPosts.length > 0 && (
+        <section class="section">
+          <div class="container">
+            <h2>{ui.latestNews}</h2>
+            <ul class="newsList">
+              {latestPosts.map((post) => (
+                <li>
+                  <a href={`/${lang}/news/${blogPostSlug(post.id)}/`}>
+                    <h3>{post.data.title}</h3>
+                    <div class="newsDate">
+                      <FormattedDate date={post.data.pubDate} lang={lang} />
+                    </div>
+                    <p class="excerpt">
+                      {post.data.description}
+                      {' '}
+                      <span class="readMore">{ui.readMore}: {post.data.title}</span>
+                    </p>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
+      <section class="section stats">
+        <div class="container">
+          <h2>{ui.impact}</h2>
+          <div class="statsGrid">
+            <div class="stat"><div class="num">92</div><div class="label">{ui.years}</div></div>
+            <div class="stat"><div class="num">200+</div><div class="label">{ui.members}</div></div>
+            <div class="stat"><div class="num">3+</div><div class="label">{ui.events}</div></div>
+            <div class="stat"><div class="num">100%</div><div class="label">{ui.volunteerRun}</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section land">
+        <div class="container">
+          <h2>{ui.landAck}</h2>
+          <p>{ui.landAckText}</p>
+        </div>
+      </section>
+    </main>
+
+    <SiteFooter />
+
+    <style>
+      /* Page-specific styles for homepage */
+      .hero {
+        padding: 72px 0 var(--spacing-section);
+        position: relative;
+        background-image: url('/images/mirrorlake_jeffstubbins-2.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        color: white;
+      }
+
+      .hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 0;
+      }
+
+      .hero .container {
+        position: relative;
+        z-index: 1;
+      }
+
+      .heroInner {
+        display: block;
+      }
+
+      .heroCopy {
+        color: white;
+      }
+
+      .kicker {
+        margin: 0 0 12px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 16px;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+      }
+
+      .hero h1 {
+        margin: 0 0 18px;
+        font-size: clamp(40px, 5vw, 64px);
+        line-height: 1.06;
+        letter-spacing: -.03em;
+        color: white;
+      }
+
+      .hero .subtitle {
+        margin: 0 0 22px;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 19px;
+      }
+
+      .prose .btnPrimary {
+        margin-top: 20px;
+        display: inline-block;
+      }
+
+      .land {
+        background: rgba(0,0,0,.03);
+        text-align: center;
+      }
+
+      .land h2 {
+        font-size: 28px;
+      }
+
+      .land p {
+        color: var(--muted);
+        font-size: 19px;
+        max-width: 75ch;
+        margin: 0 auto;
+      }
+
+      .newsList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .newsList li {
+        margin: 0;
+      }
+
+      .newsList a {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .newsList a:hover {
+        color: var(--accent);
+      }
+
+      .newsList h3 {
+        margin: 0 0 8px;
+        font-size: 24px;
+        font-weight: 600;
+      }
+
+      .newsList .newsDate {
+        display: block;
+        color: var(--muted);
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+
+      .newsList .newsDate time {
+        color: inherit;
+      }
+
+      .newsList .excerpt {
+        margin: 0;
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      .newsList .readMore {
+        color: var(--accent);
+        font-weight: 500;
+      }
+
+      @media (max-width: 920px) {
+        .heroInner {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </body>
+</html>
