@@ -4,6 +4,7 @@ import '../styles/components.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import type { MemberLocale } from '../lib/members/i18n';
+import Analytics from '@vercel/analytics/astro';
 
 interface Props {
   lang: MemberLocale;
@@ -23,6 +24,7 @@ const { lang, title, description, heroAriaLabel, heroTitle, heroSubtitle } = Ast
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <Analytics />
   </head>
 
   <body>

@@ -10,6 +10,7 @@ import FormattedDate from '../components/FormattedDate.astro';
 import { siteUi } from '../i18n/site';
 import { getLocalizedPath, languageFromAstro } from '../utils/i18n';
 import { blogPostSlug, isBlogPostInLocale } from '../utils/blog';
+import Analytics from '@vercel/analytics/astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	currentPostId?: string;
@@ -51,6 +52,7 @@ const latestPosts = allPosts
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>{title} – {site.siteNameSuffix}</title>
 		<meta name="description" content={description} />
+		<Analytics />
 	</head>
 
 	<body>
