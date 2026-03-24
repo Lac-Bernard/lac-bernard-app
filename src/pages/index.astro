@@ -1,3 +1,8 @@
 ---
-return Astro.redirect('/fr/', 301);
+import { homePathFromLocaleCookie, LOCALE_PREFERENCE_COOKIE } from '../utils/i18n';
+
+return Astro.redirect(
+	homePathFromLocaleCookie(Astro.cookies.get(LOCALE_PREFERENCE_COOKIE)?.value),
+	302,
+);
 ---

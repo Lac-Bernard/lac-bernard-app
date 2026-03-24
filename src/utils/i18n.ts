@@ -10,6 +10,13 @@ export const languages = {
 
 export type Language = keyof typeof languages;
 
+/** Persisted on `/en/*` and `/fr/*` visits so `/` can redirect without edge `vercel.json` (which cannot read cookies). */
+export const LOCALE_PREFERENCE_COOKIE = 'lb_locale';
+
+export function homePathFromLocaleCookie(value: string | undefined): '/en/' | '/fr/' {
+	return value === 'en' ? '/en/' : '/fr/';
+}
+
 /** Normalize a single path segment for locale comparison (lowercase, `_` → `-`). */
 function normalizeLocaleSegment(segment: string): string {
 	return segment.replaceAll('_', '-').toLowerCase();

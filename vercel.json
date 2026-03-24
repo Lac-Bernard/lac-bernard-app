@@ -1,11 +1,6 @@
 {
   "redirects": [
     {
-      "source": "/",
-      "destination": "/fr/",
-      "permanent": true
-    },
-    {
       "source": "/a-propos",
       "destination": "/fr/about",
       "permanent": true
