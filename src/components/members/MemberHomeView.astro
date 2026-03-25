@@ -21,7 +21,7 @@ const paths = memberPaths[locale];
 const heroSubtitle = email ? `${t.signedInAs} ${email}` : '';
 const { member, currentMemberships, historicalMemberships } = accountData;
 
-const noCurrentYearMsg = t.noMembershipThisYear.replace('{{year}}', String(currentYear));
+const intro = t.homeIntro.replace('{{year}}', String(currentYear));
 
 function membershipRows(rows: typeof currentMemberships) {
 	return rows.map((row) => ({
@@ -30,8 +30,25 @@ function membershipRows(rows: typeof currentMemberships) {
 	}));
 }
 
-const currentRows = membershipRows(currentMemberships);
+const thisYearMembership = currentMemberships.find((m) => m.year === currentYear) ?? null;
+const hasActiveCurrentYear = thisYearMembership?.status === 'active';
+const pendingThisYear =
+	thisYearMembership?.status === 'pending' ? thisYearMembership : null;
+const thisYearTierLabel = thisYearMembership
+	? membershipTierLabel(thisYearMembership.tier, locale)
+	: '';
+
+const futureRows = membershipRows(currentMemberships.filter((m) => m.year > currentYear));
 const historyRows = membershipRows(historicalMemberships);
+
+const activeTitle = t.statusActiveTitle.replace('{{year}}', String(currentYear));
+const inactiveTitle = t.statusInactiveTitle.replace('{{year}}', String(currentYear));
+const pendingTitle = t.statusPendingTitle.replace('{{year}}', String(currentYear));
+
+const interacMail = `mailto:${t.interacEmail}`;
+const membershipMail = `mailto:${t.membershipEmail}`;
+
+const showMemberActions = Boolean(member);
 ---
 
 <MemberAppLayout
@@ -44,7 +61,7 @@ const historyRows = membershipRows(historicalMemberships);
 >
   <section class="section">
     <div class="container prose">
-      <p>{t.homeIntro}</p>
+      <p>{intro}</p>
 
       {
         !member ? (
@@ -56,30 +73,130 @@ const historyRows = membershipRows(historicalMemberships);
               {member.last_name}
             </p>
 
-            <h2 class="sectionHeading">{t.membershipActiveSection}</h2>
-            {currentRows.length > 0 ? (
-              <div class="tableWrap">
-                <table class="memberTable">
-                  <thead>
-                    <tr>
-                      <th scope="col">{t.membershipTableYear}</th>
-                      <th scope="col">{t.membershipTableType}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {currentRows.map((row) => (
-                      <tr>
-                        <td>{row.year}</td>
-                        <td>{row.tierLabel}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            {hasActiveCurrentYear ? (
+              <div class="statusCard statusCardActive" role="status">
+                <div class="statusActiveMark" aria-hidden="true">✓</div>
+                <div class="statusCardBody">
+                  <h2 class="statusTitle">{activeTitle}</h2>
+                  <p class="statusTier">
+                    <span class="statusTierLabel">{t.statusActiveTierLabel}</span>
+                    {thisYearTierLabel}
+                  </p>
+                </div>
               </div>
-            ) : historyRows.length > 0 ? (
-              <p class="muted">{noCurrentYearMsg}</p>
+            ) : pendingThisYear ? (
+              <div class="statusCard statusCardPending" role="status">
+                <h2 class="statusTitle">{pendingTitle}</h2>
+                <p class="statusPendingLead">{t.statusPendingLead}</p>
+                <p class="statusTier">
+                  <span class="statusTierLabel">{t.statusActiveTierLabel}</span>
+                  {thisYearTierLabel}
+                </p>
+
+                <div class="payPrimary">
+                  <button type="button" class="btnPrimary payCardBtn" disabled aria-describedby="stripe-soon-note-pending">
+                    {t.payWithCard}
+                  </button>
+                  <p id="stripe-soon-note-pending" class="stripeNote">{t.stripeComingSoon}</p>
+                </div>
+
+                <div class="payAlt">
+                  <h3 class="payAltTitle">{t.otherPaymentTitle}</h3>
+                  <ul class="payList">
+                    <li>
+                      <span class="payMethodName">{t.payInteracTitle}</span>
+                      <p class="payMethodBody">
+                        {t.payInteracBeforeLink}
+                        <a href={interacMail}>{t.interacEmail}</a>
+                        {t.payInteracAfterLink}
+                      </p>
+                    </li>
+                    <li>
+                      <span class="payMethodName">{t.payChequeTitle}</span>
+                      <p class="payMethodBody payAddress">{t.payChequeAddress}</p>
+                    </li>
+                    <li>
+                      <span class="payMethodName">{t.payCashTitle}</span>
+                      <p class="payMethodBody">
+                        {t.payCashBeforeLink}
+                        <a href={membershipMail}>{t.membershipEmail}</a>
+                        {t.payCashAfterLink}
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+
+                <p class="formsHint">
+                  {t.formsHintBefore}
+                  <a href={paths.renewal}>{t.linkRenewal}</a>
+                  {t.formsHintAfter}
+                  <a href={paths.enrollment}>{t.linkEnrollment}</a>
+                  {t.formsHintEnd}
+                </p>
+
+                <div class="cancelRow">
+                  <button type="button" class="btnGhost cancelPendingBtn" id="cancel-pending-btn" data-membership-id={pendingThisYear.id}>
+                    {t.cancelPending}
+                  </button>
+                  <p id="cancel-pending-message" class="actionMessage" role="status" aria-live="polite"></p>
+                </div>
+              </div>
             ) : (
-              <p class="muted">{t.noMembershipsRecorded}</p>
+              <div class="statusCard statusCardInactive">
+                <h2 class="statusTitle">{inactiveTitle}</h2>
+                <p class="statusLead">{t.statusInactiveLead}</p>
+
+                <form id="create-pending-form" class="createPendingForm">
+                  <fieldset class="tierFieldset">
+                    <legend class="tierLegend">{t.tierChoiceLegend}</legend>
+                    <label class="tierOption">
+                      <input type="radio" name="tier" value="general" checked />
+                      {t.tierGeneral}
+                    </label>
+                    <label class="tierOption">
+                      <input type="radio" name="tier" value="associate" />
+                      {t.tierAssociate}
+                    </label>
+                  </fieldset>
+                  <button type="submit" class="btnPrimary" id="create-pending-submit">{t.createPendingSubmit}</button>
+                  <p id="create-pending-message" class="actionMessage" role="status" aria-live="polite"></p>
+                </form>
+
+                <p class="formsHint">
+                  {t.formsHintBefore}
+                  <a href={paths.renewal}>{t.linkRenewal}</a>
+                  {t.formsHintAfter}
+                  <a href={paths.enrollment}>{t.linkEnrollment}</a>
+                  {t.formsHintEnd}
+                </p>
+              </div>
+            )}
+
+            {futureRows.length > 0 && (
+              <>
+                <h2 class="sectionHeading">{t.membershipPrepaidSection}</h2>
+                <p class="muted sectionLead">{t.membershipPrepaidLead}</p>
+                <div class="tableWrap">
+                  <table class="memberTable">
+                    <thead>
+                      <tr>
+                        <th scope="col">{t.membershipTableYear}</th>
+                        <th scope="col">{t.membershipTableType}</th>
+                        <th scope="col">{t.membershipTableStatus}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {futureRows.map((row) => (
+                        <tr>
+                          <td>{row.year}</td>
+                          <td>{row.tierLabel}</td>
+                          <td>{row.status === 'pending' ? t.membershipStatusPending : t.membershipStatusActive}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
 
             {historyRows.length > 0 && (
@@ -91,6 +208,7 @@ const historyRows = membershipRows(historicalMemberships);
                       <tr>
                         <th scope="col">{t.membershipTableYear}</th>
                         <th scope="col">{t.membershipTableType}</th>
+                        <th scope="col">{t.membershipTableStatus}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -98,6 +216,7 @@ const historyRows = membershipRows(historicalMemberships);
                         <tr>
                           <td>{row.year}</td>
                           <td>{row.tierLabel}</td>
+                          <td>{row.status === 'pending' ? t.membershipStatusPending : t.membershipStatusActive}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -117,13 +236,93 @@ const historyRows = membershipRows(historicalMemberships);
   </section>
 </MemberAppLayout>
 
+{showMemberActions && (
+  <script
+    define:vars={{
+      errNetwork: t.errorNetwork,
+      errUnauthorized: t.pendingCreateErrorUnauthorized,
+      errAlreadyActive: t.pendingCreateErrorAlreadyActive,
+      errAlreadyPending: t.pendingCreateErrorAlreadyPending,
+      errCreateGeneric: t.pendingCreateErrorGeneric,
+      errCancelGeneric: t.pendingCancelErrorGeneric,
+      errCancelNotFound: t.pendingCancelErrorNotFound,
+    }}
+  >
+    function createErrorMessage(code) {
+      if (code === 'unauthorized') return errUnauthorized;
+      if (code === 'already_active') return errAlreadyActive;
+      if (code === 'already_pending') return errAlreadyPending;
+      return errCreateGeneric;
+    }
+
+    const createForm = document.getElementById('create-pending-form');
+    const createMsg = document.getElementById('create-pending-message');
+    const createSubmit = document.getElementById('create-pending-submit');
+
+    createForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!createMsg || !createSubmit) return;
+      createMsg.textContent = '';
+      createSubmit.setAttribute('disabled', 'true');
+      const fd = new FormData(createForm);
+      const tier = String(fd.get('tier') ?? '');
+      try {
+        const res = await fetch('/api/membership/create-pending', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tier }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          createMsg.textContent = createErrorMessage(data.error) || errCreateGeneric;
+          return;
+        }
+        window.location.reload();
+      } catch {
+        createMsg.textContent = errNetwork;
+      } finally {
+        createSubmit.removeAttribute('disabled');
+      }
+    });
+
+    const cancelBtn = document.getElementById('cancel-pending-btn');
+    const cancelMsg = document.getElementById('cancel-pending-message');
+
+    cancelBtn?.addEventListener('click', async () => {
+      if (!cancelMsg || !cancelBtn) return;
+      const id = cancelBtn.getAttribute('data-membership-id');
+      if (!id) return;
+      cancelMsg.textContent = '';
+      cancelBtn.setAttribute('disabled', 'true');
+      try {
+        const res = await fetch('/api/membership/cancel-pending', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ membershipId: id }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          cancelMsg.textContent =
+            data.error === 'not_found' ? errCancelNotFound : errCancelGeneric;
+          return;
+        }
+        window.location.reload();
+      } catch {
+        cancelMsg.textContent = errNetwork;
+      } finally {
+        cancelBtn.removeAttribute('disabled');
+      }
+    });
+  </script>
+)}
+
 <style>
   .prose form {
     margin-top: 1.5rem;
   }
 
   .muted {
-    color: var(--color-muted, #555);
+    color: var(--muted, #555);
   }
 
   .memberName {
@@ -133,7 +332,213 @@ const historyRows = membershipRows(historicalMemberships);
 
   .sectionHeading {
     font-size: 1.25rem;
-    margin: 1.75rem 0 0.75rem;
+    margin: 1.75rem 0 0.5rem;
+  }
+
+  .sectionLead {
+    margin: 0 0 0.75rem;
+    font-size: 0.95rem;
+  }
+
+  .statusCard {
+    border-radius: 14px;
+    padding: 1.35rem 1.35rem 1.25rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.12));
+  }
+
+  .statusCardActive {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    background: rgba(22, 163, 74, 0.08);
+    border-color: rgba(22, 163, 74, 0.35);
+  }
+
+  .statusActiveMark {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(22, 163, 74, 0.95);
+    color: #fff;
+    font-size: 1.35rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .statusCardBody {
+    min-width: 0;
+  }
+
+  .statusCardInactive {
+    background: rgba(37, 99, 235, 0.04);
+    border-color: rgba(37, 99, 235, 0.22);
+  }
+
+  .statusCardPending {
+    background: rgba(217, 119, 6, 0.08);
+    border-color: rgba(217, 119, 6, 0.35);
+  }
+
+  .statusCardPending .statusTitle {
+    color: rgba(146, 64, 14, 0.98);
+  }
+
+  .statusPendingLead {
+    margin: 0 0 1rem;
+    color: var(--text, rgba(0, 0, 0, 0.88));
+  }
+
+  .statusTitle {
+    margin: 0 0 0.5rem;
+    font-size: 1.45rem;
+    line-height: 1.2;
+  }
+
+  .statusCardInactive .statusTitle {
+    color: rgba(30, 64, 175, 0.95);
+  }
+
+  .statusLead {
+    margin: 0 0 1.25rem;
+    color: var(--text, rgba(0, 0, 0, 0.88));
+  }
+
+  .statusTier {
+    margin: 0 0 1.25rem;
+    font-size: 1.1rem;
+  }
+
+  .statusTierLabel {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted, #555);
+    margin-bottom: 0.2rem;
+  }
+
+  .createPendingForm {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .tierFieldset {
+    margin: 0;
+    padding: 0;
+    border: none;
+    min-width: 0;
+  }
+
+  .tierLegend {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    padding: 0;
+  }
+
+  .tierOption {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  .tierOption input {
+    width: 1.1rem;
+    height: 1.1rem;
+    accent-color: #2563eb;
+  }
+
+  .actionMessage {
+    margin: 0.35rem 0 0;
+    min-height: 1.25em;
+    font-size: 0.95rem;
+    color: var(--muted, #555);
+  }
+
+  .cancelRow {
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .cancelPendingBtn {
+    margin-bottom: 0.25rem;
+  }
+
+  .payPrimary {
+    margin-bottom: 1.5rem;
+  }
+
+  .payCardBtn:disabled {
+    opacity: 0.72;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  .payCardBtn:disabled:hover {
+    background: #2563eb;
+    transform: none;
+  }
+
+  .stripeNote {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+    color: var(--muted, #555);
+  }
+
+  .payAltTitle {
+    margin: 0 0 0.65rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .payList {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .payMethodName {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .payMethodBody {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .payAddress {
+    white-space: pre-line;
+  }
+
+  .formsHint {
+    margin: 1.35rem 0 0;
+    font-size: 0.95rem;
+    color: var(--muted, #555);
+  }
+
+  .formsHint a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   .tableWrap {
@@ -144,7 +549,7 @@ const historyRows = membershipRows(historicalMemberships);
   .memberTable {
     border-collapse: collapse;
     width: 100%;
-    max-width: 28rem;
+    max-width: 32rem;
   }
 
   .memberTable th,
@@ -159,6 +564,6 @@ const historyRows = membershipRows(historicalMemberships);
     font-size: 0.85rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: var(--color-muted, #555);
+    color: var(--muted, #555);
   }
 </style>

@@ -3,6 +3,7 @@ import MemberHomeView from '../../../components/members/MemberHomeView.astro';
 import { createSupabasePageClient } from '../../../lib/supabase/server';
 import { loadMemberAccountData } from '../../../lib/members/accountData';
 import { memberPaths } from '../../../lib/members/i18n';
+import { getMembershipCalendarYear } from '../../../lib/members/membershipYear';
 
 const paths = memberPaths.fr;
 const { supabase, flushCookies, redirectWithCookies } = createSupabasePageClient(
@@ -18,7 +19,7 @@ if (error || !user) {
 	return redirectWithCookies(`${paths.signIn}?next=${encodeURIComponent(Astro.url.pathname)}`);
 }
 
-const currentYear = new Date().getFullYear();
+const currentYear = getMembershipCalendarYear();
 const accountData = await loadMemberAccountData(supabase, user.email ?? '', currentYear);
 
 flushCookies();

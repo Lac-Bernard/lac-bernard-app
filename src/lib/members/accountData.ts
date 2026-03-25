@@ -1,17 +1,15 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { findMemberByAuthEmail, type MemberProfile } from './memberLookup';
 
-export type MemberProfile = {
-	id: string;
-	first_name: string | null;
-	last_name: string;
-	primary_email: string | null;
-	secondary_email: string | null;
-};
+export type { MemberProfile };
+
+export type MembershipStatus = 'pending' | 'active';
 
 export type MembershipRow = {
 	id: string;
 	year: number;
 	tier: string;
+	status: MembershipStatus;
 	created_at: string;
 };
 
@@ -21,49 +19,12 @@ export type MemberAccountPayload = {
 	historicalMemberships: MembershipRow[];
 };
 
-/** Escape `%` and `_` so `ILIKE` matches the literal email. */
-function escapeIlikeExact(value: string): string {
-	return value.replaceAll('\\', '\\\\').replaceAll('%', '\\%').replaceAll('_', '\\_');
-}
-
 export async function loadMemberAccountData(
 	supabase: SupabaseClient,
 	authEmail: string,
 	currentYear: number,
 ): Promise<MemberAccountPayload> {
-	const raw = authEmail.trim();
-	if (!raw) {
-		return { member: null, currentMemberships: [], historicalMemberships: [] };
-	}
-
-	const pattern = escapeIlikeExact(raw);
-
-	const { data: primaryMatch, error: errPrimary } = await supabase
-		.from('members')
-		.select('id, first_name, last_name, primary_email, secondary_email')
-		.ilike('primary_email', pattern)
-		.limit(1)
-		.maybeSingle();
-
-	if (errPrimary) {
-		return { member: null, currentMemberships: [], historicalMemberships: [] };
-	}
-
-	let member: MemberProfile | null = primaryMatch;
-
-	if (!member) {
-		const { data: secondaryMatch, error: errSecondary } = await supabase
-			.from('members')
-			.select('id, first_name, last_name, primary_email, secondary_email')
-			.ilike('secondary_email', pattern)
-			.limit(1)
-			.maybeSingle();
-
-		if (errSecondary) {
-			return { member: null, currentMemberships: [], historicalMemberships: [] };
-		}
-		member = secondaryMatch ?? null;
-	}
+	const member = await findMemberByAuthEmail(supabase, authEmail);
 
 	if (!member) {
 		return { member: null, currentMemberships: [], historicalMemberships: [] };
@@ -71,7 +32,7 @@ export async function loadMemberAccountData(
 
 	const { data: membershipRows, error: mErr } = await supabase
 		.from('memberships')
-		.select('id, year, tier, created_at')
+		.select('id, year, tier, status, created_at')
 		.eq('member_id', member.id)
 		.order('year', { ascending: false });
 
@@ -83,6 +44,7 @@ export async function loadMemberAccountData(
 		id: r.id,
 		year: r.year,
 		tier: r.tier,
+		status: r.status === 'pending' ? 'pending' : 'active',
 		created_at: r.created_at,
 	}));
 
