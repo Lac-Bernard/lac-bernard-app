@@ -231,6 +231,19 @@
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
 
+.btnPrimary:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+}
+
+.btnPrimary:disabled:hover,
+.btnPrimary:disabled:active {
+  background: #2563eb;
+  transform: none;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
 .btnGhost {
   background: transparent;
   border: 1px solid var(--border);
@@ -240,6 +253,18 @@
 .btnGhost:hover {
   background: rgba(0,0,0,.04);
   transform: translateY(-1px);
+}
+
+.btnGhost:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+  opacity: 0.6;
+}
+
+.btnGhost:disabled:hover {
+  background: transparent;
+  transform: none;
 }
 
 .btnPrimary:focus-visible,
