@@ -38,11 +38,16 @@ export const memberCopy: Record<
 		signInHeroAria: string;
 		signInHero: string;
 		signInLead: string;
+		signInDivider: string;
+		signInWithGoogle: string;
 		emailLabel: string;
 		emailPlaceholder: string;
 		sendMagicLink: string;
+		sendingMagicLink: string;
+		signInTryAnotherEmail: string;
 		errorGeneric: string;
 		errorNetwork: string;
+		magicLinkFormExplainer: string;
 		checkEmail: string;
 		adminTitle: string;
 		adminDescription: string;
@@ -107,12 +112,18 @@ export const memberCopy: Record<
 		signInDescription: 'Sign in to the Lac Bernard Association member area.',
 		signInHeroAria: 'Sign in',
 		signInHero: 'Member sign in',
-		signInLead: 'We’ll email you a secure link to access your member area.',
+		signInLead: 'Sign in with Google or request a secure link by email.',
+		signInDivider: 'or',
+		signInWithGoogle: 'Continue with Google',
 		emailLabel: 'Email',
 		emailPlaceholder: 'you@example.com',
 		sendMagicLink: 'Send magic link',
+		sendingMagicLink: 'Sending link…',
+		signInTryAnotherEmail: 'Use a different email',
 		errorGeneric: 'Something went wrong. Please try again.',
 		errorNetwork: 'Network error. Please try again.',
+		magicLinkFormExplainer:
+			'We’ll email a one-time sign-in link to the address you enter. No password needed.',
 		checkEmail: 'Check your email for the sign-in link.',
 		adminTitle: 'Admin | Lac Bernard Association',
 		adminDescription: 'Association administration — members and payments.',
@@ -181,12 +192,18 @@ export const memberCopy: Record<
 		signInDescription: 'Connexion à l’espace membre de l’Association du lac Bernard.',
 		signInHeroAria: 'Connexion',
 		signInHero: 'Connexion membre',
-		signInLead: 'Nous vous enverrons un lien sécurisé par courriel pour accéder à votre espace membre.',
+		signInLead: 'Connectez-vous avec Google ou recevez un lien sécurisé par courriel.',
+		signInDivider: 'ou',
+		signInWithGoogle: 'Continuer avec Google',
 		emailLabel: 'Courriel',
 		emailPlaceholder: 'vous@exemple.com',
 		sendMagicLink: 'Envoyer le lien magique',
+		sendingMagicLink: 'Envoi du lien…',
+		signInTryAnotherEmail: 'Utiliser une autre adresse',
 		errorGeneric: 'Une erreur s’est produite. Veuillez réessayer.',
 		errorNetwork: 'Erreur réseau. Veuillez réessayer.',
+		magicLinkFormExplainer:
+			'Nous enverrons un lien de connexion à usage unique à l’adresse indiquée. Aucun mot de passe requis.',
 		checkEmail: 'Vérifiez votre courriel pour le lien de connexion.',
 		adminTitle: 'Administration | Association du lac Bernard',
 		adminDescription: 'Administration de l’association — membres et paiements.',

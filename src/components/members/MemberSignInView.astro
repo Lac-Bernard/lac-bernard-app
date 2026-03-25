@@ -22,7 +22,16 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
   <section class="section">
     <div class="container narrow">
       <div class="card">
-        <form id="sign-in-form" class="signInForm" novalidate>
+        <a
+          class="btnGoogle"
+          href={`/api/auth/sign-in-google?next=${encodeURIComponent(next)}`}
+        >
+          {t.signInWithGoogle}
+        </a>
+        <p class="signInDivider" role="separator">
+          <span>{t.signInDivider}</span>
+        </p>
+        <form id="sign-in-form" class="signInForm" novalidate aria-busy="false">
           <input type="hidden" name="next" value={next} />
           <label class="fieldLabel" for="email">{t.emailLabel}</label>
           <input
@@ -34,8 +43,18 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
             required
             placeholder={t.emailPlaceholder}
           />
-          <p id="form-message" class="formMessage" role="status" aria-live="polite"></p>
-          <button type="submit" class="btnPrimary" id="submit-btn">{t.sendMagicLink}</button>
+          <p id="form-message" class="formMessage" role="status" aria-live="polite">
+            {t.magicLinkFormExplainer}
+          </p>
+          <button type="submit" class="btnPrimary btnMagicSubmit" id="submit-btn">
+            <span class="btnMagicSubmit-spinner" aria-hidden="true"></span>
+            <span class="btnMagicSubmit-label">{t.sendMagicLink}</span>
+          </button>
+          <p id="try-another-wrap" class="tryAnotherWrap" hidden>
+            <button type="button" class="tryAnotherBtn" id="try-another-btn">
+              {t.signInTryAnotherEmail}
+            </button>
+          </p>
         </form>
       </div>
     </div>
@@ -47,23 +66,60 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     next,
     errGeneric: t.errorGeneric,
     errNetwork: t.errorNetwork,
+    magicLinkFormExplainer: t.magicLinkFormExplainer,
     checkEmail: t.checkEmail,
+    sendingMagicLink: t.sendingMagicLink,
+    sendMagicLink: t.sendMagicLink,
   }}
 >
   const form = document.getElementById('sign-in-form');
   const messageEl = document.getElementById('form-message');
   const submitBtn = document.getElementById('submit-btn');
+  const emailInput = document.getElementById('email');
+  const tryAnotherWrap = document.getElementById('try-another-wrap');
+  const tryAnotherBtn = document.getElementById('try-another-btn');
+  const labelEl = submitBtn?.querySelector('.btnMagicSubmit-label');
+  let magicLinkJustSent = false;
+
+  function resetMagicLinkIdle() {
+    if (!messageEl || !tryAnotherWrap || !submitBtn || !labelEl) return;
+    magicLinkJustSent = false;
+    messageEl.textContent = magicLinkFormExplainer;
+    tryAnotherWrap.hidden = true;
+    submitBtn.removeAttribute('disabled');
+    labelEl.textContent = sendMagicLink;
+    submitBtn.classList.remove('is-loading');
+  }
+
+  function setMagicLinkLoading(loading) {
+    if (!form || !submitBtn || !labelEl) return;
+    form.setAttribute('aria-busy', loading ? 'true' : 'false');
+    submitBtn.classList.toggle('is-loading', loading);
+    submitBtn.toggleAttribute('disabled', loading);
+    labelEl.textContent = loading ? sendingMagicLink : sendMagicLink;
+  }
+
+  emailInput?.addEventListener('input', () => {
+    if (magicLinkJustSent) resetMagicLinkIdle();
+  });
+
+  tryAnotherBtn?.addEventListener('click', () => {
+    if (!emailInput) return;
+    resetMagicLinkIdle();
+    emailInput.focus();
+  });
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!messageEl || !submitBtn) return;
+    if (!messageEl || !submitBtn || !emailInput || !tryAnotherWrap) return;
 
     const fd = new FormData(form);
     const email = String(fd.get('email') ?? '').trim();
     const n = String(fd.get('next') ?? next);
 
+    tryAnotherWrap.hidden = true;
     messageEl.textContent = '';
-    submitBtn.setAttribute('disabled', 'true');
+    setMagicLinkLoading(true);
 
     try {
       const res = await fetch('/api/auth/sign-in', {
@@ -75,14 +131,21 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
 
       if (!res.ok) {
         messageEl.textContent = data.error || errGeneric;
+        setMagicLinkLoading(false);
         return;
       }
 
       messageEl.textContent = checkEmail;
+      magicLinkJustSent = true;
+      submitBtn.setAttribute('disabled', 'true');
+      submitBtn.classList.remove('is-loading');
+      labelEl.textContent = sendMagicLink;
+      form.setAttribute('aria-busy', 'false');
+      tryAnotherWrap.hidden = false;
+      submitBtn.blur();
     } catch {
       messageEl.textContent = errNetwork;
-    } finally {
-      submitBtn.removeAttribute('disabled');
+      setMagicLinkLoading(false);
     }
   });
 </script>
@@ -98,6 +161,53 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     background: var(--color-surface, #fff);
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
     border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .btnGoogle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    background: #fff;
+    color: #1f1f1f;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .btnGoogle:hover {
+    background: #f8f8f8;
+    border-color: rgba(0, 0, 0, 0.28);
+  }
+
+  .btnGoogle:focus-visible {
+    outline: 2px solid var(--color-accent, #1a5f4a);
+    outline-offset: 2px;
+  }
+
+  .signInDivider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-muted, #666);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .signInDivider::before,
+  .signInDivider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.12);
   }
 
   .signInForm {
@@ -136,5 +246,76 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     margin-top: 8px;
     justify-content: center;
     width: 100%;
+  }
+
+  /* After success: reads clearly as unavailable (global :hover no longer lifts it). */
+  .signInForm .btnMagicSubmit:disabled:not(.is-loading) {
+    opacity: 0.72;
+  }
+
+  .btnMagicSubmit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 48px;
+  }
+
+  .btnMagicSubmit-spinner {
+    display: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    box-sizing: border-box;
+  }
+
+  .btnMagicSubmit.is-loading .btnMagicSubmit-spinner {
+    display: block;
+    animation: magicLinkSpin 0.65s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btnMagicSubmit.is-loading .btnMagicSubmit-spinner {
+      animation: none;
+      border-color: rgba(255, 255, 255, 0.5);
+      border-top-color: rgba(255, 255, 255, 0.85);
+    }
+  }
+
+  @keyframes magicLinkSpin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .tryAnotherWrap {
+    margin: 4px 0 0;
+    text-align: center;
+  }
+
+  .tryAnotherBtn {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: 0.9rem;
+    color: var(--color-accent, #1a5f4a);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+
+  .tryAnotherBtn:hover {
+    color: var(--color-accent-hover, #134a3a);
+  }
+
+  .tryAnotherBtn:focus-visible {
+    outline: 2px solid var(--color-accent, #1a5f4a);
+    outline-offset: 2px;
+    border-radius: 2px;
   }
 </style>
