@@ -1,0 +1,314 @@
+---
+import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
+import { memberCopy, memberPaths, type MemberLocale } from '../../lib/members/i18n';
+import type { MemberProfile } from '../../lib/members/memberLookup';
+
+interface Props {
+	locale: MemberLocale;
+	mode: 'join' | 'edit';
+	email: string;
+	member: MemberProfile | null;
+	nextUrl: string;
+}
+
+const { locale, mode, email, member, nextUrl } = Astro.props;
+const t = memberCopy[locale];
+const paths = memberPaths[locale];
+
+const isEdit = mode === 'edit';
+const title = isEdit ? t.profileEditTitle : t.profileJoinTitle;
+const description = isEdit ? t.profileEditDescription : t.profileJoinDescription;
+const heroAria = isEdit ? t.profileEditHeroAria : t.profileJoinHeroAria;
+const heroTitle = isEdit ? t.profileEditHero : t.profileJoinHero;
+
+const v = (s: string | null | undefined) => (s ?? '').trim();
+
+const firstName = isEdit ? v(member?.first_name) : '';
+const lastName = isEdit ? v(member?.last_name) : '';
+const primaryPhone = isEdit ? v(member?.primary_phone) : '';
+const secondaryPhone = isEdit ? v(member?.secondary_phone) : '';
+const lakePhone = isEdit ? v(member?.lake_phone) : '';
+const lakeCivic = isEdit ? v(member?.lake_civic_number) : '';
+const lakeStreet = isEdit ? v(member?.lake_street_name) : '';
+const addr = isEdit ? v(member?.primary_address) : '';
+const city = isEdit ? v(member?.primary_city) : '';
+const province = isEdit ? v(member?.primary_province) : '';
+const country = isEdit ? v(member?.primary_country) : '';
+const postal = isEdit ? v(member?.primary_postal_code) : '';
+const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
+---
+
+<MemberAppLayout lang={locale} title={title} description={description} heroAriaLabel={heroAria} heroTitle={heroTitle}>
+	<section class="section">
+		<div class="container narrow">
+			{!isEdit && <p class="intro">{t.profileJoinIntro}</p>}
+
+			<form id="member-profile-form" class="profileForm" novalidate>
+				<input type="hidden" name="nextUrl" value={nextUrl} />
+
+				<fieldset class="profileFieldset">
+					<legend class="profileLegend">{t.profileSectionContact}</legend>
+					<label class="fieldLabel" for="profile-email-readonly">{t.profileSignInEmail}</label>
+					<input
+						class="fieldInput fieldInputReadonly"
+						id="profile-email-readonly"
+						type="email"
+						value={email}
+						readonly
+						tabindex={-1}
+						aria-readonly="true"
+					/>
+
+					<label class="fieldLabel" for="first_name">{t.profileFirstName}</label>
+					<input class="fieldInput" id="first_name" name="first_name" type="text" autocomplete="given-name" value={firstName} />
+
+					<label class="fieldLabel" for="last_name">{t.profileLastName}</label>
+					<input
+						class="fieldInput"
+						id="last_name"
+						name="last_name"
+						type="text"
+						autocomplete="family-name"
+						required
+						value={lastName}
+					/>
+
+					<label class="fieldLabel" for="primary_phone">{t.profilePrimaryPhone}</label>
+					<input class="fieldInput" id="primary_phone" name="primary_phone" type="text" autocomplete="tel" value={primaryPhone} />
+
+					<label class="fieldLabel" for="secondary_phone">{t.profileSecondaryPhone}</label>
+					<input class="fieldInput" id="secondary_phone" name="secondary_phone" type="text" autocomplete="tel" value={secondaryPhone} />
+				</fieldset>
+
+				<fieldset class="profileFieldset">
+					<legend class="profileLegend">{t.profileSectionLake}</legend>
+					<label class="fieldLabel" for="lake_phone">{t.profileLakePhone}</label>
+					<input class="fieldInput" id="lake_phone" name="lake_phone" type="text" value={lakePhone} />
+
+					<label class="fieldLabel" for="lake_civic_number">{t.profileLakeCivic}</label>
+					<input class="fieldInput" id="lake_civic_number" name="lake_civic_number" type="text" value={lakeCivic} />
+
+					<label class="fieldLabel" for="lake_street_name">{t.profileLakeStreet}</label>
+					<input class="fieldInput" id="lake_street_name" name="lake_street_name" type="text" value={lakeStreet} />
+				</fieldset>
+
+				<fieldset class="profileFieldset">
+					<legend class="profileLegend">{t.profileSectionMailing}</legend>
+					<label class="fieldLabel" for="primary_address">{t.profileStreetAddress}</label>
+					<input class="fieldInput" id="primary_address" name="primary_address" type="text" autocomplete="street-address" value={addr} />
+
+					<label class="fieldLabel" for="primary_city">{t.profileCity}</label>
+					<input class="fieldInput" id="primary_city" name="primary_city" type="text" autocomplete="address-level2" value={city} />
+
+					<div class="profileRow2">
+						<div>
+							<label class="fieldLabel" for="primary_province">{t.profileProvince}</label>
+							<input class="fieldInput" id="primary_province" name="primary_province" type="text" value={province} />
+						</div>
+						<div>
+							<label class="fieldLabel" for="primary_postal_code">{t.profilePostal}</label>
+							<input class="fieldInput" id="primary_postal_code" name="primary_postal_code" type="text" autocomplete="postal-code" value={postal} />
+						</div>
+					</div>
+
+					<label class="fieldLabel" for="primary_country">{t.profileCountry}</label>
+					<input class="fieldInput" id="primary_country" name="primary_country" type="text" autocomplete="country-name" value={country} />
+				</fieldset>
+
+				<label class="checkLabel">
+					<input type="checkbox" name="email_opt_in" checked={emailOptIn ? true : undefined} class="checkInput" />
+					<span>{t.profileEmailOptIn}</span>
+				</label>
+
+				<p id="profile-form-message" class="formMessage" role="status" aria-live="polite"></p>
+
+				<div class="profileActions">
+					<button type="submit" class="btnPrimary" id="profile-submit">
+						{isEdit ? t.profileSaveSubmit : t.profileCreateSubmit}
+					</button>
+					<a class="btnGhost profileBack" href={paths.account}>{t.profileBackToAccount}</a>
+				</div>
+			</form>
+		</div>
+	</section>
+</MemberAppLayout>
+
+<script
+	define:vars={{
+		mode,
+		nextUrl,
+		errNetwork: t.errorNetwork,
+		errLastName: t.profileErrorLastName,
+		errAlreadyMember: t.profileErrorAlreadyMember,
+		errSave: t.profileErrorSave,
+		accountPath: paths.account,
+	}}
+>
+	const form = document.getElementById('member-profile-form');
+	const msg = document.getElementById('profile-form-message');
+	const submitBtn = document.getElementById('profile-submit');
+
+	function payloadFromForm(fd) {
+		return {
+			first_name: fd.get('first_name') || null,
+			last_name: String(fd.get('last_name') ?? '').trim(),
+			primary_phone: fd.get('primary_phone') || null,
+			secondary_phone: fd.get('secondary_phone') || null,
+			lake_phone: fd.get('lake_phone') || null,
+			lake_civic_number: fd.get('lake_civic_number') || null,
+			lake_street_name: fd.get('lake_street_name') || null,
+			primary_address: fd.get('primary_address') || null,
+			primary_city: fd.get('primary_city') || null,
+			primary_province: fd.get('primary_province') || null,
+			primary_country: fd.get('primary_country') || null,
+			primary_postal_code: fd.get('primary_postal_code') || null,
+			email_opt_in: fd.get('email_opt_in') === 'on',
+		};
+	}
+
+	form?.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		if (!msg || !submitBtn) return;
+		msg.textContent = '';
+		submitBtn.setAttribute('disabled', 'true');
+		const fd = new FormData(form);
+		const body = payloadFromForm(fd);
+		if (!body.last_name) {
+			msg.textContent = errLastName;
+			submitBtn.removeAttribute('disabled');
+			return;
+		}
+		try {
+			const res = await fetch('/api/membership/profile', {
+				method: mode === 'edit' ? 'PATCH' : 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(body),
+			});
+			const data = await res.json().catch(() => ({}));
+			if (res.status === 409 && data.error === 'already_member') {
+				msg.textContent = errAlreadyMember;
+				window.setTimeout(() => {
+					window.location.href = nextUrl || accountPath;
+				}, 1200);
+				return;
+			}
+			if (!res.ok) {
+				if (data.error === 'last_name_required') msg.textContent = errLastName;
+				else msg.textContent = errSave;
+				return;
+			}
+			window.location.href = nextUrl || accountPath;
+		} catch {
+			msg.textContent = errNetwork;
+		} finally {
+			submitBtn.removeAttribute('disabled');
+		}
+	});
+</script>
+
+<style>
+	.narrow {
+		max-width: 560px;
+	}
+
+	.intro {
+		margin: 0 0 1.25rem;
+		line-height: 1.5;
+		color: var(--color-muted, #444);
+	}
+
+	.profileForm {
+		display: flex;
+		flex-direction: column;
+		gap: 1.25rem;
+	}
+
+	.profileFieldset {
+		border: 1px solid rgba(0, 0, 0, 0.1);
+		border-radius: 12px;
+		padding: 1rem 1.1rem 1.15rem;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.profileLegend {
+		font-weight: 700;
+		font-size: 0.95rem;
+		padding: 0 6px;
+	}
+
+	.fieldLabel {
+		font-weight: 600;
+		font-size: 0.9rem;
+	}
+
+	.fieldInput {
+		width: 100%;
+		padding: 10px 12px;
+		border-radius: 8px;
+		border: 1px solid rgba(0, 0, 0, 0.15);
+		font-size: 1rem;
+		box-sizing: border-box;
+	}
+
+	.fieldInputReadonly {
+		background: rgba(0, 0, 0, 0.04);
+		color: var(--color-muted, #444);
+	}
+
+	.fieldInput:focus {
+		outline: 2px solid var(--color-accent, #1a5f4a);
+		outline-offset: 2px;
+	}
+
+	.profileRow2 {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
+	}
+
+	@media (max-width: 520px) {
+		.profileRow2 {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.checkLabel {
+		display: flex;
+		align-items: flex-start;
+		gap: 10px;
+		font-size: 0.95rem;
+		line-height: 1.4;
+		cursor: pointer;
+	}
+
+	.checkInput {
+		margin-top: 3px;
+		flex-shrink: 0;
+	}
+
+	.formMessage {
+		min-height: 1.25em;
+		font-size: 0.95rem;
+		color: #b00020;
+	}
+
+	.profileActions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 12px;
+		margin-top: 4px;
+	}
+
+	.profileBack {
+		text-decoration: none;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 44px;
+		padding: 0 16px;
+	}
+</style>

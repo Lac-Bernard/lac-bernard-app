@@ -7,11 +7,47 @@ export type MemberProfile = {
 	primary_email: string | null;
 	secondary_email: string | null;
 	user_id: string | null;
+	primary_phone: string | null;
+	secondary_phone: string | null;
+	lake_phone: string | null;
+	lake_civic_number: string | null;
+	lake_street_name: string | null;
+	primary_address: string | null;
+	primary_city: string | null;
+	primary_province: string | null;
+	primary_country: string | null;
+	primary_postal_code: string | null;
+	email_opt_in: boolean;
 };
 
 /** Escape `%` and `_` so `ILIKE` matches the literal email. */
 function escapeIlikeExact(value: string): string {
 	return value.replaceAll('\\', '\\\\').replaceAll('%', '\\%').replaceAll('_', '\\_');
+}
+
+function normalizeMember(row: {
+	id: string;
+	first_name: string | null;
+	last_name: string;
+	primary_email: string | null;
+	secondary_email: string | null;
+	user_id: string | null;
+	primary_phone: string | null;
+	secondary_phone: string | null;
+	lake_phone: string | null;
+	lake_civic_number: string | null;
+	lake_street_name: string | null;
+	primary_address: string | null;
+	primary_city: string | null;
+	primary_province: string | null;
+	primary_country: string | null;
+	primary_postal_code: string | null;
+	email_opt_in: boolean | null;
+}): MemberProfile {
+	return {
+		...row,
+		email_opt_in: Boolean(row.email_opt_in),
+	};
 }
 
 /** Resolve the `members` row: linked `user_id` first, else primary email only (secondary is not used for ownership). */
@@ -22,7 +58,10 @@ export async function findMemberByAuthEmail(
 	const raw = authEmail.trim();
 	if (!raw) return null;
 
-	const selectCols = 'id, first_name, last_name, primary_email, secondary_email, user_id';
+	const selectCols =
+		'id, first_name, last_name, primary_email, secondary_email, user_id, ' +
+		'primary_phone, secondary_phone, lake_phone, lake_civic_number, lake_street_name, ' +
+		'primary_address, primary_city, primary_province, primary_country, primary_postal_code, email_opt_in';
 
 	const { data: userData } = await supabase.auth.getUser();
 	const uid = userData.user?.id;
@@ -33,7 +72,7 @@ export async function findMemberByAuthEmail(
 			.eq('user_id', uid)
 			.maybeSingle();
 		if (errUser) return null;
-		if (byUser) return byUser;
+		if (byUser) return normalizeMember(byUser);
 	}
 
 	const pattern = escapeIlikeExact(raw);
@@ -47,5 +86,5 @@ export async function findMemberByAuthEmail(
 		.maybeSingle();
 
 	if (errPrimary) return null;
-	return primaryMatch ?? null;
+	return primaryMatch ? normalizeMember(primaryMatch) : null;
 }
