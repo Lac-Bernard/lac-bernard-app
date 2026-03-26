@@ -2,7 +2,15 @@ export type MemberLocale = 'en' | 'fr';
 
 export const memberPaths: Record<
 	MemberLocale,
-	{ account: string; signIn: string; admin: string; enrollment: string; renewal: string }
+	{
+		account: string;
+		signIn: string;
+		admin: string;
+		enrollment: string;
+		renewal: string;
+		join: string;
+		edit: string;
+	}
 > = {
 	en: {
 		account: '/en/membership/account',
@@ -10,6 +18,8 @@ export const memberPaths: Record<
 		admin: '/en/membership/admin',
 		enrollment: '/en/membership/enrollment',
 		renewal: '/en/membership/renewal',
+		join: '/en/membership/account/new',
+		edit: '/en/membership/account/edit',
 	},
 	fr: {
 		account: '/fr/membership/account',
@@ -17,6 +27,8 @@ export const memberPaths: Record<
 		admin: '/fr/membership/admin',
 		enrollment: '/fr/membership/enrollment',
 		renewal: '/fr/membership/renewal',
+		join: '/fr/membership/account/new',
+		edit: '/fr/membership/account/edit',
 	},
 };
 
@@ -98,6 +110,40 @@ export const memberCopy: Record<
 		formsHintEnd: string;
 		membershipPrepaidSection: string;
 		membershipPrepaidLead: string;
+		linkEditProfile: string;
+		linkCreateProfile: string;
+		profileJoinTitle: string;
+		profileJoinDescription: string;
+		profileJoinHeroAria: string;
+		profileJoinHero: string;
+		profileJoinIntro: string;
+		profileEditTitle: string;
+		profileEditDescription: string;
+		profileEditHeroAria: string;
+		profileEditHero: string;
+		profileSectionContact: string;
+		profileSectionLake: string;
+		profileSectionMailing: string;
+		profileSignInEmail: string;
+		profileFirstName: string;
+		profileLastName: string;
+		profilePrimaryPhone: string;
+		profileSecondaryPhone: string;
+		profileLakePhone: string;
+		profileLakeCivic: string;
+		profileLakeStreet: string;
+		profileStreetAddress: string;
+		profileCity: string;
+		profileProvince: string;
+		profileCountry: string;
+		profilePostal: string;
+		profileEmailOptIn: string;
+		profileCreateSubmit: string;
+		profileSaveSubmit: string;
+		profileBackToAccount: string;
+		profileErrorLastName: string;
+		profileErrorAlreadyMember: string;
+		profileErrorSave: string;
 	}
 > = {
 	en: {
@@ -179,6 +225,41 @@ export const memberCopy: Record<
 		formsHintEnd: ' so we can match your payment to your record.',
 		membershipPrepaidSection: 'Prepaid / future years',
 		membershipPrepaidLead: 'These membership years are on file after the current calendar year.',
+		linkEditProfile: 'Edit profile',
+		linkCreateProfile: 'Create member profile',
+		profileJoinTitle: 'Join | Lac Bernard Association',
+		profileJoinDescription: 'Create your member profile to link your account to the association.',
+		profileJoinHeroAria: 'New member profile',
+		profileJoinHero: 'Create your profile',
+		profileJoinIntro:
+			'Enter your contact details as they should appear in our records. Your sign-in email is shown below and cannot be changed here.',
+		profileEditTitle: 'Edit profile | Lac Bernard Association',
+		profileEditDescription: 'Update your contact information on file with the association.',
+		profileEditHeroAria: 'Edit profile',
+		profileEditHero: 'Your profile',
+		profileSectionContact: 'Contact',
+		profileSectionLake: 'At the lake',
+		profileSectionMailing: 'Mailing address',
+		profileSignInEmail: 'Sign-in email',
+		profileFirstName: 'First name',
+		profileLastName: 'Last name',
+		profilePrimaryPhone: 'Primary phone',
+		profileSecondaryPhone: 'Secondary phone',
+		profileLakePhone: 'Lake phone',
+		profileLakeCivic: 'Civic number',
+		profileLakeStreet: 'Street name',
+		profileStreetAddress: 'Street address',
+		profileCity: 'City',
+		profileProvince: 'Province / state',
+		profileCountry: 'Country',
+		profilePostal: 'Postal code',
+		profileEmailOptIn: 'Email me association updates (you can change this anytime)',
+		profileCreateSubmit: 'Create profile',
+		profileSaveSubmit: 'Save changes',
+		profileBackToAccount: 'Back to member area',
+		profileErrorLastName: 'Last name is required.',
+		profileErrorAlreadyMember: 'A profile already exists for this account. Returning to the member area.',
+		profileErrorSave: 'Could not save your profile. Please try again.',
 	},
 	fr: {
 		homeTitle: 'Espace membre | Association du lac Bernard',
@@ -259,6 +340,41 @@ export const memberCopy: Record<
 		formsHintEnd: ' afin que nous puissions associer votre paiement à votre dossier.',
 		membershipPrepaidSection: 'Années payées d’avance / futures',
 		membershipPrepaidLead: 'Ces années d’adhésion sont enregistrées après l’année civile en cours.',
+		linkEditProfile: 'Modifier le profil',
+		linkCreateProfile: 'Créer un profil membre',
+		profileJoinTitle: 'Adhésion | Association du lac Bernard',
+		profileJoinDescription: 'Créez votre profil membre pour lier votre compte à l’association.',
+		profileJoinHeroAria: 'Nouveau profil membre',
+		profileJoinHero: 'Créer votre profil',
+		profileJoinIntro:
+			'Indiquez vos coordonnées telles qu’elles doivent figurer dans nos dossiers. Votre courriel de connexion est affiché ci-dessous; il ne peut pas être modifié ici.',
+		profileEditTitle: 'Profil | Association du lac Bernard',
+		profileEditDescription: 'Mettez à jour les coordonnées associées à votre dossier.',
+		profileEditHeroAria: 'Modifier le profil',
+		profileEditHero: 'Votre profil',
+		profileSectionContact: 'Coordonnées',
+		profileSectionLake: 'Au lac',
+		profileSectionMailing: 'Adresse postale',
+		profileSignInEmail: 'Courriel de connexion',
+		profileFirstName: 'Prénom',
+		profileLastName: 'Nom',
+		profilePrimaryPhone: 'Téléphone principal',
+		profileSecondaryPhone: 'Téléphone secondaire',
+		profileLakePhone: 'Téléphone au lac',
+		profileLakeCivic: 'Numéro civique',
+		profileLakeStreet: 'Rue',
+		profileStreetAddress: 'Adresse',
+		profileCity: 'Ville',
+		profileProvince: 'Province / État',
+		profileCountry: 'Pays',
+		profilePostal: 'Code postal',
+		profileEmailOptIn: 'M’envoyer des nouvelles de l’association par courriel (modifiable à tout moment)',
+		profileCreateSubmit: 'Créer le profil',
+		profileSaveSubmit: 'Enregistrer',
+		profileBackToAccount: 'Retour à l’espace membre',
+		profileErrorLastName: 'Le nom est obligatoire.',
+		profileErrorAlreadyMember: 'Un profil existe déjà pour ce compte. Retour à l’espace membre.',
+		profileErrorSave: 'Enregistrement impossible. Veuillez réessayer.',
 	},
 };
 

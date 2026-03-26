@@ -65,9 +65,19 @@ const showMemberActions = Boolean(member);
 
       {
         !member ? (
-          <p class="muted">{t.noMemberForEmail}</p>
+          <>
+            <p class="muted">{t.noMemberForEmail}</p>
+            <p>
+              <a class="profileEditLink" href={`${paths.join}?next=${encodeURIComponent(paths.account)}`}>
+                {t.linkCreateProfile}
+              </a>
+            </p>
+          </>
         ) : (
           <>
+            <p class="profileEditRow">
+              <a class="profileEditLink" href={paths.edit}>{t.linkEditProfile}</a>
+            </p>
             <p class="memberName">
               {member.first_name ? `${member.first_name} ` : ''}
               {member.last_name}
@@ -323,6 +333,21 @@ const showMemberActions = Boolean(member);
 
   .muted {
     color: var(--muted, #555);
+  }
+
+  .profileEditRow {
+    margin: 0 0 0.75rem;
+  }
+
+  .profileEditLink {
+    font-weight: 600;
+    color: var(--color-accent, #1a5f4a);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .profileEditLink:hover {
+    text-decoration-thickness: 2px;
   }
 
   .memberName {

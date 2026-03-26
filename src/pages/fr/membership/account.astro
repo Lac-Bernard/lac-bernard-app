@@ -25,6 +25,11 @@ await supabase.rpc('claim_member');
 
 const accountData = await loadMemberAccountData(supabase, user.email ?? '', currentYear);
 
+if (!accountData.member) {
+	const join = `${paths.join}?next=${encodeURIComponent(paths.account)}`;
+	return redirectWithCookies(join);
+}
+
 flushCookies();
 const email = user.email ?? '';
 ---
