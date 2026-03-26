@@ -66,6 +66,65 @@ export const memberCopy: Record<
 		adminHeroAria: string;
 		adminHero: string;
 		adminBody: string;
+		adminNavPending: string;
+		adminNavActiveMembers: string;
+		adminNavNotRenewed: string;
+		adminTableName: string;
+		adminTableEmail: string;
+		adminTableYear: string;
+		adminTableTier: string;
+		adminTableStatus: string;
+		adminTableCreated: string;
+		adminTableActions: string;
+		adminSearchLabel: string;
+		adminSortLabel: string;
+		adminSortCreatedDesc: string;
+		adminSortNameAsc: string;
+		adminPendingEmpty: string;
+		adminRecordPaymentBtn: string;
+		adminPaymentHeading: string;
+		adminAmountLabel: string;
+		adminMethodLabel: string;
+		adminMethodEtransfer: string;
+		adminMethodCheque: string;
+		adminMethodCash: string;
+		adminMethodUnknown: string;
+		adminDateLabel: string;
+		adminNotesLabel: string;
+		adminSubmitPaymentBtn: string;
+		adminPromoteBtn: string;
+		adminPromoteSuccess: string;
+		adminPromoteNoAccount: string;
+		adminMemberEditHeading: string;
+		adminSaveMemberBtn: string;
+		adminDetailHint: string;
+		adminLoading: string;
+		adminErrorGeneric: string;
+		adminPageOf: string;
+		adminPrevPage: string;
+		adminNextPage: string;
+		adminFilterApply: string;
+		adminSelectMemberHint: string;
+		adminSecondaryEmailLabel: string;
+		adminNotesFieldLabel: string;
+		adminStatusMemberLabel: string;
+		adminUserIdLabel: string;
+		adminPrimaryEmailLabel: string;
+		adminBackToList: string;
+		adminMemberSaved: string;
+		adminPaymentSaved: string;
+		adminMembershipYearLabel: string;
+		adminFilterTierLabel: string;
+		adminFilterTierAll: string;
+		adminFilterTierGeneral: string;
+		adminFilterTierAssociate: string;
+		adminExportEmails: string;
+		adminExportEmailsCopied: string;
+		adminCopyEmailsFallbackPrompt: string;
+		adminCopyEmailsDialogCopy: string;
+		adminCopyEmailsDialogClose: string;
+		adminExportEmailsHint: string;
+		adminExportEmailsEmpty: string;
 		membershipHistorySection: string;
 		membershipTableYear: string;
 		membershipTableType: string;
@@ -176,7 +235,68 @@ export const memberCopy: Record<
 		adminHeroAria: 'Administration',
 		adminHero: 'Administration',
 		adminBody:
-			'Member records, payment marking, and tools will live here. Access is limited to accounts with the admin role in Supabase.',
+			'Review pending payments, list active or not-yet-renewed members by year, record manual payments, and grant admin access to linked accounts.',
+		adminNavPending: 'Pending payments',
+		adminNavActiveMembers: 'Active members',
+		adminNavNotRenewed: 'Not renewed',
+		adminTableName: 'Name',
+		adminTableEmail: 'Email',
+		adminTableYear: 'Year',
+		adminTableTier: 'Type',
+		adminTableStatus: 'Status',
+		adminTableCreated: 'Created',
+		adminTableActions: 'Actions',
+		adminSearchLabel: 'Search',
+		adminSortLabel: 'Sort',
+		adminSortCreatedDesc: 'Newest first',
+		adminSortNameAsc: 'Last name A–Z',
+		adminPendingEmpty: 'No pending memberships.',
+		adminRecordPaymentBtn: 'Record payment',
+		adminPaymentHeading: 'Record manual payment',
+		adminAmountLabel: 'Amount',
+		adminMethodLabel: 'Method',
+		adminMethodEtransfer: 'e-Transfer',
+		adminMethodCheque: 'Cheque',
+		adminMethodCash: 'Cash',
+		adminMethodUnknown: 'Unknown',
+		adminDateLabel: 'Payment date',
+		adminNotesLabel: 'Notes (optional)',
+		adminSubmitPaymentBtn: 'Save payment & activate',
+		adminPromoteBtn: 'Grant admin role',
+		adminPromoteSuccess: 'Admin role granted. They may need to sign out and back in.',
+		adminPromoteNoAccount: 'This member has no linked sign-in account (user id).',
+		adminMemberEditHeading: 'Edit member',
+		adminSaveMemberBtn: 'Save member',
+		adminDetailHint: 'Select a member in the list or search, then edit below.',
+		adminLoading: 'Loading…',
+		adminErrorGeneric: 'Something went wrong.',
+		adminPageOf: 'Page {{page}} of {{total}}',
+		adminPrevPage: 'Previous',
+		adminNextPage: 'Next',
+		adminFilterApply: 'Apply',
+		adminSelectMemberHint: 'Choose a member row to load details.',
+		adminSecondaryEmailLabel: 'Secondary email',
+		adminNotesFieldLabel: 'Internal notes',
+		adminStatusMemberLabel: 'Member status',
+		adminUserIdLabel: 'Linked auth user id',
+		adminPrimaryEmailLabel: 'Primary email',
+		adminBackToList: 'Clear selection',
+		adminMemberSaved: 'Member saved.',
+		adminPaymentSaved: 'Payment recorded and membership activated.',
+		adminMembershipYearLabel: 'Membership year',
+		adminFilterTierLabel: 'Membership type',
+		adminFilterTierAll: 'All types',
+		adminFilterTierGeneral: 'General only',
+		adminFilterTierAssociate: 'Associate only',
+		adminExportEmails: 'Copy email list',
+		adminExportEmailsCopied: 'Comma-separated emails copied to clipboard.',
+		adminCopyEmailsFallbackPrompt:
+			'Automatic copy was blocked. Select the text below or use Copy to clipboard.',
+		adminCopyEmailsDialogCopy: 'Copy to clipboard',
+		adminCopyEmailsDialogClose: 'Close',
+		adminExportEmailsHint:
+			'Same filters as this table (non-empty primary email only). Get consent before bulk mail.',
+		adminExportEmailsEmpty: 'No primary emails to copy for this view.',
 		membershipHistorySection: 'Membership history',
 		membershipTableYear: 'Year',
 		membershipTableType: 'Type',
@@ -291,7 +411,68 @@ export const memberCopy: Record<
 		adminHeroAria: 'Administration',
 		adminHero: 'Administration',
 		adminBody:
-			'Les dossiers membres, le suivi des paiements et les outils seront regroupés ici. L’accès est réservé aux comptes dotés du rôle administrateur dans Supabase.',
+			'Consultez les paiements en attente, les membres actifs ou non renouvelés par année, enregistrez les paiements manuels et attribuez le rôle administrateur aux comptes liés.',
+		adminNavPending: 'Paiements en attente',
+		adminNavActiveMembers: 'Membres actifs',
+		adminNavNotRenewed: 'Non renouvelés',
+		adminTableName: 'Nom',
+		adminTableEmail: 'Courriel',
+		adminTableYear: 'Année',
+		adminTableTier: 'Type',
+		adminTableStatus: 'Statut',
+		adminTableCreated: 'Créé',
+		adminTableActions: 'Actions',
+		adminSearchLabel: 'Recherche',
+		adminSortLabel: 'Tri',
+		adminSortCreatedDesc: 'Plus récents',
+		adminSortNameAsc: 'Nom de famille A–Z',
+		adminPendingEmpty: 'Aucune adhésion en attente.',
+		adminRecordPaymentBtn: 'Enregistrer le paiement',
+		adminPaymentHeading: 'Paiement manuel',
+		adminAmountLabel: 'Montant',
+		adminMethodLabel: 'Mode',
+		adminMethodEtransfer: 'Virement',
+		adminMethodCheque: 'Chèque',
+		adminMethodCash: 'Comptant',
+		adminMethodUnknown: 'Inconnu',
+		adminDateLabel: 'Date du paiement',
+		adminNotesLabel: 'Notes (facultatif)',
+		adminSubmitPaymentBtn: 'Enregistrer et activer',
+		adminPromoteBtn: 'Accorder le rôle admin',
+		adminPromoteSuccess: 'Rôle administrateur accordé. La personne devra peut-être se déconnecter et se reconnecter.',
+		adminPromoteNoAccount: 'Ce membre n’a pas de compte de connexion lié (identifiant utilisateur).',
+		adminMemberEditHeading: 'Modifier le membre',
+		adminSaveMemberBtn: 'Enregistrer',
+		adminDetailHint: 'Sélectionnez un membre dans la liste pour modifier les détails.',
+		adminLoading: 'Chargement…',
+		adminErrorGeneric: 'Une erreur s’est produite.',
+		adminPageOf: 'Page {{page}} sur {{total}}',
+		adminPrevPage: 'Précédent',
+		adminNextPage: 'Suivant',
+		adminFilterApply: 'Appliquer',
+		adminSelectMemberHint: 'Choisissez une ligne pour charger les détails.',
+		adminSecondaryEmailLabel: 'Courriel secondaire',
+		adminNotesFieldLabel: 'Notes internes',
+		adminStatusMemberLabel: 'Statut du membre',
+		adminUserIdLabel: 'Identifiant de compte lié',
+		adminPrimaryEmailLabel: 'Courriel principal',
+		adminBackToList: 'Effacer la sélection',
+		adminMemberSaved: 'Membre enregistré.',
+		adminPaymentSaved: 'Paiement enregistré et adhésion activée.',
+		adminMembershipYearLabel: 'Année d’adhésion',
+		adminFilterTierLabel: 'Type d’adhésion',
+		adminFilterTierAll: 'Tous les types',
+		adminFilterTierGeneral: 'Générale seulement',
+		adminFilterTierAssociate: 'Associée seulement',
+		adminExportEmails: 'Copier la liste de courriels',
+		adminExportEmailsCopied: 'Courriels séparés par des virgules copiés dans le presse-papiers.',
+		adminCopyEmailsFallbackPrompt:
+			'La copie automatique a été bloquée. Sélectionnez le texte ci-dessous ou utilisez Copier.',
+		adminCopyEmailsDialogCopy: 'Copier dans le presse-papiers',
+		adminCopyEmailsDialogClose: 'Fermer',
+		adminExportEmailsHint:
+			'Mêmes filtres que ce tableau (courriel principal non vide seulement). Obtenez le consentement avant un envoi de masse.',
+		adminExportEmailsEmpty: 'Aucun courriel principal à copier pour cette vue.',
 		membershipHistorySection: 'Historique des adhésions',
 		membershipTableYear: 'Année',
 		membershipTableType: 'Type',

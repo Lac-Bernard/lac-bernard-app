@@ -13,9 +13,11 @@ interface Props {
   heroAriaLabel: string;
   heroTitle: string;
   heroSubtitle?: string;
+  /** Shorter hero for tool-style pages (e.g. membership admin). */
+  heroCompact?: boolean;
 }
 
-const { lang, title, description, heroAriaLabel, heroTitle, heroSubtitle } = Astro.props;
+const { lang, title, description, heroAriaLabel, heroTitle, heroSubtitle, heroCompact } = Astro.props;
 ---
 
 <html lang={lang}>
@@ -31,7 +33,7 @@ const { lang, title, description, heroAriaLabel, heroTitle, heroSubtitle } = Ast
     <SiteHeader />
 
     <main id="main-content">
-      <section class="hero" aria-label={heroAriaLabel}>
+      <section class:list={['hero', { 'hero--compact': heroCompact }]} aria-label={heroAriaLabel}>
         <div class="container heroInner">
           <div class="heroCopy">
             <h1>{heroTitle}</h1>
@@ -88,5 +90,23 @@ const { lang, title, description, heroAriaLabel, heroTitle, heroSubtitle } = Ast
     font-size: 1.125rem;
     opacity: 0.95;
     max-width: 36rem;
+  }
+
+  .hero--compact {
+    padding: 44px 0 40px;
+    min-height: 0;
+  }
+
+  .hero--compact::before {
+    background: rgba(0, 0, 0, 0.58);
+  }
+
+  .hero--compact h1 {
+    font-size: clamp(26px, 3.2vw, 40px);
+  }
+
+  .hero--compact .heroLead {
+    font-size: 1rem;
+    opacity: 0.92;
   }
 </style>
