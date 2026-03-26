@@ -20,6 +20,9 @@ if (error || !user) {
 }
 
 const currentYear = getMembershipCalendarYear();
+
+await supabase.rpc('claim_member');
+
 const accountData = await loadMemberAccountData(supabase, user.email ?? '', currentYear);
 
 flushCookies();
