@@ -14,7 +14,7 @@ function escapeIlikeExact(value: string): string {
 	return value.replaceAll('\\', '\\\\').replaceAll('%', '\\%').replaceAll('_', '\\_');
 }
 
-/** Resolve the `members` row: linked `user_id` first, else email (primary then secondary). */
+/** Resolve the `members` row: linked `user_id` first, else primary email only (secondary is not used for ownership). */
 export async function findMemberByAuthEmail(
 	supabase: SupabaseClient,
 	authEmail: string,
@@ -47,16 +47,5 @@ export async function findMemberByAuthEmail(
 		.maybeSingle();
 
 	if (errPrimary) return null;
-	if (primaryMatch) return primaryMatch;
-
-	const { data: secondaryMatch, error: errSecondary } = await supabase
-		.from('members')
-		.select(selectCols)
-		.ilike('secondary_email', pattern)
-		.order('created_at', { ascending: true })
-		.limit(1)
-		.maybeSingle();
-
-	if (errSecondary) return null;
-	return secondaryMatch ?? null;
+	return primaryMatch ?? null;
 }
