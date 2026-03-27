@@ -23,8 +23,6 @@ const paths = memberPaths[locale];
 const heroSubtitle = email ? `${t.signedInAs} ${email}` : '';
 const { member, currentMemberships, historicalMemberships } = accountData;
 
-const intro = t.homeIntro.replace('{{year}}', String(currentYear));
-
 function membershipRows(rows: typeof currentMemberships) {
 	return rows.map((row) => ({
 		...row,
@@ -55,6 +53,15 @@ const pendingFeeCents =
 const pendingMembershipFeeCad =
 	pendingFeeCents != null ? (pendingFeeCents / 100).toFixed(2) : '0.00';
 
+const activeFeeCents =
+	thisYearMembership?.status === 'active'
+		? membershipCentsForTier(thisYearMembership.tier)
+		: null;
+const activeMembershipFeeCad =
+	activeFeeCents != null ? (activeFeeCents / 100).toFixed(2) : '0.00';
+
+const activeYearScope = t.statusActiveYearScope.replace('{{year}}', String(currentYear));
+
 const showMemberActions = Boolean(member);
 const hasLakeAddress = Boolean(
 	member &&
@@ -75,20 +82,30 @@ const generalFeeCad =
 	generalCents != null ? (generalCents / 100).toFixed(2) : '0.00';
 const associateFeeCad =
 	associateCents != null ? (associateCents / 100).toFixed(2) : '0.00';
+
+const displayEmail = member ? (member.primary_email?.trim() || email) : '';
+
+let mailingLine: string | null = null;
+if (member) {
+	const m = member;
+	const parts: string[] = [];
+	if (m.primary_address?.trim()) parts.push(m.primary_address.trim());
+	const cityProv = [m.primary_city?.trim(), m.primary_province?.trim()].filter(Boolean).join(', ');
+	if (cityProv) parts.push(cityProv);
+	if (m.primary_postal_code?.trim()) parts.push(m.primary_postal_code.trim());
+	mailingLine = parts.length ? parts.join(', ') : null;
+}
 ---
 
 <MemberAppLayout
   lang={locale}
   title={t.homeTitle}
   description={t.homeDescription}
-  heroAriaLabel={t.homeHero}
   heroTitle={t.homeHero}
   heroSubtitle={heroSubtitle}
 >
   <section class="section">
-    <div class="container prose">
-      <p>{intro}</p>
-
+    <div class="container prose memberHomeProse">
       {checkoutFlash === 'success' && (
         <p class="checkoutBanner checkoutBannerSuccess" role="status">{t.checkoutSuccessBanner}</p>
       )}
@@ -108,240 +125,320 @@ const associateFeeCad =
           </>
         ) : (
           <>
-            <p class="profileEditRow">
-              <a class="profileEditLink" href={paths.edit}>{t.linkEditProfile}</a>
-            </p>
-            <p class="memberName">
-              {member.first_name ? `${member.first_name} ` : ''}
-              {member.last_name}
-            </p>
+            <div class="memberSummaryCard">
+              <div class="memberSummaryHeader">
+                <div class="memberSummaryIdentity">
+                  <p class="memberSummaryName">
+                    {member.first_name ? `${member.first_name} ` : ''}
+                    {member.last_name}
+                  </p>
+                  <p class="memberSummaryEmail">{displayEmail}</p>
+                </div>
+                <a class="profileEditLink memberSummaryEdit" href={paths.edit}>{t.linkEditProfile}</a>
+              </div>
+              <dl class="memberSummaryDl">
+                <div class="memberSummaryDlRow">
+                  <dt>{t.profileSectionLake}</dt>
+                  <dd>{lakeAddressLine || t.homeAddressNotOnFile}</dd>
+                </div>
+                <div class="memberSummaryDlRow">
+                  <dt>{t.profileSectionMailing}</dt>
+                  <dd>{mailingLine || t.homeAddressNotOnFile}</dd>
+                </div>
+              </dl>
+            </div>
 
             {hasActiveCurrentYear ? (
               <div class="statusCard statusCardActive" role="status">
-                <div class="statusActiveMark" aria-hidden="true">✓</div>
-                <div class="statusCardBody">
+                <div class="statusActiveHead">
+                  <div class="statusActiveMark" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  </div>
                   <h2 class="statusTitle">{activeTitle}</h2>
-                  <p class="statusTier">
-                    <span class="statusTierLabel">{t.statusActiveTierLabel}</span>
-                    {thisYearTierLabel}
-                  </p>
+                </div>
+                <div class="statusCardBody statusCardBodyActive">
+                  <p class="statusActiveScope">{activeYearScope}</p>
+                  <div class="activeTierSummary">
+                    <p class="tierLegend">{t.statusActiveTierLabel}</p>
+                    <div class="activeTierTile">
+                      <div class="activeTierTileRow">
+                        <span class="activeTierName">{thisYearTierLabel}</span>
+                        <span class="activeTierFee">{activeMembershipFeeCad} CAD</span>
+                      </div>
+                      {thisYearMembership?.tier === 'general' && (
+                        <div class="activeTierVote">
+                          <p class="activeTierVoteLabel">{t.statusActiveGeneralVoteLabel}</p>
+                          <p class="activeTierVoteAddress">{lakeAddressLine || t.homeAddressNotOnFile}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {futureRows.length > 0 && (
+                    <p class="statusActivePrepaid">
+                      {t.statusActivePrepaidTeaser.replace('{{count}}', String(futureRows.length))}
+                    </p>
+                  )}
                 </div>
               </div>
             ) : pendingThisYear ? (
               <div class="statusCard statusCardPending" role="status">
-                <h2 class="statusTitle">{pendingTitle}</h2>
-                <p class="statusPendingLead">{t.statusPendingLead}</p>
-                <p class="statusTier">
-                  <span class="statusTierLabel">{t.statusActiveTierLabel}</span>
-                  {thisYearTierLabel}
-                </p>
-
-                <div class="payPrimary">
-                  <button type="button" class="btnPrimary payCardBtn" id="open-checkout-modal">
-                    {t.payWithCard}
-                  </button>
-                </div>
-
-                <dialog id="checkout-modal" class="checkoutModal" aria-labelledby="checkout-modal-title">
-                  <div class="checkoutModalInner">
-                    <h2 id="checkout-modal-title" class="checkoutModalHeading">{t.checkoutModalTitle}</h2>
-                    <dl class="checkoutModalSummary">
-                      <div class="checkoutModalSummaryRow">
-                        <dt>{t.checkoutModalMembershipLabel}</dt>
-                        <dd>{thisYearTierLabel}</dd>
-                      </div>
-                      <div class="checkoutModalSummaryRow">
-                        <dt>{t.checkoutModalFeeLabel}</dt>
-                        <dd>
-                          {pendingMembershipFeeCad} CAD
-                        </dd>
-                      </div>
-                    </dl>
-                    <form id="checkout-modal-form" data-membership-id={pendingThisYear.id}>
-                      <div class="donationRow">
-                        <label class="donationLabel" for="modal-donation">{t.donationLabel}</label>
-                        <input
-                          type="number"
-                          class="donationInput"
-                          id="modal-donation"
-                          name="donation"
-                          min="0"
-                          max="50000"
-                          step="0.01"
-                          placeholder="0"
-                          inputmode="decimal"
-                          aria-describedby="modal-donation-hint"
-                        />
-                        <p id="modal-donation-hint" class="stripeNote">{t.donationHint}</p>
-                      </div>
-                      <div class="donationNoteRow">
-                        <label class="donationLabel" for="modal-donation-note">{t.donationNoteLabel}</label>
-                        <textarea
-                          class="donationNoteInput"
-                          id="modal-donation-note"
-                          name="donationNote"
-                          rows="3"
-                          maxlength="500"
-                          aria-describedby="modal-donation-note-hint"
-                        ></textarea>
-                        <p id="modal-donation-note-hint" class="stripeNote">{t.donationNoteHint}</p>
-                      </div>
-                      <p id="pay-checkout-message" class="actionMessage checkoutModalError" role="status" aria-live="polite"></p>
-                      <div class="checkoutModalActions">
-                        <button type="button" class="btnGhost" id="checkout-modal-cancel">
-                          {t.checkoutModalCancel}
-                        </button>
-                        <button type="submit" class="btnPrimary" id="checkout-modal-submit">
-                          {t.checkoutModalContinue}
-                        </button>
-                      </div>
-                    </form>
+                <div class="statusPendingHead">
+                  <div class="statusPendingMark" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
                   </div>
-                </dialog>
-
-                <div class="payAlt">
-                  <h3 class="payAltTitle">{t.otherPaymentTitle}</h3>
-                  <ul class="payList">
-                    <li>
-                      <span class="payMethodName">{t.payInteracTitle}</span>
-                      <p class="payMethodBody">
-                        {t.payInteracBeforeLink}
-                        <a href={interacMail}>{t.interacEmail}</a>
-                        {t.payInteracAfterLink}
-                      </p>
-                    </li>
-                    <li>
-                      <span class="payMethodName">{t.payChequeTitle}</span>
-                      <p class="payMethodBody payAddress">{t.payChequeAddress}</p>
-                    </li>
-                    <li>
-                      <span class="payMethodName">{t.payCashTitle}</span>
-                      <p class="payMethodBody">
-                        {t.payCashBeforeLink}
-                        <a href={membershipMail}>{t.membershipEmail}</a>
-                        {t.payCashAfterLink}
-                      </p>
-                    </li>
-                  </ul>
+                  <h2 class="statusTitle">{pendingTitle}</h2>
                 </div>
+                <div class="statusCardBody statusCardBodyPending">
+                  <p class="statusPendingLead">{t.statusPendingLead}</p>
 
-                <div class="cancelRow">
-                  <button type="button" class="btnGhost cancelPendingBtn" id="cancel-pending-btn" data-membership-id={pendingThisYear.id}>
-                    {t.cancelPending}
-                  </button>
-                  <p id="cancel-pending-message" class="actionMessage" role="status" aria-live="polite"></p>
+                  <div class="pendingTierSummary">
+                    <p class="tierLegend">{t.statusActiveTierLabel}</p>
+                    <div class="pendingTierTile">
+                      <div class="pendingTierTileRow">
+                        <span class="pendingTierName">{thisYearTierLabel}</span>
+                        <span class="pendingTierFee">{pendingMembershipFeeCad} CAD</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="payPrimary">
+                    <button type="button" class="btnPrimary payCardBtn payCardBtnFull" id="open-checkout-modal">
+                      {t.payWithCard}
+                    </button>
+                  </div>
+
+                  <dialog id="checkout-modal" class="checkoutModal" aria-labelledby="checkout-modal-title">
+                    <div class="checkoutModalInner">
+                      <h2 id="checkout-modal-title" class="checkoutModalHeading">{t.checkoutModalTitle}</h2>
+                      <dl class="checkoutModalSummary">
+                        <div class="checkoutModalSummaryRow">
+                          <dt>{t.checkoutModalMembershipLabel}</dt>
+                          <dd>{thisYearTierLabel}</dd>
+                        </div>
+                        <div class="checkoutModalSummaryRow">
+                          <dt>{t.checkoutModalFeeLabel}</dt>
+                          <dd>{pendingMembershipFeeCad} CAD</dd>
+                        </div>
+                      </dl>
+                      <form id="checkout-modal-form" class="checkoutModalForm" data-membership-id={pendingThisYear.id}>
+                        <div class="checkoutModalField donationRow">
+                          <label class="donationLabel" for="modal-donation">{t.donationLabel}</label>
+                          <input
+                            type="number"
+                            class="donationInput checkoutModalInput"
+                            id="modal-donation"
+                            name="donation"
+                            min="0"
+                            max="50000"
+                            step="0.01"
+                            placeholder="0"
+                            inputmode="decimal"
+                            aria-describedby="modal-donation-hint"
+                          />
+                          <p id="modal-donation-hint" class="stripeNote checkoutModalHint">{t.donationHint}</p>
+                        </div>
+                        <div class="checkoutModalField donationNoteRow">
+                          <label class="donationLabel" for="modal-donation-note">{t.donationNoteLabel}</label>
+                          <textarea
+                            class="donationNoteInput"
+                            id="modal-donation-note"
+                            name="donationNote"
+                            rows="3"
+                            maxlength="500"
+                            aria-describedby="modal-donation-note-hint"
+                          ></textarea>
+                          <p id="modal-donation-note-hint" class="stripeNote checkoutModalHint">{t.donationNoteHint}</p>
+                        </div>
+                        <p id="pay-checkout-message" class="actionMessage checkoutModalError" role="status" aria-live="polite"></p>
+                        <div class="checkoutModalActions">
+                          <button type="button" class="btnGhost checkoutModalBtnSecondary" id="checkout-modal-cancel">
+                            {t.checkoutModalCancel}
+                          </button>
+                          <button type="submit" class="btnPrimary checkoutModalBtnPrimary" id="checkout-modal-submit">
+                            {t.checkoutModalContinue}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </dialog>
+
+                  <div class="payAlt">
+                    <h3 class="payAltTitle">{t.otherPaymentTitle}</h3>
+                    <div class="payMethodGrid">
+                      <div class="payMethodCard">
+                        <div class="payMethodCardTitle">{t.payInteracTitle}</div>
+                        <p class="payMethodCardBody">
+                          {t.payInteracBeforeLink}
+                          <a href={interacMail}>{t.interacEmail}</a>
+                          {t.payInteracAfterLink}
+                        </p>
+                      </div>
+                      <div class="payMethodCard">
+                        <div class="payMethodCardTitle">{t.payChequeTitle}</div>
+                        <p class="payMethodCardBody payAddress">{t.payChequeAddress}</p>
+                      </div>
+                      <div class="payMethodCard">
+                        <div class="payMethodCardTitle">{t.payCashTitle}</div>
+                        <p class="payMethodCardBody">
+                          {t.payCashBeforeLink}
+                          <a href={membershipMail}>{t.membershipEmail}</a>
+                          {t.payCashAfterLink}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="cancelRow">
+                    <button type="button" class="btnGhost cancelPendingBtn" id="cancel-pending-btn" data-membership-id={pendingThisYear.id}>
+                      {t.cancelPending}
+                    </button>
+                    <p id="cancel-pending-message" class="actionMessage" role="status" aria-live="polite"></p>
+                  </div>
                 </div>
               </div>
             ) : (
-              <div class="statusCard statusCardInactive">
-                <h2 class="statusTitle">{inactiveTitle}</h2>
-                <p class="statusLead">{t.statusInactiveLead}</p>
+              <div class="statusCard statusCardInactive" role="status">
+                <div class="statusInactiveHead">
+                  <div class="statusInactiveMark" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  </div>
+                  <h2 class="statusTitle">{inactiveTitle}</h2>
+                </div>
+                <div class="statusCardBody statusCardBodyInactive">
+                  <p class="statusLead">{t.statusInactiveLead}</p>
+                  <ul class="statusSteps">
+                    <li>{t.statusInactiveStep1}</li>
+                    <li>{t.statusInactiveStep2}</li>
+                    <li>{t.statusInactiveStep3}</li>
+                  </ul>
 
-                <form id="create-pending-form" class="createPendingForm">
-                  <fieldset class="tierFieldset">
-                    <legend class="tierLegend">{t.tierChoiceLegend}</legend>
-                    <label class="tierOption">
-                      <input
-                        type="radio"
-                        name="tier"
-                        value="general"
-                        checked={hasLakeAddress}
-                        disabled={!hasLakeAddress}
-                        title={!hasLakeAddress ? t.tierGeneralBlockedLead : undefined}
-                      />
-                      <span class="tierOptionBody">
-                        <span class="tierOptionTitleRow">
-                          <span class="tierOptionTitle">{t.tierGeneral}</span>
-                          <span class="tierOptionPrice">{generalFeeCad} CAD</span>
-                        </span>
-                        <span class="tierOptionExplainer">
-                          {hasLakeAddress ? tierGeneralExplainerWithAddressResolved : t.tierGeneralExplainer}
-                        </span>
-                      </span>
-                    </label>
-                    <label class="tierOption">
-                      <input type="radio" name="tier" value="associate" checked={!hasLakeAddress} />
-                      <span class="tierOptionBody">
-                        <span class="tierOptionTitleRow">
-                          <span class="tierOptionTitle">{t.tierAssociate}</span>
-                          <span class="tierOptionPrice">{associateFeeCad} CAD</span>
-                        </span>
-                        <span class="tierOptionExplainer">{t.tierAssociateExplainer}</span>
-                      </span>
-                    </label>
-                  </fieldset>
-                  {!hasLakeAddress && (
-                    <p class="tierBlockedNote">
-                      {t.tierGeneralBlockedLead}{' '}
-                      <a class="profileEditLink" href={paths.edit}>{t.linkEditProfile}</a>
-                    </p>
-                  )}
-                  <button type="submit" class="btnPrimary" id="create-pending-submit">{t.createPendingSubmit}</button>
-                  <p id="create-pending-message" class="actionMessage" role="status" aria-live="polite"></p>
-                </form>
+                  <form id="create-pending-form" class="createPendingForm">
+                    <fieldset class="tierFieldset">
+                      <legend class="tierLegend">{t.tierChoiceLegend}</legend>
+                      <div class="tierGrid">
+                        <label class="tierOption tierOptionTile">
+                          <input
+                            type="radio"
+                            name="tier"
+                            value="general"
+                            checked={hasLakeAddress}
+                            disabled={!hasLakeAddress}
+                            title={!hasLakeAddress ? t.tierGeneralBlockedLead : undefined}
+                          />
+                          <span class="tierOptionBody">
+                            <span class="tierOptionTitleRow">
+                              <span class="tierOptionTitle">{t.tierGeneral}</span>
+                              <span class="tierOptionPriceBadge">{generalFeeCad} CAD</span>
+                            </span>
+                            <span class="tierOptionExplainer">
+                              {hasLakeAddress ? tierGeneralExplainerWithAddressResolved : t.tierGeneralExplainer}
+                            </span>
+                          </span>
+                        </label>
+                        <label class="tierOption tierOptionTile">
+                          <input type="radio" name="tier" value="associate" checked={!hasLakeAddress} />
+                          <span class="tierOptionBody">
+                            <span class="tierOptionTitleRow">
+                              <span class="tierOptionTitle">{t.tierAssociate}</span>
+                              <span class="tierOptionPriceBadge">{associateFeeCad} CAD</span>
+                            </span>
+                            <span class="tierOptionExplainer">{t.tierAssociateExplainer}</span>
+                          </span>
+                        </label>
+                      </div>
+                    </fieldset>
+                    {!hasLakeAddress && (
+                      <p class="tierBlockedNote">
+                        {t.tierGeneralBlockedLead}{' '}
+                        <a class="profileEditLink" href={paths.edit}>{t.linkEditProfile}</a>
+                      </p>
+                    )}
+                    <button type="submit" class="btnPrimary createPendingSubmitBtn" id="create-pending-submit">{t.createPendingSubmit}</button>
+                    <p id="create-pending-message" class="actionMessage" role="status" aria-live="polite"></p>
+                  </form>
+                </div>
               </div>
             )}
 
             {futureRows.length > 0 && (
-              <>
-                <h2 class="sectionHeading">{t.membershipPrepaidSection}</h2>
-                <p class="muted sectionLead">{t.membershipPrepaidLead}</p>
-                <div class="tableWrap">
-                  <table class="memberTable">
+              <section
+                class="memberRecordsCard memberRecordsCardPrepaid"
+                aria-labelledby="member-prepaid-heading"
+              >
+                <h2 id="member-prepaid-heading" class="memberRecordsTitle">
+                  {t.membershipPrepaidSection}
+                </h2>
+                <p class="memberRecordsLead">{t.membershipPrepaidLead}</p>
+                <div class="memberRecordsTableScroll">
+                  <table class="memberRecordsTable">
                     <thead>
                       <tr>
                         <th scope="col">{t.membershipTableYear}</th>
                         <th scope="col">{t.membershipTableType}</th>
-                        <th scope="col">{t.membershipTableStatus}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {futureRows.map((row) => (
                         <tr>
-                          <td>{row.year}</td>
+                          <td class="memberRecordsCellYear">{row.year}</td>
                           <td>{row.tierLabel}</td>
-                          <td>{row.status === 'pending' ? t.membershipStatusPending : t.membershipStatusActive}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-              </>
+              </section>
             )}
 
             {historyRows.length > 0 && (
-              <>
-                <h2 class="sectionHeading">{t.membershipHistorySection}</h2>
-                <div class="tableWrap">
-                  <table class="memberTable">
+              <section
+                class="memberRecordsCard memberRecordsCardHistory"
+                aria-labelledby="member-history-heading"
+              >
+                <h2 id="member-history-heading" class="memberRecordsTitle">
+                  {t.membershipHistorySection}
+                </h2>
+                <p class="memberRecordsLead memberRecordsLeadMuted">{t.membershipHistoryLead}</p>
+                <div class="memberRecordsTableScroll">
+                  <table class="memberRecordsTable">
                     <thead>
                       <tr>
                         <th scope="col">{t.membershipTableYear}</th>
                         <th scope="col">{t.membershipTableType}</th>
-                        <th scope="col">{t.membershipTableStatus}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {historyRows.map((row) => (
                         <tr>
-                          <td>{row.year}</td>
+                          <td class="memberRecordsCellYear">{row.year}</td>
                           <td>{row.tierLabel}</td>
-                          <td>{row.status === 'pending' ? t.membershipStatusPending : t.membershipStatusActive}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-              </>
+              </section>
             )}
           </>
         )
       }
 
-      <form method="POST" action="/api/auth/sign-out">
-        <input type="hidden" name="redirect_to" value={paths.signIn} />
-        <button type="submit" class="btnGhost">{t.signOut}</button>
-      </form>
+      <div class="memberAccountFooter">
+        <form method="POST" action="/api/auth/sign-out">
+          <input type="hidden" name="redirect_to" value={paths.signIn} />
+          <button type="submit" class="btnGhost">{t.signOut}</button>
+        </form>
+      </div>
     </div>
   </section>
 </MemberAppLayout>
@@ -532,8 +629,83 @@ const associateFeeCad =
     color: var(--muted, #555);
   }
 
-  .profileEditRow {
-    margin: 0 0 0.75rem;
+  .memberSummaryCard {
+    border-radius: 14px;
+    padding: 1.15rem 1.25rem 1.1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.12));
+    background: var(--panel2, rgba(0, 0, 0, 0.02));
+  }
+
+  /* Beat global `.prose p` margins inside the summary */
+  .memberSummaryCard p {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .memberSummaryHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .memberSummaryIdentity {
+    min-width: 0;
+  }
+
+  .memberSummaryCard p.memberSummaryName {
+    font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 1.25;
+    margin-bottom: 0.35rem;
+    color: var(--text, rgba(0, 0, 0, 0.92));
+  }
+
+  .memberSummaryEmail {
+    font-size: 0.95rem;
+    color: var(--muted, #555);
+  }
+
+  .memberSummaryEdit {
+    flex-shrink: 0;
+    align-self: flex-start;
+  }
+
+  .memberSummaryDl {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .memberSummaryDlRow {
+    display: grid;
+    grid-template-columns: minmax(0, 7.5rem) 1fr;
+    gap: 0.35rem 0.75rem;
+    align-items: baseline;
+    font-size: 0.92rem;
+    line-height: 1.4;
+  }
+
+  .memberSummaryDl dt {
+    margin: 0;
+    font-weight: 600;
+    color: var(--muted, #555);
+  }
+
+  .memberSummaryDl dd {
+    margin: 0;
+    color: var(--text, rgba(0, 0, 0, 0.88));
+  }
+
+  @media (max-width: 480px) {
+    .memberSummaryDlRow {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
   }
 
   .profileEditLink {
@@ -547,19 +719,107 @@ const associateFeeCad =
     text-decoration-thickness: 2px;
   }
 
-  .memberName {
-    font-weight: 600;
-    margin-bottom: 1.25rem;
+  .memberHomeProse {
+    max-width: min(var(--member-column-max), 100%);
+    margin-inline: auto;
   }
 
-  .sectionHeading {
-    font-size: 1.25rem;
-    margin: 1.75rem 0 0.5rem;
+  .memberAccountFooter {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border, rgba(0, 0, 0, 0.12));
   }
 
-  .sectionLead {
-    margin: 0 0 0.75rem;
+  .memberAccountFooter form {
+    margin-top: 0;
+  }
+
+  .memberRecordsCard {
+    margin-top: 1.75rem;
+    padding: 1.15rem 1.2rem 1.1rem;
+    border-radius: 14px;
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.12));
+  }
+
+  .memberRecordsCardPrepaid {
+    background: rgba(37, 99, 235, 0.05);
+    border-color: rgba(37, 99, 235, 0.2);
+  }
+
+  .memberRecordsCardHistory {
+    background: var(--panel2, rgba(0, 0, 0, 0.02));
+    margin-top: 1.25rem;
+  }
+
+  .memberRecordsTitle {
+    margin: 0 0 0.45rem;
+    font-size: 1.12rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--text, rgba(0, 0, 0, 0.92));
+  }
+
+  .memberRecordsCardPrepaid .memberRecordsTitle {
+    color: rgba(30, 64, 175, 0.98);
+  }
+
+  .memberRecordsLead {
+    margin: 0 0 1rem;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--text, rgba(0, 0, 0, 0.88));
+  }
+
+  .memberRecordsLeadMuted {
+    color: var(--muted, #555);
+  }
+
+  .memberRecordsTableScroll {
+    overflow-x: auto;
+    margin: 0 -0.15rem;
+    padding: 0 0.15rem;
+  }
+
+  .memberRecordsTable {
+    width: 100%;
+    border-collapse: collapse;
     font-size: 0.95rem;
+  }
+
+  .memberRecordsTable thead th {
+    text-align: left;
+    padding: 0.5rem 0.65rem 0.55rem;
+    font-weight: 600;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted, #555);
+    background: rgba(0, 0, 0, 0.035);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .memberRecordsTable thead th:first-child {
+    border-top-left-radius: 8px;
+  }
+
+  .memberRecordsTable thead th:last-child {
+    border-top-right-radius: 8px;
+  }
+
+  .memberRecordsTable tbody td {
+    padding: 0.65rem 0.65rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+    vertical-align: middle;
+  }
+
+  .memberRecordsTable tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .memberRecordsCellYear {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
   }
 
   .statusCard {
@@ -570,11 +830,23 @@ const associateFeeCad =
   }
 
   .statusCardActive {
-    display: flex;
-    gap: 1rem;
-    align-items: flex-start;
+    display: block;
     background: rgba(22, 163, 74, 0.08);
     border-color: rgba(22, 163, 74, 0.35);
+  }
+
+  .statusActiveHead {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .statusActiveHead .statusTitle {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+    color: rgba(20, 83, 45, 0.98);
   }
 
   .statusActiveMark {
@@ -584,12 +856,96 @@ const associateFeeCad =
     border-radius: 50%;
     background: rgba(22, 163, 74, 0.95);
     color: #fff;
-    font-size: 1.35rem;
-    font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
     line-height: 1;
+  }
+
+  .statusActiveMark svg {
+    display: block;
+  }
+
+  .statusCardBodyActive {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .statusActiveScope {
+    margin: 0 0 1.05rem;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    color: var(--muted, #555);
+  }
+
+  .activeTierSummary {
+    margin: 0 0 0.85rem;
+  }
+
+  .activeTierSummary .tierLegend {
+    margin-bottom: 0.45rem;
+  }
+
+  .activeTierTile {
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 2px solid rgba(22, 163, 74, 0.38);
+    background: rgba(255, 255, 255, 0.75);
+  }
+
+  .activeTierTileRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem 0.75rem;
+  }
+
+  .activeTierName {
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+
+  .activeTierFee {
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(22, 163, 74, 0.16);
+    color: rgba(20, 83, 45, 0.98);
+    white-space: nowrap;
+  }
+
+  .activeTierVote {
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(22, 163, 74, 0.22);
+  }
+
+  .activeTierVoteLabel {
+    margin: 0 0 0.25rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted, #555);
+  }
+
+  .activeTierVoteAddress {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: rgba(20, 83, 45, 0.98);
+  }
+
+  .statusActivePrepaid {
+    margin: 0;
+    padding-top: 0.85rem;
+    border-top: 1px solid rgba(22, 163, 74, 0.2);
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--muted, #555);
   }
 
   .statusCardBody {
@@ -597,22 +953,151 @@ const associateFeeCad =
   }
 
   .statusCardInactive {
+    display: block;
     background: rgba(37, 99, 235, 0.04);
     border-color: rgba(37, 99, 235, 0.22);
   }
 
-  .statusCardPending {
-    background: rgba(217, 119, 6, 0.08);
-    border-color: rgba(217, 119, 6, 0.35);
+  .statusInactiveHead {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
   }
 
-  .statusCardPending .statusTitle {
+  .statusInactiveHead .statusTitle {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .statusInactiveMark {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.92);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .statusInactiveMark svg {
+    display: block;
+  }
+
+  .statusCardBodyInactive {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .statusCardBodyInactive .statusLead {
+    margin-bottom: 0.65rem;
+  }
+
+  .statusSteps {
+    margin: 0 0 1.15rem;
+    padding-left: 1.2rem;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--muted, #555);
+  }
+
+  .statusSteps li {
+    margin-bottom: 0.35rem;
+  }
+
+  .statusSteps li:last-child {
+    margin-bottom: 0;
+  }
+
+  .statusCardPending {
+    display: block;
+    background: rgba(217, 119, 6, 0.06);
+    border-color: rgba(217, 119, 6, 0.28);
+  }
+
+  .statusPendingHead {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .statusPendingHead .statusTitle {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
     color: rgba(146, 64, 14, 0.98);
   }
 
+  .statusPendingMark {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(217, 119, 6, 0.92);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .statusPendingMark svg {
+    display: block;
+  }
+
+  .statusCardBodyPending {
+    min-width: 0;
+    width: 100%;
+  }
+
   .statusPendingLead {
-    margin: 0 0 1rem;
+    margin: 0 0 1.1rem;
     color: var(--text, rgba(0, 0, 0, 0.88));
+    font-size: 0.98rem;
+    line-height: 1.45;
+  }
+
+  .pendingTierSummary {
+    margin: 0 0 1.15rem;
+  }
+
+  .pendingTierSummary .tierLegend {
+    margin-bottom: 0.45rem;
+  }
+
+  .pendingTierTile {
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 2px solid rgba(217, 119, 6, 0.35);
+    background: rgba(255, 255, 255, 0.75);
+  }
+
+  .pendingTierTileRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem 0.75rem;
+  }
+
+  .pendingTierName {
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+
+  .pendingTierFee {
+    font-weight: 600;
+    font-size: 0.82rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(217, 119, 6, 0.14);
+    color: rgba(146, 64, 14, 0.98);
+    white-space: nowrap;
   }
 
   .statusTitle {
@@ -630,27 +1115,26 @@ const associateFeeCad =
     color: var(--text, rgba(0, 0, 0, 0.88));
   }
 
-  .statusTier {
-    margin: 0 0 1.25rem;
-    font-size: 1.1rem;
-  }
-
-  .statusTierLabel {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--muted, #555);
-    margin-bottom: 0.2rem;
-  }
-
   .createPendingForm {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 1rem;
     margin-bottom: 0.5rem;
+    width: 100%;
+  }
+
+  .createPendingSubmitBtn {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0.25rem;
+  }
+
+  /* Override global `.prose .btnPrimary` spacing for full-width CTA */
+  .prose .createPendingSubmitBtn.btnPrimary {
+    display: block;
+    margin-top: 0.25rem;
+    text-align: center;
   }
 
   .tierFieldset {
@@ -658,6 +1142,7 @@ const associateFeeCad =
     padding: 0;
     border: none;
     min-width: 0;
+    width: 100%;
   }
 
   .tierLegend {
@@ -665,6 +1150,19 @@ const associateFeeCad =
     font-size: 1rem;
     margin-bottom: 0.5rem;
     padding: 0;
+  }
+
+  .tierGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  @media (min-width: 640px) {
+    .tierGrid {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   .tierOption {
@@ -676,15 +1174,39 @@ const associateFeeCad =
     font-size: 1rem;
   }
 
+  .tierOptionTile {
+    margin-bottom: 0;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    background: var(--bg, #fff);
+    transition:
+      border-color 0.15s ease,
+      background 0.15s ease;
+  }
+
+  .tierOptionTile:focus-within {
+    outline: 2px solid rgba(37, 99, 235, 0.45);
+    outline-offset: 2px;
+  }
+
+  .tierOptionTile:has(input:checked) {
+    border-color: rgba(37, 99, 235, 0.65);
+    background: rgba(37, 99, 235, 0.07);
+  }
+
   .tierOption:has(input:disabled) {
     cursor: not-allowed;
-    opacity: 0.85;
+  }
+
+  .tierOptionTile:has(input:disabled) {
+    opacity: 0.72;
   }
 
   .tierOption input {
     width: 1.1rem;
     height: 1.1rem;
-    margin-top: 0.2rem;
+    margin-top: 0.15rem;
     flex-shrink: 0;
     accent-color: #2563eb;
   }
@@ -692,7 +1214,7 @@ const associateFeeCad =
   .tierOptionBody {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.35rem;
     min-width: 0;
     flex: 1;
   }
@@ -700,7 +1222,7 @@ const associateFeeCad =
   .tierOptionTitleRow {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 0.35rem 0.75rem;
   }
@@ -714,6 +1236,21 @@ const associateFeeCad =
     font-size: 0.95rem;
     color: var(--muted, #444);
     white-space: nowrap;
+  }
+
+  .tierOptionPriceBadge {
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--muted, #444);
+    white-space: nowrap;
+  }
+
+  .tierOptionTile:has(input:checked) .tierOptionPriceBadge {
+    background: rgba(37, 99, 235, 0.14);
+    color: rgba(30, 64, 175, 0.98);
   }
 
   .tierOptionExplainer {
@@ -748,72 +1285,140 @@ const associateFeeCad =
   }
 
   .payPrimary {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.35rem;
+  }
+
+  .prose .payCardBtnFull.btnPrimary {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0;
+    text-align: center;
   }
 
   .checkoutModal {
-    max-width: min(26rem, calc(100vw - 2rem));
+    max-width: min(24rem, calc(100vw - 2rem));
     padding: 0;
-    border: none;
-    border-radius: 0.5rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 14px;
+    box-shadow:
+      0 25px 50px -12px rgba(0, 0, 0, 0.22),
+      0 0 0 1px rgba(0, 0, 0, 0.04);
+    background: var(--bg, #fafafa);
+    overflow: hidden;
   }
 
   .checkoutModal::backdrop {
-    background: rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.48);
+    backdrop-filter: blur(2px);
   }
 
   .checkoutModalInner {
-    padding: 1.25rem 1.5rem 1.5rem;
+    padding: 1.35rem 1.35rem 1.3rem;
   }
 
   .checkoutModalHeading {
     margin: 0 0 1rem;
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
+    color: var(--text, rgba(0, 0, 0, 0.92));
   }
 
   .checkoutModalSummary {
     margin: 0 0 1.25rem;
-    padding: 0.75rem 0.9rem;
-    border-radius: 0.375rem;
-    background: rgba(0, 0, 0, 0.04);
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    background: rgba(37, 99, 235, 0.06);
+    border: 1px solid rgba(37, 99, 235, 0.18);
   }
 
   .checkoutModalSummaryRow {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.35rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
+    justify-content: space-between;
+    gap: 0.35rem 1rem;
     font-size: 0.95rem;
   }
 
   .checkoutModalSummaryRow:not(:last-child) {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.55rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid rgba(37, 99, 235, 0.12);
   }
 
   .checkoutModalSummaryRow dt {
     margin: 0;
+    font-size: 0.72rem;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     color: var(--muted, #555);
   }
 
   .checkoutModalSummaryRow dd {
     margin: 0;
     text-align: right;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 1rem;
+    color: rgba(30, 64, 175, 0.98);
+  }
+
+  .checkoutModalForm {
+    margin: 0;
+  }
+
+  .checkoutModalField {
+    margin-bottom: 1.05rem;
+  }
+
+  .checkoutModalField:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .checkoutModalInner .donationLabel {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .checkoutModalInput {
+    width: 100%;
+    max-width: none;
+    box-sizing: border-box;
+    padding: 0.5rem 0.65rem;
+    font-size: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 10px;
+    background: var(--bg, #fff);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .checkoutModalInput:focus {
+    outline: none;
+    border-color: rgba(37, 99, 235, 0.55);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  .checkoutModalHint {
+    margin-top: 0.4rem;
+    margin-bottom: 0;
+    font-size: 0.86rem;
+    line-height: 1.4;
   }
 
   .donationNoteRow {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0;
   }
 
   .donationNoteInput {
     display: block;
     width: 100%;
     box-sizing: border-box;
-    padding: 0.5rem 0.6rem;
+    padding: 0.5rem 0.65rem;
     font-size: 0.95rem;
     line-height: 1.45;
     border: 1px solid rgba(0, 0, 0, 0.2);
@@ -823,16 +1428,50 @@ const associateFeeCad =
     min-height: 4.5rem;
   }
 
+  .checkoutModalInner textarea.donationNoteInput {
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    min-height: 4.25rem;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+
+  .checkoutModalInner textarea.donationNoteInput:focus {
+    outline: none;
+    border-color: rgba(37, 99, 235, 0.55);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
   .checkoutModalError {
-    margin: 0.5rem 0 0.75rem;
+    margin: 0.65rem 0 0;
+    min-height: 0;
   }
 
   .checkoutModalActions {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.65rem;
-    justify-content: flex-end;
-    margin-top: 0.25rem;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1.2rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .checkoutModalBtnSecondary,
+  .checkoutModalBtnPrimary {
+    width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .prose .checkoutModalBtnPrimary.btnPrimary {
+    margin-top: 0;
+    color: #fff !important;
+  }
+
+  .prose .checkoutModalBtnSecondary.btnGhost {
+    margin-top: 0;
   }
 
   .checkoutBanner {
@@ -895,58 +1534,40 @@ const associateFeeCad =
 
   .payAltTitle {
     margin: 0 0 0.65rem;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
+    letter-spacing: 0.01em;
   }
 
-  .payList {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  .payMethodGrid {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.65rem;
   }
 
-  .payMethodName {
+  .payMethodCard {
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: var(--bg, #fff);
+  }
+
+  .payMethodCardTitle {
     font-weight: 600;
-    display: block;
-    margin-bottom: 0.25rem;
+    font-size: 0.88rem;
+    margin: 0 0 0.4rem;
+    color: var(--text, rgba(0, 0, 0, 0.88));
   }
 
-  .payMethodBody {
+  .payMethodCardBody {
     margin: 0;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     line-height: 1.5;
+    color: var(--muted, #555);
   }
 
   .payAddress {
     white-space: pre-line;
   }
 
-  .tableWrap {
-    overflow-x: auto;
-    margin-bottom: 0.5rem;
-  }
-
-  .memberTable {
-    border-collapse: collapse;
-    width: 100%;
-    max-width: 32rem;
-  }
-
-  .memberTable th,
-  .memberTable td {
-    text-align: left;
-    padding: 0.5rem 0.75rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-  }
-
-  .memberTable th {
-    font-weight: 600;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--muted, #555);
-  }
 </style>

@@ -8,6 +8,8 @@
   --border: rgba(0,0,0,.12);
   --radius: 18px;
   --max: 1120px;
+  /** Logged-in member flows: title + reading column (see MemberAppLayout, MemberHomeView) */
+  --member-column-max: 40rem;
   --shadow: 0 8px 24px rgba(0,0,0,.12);
   --spacing-section: 56px;
   --spacing-gap: 20px;
