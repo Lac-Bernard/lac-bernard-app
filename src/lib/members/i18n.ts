@@ -43,7 +43,6 @@ export const memberCopy: Record<
 		homeDescription: string;
 		homeHero: string;
 		signedInAs: string;
-		homeIntro: string;
 		signOut: string;
 		signInTitle: string;
 		signInDescription: string;
@@ -126,6 +125,7 @@ export const memberCopy: Record<
 		adminExportEmailsHint: string;
 		adminExportEmailsEmpty: string;
 		membershipHistorySection: string;
+		membershipHistoryLead: string;
 		membershipTableYear: string;
 		membershipTableType: string;
 		membershipTableStatus: string;
@@ -140,6 +140,12 @@ export const memberCopy: Record<
 		noMemberForEmail: string;
 		statusActiveTitle: string;
 		statusActiveTierLabel: string;
+		/** Shown under the active title — clarifies calendar-year coverage */
+		statusActiveYearScope: string;
+		/** When the member has prepaid future years; {{count}} is a number */
+		statusActivePrepaidTeaser: string;
+		/** Shown under general tier when active — line above the lake civic address */
+		statusActiveGeneralVoteLabel: string;
 		statusInactiveTitle: string;
 		statusInactiveLead: string;
 		statusInactiveStep1: string;
@@ -230,8 +236,6 @@ export const memberCopy: Record<
 		homeDescription: 'See your membership status for this year and how to renew or pay.',
 		homeHero: 'Member area',
 		signedInAs: 'Signed in as',
-		homeIntro:
-			'Below is your membership status for {{year}}. This page is only visible when you are signed in.',
 		signOut: 'Sign out',
 		signInTitle: 'Member sign in | Lac Bernard Association',
 		signInDescription: 'Sign in to the Lac Bernard Association member area.',
@@ -318,6 +322,7 @@ export const memberCopy: Record<
 			'Same filters as this table (non-empty primary email only). Get consent before bulk mail.',
 		adminExportEmailsEmpty: 'No primary emails to copy for this view.',
 		membershipHistorySection: 'Membership history',
+		membershipHistoryLead: 'Earlier years on file (for your reference).',
 		membershipTableYear: 'Year',
 		membershipTableType: 'Type',
 		membershipTableStatus: 'Status',
@@ -340,6 +345,10 @@ export const memberCopy: Record<
 			'We could not find a member profile linked to this sign-in email. If you use another address on file, sign in with that email or contact the association.',
 		statusActiveTitle: 'Your {{year}} membership is active',
 		statusActiveTierLabel: 'Membership type',
+		statusActiveYearScope: 'Covers the full {{year}} calendar year (Jan 1–Dec 31).',
+		statusActivePrepaidTeaser:
+			'You also have {{count}} prepaid year(s) on file—see the section below.',
+		statusActiveGeneralVoteLabel: 'Voting membership for this lake address:',
 		statusInactiveTitle: 'No active membership for {{year}}',
 		statusInactiveLead: 'Choose a membership type below, then start your request. General membership needs a lake address on your profile.',
 		statusInactiveStep1: 'Pick general (voting) or associate (non-voting).',
@@ -386,8 +395,9 @@ export const memberCopy: Record<
 		payCashBeforeLink: 'Contact us at ',
 		payCashAfterLink: ' to arrange payment in person.',
 		membershipEmail: 'membership@lacbernard.ca',
-		membershipPrepaidSection: 'Prepaid / future years',
-		membershipPrepaidLead: 'These membership years are on file after the current calendar year.',
+		membershipPrepaidSection: 'Prepaid & upcoming years',
+		membershipPrepaidLead:
+			'These are on your record for years after the current calendar year—use this to confirm prepaid coverage without contacting the office.',
 		linkEditProfile: 'Edit profile',
 		linkCreateProfile: 'Create member profile',
 		homeAddressNotOnFile: 'Not on file',
@@ -430,8 +440,6 @@ export const memberCopy: Record<
 		homeDescription: 'Consultez le statut de votre adhésion pour l’année en cours et les options de paiement.',
 		homeHero: 'Espace membre',
 		signedInAs: 'Connecté en tant que',
-		homeIntro:
-			'Ci-dessous : le statut de votre adhésion pour {{year}}. Cette page est visible seulement lorsque vous êtes connecté.',
 		signOut: 'Se déconnecter',
 		signInTitle: 'Connexion membre | Association du lac Bernard',
 		signInDescription: 'Connexion à l’espace membre de l’Association du lac Bernard.',
@@ -518,6 +526,7 @@ export const memberCopy: Record<
 			'Mêmes filtres que ce tableau (courriel principal non vide seulement). Obtenez le consentement avant un envoi de masse.',
 		adminExportEmailsEmpty: 'Aucun courriel principal à copier pour cette vue.',
 		membershipHistorySection: 'Historique des adhésions',
+		membershipHistoryLead: 'Années antérieures dans votre dossier (à titre indicatif).',
 		membershipTableYear: 'Année',
 		membershipTableType: 'Type',
 		membershipTableStatus: 'Statut',
@@ -540,6 +549,10 @@ export const memberCopy: Record<
 			'Aucun profil membre n’est lié à cette adresse de connexion. Si vous utilisez une autre adresse dans nos dossiers, connectez-vous avec celle-ci ou communiquez avec l’association.',
 		statusActiveTitle: 'Votre adhésion {{year}} est active',
 		statusActiveTierLabel: 'Type d’adhésion',
+		statusActiveYearScope: 'Valable pour l’année civile {{year}} (1er janv. au 31 déc.).',
+		statusActivePrepaidTeaser:
+			'Vous avez aussi {{count}} année(s) payée(s) d’avance dans votre dossier — voir la section ci-dessous.',
+		statusActiveGeneralVoteLabel: 'Adhésion avec droit de vote pour l’adresse au lac :',
 		statusInactiveTitle: 'Aucune adhésion active pour {{year}}',
 		statusInactiveLead:
 			'Choisissez un type d’adhésion ci-dessous, puis démarrez votre demande. L’adhésion générale exige une adresse au lac dans votre profil.',
@@ -588,8 +601,9 @@ export const memberCopy: Record<
 		payCashBeforeLink: 'Communiquez avec nous à ',
 		payCashAfterLink: ' pour convenir d’un paiement en personne.',
 		membershipEmail: 'membership@lacbernard.ca',
-		membershipPrepaidSection: 'Années payées d’avance / futures',
-		membershipPrepaidLead: 'Ces années d’adhésion sont enregistrées après l’année civile en cours.',
+		membershipPrepaidSection: 'Années payées d’avance et à venir',
+		membershipPrepaidLead:
+			'Ces années figurent dans votre dossier après l’année civile en cours—vous pouvez vous y référer pour confirmer votre cotisation sans communiquer avec le bureau.',
 		linkEditProfile: 'Modifier le profil',
 		linkCreateProfile: 'Créer un profil membre',
 		homeAddressNotOnFile: 'Non indiquée',

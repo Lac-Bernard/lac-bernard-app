@@ -8,7 +8,8 @@
     "preview": "astro preview",
     "astro": "astro",
     "db:seed": "node scripts/generate-dummy-seeds.mjs",
-    "db:clear-memberships-dev": "ALLOW_CLEAR_MEMBERSHIPS=1 node scripts/clear-memberships-dev.mjs"
+    "db:clear-memberships-dev": "ALLOW_CLEAR_MEMBERSHIPS=1 node scripts/clear-memberships-dev.mjs",
+    "db:seed-membership-history": "ALLOW_SEED_MEMBERSHIP_HISTORY=1 node scripts/seed-membership-history.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.12",

@@ -18,7 +18,6 @@ const paths = memberPaths[locale];
 const isEdit = mode === 'edit';
 const title = isEdit ? t.profileEditTitle : t.profileJoinTitle;
 const description = isEdit ? t.profileEditDescription : t.profileJoinDescription;
-const heroAria = isEdit ? t.profileEditHeroAria : t.profileJoinHeroAria;
 const heroTitle = isEdit ? t.profileEditHero : t.profileJoinHero;
 
 const v = (s: string | null | undefined) => (s ?? '').trim();
@@ -38,7 +37,7 @@ const postal = isEdit ? v(member?.primary_postal_code) : '';
 const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 ---
 
-<MemberAppLayout lang={locale} title={title} description={description} heroAriaLabel={heroAria} heroTitle={heroTitle}>
+<MemberAppLayout lang={locale} title={title} description={description} heroTitle={heroTitle}>
 	<section class="section">
 		<div class="container narrow">
 			{!isEdit && <p class="intro">{t.profileJoinIntro}</p>}
