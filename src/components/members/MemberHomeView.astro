@@ -75,6 +75,19 @@ const generalFeeCad =
 	generalCents != null ? (generalCents / 100).toFixed(2) : '0.00';
 const associateFeeCad =
 	associateCents != null ? (associateCents / 100).toFixed(2) : '0.00';
+
+const displayEmail = member ? (member.primary_email?.trim() || email) : '';
+
+let mailingLine: string | null = null;
+if (member) {
+	const m = member;
+	const parts: string[] = [];
+	if (m.primary_address?.trim()) parts.push(m.primary_address.trim());
+	const cityProv = [m.primary_city?.trim(), m.primary_province?.trim()].filter(Boolean).join(', ');
+	if (cityProv) parts.push(cityProv);
+	if (m.primary_postal_code?.trim()) parts.push(m.primary_postal_code.trim());
+	mailingLine = parts.length ? parts.join(', ') : null;
+}
 ---
 
 <MemberAppLayout
@@ -84,9 +97,10 @@ const associateFeeCad =
   heroAriaLabel={t.homeHero}
   heroTitle={t.homeHero}
   heroSubtitle={heroSubtitle}
+  heroCompact
 >
   <section class="section">
-    <div class="container prose">
+    <div class="container prose memberHomeProse">
       <p>{intro}</p>
 
       {checkoutFlash === 'success' && (
@@ -108,13 +122,28 @@ const associateFeeCad =
           </>
         ) : (
           <>
-            <p class="profileEditRow">
-              <a class="profileEditLink" href={paths.edit}>{t.linkEditProfile}</a>
-            </p>
-            <p class="memberName">
-              {member.first_name ? `${member.first_name} ` : ''}
-              {member.last_name}
-            </p>
+            <div class="memberSummaryCard">
+              <div class="memberSummaryHeader">
+                <div class="memberSummaryIdentity">
+                  <p class="memberSummaryName">
+                    {member.first_name ? `${member.first_name} ` : ''}
+                    {member.last_name}
+                  </p>
+                  <p class="memberSummaryEmail">{displayEmail}</p>
+                </div>
+                <a class="profileEditLink memberSummaryEdit" href={paths.edit}>{t.linkEditProfile}</a>
+              </div>
+              <dl class="memberSummaryDl">
+                <div class="memberSummaryDlRow">
+                  <dt>{t.profileSectionLake}</dt>
+                  <dd>{lakeAddressLine || t.homeAddressNotOnFile}</dd>
+                </div>
+                <div class="memberSummaryDlRow">
+                  <dt>{t.profileSectionMailing}</dt>
+                  <dd>{mailingLine || t.homeAddressNotOnFile}</dd>
+                </div>
+              </dl>
+            </div>
 
             {hasActiveCurrentYear ? (
               <div class="statusCard statusCardActive" role="status">
@@ -233,52 +262,71 @@ const associateFeeCad =
                 </div>
               </div>
             ) : (
-              <div class="statusCard statusCardInactive">
-                <h2 class="statusTitle">{inactiveTitle}</h2>
-                <p class="statusLead">{t.statusInactiveLead}</p>
+              <div class="statusCard statusCardInactive" role="status">
+                <div class="statusInactiveHead">
+                  <div class="statusInactiveMark" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                      <line x1="16" y1="2" x2="16" y2="6" />
+                      <line x1="8" y1="2" x2="8" y2="6" />
+                      <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                  </div>
+                  <h2 class="statusTitle">{inactiveTitle}</h2>
+                </div>
+                <div class="statusCardBody statusCardBodyInactive">
+                  <p class="statusLead">{t.statusInactiveLead}</p>
+                  <ul class="statusSteps">
+                    <li>{t.statusInactiveStep1}</li>
+                    <li>{t.statusInactiveStep2}</li>
+                    <li>{t.statusInactiveStep3}</li>
+                  </ul>
 
-                <form id="create-pending-form" class="createPendingForm">
-                  <fieldset class="tierFieldset">
-                    <legend class="tierLegend">{t.tierChoiceLegend}</legend>
-                    <label class="tierOption">
-                      <input
-                        type="radio"
-                        name="tier"
-                        value="general"
-                        checked={hasLakeAddress}
-                        disabled={!hasLakeAddress}
-                        title={!hasLakeAddress ? t.tierGeneralBlockedLead : undefined}
-                      />
-                      <span class="tierOptionBody">
-                        <span class="tierOptionTitleRow">
-                          <span class="tierOptionTitle">{t.tierGeneral}</span>
-                          <span class="tierOptionPrice">{generalFeeCad} CAD</span>
-                        </span>
-                        <span class="tierOptionExplainer">
-                          {hasLakeAddress ? tierGeneralExplainerWithAddressResolved : t.tierGeneralExplainer}
-                        </span>
-                      </span>
-                    </label>
-                    <label class="tierOption">
-                      <input type="radio" name="tier" value="associate" checked={!hasLakeAddress} />
-                      <span class="tierOptionBody">
-                        <span class="tierOptionTitleRow">
-                          <span class="tierOptionTitle">{t.tierAssociate}</span>
-                          <span class="tierOptionPrice">{associateFeeCad} CAD</span>
-                        </span>
-                        <span class="tierOptionExplainer">{t.tierAssociateExplainer}</span>
-                      </span>
-                    </label>
-                  </fieldset>
-                  {!hasLakeAddress && (
-                    <p class="tierBlockedNote">
-                      {t.tierGeneralBlockedLead}{' '}
-                      <a class="profileEditLink" href={paths.edit}>{t.linkEditProfile}</a>
-                    </p>
-                  )}
-                  <button type="submit" class="btnPrimary" id="create-pending-submit">{t.createPendingSubmit}</button>
-                  <p id="create-pending-message" class="actionMessage" role="status" aria-live="polite"></p>
-                </form>
+                  <form id="create-pending-form" class="createPendingForm">
+                    <fieldset class="tierFieldset">
+                      <legend class="tierLegend">{t.tierChoiceLegend}</legend>
+                      <div class="tierGrid">
+                        <label class="tierOption tierOptionTile">
+                          <input
+                            type="radio"
+                            name="tier"
+                            value="general"
+                            checked={hasLakeAddress}
+                            disabled={!hasLakeAddress}
+                            title={!hasLakeAddress ? t.tierGeneralBlockedLead : undefined}
+                          />
+                          <span class="tierOptionBody">
+                            <span class="tierOptionTitleRow">
+                              <span class="tierOptionTitle">{t.tierGeneral}</span>
+                              <span class="tierOptionPriceBadge">{generalFeeCad} CAD</span>
+                            </span>
+                            <span class="tierOptionExplainer">
+                              {hasLakeAddress ? tierGeneralExplainerWithAddressResolved : t.tierGeneralExplainer}
+                            </span>
+                          </span>
+                        </label>
+                        <label class="tierOption tierOptionTile">
+                          <input type="radio" name="tier" value="associate" checked={!hasLakeAddress} />
+                          <span class="tierOptionBody">
+                            <span class="tierOptionTitleRow">
+                              <span class="tierOptionTitle">{t.tierAssociate}</span>
+                              <span class="tierOptionPriceBadge">{associateFeeCad} CAD</span>
+                            </span>
+                            <span class="tierOptionExplainer">{t.tierAssociateExplainer}</span>
+                          </span>
+                        </label>
+                      </div>
+                    </fieldset>
+                    {!hasLakeAddress && (
+                      <p class="tierBlockedNote">
+                        {t.tierGeneralBlockedLead}{' '}
+                        <a class="profileEditLink" href={paths.edit}>{t.linkEditProfile}</a>
+                      </p>
+                    )}
+                    <button type="submit" class="btnPrimary createPendingSubmitBtn" id="create-pending-submit">{t.createPendingSubmit}</button>
+                    <p id="create-pending-message" class="actionMessage" role="status" aria-live="polite"></p>
+                  </form>
+                </div>
               </div>
             )}
 
@@ -338,10 +386,12 @@ const associateFeeCad =
         )
       }
 
-      <form method="POST" action="/api/auth/sign-out">
-        <input type="hidden" name="redirect_to" value={paths.signIn} />
-        <button type="submit" class="btnGhost">{t.signOut}</button>
-      </form>
+      <div class="memberAccountFooter">
+        <form method="POST" action="/api/auth/sign-out">
+          <input type="hidden" name="redirect_to" value={paths.signIn} />
+          <button type="submit" class="btnGhost">{t.signOut}</button>
+        </form>
+      </div>
     </div>
   </section>
 </MemberAppLayout>
@@ -532,8 +582,83 @@ const associateFeeCad =
     color: var(--muted, #555);
   }
 
-  .profileEditRow {
-    margin: 0 0 0.75rem;
+  .memberSummaryCard {
+    border-radius: 14px;
+    padding: 1.15rem 1.25rem 1.1rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid var(--border, rgba(0, 0, 0, 0.12));
+    background: var(--panel2, rgba(0, 0, 0, 0.02));
+  }
+
+  /* Beat global `.prose p` margins inside the summary */
+  .memberSummaryCard p {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .memberSummaryHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .memberSummaryIdentity {
+    min-width: 0;
+  }
+
+  .memberSummaryCard p.memberSummaryName {
+    font-weight: 700;
+    font-size: 1.2rem;
+    line-height: 1.25;
+    margin-bottom: 0.35rem;
+    color: var(--text, rgba(0, 0, 0, 0.92));
+  }
+
+  .memberSummaryEmail {
+    font-size: 0.95rem;
+    color: var(--muted, #555);
+  }
+
+  .memberSummaryEdit {
+    flex-shrink: 0;
+    align-self: flex-start;
+  }
+
+  .memberSummaryDl {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .memberSummaryDlRow {
+    display: grid;
+    grid-template-columns: minmax(0, 7.5rem) 1fr;
+    gap: 0.35rem 0.75rem;
+    align-items: baseline;
+    font-size: 0.92rem;
+    line-height: 1.4;
+  }
+
+  .memberSummaryDl dt {
+    margin: 0;
+    font-weight: 600;
+    color: var(--muted, #555);
+  }
+
+  .memberSummaryDl dd {
+    margin: 0;
+    color: var(--text, rgba(0, 0, 0, 0.88));
+  }
+
+  @media (max-width: 480px) {
+    .memberSummaryDlRow {
+      grid-template-columns: 1fr;
+      gap: 0.15rem;
+    }
   }
 
   .profileEditLink {
@@ -547,9 +672,19 @@ const associateFeeCad =
     text-decoration-thickness: 2px;
   }
 
-  .memberName {
-    font-weight: 600;
-    margin-bottom: 1.25rem;
+  .memberHomeProse {
+    max-width: min(40rem, 100%);
+    margin-inline: auto;
+  }
+
+  .memberAccountFooter {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border, rgba(0, 0, 0, 0.12));
+  }
+
+  .memberAccountFooter form {
+    margin-top: 0;
   }
 
   .sectionHeading {
@@ -597,8 +732,64 @@ const associateFeeCad =
   }
 
   .statusCardInactive {
+    display: block;
     background: rgba(37, 99, 235, 0.04);
     border-color: rgba(37, 99, 235, 0.22);
+  }
+
+  .statusInactiveHead {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .statusInactiveHead .statusTitle {
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .statusInactiveMark {
+    flex-shrink: 0;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: rgba(37, 99, 235, 0.92);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  .statusInactiveMark svg {
+    display: block;
+  }
+
+  .statusCardBodyInactive {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .statusCardBodyInactive .statusLead {
+    margin-bottom: 0.65rem;
+  }
+
+  .statusSteps {
+    margin: 0 0 1.15rem;
+    padding-left: 1.2rem;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--muted, #555);
+  }
+
+  .statusSteps li {
+    margin-bottom: 0.35rem;
+  }
+
+  .statusSteps li:last-child {
+    margin-bottom: 0;
   }
 
   .statusCardPending {
@@ -648,9 +839,23 @@ const associateFeeCad =
   .createPendingForm {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 1rem;
     margin-bottom: 0.5rem;
+    width: 100%;
+  }
+
+  .createPendingSubmitBtn {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 0.25rem;
+  }
+
+  /* Override global `.prose .btnPrimary` spacing for full-width CTA */
+  .prose .createPendingSubmitBtn.btnPrimary {
+    display: block;
+    margin-top: 0.25rem;
+    text-align: center;
   }
 
   .tierFieldset {
@@ -658,6 +863,7 @@ const associateFeeCad =
     padding: 0;
     border: none;
     min-width: 0;
+    width: 100%;
   }
 
   .tierLegend {
@@ -665,6 +871,19 @@ const associateFeeCad =
     font-size: 1rem;
     margin-bottom: 0.5rem;
     padding: 0;
+  }
+
+  .tierGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  @media (min-width: 640px) {
+    .tierGrid {
+      grid-template-columns: 1fr 1fr;
+    }
   }
 
   .tierOption {
@@ -676,15 +895,39 @@ const associateFeeCad =
     font-size: 1rem;
   }
 
+  .tierOptionTile {
+    margin-bottom: 0;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    background: var(--bg, #fff);
+    transition:
+      border-color 0.15s ease,
+      background 0.15s ease;
+  }
+
+  .tierOptionTile:focus-within {
+    outline: 2px solid rgba(37, 99, 235, 0.45);
+    outline-offset: 2px;
+  }
+
+  .tierOptionTile:has(input:checked) {
+    border-color: rgba(37, 99, 235, 0.65);
+    background: rgba(37, 99, 235, 0.07);
+  }
+
   .tierOption:has(input:disabled) {
     cursor: not-allowed;
-    opacity: 0.85;
+  }
+
+  .tierOptionTile:has(input:disabled) {
+    opacity: 0.72;
   }
 
   .tierOption input {
     width: 1.1rem;
     height: 1.1rem;
-    margin-top: 0.2rem;
+    margin-top: 0.15rem;
     flex-shrink: 0;
     accent-color: #2563eb;
   }
@@ -692,7 +935,7 @@ const associateFeeCad =
   .tierOptionBody {
     display: flex;
     flex-direction: column;
-    gap: 0.2rem;
+    gap: 0.35rem;
     min-width: 0;
     flex: 1;
   }
@@ -700,7 +943,7 @@ const associateFeeCad =
   .tierOptionTitleRow {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 0.35rem 0.75rem;
   }
@@ -714,6 +957,21 @@ const associateFeeCad =
     font-size: 0.95rem;
     color: var(--muted, #444);
     white-space: nowrap;
+  }
+
+  .tierOptionPriceBadge {
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.06);
+    color: var(--muted, #444);
+    white-space: nowrap;
+  }
+
+  .tierOptionTile:has(input:checked) .tierOptionPriceBadge {
+    background: rgba(37, 99, 235, 0.14);
+    color: rgba(30, 64, 175, 0.98);
   }
 
   .tierOptionExplainer {

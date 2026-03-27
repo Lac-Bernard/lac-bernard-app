@@ -142,6 +142,9 @@ export const memberCopy: Record<
 		statusActiveTierLabel: string;
 		statusInactiveTitle: string;
 		statusInactiveLead: string;
+		statusInactiveStep1: string;
+		statusInactiveStep2: string;
+		statusInactiveStep3: string;
 		tierChoiceLegend: string;
 		createPendingSubmit: string;
 		statusPendingTitle: string;
@@ -186,6 +189,8 @@ export const memberCopy: Record<
 		membershipPrepaidLead: string;
 		linkEditProfile: string;
 		linkCreateProfile: string;
+		/** Shown when lake or mailing address is empty on member home */
+		homeAddressNotOnFile: string;
 		profileJoinTitle: string;
 		profileJoinDescription: string;
 		profileJoinHeroAria: string;
@@ -336,8 +341,10 @@ export const memberCopy: Record<
 		statusActiveTitle: 'Your {{year}} membership is active',
 		statusActiveTierLabel: 'Membership type',
 		statusInactiveTitle: 'No active membership for {{year}}',
-		statusInactiveLead:
-			'Choose general (voting) or associate (non-voting) and start a membership request. General requires a lake address on your profile. You’ll see payment instructions next; your membership becomes active once your payment is received or recorded by the association.',
+		statusInactiveLead: 'Choose a membership type below, then start your request. General membership needs a lake address on your profile.',
+		statusInactiveStep1: 'Pick general (voting) or associate (non-voting).',
+		statusInactiveStep2: 'Submit the request — you’ll get payment instructions next.',
+		statusInactiveStep3: 'Your membership activates when payment is received or recorded by the association.',
 		tierChoiceLegend: 'Membership type',
 		createPendingSubmit: 'Start membership request',
 		statusPendingTitle: 'Your {{year}} membership is pending payment',
@@ -383,6 +390,7 @@ export const memberCopy: Record<
 		membershipPrepaidLead: 'These membership years are on file after the current calendar year.',
 		linkEditProfile: 'Edit profile',
 		linkCreateProfile: 'Create member profile',
+		homeAddressNotOnFile: 'Not on file',
 		profileJoinTitle: 'Join | Lac Bernard Association',
 		profileJoinDescription: 'Create your member profile to link your account to the association.',
 		profileJoinHeroAria: 'New member profile',
@@ -534,7 +542,10 @@ export const memberCopy: Record<
 		statusActiveTierLabel: 'Type d’adhésion',
 		statusInactiveTitle: 'Aucune adhésion active pour {{year}}',
 		statusInactiveLead:
-			'Choisissez l’adhésion générale (droit de vote) ou associée (sans droit de vote) et démarrez une demande. L’adhésion générale exige une adresse au lac dans votre profil. Les instructions de paiement suivront; votre adhésion deviendra active lorsque le paiement sera reçu ou enregistré par l’association.',
+			'Choisissez un type d’adhésion ci-dessous, puis démarrez votre demande. L’adhésion générale exige une adresse au lac dans votre profil.',
+		statusInactiveStep1: 'Choisissez l’adhésion générale (droit de vote) ou associée (sans droit de vote).',
+		statusInactiveStep2: 'Envoyez la demande — les instructions de paiement suivront.',
+		statusInactiveStep3: 'Votre adhésion devient active lorsque le paiement est reçu ou enregistré par l’association.',
 		tierChoiceLegend: 'Type d’adhésion',
 		createPendingSubmit: 'Démarrer la demande d’adhésion',
 		statusPendingTitle: 'Votre adhésion {{year}} est en attente de paiement',
@@ -581,6 +592,7 @@ export const memberCopy: Record<
 		membershipPrepaidLead: 'Ces années d’adhésion sont enregistrées après l’année civile en cours.',
 		linkEditProfile: 'Modifier le profil',
 		linkCreateProfile: 'Créer un profil membre',
+		homeAddressNotOnFile: 'Non indiquée',
 		profileJoinTitle: 'Adhésion | Association du lac Bernard',
 		profileJoinDescription: 'Créez votre profil membre pour lier votre compte à l’association.',
 		profileJoinHeroAria: 'Nouveau profil membre',
