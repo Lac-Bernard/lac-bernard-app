@@ -21,3 +21,15 @@ export function parseDonationDollars(raw: unknown): number | null {
 	if (n > MAX_DONATION_DOLLARS) return null;
 	return Math.round(n * 100) / 100;
 }
+
+/** Stripe metadata values are limited to 500 characters. */
+export const MAX_DONATION_NOTE_LENGTH = 500;
+
+/** Trimmed donation note; null if invalid (e.g. too long or wrong type). Empty string if absent. */
+export function parseDonationNote(raw: unknown): string | null {
+	if (raw === undefined || raw === null || raw === '') return '';
+	if (typeof raw !== 'string') return null;
+	const t = raw.trim();
+	if (t.length > MAX_DONATION_NOTE_LENGTH) return null;
+	return t;
+}

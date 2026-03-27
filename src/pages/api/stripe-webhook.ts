@@ -89,10 +89,17 @@ export const POST: APIRoute = async ({ request }) => {
 		return new Response('ok', { status: 200 });
 	}
 
+	const donationNoteRaw = metadata.donation_note;
+	const donationNote =
+		typeof donationNoteRaw === 'string' ? donationNoteRaw.trim() : '';
+
 	const amountDollars = amountTotal / 100;
 	const notesParts = [`Stripe Checkout`, `session ${session.id}`];
 	if (donationCents > 0) {
 		notesParts.push(`donation $${(donationCents / 100).toFixed(2)} CAD`);
+	}
+	if (donationNote.length > 0) {
+		notesParts.push(`Donation note: ${donationNote}`);
 	}
 	const notes = notesParts.join(' · ');
 

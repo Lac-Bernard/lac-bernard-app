@@ -5,6 +5,7 @@ import { findMemberByAuthEmail } from '../../../lib/members/memberLookup';
 import {
 	membershipCentsForTier,
 	parseDonationDollars,
+	parseDonationNote,
 } from '../../../lib/membership/stripeCheckout';
 import { getMembershipCalendarYear } from '../../../lib/members/membershipYear';
 import { memberPaths, type MemberLocale } from '../../../lib/members/i18n';
@@ -35,7 +36,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		});
 	}
 
-	let body: { membershipId?: string; donationDollars?: unknown; locale?: string };
+	let body: {
+		membershipId?: string;
+		donationDollars?: unknown;
+		donationNote?: unknown;
+		locale?: string;
+	};
 	try {
 		body = await request.json();
 	} catch {
@@ -62,6 +68,14 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		});
 	}
 	const donationCents = Math.round(donationDollars * 100);
+
+	const donationNote = parseDonationNote(body.donationNote);
+	if (donationNote === null) {
+		return new Response(JSON.stringify({ error: 'invalid_donation_note' }), {
+			status: 400,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
 
 	const member = await findMemberByAuthEmail(supabase, user.email);
 	if (!member) {
@@ -148,6 +162,12 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 	if (donationCents > 0) {
 		const donationLabel = locale === 'fr' ? 'Don' : 'Donation';
+		const noteDesc =
+			donationNote.length > 0
+				? donationNote.length > 180
+					? `${donationNote.slice(0, 177)}…`
+					: donationNote
+				: undefined;
 		lineItems.push({
 			quantity: 1,
 			price_data: {
@@ -155,6 +175,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				unit_amount: donationCents,
 				product_data: {
 					name: donationLabel,
+					...(noteDesc ? { description: noteDesc } : {}),
 				},
 			},
 		});
@@ -172,6 +193,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			tier: ms.tier,
 			membership_amount_cents: String(membershipCents),
 			donation_cents: String(donationCents),
+			donation_note: donationNote,
 		},
 		locale: locale === 'fr' ? 'fr' : 'en',
 	};

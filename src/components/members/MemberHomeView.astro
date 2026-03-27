@@ -7,6 +7,7 @@ import {
 	type MemberLocale,
 } from '../../lib/members/i18n';
 import type { MemberAccountPayload } from '../../lib/members/accountData';
+import { membershipCentsForTier } from '../../lib/membership/stripeCheckout';
 
 interface Props {
 	locale: MemberLocale;
@@ -48,6 +49,11 @@ const pendingTitle = t.statusPendingTitle.replace('{{year}}', String(currentYear
 
 const interacMail = `mailto:${t.interacEmail}`;
 const membershipMail = `mailto:${t.membershipEmail}`;
+
+const pendingFeeCents =
+	pendingThisYear ? membershipCentsForTier(pendingThisYear.tier) : null;
+const pendingMembershipFeeCad =
+	pendingFeeCents != null ? (pendingFeeCents / 100).toFixed(2) : '0.00';
 
 const showMemberActions = Boolean(member);
 ---
@@ -111,28 +117,68 @@ const showMemberActions = Boolean(member);
                   {thisYearTierLabel}
                 </p>
 
-                <form id="stripe-checkout-form" class="payPrimary" data-membership-id={pendingThisYear.id}>
-                  <div class="donationRow">
-                    <label class="donationLabel" for="donation-dollars-pending">{t.donationLabel}</label>
-                    <input
-                      type="number"
-                      class="donationInput"
-                      id="donation-dollars-pending"
-                      name="donation"
-                      min="0"
-                      max="50000"
-                      step="0.01"
-                      value="0"
-                      inputmode="decimal"
-                      aria-describedby="donation-hint-pending"
-                    />
-                    <p id="donation-hint-pending" class="stripeNote">{t.donationHint}</p>
-                  </div>
-                  <button type="submit" class="btnPrimary payCardBtn" id="pay-with-card-submit">
+                <div class="payPrimary">
+                  <button type="button" class="btnPrimary payCardBtn" id="open-checkout-modal">
                     {t.payWithCard}
                   </button>
-                  <p id="pay-checkout-message" class="actionMessage" role="status" aria-live="polite"></p>
-                </form>
+                </div>
+
+                <dialog id="checkout-modal" class="checkoutModal" aria-labelledby="checkout-modal-title">
+                  <div class="checkoutModalInner">
+                    <h2 id="checkout-modal-title" class="checkoutModalHeading">{t.checkoutModalTitle}</h2>
+                    <dl class="checkoutModalSummary">
+                      <div class="checkoutModalSummaryRow">
+                        <dt>{t.checkoutModalMembershipLabel}</dt>
+                        <dd>{thisYearTierLabel}</dd>
+                      </div>
+                      <div class="checkoutModalSummaryRow">
+                        <dt>{t.checkoutModalFeeLabel}</dt>
+                        <dd>
+                          {pendingMembershipFeeCad} CAD
+                        </dd>
+                      </div>
+                    </dl>
+                    <form id="checkout-modal-form" data-membership-id={pendingThisYear.id}>
+                      <div class="donationRow">
+                        <label class="donationLabel" for="modal-donation">{t.donationLabel}</label>
+                        <input
+                          type="number"
+                          class="donationInput"
+                          id="modal-donation"
+                          name="donation"
+                          min="0"
+                          max="50000"
+                          step="0.01"
+                          placeholder="0"
+                          inputmode="decimal"
+                          aria-describedby="modal-donation-hint"
+                        />
+                        <p id="modal-donation-hint" class="stripeNote">{t.donationHint}</p>
+                      </div>
+                      <div class="donationNoteRow">
+                        <label class="donationLabel" for="modal-donation-note">{t.donationNoteLabel}</label>
+                        <textarea
+                          class="donationNoteInput"
+                          id="modal-donation-note"
+                          name="donationNote"
+                          rows="3"
+                          maxlength="500"
+                          aria-describedby="modal-donation-note-hint"
+                        ></textarea>
+                        <p id="modal-donation-note-hint" class="stripeNote">{t.donationNoteHint}</p>
+                      </div>
+                      <p id="pay-checkout-message" class="actionMessage checkoutModalError" role="status" aria-live="polite"></p>
+                      <div class="checkoutModalActions">
+                        <button type="button" class="btnGhost" id="checkout-modal-cancel">
+                          {t.checkoutModalCancel}
+                        </button>
+                        <button type="submit" class="btnPrimary" id="checkout-modal-submit">
+                          {t.checkoutModalContinue}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </dialog>
 
                 <div class="payAlt">
                   <h3 class="payAltTitle">{t.otherPaymentTitle}</h3>
@@ -284,6 +330,7 @@ const showMemberActions = Boolean(member);
       errCheckoutGeneric: t.checkoutErrorGeneric,
       errCheckoutStripeMisconfigured: t.checkoutStripeMisconfigured,
       errCheckoutInvalidDonation: t.checkoutInvalidDonation,
+      errCheckoutInvalidDonationNote: t.checkoutInvalidDonationNote,
     }}
   >
     function createErrorMessage(code) {
@@ -352,15 +399,30 @@ const showMemberActions = Boolean(member);
       }
     });
 
-    const checkoutForm = document.getElementById('stripe-checkout-form');
+    const checkoutModal = document.getElementById('checkout-modal');
+    const openCheckoutBtn = document.getElementById('open-checkout-modal');
+    const checkoutModalForm = document.getElementById('checkout-modal-form');
     const checkoutMsg = document.getElementById('pay-checkout-message');
-    const checkoutSubmit = document.getElementById('pay-with-card-submit');
-    const donationInput = document.getElementById('donation-dollars-pending');
+    const checkoutSubmit = document.getElementById('checkout-modal-submit');
+    const donationInput = document.getElementById('modal-donation');
+    const donationNoteInput = document.getElementById('modal-donation-note');
 
-    checkoutForm?.addEventListener('submit', async (e) => {
+    openCheckoutBtn?.addEventListener('click', () => {
+      if (checkoutMsg) checkoutMsg.textContent = '';
+      checkoutModalForm?.reset();
+      checkoutModal?.showModal();
+    });
+
+    document.getElementById('checkout-modal-cancel')?.addEventListener('click', () => {
+      checkoutModalForm?.reset();
+      if (checkoutMsg) checkoutMsg.textContent = '';
+      checkoutModal?.close();
+    });
+
+    checkoutModalForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!checkoutMsg || !checkoutSubmit || !checkoutForm) return;
-      const membershipId = checkoutForm.getAttribute('data-membership-id');
+      if (!checkoutMsg || !checkoutSubmit || !checkoutModalForm) return;
+      const membershipId = checkoutModalForm.getAttribute('data-membership-id');
       if (!membershipId) return;
       checkoutMsg.textContent = '';
       checkoutSubmit.setAttribute('disabled', 'true');
@@ -379,6 +441,12 @@ const showMemberActions = Boolean(member);
           donationDollars = n;
         }
       }
+      const donationNote = donationNoteInput ? String(donationNoteInput.value ?? '').trim() : '';
+      if (donationNote.length > 500) {
+        checkoutMsg.textContent = errCheckoutInvalidDonationNote;
+        checkoutSubmit.removeAttribute('disabled');
+        return;
+      }
       try {
         const res = await fetch('/api/membership/create-checkout-session', {
           method: 'POST',
@@ -386,6 +454,7 @@ const showMemberActions = Boolean(member);
           body: JSON.stringify({
             membershipId,
             donationDollars,
+            donationNote,
             locale: memberLocale,
           }),
         });
@@ -393,6 +462,8 @@ const showMemberActions = Boolean(member);
         if (!res.ok) {
           if (data.error === 'invalid_donation') {
             checkoutMsg.textContent = errCheckoutInvalidDonation;
+          } else if (data.error === 'invalid_donation_note') {
+            checkoutMsg.textContent = errCheckoutInvalidDonationNote;
           } else if (data.error === 'stripe_misconfigured') {
             checkoutMsg.textContent = errCheckoutStripeMisconfigured;
           } else {
@@ -592,6 +663,90 @@ const showMemberActions = Boolean(member);
 
   .payPrimary {
     margin-bottom: 1.5rem;
+  }
+
+  .checkoutModal {
+    max-width: min(26rem, calc(100vw - 2rem));
+    padding: 0;
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  }
+
+  .checkoutModal::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .checkoutModalInner {
+    padding: 1.25rem 1.5rem 1.5rem;
+  }
+
+  .checkoutModalHeading {
+    margin: 0 0 1rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .checkoutModalSummary {
+    margin: 0 0 1.25rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.375rem;
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .checkoutModalSummaryRow {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.35rem 1rem;
+    align-items: baseline;
+    font-size: 0.95rem;
+  }
+
+  .checkoutModalSummaryRow:not(:last-child) {
+    margin-bottom: 0.5rem;
+  }
+
+  .checkoutModalSummaryRow dt {
+    margin: 0;
+    font-weight: 600;
+    color: var(--muted, #555);
+  }
+
+  .checkoutModalSummaryRow dd {
+    margin: 0;
+    text-align: right;
+    font-weight: 600;
+  }
+
+  .donationNoteRow {
+    margin-bottom: 0.75rem;
+  }
+
+  .donationNoteInput {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.95rem;
+    line-height: 1.45;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.375rem;
+    background: var(--bg, #fff);
+    resize: vertical;
+    min-height: 4.5rem;
+  }
+
+  .checkoutModalError {
+    margin: 0.5rem 0 0.75rem;
+  }
+
+  .checkoutModalActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    justify-content: flex-end;
+    margin-top: 0.25rem;
   }
 
   .checkoutBanner {
