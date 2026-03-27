@@ -150,7 +150,21 @@ export const memberCopy: Record<
 		pendingCancelErrorGeneric: string;
 		pendingCancelErrorNotFound: string;
 		payWithCard: string;
-		stripeComingSoon: string;
+		donationLabel: string;
+		donationHint: string;
+		donationNoteLabel: string;
+		donationNoteHint: string;
+		checkoutModalTitle: string;
+		checkoutModalMembershipLabel: string;
+		checkoutModalFeeLabel: string;
+		checkoutModalContinue: string;
+		checkoutModalCancel: string;
+		checkoutErrorGeneric: string;
+		checkoutStripeMisconfigured: string;
+		checkoutInvalidDonation: string;
+		checkoutInvalidDonationNote: string;
+		checkoutSuccessBanner: string;
+		checkoutCancelledBanner: string;
 		otherPaymentTitle: string;
 		payInteracTitle: string;
 		payInteracBeforeLink: string;
@@ -325,7 +339,22 @@ export const memberCopy: Record<
 		pendingCancelErrorGeneric: 'Could not cancel. Please try again.',
 		pendingCancelErrorNotFound: 'That request could not be found or is no longer pending.',
 		payWithCard: 'Pay with credit card',
-		stripeComingSoon: 'Secure checkout with Stripe will be available here soon.',
+		donationLabel: 'Optional donation (CAD)',
+		donationHint: 'Add any amount to support the association, or leave at 0.',
+		donationNoteLabel: 'Note with your donation (optional)',
+		donationNoteHint: 'Shown on your payment record. Max 500 characters.',
+		checkoutModalTitle: 'Pay with card',
+		checkoutModalMembershipLabel: 'Membership',
+		checkoutModalFeeLabel: 'Membership fee',
+		checkoutModalContinue: 'Continue to secure checkout',
+		checkoutModalCancel: 'Cancel',
+		checkoutErrorGeneric: 'Could not start checkout. Please try again.',
+		checkoutStripeMisconfigured: 'Online payment is not configured. Please use another payment method or try again later.',
+		checkoutInvalidDonation: 'Enter a valid donation amount (0 or more, up to 50,000).',
+		checkoutInvalidDonationNote: 'Keep the note to 500 characters or fewer.',
+		checkoutSuccessBanner:
+			'Thank you. When your payment succeeds, your membership will show as active here shortly.',
+		checkoutCancelledBanner: 'Checkout was cancelled. You can try again when you are ready.',
 		otherPaymentTitle: 'Other ways to pay',
 		payInteracTitle: 'INTERAC e-Transfer',
 		payInteracBeforeLink: 'Send your payment from your bank to ',
@@ -501,7 +530,23 @@ export const memberCopy: Record<
 		pendingCancelErrorGeneric: 'Impossible d’annuler. Veuillez réessayer.',
 		pendingCancelErrorNotFound: 'Cette demande est introuvable ou n’est plus en attente.',
 		payWithCard: 'Payer par carte de crédit',
-		stripeComingSoon: 'Un paiement sécurisé par Stripe sera bientôt disponible ici.',
+		donationLabel: 'Don facultatif (CAD)',
+		donationHint: 'Ajoutez un montant pour soutenir l’association, ou laissez 0.',
+		donationNoteLabel: 'Note accompagnant le don (facultatif)',
+		donationNoteHint: 'Affichée sur votre dossier de paiement. 500 caractères maximum.',
+		checkoutModalTitle: 'Payer par carte',
+		checkoutModalMembershipLabel: 'Adhésion',
+		checkoutModalFeeLabel: 'Cotisation',
+		checkoutModalContinue: 'Continuer vers le paiement sécurisé',
+		checkoutModalCancel: 'Annuler',
+		checkoutErrorGeneric: 'Impossible de démarrer le paiement. Veuillez réessayer.',
+		checkoutStripeMisconfigured:
+			'Le paiement en ligne n’est pas configuré. Utilisez un autre mode de paiement ou réessayez plus tard.',
+		checkoutInvalidDonation: 'Entrez un montant de don valide (0 ou plus, jusqu’à 50 000).',
+		checkoutInvalidDonationNote: 'Limitez la note à 500 caractères ou moins.',
+		checkoutSuccessBanner:
+			'Merci. Lorsque le paiement est réussi, votre adhésion active s’affichera ici sous peu.',
+		checkoutCancelledBanner: 'Le paiement a été annulé. Vous pouvez réessayer quand vous voulez.',
 		otherPaymentTitle: 'Autres modes de paiement',
 		payInteracTitle: 'Virement Interac',
 		payInteracBeforeLink: 'Envoyez votre paiement à partir de votre banque à ',

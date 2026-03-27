@@ -32,6 +32,15 @@ if (!accountData.member) {
 
 flushCookies();
 const email = user.email ?? '';
+const checkoutParam = Astro.url.searchParams.get('checkout');
+const checkoutFlash =
+	checkoutParam === 'success' ? 'success' : checkoutParam === 'cancelled' ? 'cancelled' : null;
 ---
 
-<MemberHomeView locale="fr" email={email} currentYear={currentYear} accountData={accountData} />
+<MemberHomeView
+	locale="fr"
+	email={email}
+	currentYear={currentYear}
+	accountData={accountData}
+	checkoutFlash={checkoutFlash}
+/>

@@ -19,3 +19,21 @@ export function getSupabaseServiceRoleEnv(): { url: string; serviceRoleKey: stri
 	}
 	return { url, serviceRoleKey };
 }
+
+/** Server-only. `sk_test_…` (dev) or `sk_live_…` (prod). */
+export function getStripeSecretKey(): string {
+	const key = import.meta.env.STRIPE_SECRET_KEY;
+	if (typeof key !== 'string' || !key.trim()) {
+		throw new Error('Set STRIPE_SECRET_KEY in server environment for Stripe Checkout.');
+	}
+	return key.trim();
+}
+
+/** Server-only. `whsec_…` from Stripe Dashboard (prod) or `stripe listen` (local dev). */
+export function getStripeWebhookSecret(): string {
+	const key = import.meta.env.STRIPE_WEBHOOK_SECRET;
+	if (typeof key !== 'string' || !key.trim()) {
+		throw new Error('Set STRIPE_WEBHOOK_SECRET in server environment for Stripe webhooks.');
+	}
+	return key.trim();
+}
