@@ -13,9 +13,10 @@ interface Props {
 	email: string;
 	currentYear: number;
 	accountData: MemberAccountPayload;
+	checkoutFlash?: 'success' | 'cancelled' | null;
 }
 
-const { locale, email, currentYear, accountData } = Astro.props;
+const { locale, email, currentYear, accountData, checkoutFlash = null } = Astro.props;
 const t = memberCopy[locale];
 const paths = memberPaths[locale];
 const heroSubtitle = email ? `${t.signedInAs} ${email}` : '';
@@ -63,6 +64,13 @@ const showMemberActions = Boolean(member);
     <div class="container prose">
       <p>{intro}</p>
 
+      {checkoutFlash === 'success' && (
+        <p class="checkoutBanner checkoutBannerSuccess" role="status">{t.checkoutSuccessBanner}</p>
+      )}
+      {checkoutFlash === 'cancelled' && (
+        <p class="checkoutBanner checkoutBannerCancelled" role="status">{t.checkoutCancelledBanner}</p>
+      )}
+
       {
         !member ? (
           <>
@@ -103,12 +111,28 @@ const showMemberActions = Boolean(member);
                   {thisYearTierLabel}
                 </p>
 
-                <div class="payPrimary">
-                  <button type="button" class="btnPrimary payCardBtn" disabled aria-describedby="stripe-soon-note-pending">
+                <form id="stripe-checkout-form" class="payPrimary" data-membership-id={pendingThisYear.id}>
+                  <div class="donationRow">
+                    <label class="donationLabel" for="donation-dollars-pending">{t.donationLabel}</label>
+                    <input
+                      type="number"
+                      class="donationInput"
+                      id="donation-dollars-pending"
+                      name="donation"
+                      min="0"
+                      max="50000"
+                      step="0.01"
+                      value="0"
+                      inputmode="decimal"
+                      aria-describedby="donation-hint-pending"
+                    />
+                    <p id="donation-hint-pending" class="stripeNote">{t.donationHint}</p>
+                  </div>
+                  <button type="submit" class="btnPrimary payCardBtn" id="pay-with-card-submit">
                     {t.payWithCard}
                   </button>
-                  <p id="stripe-soon-note-pending" class="stripeNote">{t.stripeComingSoon}</p>
-                </div>
+                  <p id="pay-checkout-message" class="actionMessage" role="status" aria-live="polite"></p>
+                </form>
 
                 <div class="payAlt">
                   <h3 class="payAltTitle">{t.otherPaymentTitle}</h3>
@@ -256,6 +280,10 @@ const showMemberActions = Boolean(member);
       errCreateGeneric: t.pendingCreateErrorGeneric,
       errCancelGeneric: t.pendingCancelErrorGeneric,
       errCancelNotFound: t.pendingCancelErrorNotFound,
+      memberLocale: locale,
+      errCheckoutGeneric: t.checkoutErrorGeneric,
+      errCheckoutStripeMisconfigured: t.checkoutStripeMisconfigured,
+      errCheckoutInvalidDonation: t.checkoutInvalidDonation,
     }}
   >
     function createErrorMessage(code) {
@@ -321,6 +349,66 @@ const showMemberActions = Boolean(member);
         cancelMsg.textContent = errNetwork;
       } finally {
         cancelBtn.removeAttribute('disabled');
+      }
+    });
+
+    const checkoutForm = document.getElementById('stripe-checkout-form');
+    const checkoutMsg = document.getElementById('pay-checkout-message');
+    const checkoutSubmit = document.getElementById('pay-with-card-submit');
+    const donationInput = document.getElementById('donation-dollars-pending');
+
+    checkoutForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!checkoutMsg || !checkoutSubmit || !checkoutForm) return;
+      const membershipId = checkoutForm.getAttribute('data-membership-id');
+      if (!membershipId) return;
+      checkoutMsg.textContent = '';
+      checkoutSubmit.setAttribute('disabled', 'true');
+      let donationDollars = 0;
+      if (donationInput) {
+        const v = String(donationInput.value ?? '').trim();
+        if (v === '') {
+          donationDollars = 0;
+        } else {
+          const n = parseFloat(v);
+          if (!Number.isFinite(n) || n < 0) {
+            checkoutMsg.textContent = errCheckoutInvalidDonation;
+            checkoutSubmit.removeAttribute('disabled');
+            return;
+          }
+          donationDollars = n;
+        }
+      }
+      try {
+        const res = await fetch('/api/membership/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            membershipId,
+            donationDollars,
+            locale: memberLocale,
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          if (data.error === 'invalid_donation') {
+            checkoutMsg.textContent = errCheckoutInvalidDonation;
+          } else if (data.error === 'stripe_misconfigured') {
+            checkoutMsg.textContent = errCheckoutStripeMisconfigured;
+          } else {
+            checkoutMsg.textContent = errCheckoutGeneric;
+          }
+          return;
+        }
+        if (typeof data.url === 'string' && data.url) {
+          window.location.assign(data.url);
+          return;
+        }
+        checkoutMsg.textContent = errCheckoutGeneric;
+      } catch {
+        checkoutMsg.textContent = errNetwork;
+      } finally {
+        checkoutSubmit.removeAttribute('disabled');
       }
     });
   </script>
@@ -504,6 +592,46 @@ const showMemberActions = Boolean(member);
 
   .payPrimary {
     margin-bottom: 1.5rem;
+  }
+
+  .checkoutBanner {
+    padding: 0.75rem 1rem;
+    margin: 0 0 1.25rem;
+    border-radius: 0.375rem;
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .checkoutBannerSuccess {
+    background: rgba(22, 163, 74, 0.12);
+    border: 1px solid rgba(22, 163, 74, 0.35);
+  }
+
+  .checkoutBannerCancelled {
+    background: rgba(234, 179, 8, 0.15);
+    border: 1px solid rgba(202, 138, 4, 0.35);
+  }
+
+  .donationRow {
+    margin-bottom: 0.75rem;
+  }
+
+  .donationLabel {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    font-size: 0.95rem;
+  }
+
+  .donationInput {
+    display: block;
+    width: 100%;
+    max-width: 12rem;
+    padding: 0.45rem 0.6rem;
+    font-size: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 0.375rem;
+    background: var(--bg, #fff);
   }
 
   .payCardBtn:disabled {

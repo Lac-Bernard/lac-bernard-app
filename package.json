@@ -20,6 +20,7 @@
     "astro": "^5.16.0",
     "cookie": "^1.1.1",
     "sharp": "^0.34.3",
+    "stripe": "^17.7.0",
     "tinacms": "^2.9.5"
   },
   "devDependencies": {
