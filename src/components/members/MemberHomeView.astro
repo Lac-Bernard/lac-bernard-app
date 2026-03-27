@@ -56,6 +56,25 @@ const pendingMembershipFeeCad =
 	pendingFeeCents != null ? (pendingFeeCents / 100).toFixed(2) : '0.00';
 
 const showMemberActions = Boolean(member);
+const hasLakeAddress = Boolean(
+	member &&
+		member.lake_civic_number?.trim() &&
+		member.lake_street_name?.trim(),
+);
+const lakeAddressLine =
+	member?.lake_civic_number?.trim() && member?.lake_street_name?.trim()
+		? `${member.lake_civic_number.trim()} ${member.lake_street_name.trim()}`
+		: '';
+const tierGeneralExplainerWithAddressResolved = lakeAddressLine
+	? t.tierGeneralExplainerWithAddress.replace('{{lakeAddress}}', lakeAddressLine)
+	: t.tierGeneralExplainer;
+
+const generalCents = membershipCentsForTier('general');
+const associateCents = membershipCentsForTier('associate');
+const generalFeeCad =
+	generalCents != null ? (generalCents / 100).toFixed(2) : '0.00';
+const associateFeeCad =
+	associateCents != null ? (associateCents / 100).toFixed(2) : '0.00';
 ---
 
 <MemberAppLayout
@@ -206,14 +225,6 @@ const showMemberActions = Boolean(member);
                   </ul>
                 </div>
 
-                <p class="formsHint">
-                  {t.formsHintBefore}
-                  <a href={paths.renewal}>{t.linkRenewal}</a>
-                  {t.formsHintAfter}
-                  <a href={paths.enrollment}>{t.linkEnrollment}</a>
-                  {t.formsHintEnd}
-                </p>
-
                 <div class="cancelRow">
                   <button type="button" class="btnGhost cancelPendingBtn" id="cancel-pending-btn" data-membership-id={pendingThisYear.id}>
                     {t.cancelPending}
@@ -230,25 +241,44 @@ const showMemberActions = Boolean(member);
                   <fieldset class="tierFieldset">
                     <legend class="tierLegend">{t.tierChoiceLegend}</legend>
                     <label class="tierOption">
-                      <input type="radio" name="tier" value="general" checked />
-                      {t.tierGeneral}
+                      <input
+                        type="radio"
+                        name="tier"
+                        value="general"
+                        checked={hasLakeAddress}
+                        disabled={!hasLakeAddress}
+                        title={!hasLakeAddress ? t.tierGeneralBlockedLead : undefined}
+                      />
+                      <span class="tierOptionBody">
+                        <span class="tierOptionTitleRow">
+                          <span class="tierOptionTitle">{t.tierGeneral}</span>
+                          <span class="tierOptionPrice">{generalFeeCad} CAD</span>
+                        </span>
+                        <span class="tierOptionExplainer">
+                          {hasLakeAddress ? tierGeneralExplainerWithAddressResolved : t.tierGeneralExplainer}
+                        </span>
+                      </span>
                     </label>
                     <label class="tierOption">
-                      <input type="radio" name="tier" value="associate" />
-                      {t.tierAssociate}
+                      <input type="radio" name="tier" value="associate" checked={!hasLakeAddress} />
+                      <span class="tierOptionBody">
+                        <span class="tierOptionTitleRow">
+                          <span class="tierOptionTitle">{t.tierAssociate}</span>
+                          <span class="tierOptionPrice">{associateFeeCad} CAD</span>
+                        </span>
+                        <span class="tierOptionExplainer">{t.tierAssociateExplainer}</span>
+                      </span>
                     </label>
                   </fieldset>
+                  {!hasLakeAddress && (
+                    <p class="tierBlockedNote">
+                      {t.tierGeneralBlockedLead}{' '}
+                      <a class="profileEditLink" href={paths.edit}>{t.linkEditProfile}</a>
+                    </p>
+                  )}
                   <button type="submit" class="btnPrimary" id="create-pending-submit">{t.createPendingSubmit}</button>
                   <p id="create-pending-message" class="actionMessage" role="status" aria-live="polite"></p>
                 </form>
-
-                <p class="formsHint">
-                  {t.formsHintBefore}
-                  <a href={paths.renewal}>{t.linkRenewal}</a>
-                  {t.formsHintAfter}
-                  <a href={paths.enrollment}>{t.linkEnrollment}</a>
-                  {t.formsHintEnd}
-                </p>
               </div>
             )}
 
@@ -331,12 +361,16 @@ const showMemberActions = Boolean(member);
       errCheckoutStripeMisconfigured: t.checkoutStripeMisconfigured,
       errCheckoutInvalidDonation: t.checkoutInvalidDonation,
       errCheckoutInvalidDonationNote: t.checkoutInvalidDonationNote,
+      errNoLake: t.pendingCreateErrorNoLakeAddress,
+      errGeneralTaken: t.pendingCreateErrorGeneralAddressTaken,
     }}
   >
     function createErrorMessage(code) {
       if (code === 'unauthorized') return errUnauthorized;
       if (code === 'already_active') return errAlreadyActive;
       if (code === 'already_pending') return errAlreadyPending;
+      if (code === 'no_lake_address') return errNoLake;
+      if (code === 'general_address_taken') return errGeneralTaken;
       return errCreateGeneric;
     }
 
@@ -464,6 +498,10 @@ const showMemberActions = Boolean(member);
             checkoutMsg.textContent = errCheckoutInvalidDonation;
           } else if (data.error === 'invalid_donation_note') {
             checkoutMsg.textContent = errCheckoutInvalidDonationNote;
+          } else if (data.error === 'no_lake_address') {
+            checkoutMsg.textContent = errNoLake;
+          } else if (data.error === 'general_address_taken') {
+            checkoutMsg.textContent = errGeneralTaken;
           } else if (data.error === 'stripe_misconfigured') {
             checkoutMsg.textContent = errCheckoutStripeMisconfigured;
           } else {
@@ -631,17 +669,65 @@ const showMemberActions = Boolean(member);
 
   .tierOption {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.5rem;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.65rem;
     cursor: pointer;
     font-size: 1rem;
+  }
+
+  .tierOption:has(input:disabled) {
+    cursor: not-allowed;
+    opacity: 0.85;
   }
 
   .tierOption input {
     width: 1.1rem;
     height: 1.1rem;
+    margin-top: 0.2rem;
+    flex-shrink: 0;
     accent-color: #2563eb;
+  }
+
+  .tierOptionBody {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .tierOptionTitleRow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.35rem 0.75rem;
+  }
+
+  .tierOptionTitle {
+    font-weight: 600;
+  }
+
+  .tierOptionPrice {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--muted, #444);
+    white-space: nowrap;
+  }
+
+  .tierOptionExplainer {
+    font-size: 0.88rem;
+    font-weight: 400;
+    color: var(--muted, #555);
+    line-height: 1.4;
+  }
+
+  .tierBlockedNote {
+    margin: 0 0 0.25rem;
+    font-size: 0.92rem;
+    color: var(--muted, #555);
+    max-width: 28rem;
   }
 
   .actionMessage {
@@ -836,17 +922,6 @@ const showMemberActions = Boolean(member);
 
   .payAddress {
     white-space: pre-line;
-  }
-
-  .formsHint {
-    margin: 1.35rem 0 0;
-    font-size: 0.95rem;
-    color: var(--muted, #555);
-  }
-
-  .formsHint a {
-    text-decoration: underline;
-    text-underline-offset: 2px;
   }
 
   .tableWrap {

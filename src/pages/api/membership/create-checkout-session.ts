@@ -135,6 +135,29 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		});
 	}
 
+	if (ms.tier === 'general') {
+		const { data: elig, error: eligErr } = await supabase.rpc('membership_general_eligibility', {
+			p_member_id: member.id,
+			p_year: currentYear,
+		});
+		if (eligErr) {
+			return new Response(JSON.stringify({ error: 'eligibility_failed' }), {
+				status: 500,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+		const result = elig as { ok?: boolean; error?: string } | null;
+		if (!result?.ok) {
+			const code = result?.error ?? 'unknown';
+			const status =
+				code === 'forbidden' ? 403 : code === 'not_found' ? 404 : 409;
+			return new Response(JSON.stringify({ error: code }), {
+				status,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+	}
+
 	const origin = getPublicRequestOrigin(request);
 	const accountPath = memberPaths[locale].account;
 	const successUrl = `${origin}${accountPath}?checkout=success`;

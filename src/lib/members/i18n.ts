@@ -133,6 +133,10 @@ export const memberCopy: Record<
 		membershipStatusPending: string;
 		tierGeneral: string;
 		tierAssociate: string;
+		tierGeneralExplainer: string;
+		tierGeneralExplainerWithAddress: string;
+		tierAssociateExplainer: string;
+		tierGeneralBlockedLead: string;
 		noMemberForEmail: string;
 		statusActiveTitle: string;
 		statusActiveTierLabel: string;
@@ -147,6 +151,8 @@ export const memberCopy: Record<
 		pendingCreateErrorAlreadyActive: string;
 		pendingCreateErrorAlreadyPending: string;
 		pendingCreateErrorGeneric: string;
+		pendingCreateErrorNoLakeAddress: string;
+		pendingCreateErrorGeneralAddressTaken: string;
 		pendingCancelErrorGeneric: string;
 		pendingCancelErrorNotFound: string;
 		payWithCard: string;
@@ -176,11 +182,6 @@ export const memberCopy: Record<
 		payCashBeforeLink: string;
 		payCashAfterLink: string;
 		membershipEmail: string;
-		formsHintBefore: string;
-		formsHintAfter: string;
-		linkRenewal: string;
-		linkEnrollment: string;
-		formsHintEnd: string;
 		membershipPrepaidSection: string;
 		membershipPrepaidLead: string;
 		linkEditProfile: string;
@@ -319,13 +320,24 @@ export const memberCopy: Record<
 		membershipStatusPending: 'Pending payment',
 		tierGeneral: 'General',
 		tierAssociate: 'Associate',
+		tierGeneralExplainer:
+			'Voting membership. One per lake property per calendar year. Requires a lake civic number and street on your profile.',
+		tierGeneralExplainerWithAddress:
+			'You’re purchasing the general membership for {{lakeAddress}}. You’ll be the voting member for that address for this year. Only one general membership is allowed per property per calendar year.',
+		tierAssociateExplainer: 'Non-voting. Lake address is optional.',
+		tierGeneralBlockedLead:
+			'To request general membership, add your lake civic number and street under your profile:',
+		pendingCreateErrorNoLakeAddress:
+			'General membership requires a lake civic number and street on your profile.',
+		pendingCreateErrorGeneralAddressTaken:
+			'Another member at this lake address already has a general membership for this year.',
 		noMemberForEmail:
 			'We could not find a member profile linked to this sign-in email. If you use another address on file, sign in with that email or contact the association.',
 		statusActiveTitle: 'Your {{year}} membership is active',
 		statusActiveTierLabel: 'Membership type',
 		statusInactiveTitle: 'No active membership for {{year}}',
 		statusInactiveLead:
-			'Choose general or associate and start a membership request. You’ll see payment instructions next; your membership becomes active once your payment is received or recorded by the association.',
+			'Choose general (voting) or associate (non-voting) and start a membership request. General requires a lake address on your profile. You’ll see payment instructions next; your membership becomes active once your payment is received or recorded by the association.',
 		tierChoiceLegend: 'Membership type',
 		createPendingSubmit: 'Start membership request',
 		statusPendingTitle: 'Your {{year}} membership is pending payment',
@@ -367,11 +379,6 @@ export const memberCopy: Record<
 		payCashBeforeLink: 'Contact us at ',
 		payCashAfterLink: ' to arrange payment in person.',
 		membershipEmail: 'membership@lacbernard.ca',
-		formsHintBefore: 'Use the ',
-		formsHintAfter: ' or ',
-		linkRenewal: 'renewal form',
-		linkEnrollment: 'new membership form',
-		formsHintEnd: ' so we can match your payment to your record.',
 		membershipPrepaidSection: 'Prepaid / future years',
 		membershipPrepaidLead: 'These membership years are on file after the current calendar year.',
 		linkEditProfile: 'Edit profile',
@@ -510,13 +517,24 @@ export const memberCopy: Record<
 		membershipStatusPending: 'En attente de paiement',
 		tierGeneral: 'Générale',
 		tierAssociate: 'Associée',
+		tierGeneralExplainer:
+			'Adhésion avec droit de vote. Une par propriété au lac pour l’année civile. Exige le numéro civique et la rue au lac dans votre profil.',
+		tierGeneralExplainerWithAddress:
+			'Vous achetez l’adhésion générale pour {{lakeAddress}}. Vous serez le membre ayant le droit de vote pour cette adresse cette année. Une seule adhésion générale est permise par propriété par année civile.',
+		tierAssociateExplainer: 'Sans droit de vote. L’adresse au lac est facultative.',
+		tierGeneralBlockedLead:
+			'Pour l’adhésion générale, ajoutez le numéro civique et la rue au lac dans votre profil :',
+		pendingCreateErrorNoLakeAddress:
+			'L’adhésion générale exige un numéro civique et une rue au lac dans votre profil.',
+		pendingCreateErrorGeneralAddressTaken:
+			'Un autre membre à cette adresse au lac a déjà une adhésion générale pour cette année.',
 		noMemberForEmail:
 			'Aucun profil membre n’est lié à cette adresse de connexion. Si vous utilisez une autre adresse dans nos dossiers, connectez-vous avec celle-ci ou communiquez avec l’association.',
 		statusActiveTitle: 'Votre adhésion {{year}} est active',
 		statusActiveTierLabel: 'Type d’adhésion',
 		statusInactiveTitle: 'Aucune adhésion active pour {{year}}',
 		statusInactiveLead:
-			'Choisissez le type d’adhésion (générale ou associée) et démarrez une demande. Les instructions de paiement suivront; votre adhésion deviendra active lorsque le paiement sera reçu ou enregistré par l’association.',
+			'Choisissez l’adhésion générale (droit de vote) ou associée (sans droit de vote) et démarrez une demande. L’adhésion générale exige une adresse au lac dans votre profil. Les instructions de paiement suivront; votre adhésion deviendra active lorsque le paiement sera reçu ou enregistré par l’association.',
 		tierChoiceLegend: 'Type d’adhésion',
 		createPendingSubmit: 'Démarrer la demande d’adhésion',
 		statusPendingTitle: 'Votre adhésion {{year}} est en attente de paiement',
@@ -559,11 +577,6 @@ export const memberCopy: Record<
 		payCashBeforeLink: 'Communiquez avec nous à ',
 		payCashAfterLink: ' pour convenir d’un paiement en personne.',
 		membershipEmail: 'membership@lacbernard.ca',
-		formsHintBefore: 'Utilisez le ',
-		formsHintAfter: ' ou le ',
-		linkRenewal: 'formulaire de renouvellement',
-		linkEnrollment: 'formulaire d’adhésion',
-		formsHintEnd: ' afin que nous puissions associer votre paiement à votre dossier.',
 		membershipPrepaidSection: 'Années payées d’avance / futures',
 		membershipPrepaidLead: 'Ces années d’adhésion sont enregistrées après l’année civile en cours.',
 		linkEditProfile: 'Modifier le profil',
