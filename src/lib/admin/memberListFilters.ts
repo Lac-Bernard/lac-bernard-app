@@ -4,7 +4,7 @@ import { getMembershipCalendarYear } from '../members/membershipYear';
 /** Same interpretation as GET /api/admin/members — single source of truth for list + export. */
 export type AdminMemberListFilters = {
 	year: number;
-	membership: 'active' | 'not_active';
+	membership: 'active' | 'not_active' | 'all' | 'has_membership_history';
 	tier: 'all' | 'general' | 'associate';
 	/** Pass to RPC as `p_q` via `q || null` */
 	q: string;
@@ -19,7 +19,10 @@ export function parseAdminMemberListFilters(searchParams: URLSearchParams): Admi
 	const year = Number.isFinite(yearParsed) ? yearParsed : getMembershipCalendarYear();
 
 	const membershipRaw = (searchParams.get('membership') ?? 'active').trim().toLowerCase();
-	const membership: 'active' | 'not_active' = membershipRaw === 'not_active' ? 'not_active' : 'active';
+	let membership: AdminMemberListFilters['membership'] = 'active';
+	if (membershipRaw === 'not_active') membership = 'not_active';
+	else if (membershipRaw === 'all') membership = 'all';
+	else if (membershipRaw === 'has_membership_history') membership = 'has_membership_history';
 
 	const tierRaw = (searchParams.get('tier') ?? 'all').trim().toLowerCase();
 	const tier: 'all' | 'general' | 'associate' =

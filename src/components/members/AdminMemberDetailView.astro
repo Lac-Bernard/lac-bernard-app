@@ -1,0 +1,805 @@
+---
+import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
+import { memberCopy, memberPaths, type MemberLocale } from '../../lib/members/i18n';
+import { getMembershipCalendarYear } from '../../lib/members/membershipYear';
+
+interface Props {
+	locale: MemberLocale;
+	email: string;
+	memberId: string;
+}
+
+const { locale, email, memberId } = Astro.props;
+const t = memberCopy[locale];
+const paths = memberPaths[locale];
+const calendarYear = getMembershipCalendarYear();
+const numberLocale = locale === 'fr' ? 'fr-CA' : 'en-CA';
+
+const adminKeys = [
+	'adminDetailTitle',
+	'adminDetailSectionProfile',
+	'adminDetailSectionMemberships',
+	'adminDetailPaymentsHeading',
+	'adminBackToAdmin',
+	'adminRecordPaymentBtn',
+	'adminPaymentHeading',
+	'adminAmountLabel',
+	'adminMethodLabel',
+	'adminMethodEtransfer',
+	'adminMethodCheque',
+	'adminMethodCash',
+	'adminMethodUnknown',
+	'adminMethodStripe',
+	'adminDateLabel',
+	'adminNotesLabel',
+	'adminSubmitPaymentBtn',
+	'adminPromoteBtn',
+	'adminPromoteSuccess',
+	'adminPromoteNoAccount',
+	'adminSaveMemberBtn',
+	'adminLoading',
+	'adminErrorGeneric',
+	'adminMemberSaved',
+	'adminPaymentSaved',
+	'adminSecondaryEmailLabel',
+	'adminNotesFieldLabel',
+	'adminStatusMemberLabel',
+	'adminUserIdLabel',
+	'adminPrimaryEmailLabel',
+	'membershipTableYear',
+	'membershipTableType',
+	'membershipTableStatus',
+	'membershipStatusActive',
+	'membershipStatusPending',
+	'adminTableAmount',
+	'adminTablePaymentDate',
+	'adminDetailNoMemberships',
+	'adminDetailPaymentsEmpty',
+	'adminDetailFutureBadge',
+	'adminDetailMembershipYearPicker',
+	'adminDetailStandardFee',
+	'adminDetailAmountMembership',
+	'adminDetailAmountDonation',
+	'adminDetailAmountTotal',
+	'adminDetailNoMembershipForYear',
+	'adminDetailDonationNoteLabel',
+	'adminTablePaymentRef',
+] as const;
+
+const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
+
+const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
+---
+
+<MemberAppLayout
+  lang={locale}
+  title={t.adminDetailTitle}
+  description={t.adminDescription}
+  heroTitle={t.adminHero}
+  heroSubtitle={email}
+  compactHero
+  alignHeroWithAdmin
+>
+  <section class="section alt adminPage">
+    <div class="container adminConsole">
+      <div class="adminShell">
+        <div class="adminShellHeader">
+          <p class="adminLead">
+            <a href={paths.admin} class="adminBackLink">{t.adminBackToAdmin}</a>
+          </p>
+        </div>
+
+        <p id="admin-detail-status" class="adminStatus" aria-live="polite"></p>
+
+        <div class="adminPanel adminCard">
+          <h2 class="adminSubheading">{t.adminDetailSectionProfile}</h2>
+          <form id="admin-member-detail-form" class="adminMemberForm">
+            <div class="adminFormGrid">
+              <label>{t.profileFirstName} <input type="text" id="admin-field-first_name" name="first_name" class="adminInput" /></label>
+              <label>{t.profileLastName} * <input type="text" id="admin-field-last_name" name="last_name" class="adminInput" required /></label>
+              <label>{t.adminPrimaryEmailLabel} <input type="email" id="admin-field-primary_email" name="primary_email" class="adminInput" /></label>
+              <label>{t.adminSecondaryEmailLabel} <input type="email" id="admin-field-secondary_email" name="secondary_email" class="adminInput" /></label>
+              <label>{t.profilePrimaryPhone} <input type="text" id="admin-field-primary_phone" name="primary_phone" class="adminInput" /></label>
+              <label>{t.profileSecondaryPhone} <input type="text" id="admin-field-secondary_phone" name="secondary_phone" class="adminInput" /></label>
+              <label>{t.profileLakePhone} <input type="text" id="admin-field-lake_phone" name="lake_phone" class="adminInput" /></label>
+              <label>{t.profileLakeCivic} <input type="text" id="admin-field-lake_civic_number" name="lake_civic_number" class="adminInput" /></label>
+              <label>{t.profileLakeStreet} <input type="text" id="admin-field-lake_street_name" name="lake_street_name" class="adminInput" /></label>
+              <label>{t.profileStreetAddress} <input type="text" id="admin-field-primary_address" name="primary_address" class="adminInput" /></label>
+              <label>{t.profileCity} <input type="text" id="admin-field-primary_city" name="primary_city" class="adminInput" /></label>
+              <label>{t.profileProvince} <input type="text" id="admin-field-primary_province" name="primary_province" class="adminInput" /></label>
+              <label>{t.profileCountry} <input type="text" id="admin-field-primary_country" name="primary_country" class="adminInput" /></label>
+              <label>{t.profilePostal} <input type="text" id="admin-field-primary_postal_code" name="primary_postal_code" class="adminInput" /></label>
+              <label class="adminCheckbox"><input type="checkbox" id="admin-field-email_opt_in" name="email_opt_in" /> {t.profileEmailOptIn}</label>
+              <label>{t.adminStatusMemberLabel} <input type="text" id="admin-field-status" name="status" class="adminInput" /></label>
+              <label>{t.adminUserIdLabel} <input type="text" id="admin-field-user_id" name="user_id" class="adminInput" /></label>
+              <label class="adminNotes">{t.adminNotesFieldLabel} <textarea id="admin-field-notes" name="notes" class="adminInput" rows="3"></textarea></label>
+            </div>
+            <div class="adminFormActions">
+              <button type="submit" class="adminBtn adminBtn--solid">{t.adminSaveMemberBtn}</button>
+              <button type="button" class="adminBtn adminBtn--ghost" id="admin-promote-btn">{t.adminPromoteBtn}</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="adminPanel adminCard">
+          <h2 class="adminSubheading">{t.adminDetailSectionMemberships}</h2>
+          <div id="admin-detail-memberships-mount" class="adminDetailMembershipList"></div>
+        </div>
+
+        <div class="adminShellFooter">
+          <form method="POST" action="/api/auth/sign-out" class="adminSignOutForm">
+            <input type="hidden" name="redirect_to" value={paths.signIn} />
+            <button type="submit" class="adminBtn adminBtn--link">{t.signOut}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <dialog id="admin-payment-dialog" class="adminDialog">
+      <form id="admin-payment-form" class="adminPaymentForm">
+        <h3>{t.adminPaymentHeading}</h3>
+        <input type="hidden" id="admin-payment-membership-id" value="" />
+        <label>
+          {t.adminAmountLabel}
+          <input type="number" name="amount" min="0" step="0.01" required class="adminInput" />
+        </label>
+        <label>
+          {t.adminMethodLabel}
+          <select name="method" required class="adminInput">
+            <option value="e-transfer">{t.adminMethodEtransfer}</option>
+            <option value="cheque">{t.adminMethodCheque}</option>
+            <option value="cash">{t.adminMethodCash}</option>
+            <option value="unknown">{t.adminMethodUnknown}</option>
+          </select>
+        </label>
+        <label>
+          {t.adminDateLabel}
+          <input type="date" name="date" class="adminInput" />
+        </label>
+        <label>
+          {t.adminNotesLabel}
+          <input type="text" name="notes" class="adminInput" />
+        </label>
+        <div class="adminDialogActions">
+          <button type="submit" class="adminBtn adminBtn--solid" value="default">{t.adminSubmitPaymentBtn}</button>
+          <button type="button" class="adminBtn adminBtn--ghost" id="admin-payment-cancel">{t.checkoutModalCancel}</button>
+        </div>
+      </form>
+    </dialog>
+  </section>
+</MemberAppLayout>
+
+<script type="application/json" id="admin-member-detail-data" set:html={JSON.stringify({ adminStrings, tierLabels, memberId, calendarYear, numberLocale })}></script>
+<script>
+  import { initAdminMemberDetail } from '../../scripts/admin-member-detail';
+  const el = document.getElementById('admin-member-detail-data');
+  const raw = el?.textContent;
+  if (raw) {
+    const { adminStrings, tierLabels, memberId, calendarYear, numberLocale } = JSON.parse(raw) as {
+      adminStrings: Record<string, string>;
+      tierLabels: { general: string; associate: string };
+      memberId: string;
+      calendarYear: number;
+      numberLocale: string;
+    };
+    initAdminMemberDetail(adminStrings, tierLabels, memberId, calendarYear, numberLocale);
+  }
+</script>
+
+<style>
+  .adminPage {
+    --admin-radius: 12px;
+    --admin-radius-sm: 8px;
+    --admin-border: var(--border);
+    --admin-surface: #fff;
+    --admin-surface-muted: var(--panel);
+    --admin-accent: rgba(28, 95, 118, 0.98);
+    --admin-accent-hover: rgba(22, 78, 98, 1);
+    --admin-accent-soft: rgba(72, 196, 255, 0.16);
+    --admin-text: var(--text);
+    --admin-font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--admin-font);
+    font-size: 0.875rem;
+    line-height: 1.45;
+    padding: 28px 0 40px;
+  }
+
+  .adminConsole {
+    max-width: 1100px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .adminShellHeader {
+    padding: 1rem 1.35rem 1rem;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  .adminBackLink {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--admin-accent);
+    text-decoration: none;
+  }
+
+  .adminBackLink:hover {
+    text-decoration: underline;
+  }
+
+  .adminShell {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .adminStatus {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    border-bottom: 1px solid var(--admin-border);
+    background: rgba(72, 196, 255, 0.08);
+    color: var(--admin-text);
+  }
+
+  .adminStatus[data-error='1'] {
+    background: rgba(176, 0, 32, 0.08);
+    color: #8a1024;
+  }
+
+  .adminStatus[data-success='1'] {
+    background: rgba(34, 120, 80, 0.1);
+    color: rgba(18, 75, 50, 0.95);
+  }
+
+  .adminStatus:empty {
+    display: none;
+    padding: 0;
+    border: none;
+  }
+
+  .adminPanel {
+    padding: 1rem 1.1rem 1.2rem;
+    min-width: 0;
+  }
+
+  .adminPanel + .adminPanel {
+    border-top: 1px solid var(--admin-border);
+  }
+
+  .adminSubheading {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text);
+  }
+
+  .adminDetailMembershipList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .adminDetailYearToolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    margin-bottom: 1.15rem;
+    padding-bottom: 0.15rem;
+  }
+
+  .adminDetailYearToolbarLabel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem 0.75rem;
+    margin: 0;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: var(--admin-text);
+  }
+
+  .adminDetailYearToolbarText {
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .adminDetailYearPanel {
+    min-width: 0;
+  }
+
+  .adminDetailPaymentSummary {
+    margin: 0;
+    padding: 0.85rem 1rem 0.95rem;
+    border-radius: var(--admin-radius-sm);
+    border: 1px solid var(--admin-border);
+    background: rgba(255, 255, 255, 0.55);
+    font-size: 0.8125rem;
+    line-height: 1.35;
+  }
+
+  .adminDetailSummaryRow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(5.25rem, max-content);
+    column-gap: 1.25rem;
+    align-items: baseline;
+    padding: 0.38rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.055);
+  }
+
+  .adminDetailSummaryRow:has(+ .adminDetailSummaryRow--total) {
+    border-bottom: none;
+    padding-bottom: 0.2rem;
+  }
+
+  .adminDetailSummaryRow > span:first-child {
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .adminDetailSummaryRow--total {
+    margin-top: 0.2rem;
+    padding-top: 0.55rem;
+    padding-bottom: 0.15rem;
+    border-bottom: none;
+    border-top: 1px solid var(--admin-border);
+  }
+
+  .adminDetailSummaryRow--total > span:first-child {
+    color: var(--admin-text);
+    font-weight: 700;
+  }
+
+  .adminDetailSummaryValue {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    text-align: right;
+    font-weight: 600;
+    color: var(--admin-text);
+  }
+
+  .adminDetailSummaryRow--total .adminDetailSummaryValue {
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+
+  .adminDetailDonationNoteLine {
+    margin: 0.65rem 0 0;
+    padding-top: 0.55rem;
+    border-top: 1px dashed rgba(0, 0, 0, 0.1);
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  .adminDetailDonationNoteLabel {
+    font-weight: 700;
+    color: var(--admin-text);
+    margin-right: 0.35rem;
+  }
+
+  .adminDetailMembershipCard {
+    margin: 0;
+    padding: 1rem 1.1rem 1.15rem;
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    background: var(--admin-surface-muted);
+  }
+
+  .adminDetailMembershipHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.65rem 1rem;
+    margin: 0 0 0.85rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  .adminDetailMembershipHeadMain {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem 0.6rem;
+    min-width: 0;
+  }
+
+  .adminDetailMembershipHeadActions {
+    flex-shrink: 0;
+  }
+
+  .adminDetailYear {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    color: var(--admin-text);
+  }
+
+  .adminDetailBadge {
+    display: inline-block;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.25;
+    border: 1px solid transparent;
+  }
+
+  .adminDetailBadge--tier {
+    background: rgba(255, 255, 255, 0.65);
+    border-color: var(--admin-border);
+    color: var(--admin-text);
+    text-transform: none;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .adminDetailBadge--future {
+    background: rgba(72, 196, 255, 0.14);
+    border-color: rgba(28, 95, 118, 0.22);
+    color: var(--admin-accent);
+    text-transform: none;
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+  }
+
+  .adminDetailBadge--status.adminDetailBadge--active {
+    background: rgba(34, 120, 80, 0.12);
+    border-color: rgba(34, 120, 80, 0.28);
+    color: rgba(18, 75, 50, 0.95);
+  }
+
+  .adminDetailBadge--status.adminDetailBadge--pending {
+    background: rgba(200, 130, 0, 0.12);
+    border-color: rgba(180, 110, 0, 0.28);
+    color: rgba(90, 55, 0, 0.95);
+  }
+
+  .adminDetailBadge--status.adminDetailBadge--neutral {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: var(--admin-border);
+    color: var(--muted);
+    text-transform: none;
+    font-size: 0.78rem;
+  }
+
+  .adminDetailPaymentsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-top: 0.15rem;
+  }
+
+  .adminDetailPaymentsTitle {
+    margin: 0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+  }
+
+  .adminDetailPaymentsEmpty {
+    margin: 0;
+    padding: 0.5rem 0 0;
+    font-size: 0.8125rem;
+    font-style: italic;
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  .adminDetailPaymentsTableWrap {
+    margin-top: 0;
+  }
+
+  .adminTable--payments th:nth-child(4),
+  .adminTable--payments td:nth-child(4) {
+    max-width: min(28rem, 42vw);
+  }
+
+  .adminDetailTdLong {
+    vertical-align: top;
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+  }
+
+  .adminDetailCellLong {
+    display: block;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .adminDetailCellEmpty {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .adminMemberForm {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .adminMemberForm label:not(.adminCheckbox) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .adminFormGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem 1.25rem;
+    padding: 1rem;
+    background: var(--admin-surface-muted);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+  }
+
+  .adminCheckbox {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--admin-text);
+    cursor: pointer;
+  }
+
+  .adminNotes {
+    grid-column: 1 / -1;
+  }
+
+  .adminFormActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 1.15rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--admin-border);
+  }
+
+  .adminInput {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 320px;
+    margin: 0;
+    padding: 0.4rem 0.55rem;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--admin-text);
+    background: #fff;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+  }
+
+  .adminInput.adminInput--yearSelect {
+    display: inline-block;
+    width: auto;
+    min-width: 7rem;
+    max-width: 9.5rem;
+    padding: 0.45rem 0.7rem;
+    font-weight: 600;
+    line-height: 1.25;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+    cursor: pointer;
+    vertical-align: middle;
+  }
+
+  .adminInput.adminInput--yearSelect:hover {
+    border-color: rgba(28, 95, 118, 0.35);
+  }
+
+  .adminInput.adminInput--yearSelect:focus {
+    outline: 2px solid rgba(72, 196, 255, 0.45);
+    outline-offset: 1px;
+  }
+
+  .tableWrap {
+    overflow-x: auto;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    margin: 0.5rem 0 0;
+    box-sizing: border-box;
+    border-radius: var(--admin-radius-sm);
+    border: 1px solid var(--admin-border);
+  }
+
+  .adminTable {
+    width: 100%;
+    min-width: 480px;
+    border-collapse: collapse;
+    font-size: 0.8125rem;
+  }
+
+  .adminTable th,
+  .adminTable td {
+    padding: 0.55rem 0.85rem;
+    text-align: left;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  .adminTable th {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    background: var(--admin-surface-muted);
+  }
+
+  .adminShellFooter {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.65rem 1.25rem;
+    border-top: 1px solid var(--admin-border);
+    background: var(--admin-surface-muted);
+  }
+
+  .adminDialog {
+    padding: 0;
+    border: none;
+    border-radius: var(--admin-radius);
+    max-width: min(440px, calc(100vw - 2rem));
+    box-shadow: var(--shadow);
+    background: var(--admin-surface);
+  }
+
+  .adminDialog::backdrop {
+    background: rgba(15, 25, 35, 0.45);
+    backdrop-filter: blur(2px);
+  }
+
+  .adminPaymentForm {
+    padding: 1.35rem 1.5rem 1.5rem;
+  }
+
+  .adminPaymentForm h3 {
+    margin: 0 0 1.1rem;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .adminPaymentForm label {
+    display: block;
+    margin-bottom: 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+
+  .adminDialogActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--admin-border);
+  }
+
+  .adminPage :global(.adminBtn) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    margin: 0;
+    padding: 0.4rem 0.85rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1.2;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+
+  .adminPage :global(.adminBtn--solid) {
+    background: var(--admin-accent);
+    color: #fff;
+    border-color: var(--admin-accent);
+  }
+
+  .adminPage :global(.adminBtn--ghost) {
+    background: transparent;
+    color: var(--muted);
+    border-color: var(--admin-border);
+  }
+
+  .adminPage :global(.adminBtn--link) {
+    padding: 0.35rem 0.5rem;
+    font-size: 0.88rem;
+    font-weight: 500;
+    color: var(--muted);
+    background: transparent;
+    border: none;
+    text-decoration: underline;
+  }
+
+  .adminHint {
+    font-size: 0.8125rem;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* Payments table: stay inside card — unbroken Stripe ids must wrap */
+  .adminDetailPaymentsTableWrap.tableWrap {
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments {
+    min-width: 0 !important;
+    max-width: 100%;
+    width: 100%;
+    table-layout: fixed;
+    font-size: 0.78rem;
+  }
+
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(1),
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(1) {
+    width: 11%;
+  }
+
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(2),
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(2) {
+    width: 12%;
+  }
+
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(3),
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(3) {
+    width: 9%;
+  }
+
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(4),
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(4),
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(5),
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(5) {
+    width: 34%;
+  }
+
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th,
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td {
+    padding: 0.4rem 0.45rem;
+  }
+
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th {
+    font-size: 0.62rem;
+  }
+
+  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td {
+    min-width: 0;
+  }
+
+  .adminDetailPaymentsTableWrap .adminDetailCellLong {
+    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    word-break: break-all;
+  }
+</style>

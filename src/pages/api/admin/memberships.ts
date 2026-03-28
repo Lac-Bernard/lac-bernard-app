@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { requireAdminSession } from '../../../lib/admin/session';
+import { membershipCentsForTier } from '../../../lib/membership/stripeCheckout';
 import { createSupabaseServiceRoleClient } from '../../../lib/supabase/service';
 
 const MAX_LIMIT = 100;
@@ -68,6 +69,7 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 
 	const memberships = list.map((m) => ({
 		...m,
+		expected_membership_cents: membershipCentsForTier(m.tier),
 		members: memberMap.get(m.member_id) ?? null,
 	}));
 

@@ -34,6 +34,8 @@ type MembershipEmbed = {
 	year: number;
 	tier: string;
 	status: string;
+	/** Standard membership fee for tier (cents); null if tier is unknown */
+	expected_membership_cents?: number | null;
 	members: null | {
 		id: string;
 		first_name: string | null;
@@ -43,7 +45,9 @@ type MembershipEmbed = {
 	};
 };
 
-type MemberListTab = 'members-active' | 'members-not-renewed';
+/** Trash icon for pending row remove (stroke uses `currentColor`) */
+const ADMIN_PENDING_TRASH_ICON =
+	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>';
 
 function el<T extends HTMLElement>(sel: string): T | null {
 	return document.querySelector(sel) as T | null;
@@ -124,10 +128,6 @@ function showEmailExportEmptyDialog(strings: AdminConsoleStrings): void {
 	dlg.showModal();
 }
 
-/**
- * Copy after async fetch: `navigator.clipboard` often fails because user activation expires
- * before writeText runs. Prefer synchronous `execCommand('copy')` on a focused textarea.
- */
 function copyPlainTextToClipboard(strings: AdminConsoleStrings, text: string): void {
 	if (!text.length) {
 		showEmailExportEmptyDialog(strings);
@@ -167,7 +167,6 @@ function copyPlainTextToClipboard(strings: AdminConsoleStrings, text: string): v
 	);
 }
 
-/** `window.prompt` drops long/complex default text in many browsers; use a real textarea. */
 function showEmailExportFallbackDialog(strings: AdminConsoleStrings, text: string): void {
 	const dlg = document.createElement('dialog');
 	dlg.className = 'adminEmailExportDialog';
@@ -216,7 +215,7 @@ function showEmailExportFallbackDialog(strings: AdminConsoleStrings, text: strin
 						cleanup();
 					}
 				} catch {
-					/* keep dialog open; user can select manually */
+					/* keep dialog open */
 				}
 			},
 		);
@@ -261,65 +260,77 @@ async function copyEmailsFromApi(strings: AdminConsoleStrings, urlWithQuery: str
 	}
 }
 
+function methodLabel(strings: AdminConsoleStrings, m: string | null): string {
+	if (!m) return '—';
+	if (m === 'stripe') return t(strings, 'adminMethodStripe');
+	if (m === 'e-transfer') return t(strings, 'adminMethodEtransfer');
+	if (m === 'cheque') return t(strings, 'adminMethodCheque');
+	if (m === 'cash') return t(strings, 'adminMethodCash');
+	if (m === 'unknown') return t(strings, 'adminMethodUnknown');
+	return m;
+}
+
+function formatExpectedMembershipFee(cents: number | null | undefined, numberLocale: string): string {
+	if (cents == null) return '—';
+	return new Intl.NumberFormat(numberLocale, { style: 'currency', currency: 'CAD' }).format(cents / 100);
+}
+
 export function initAdminConsole(
 	strings: AdminConsoleStrings,
 	tierLabels: { general: string; associate: string },
 	defaultMembershipYear: number,
+	adminMembersBase: string,
+	numberLocale: string = 'en-CA',
 ) {
 	const pendingBody = el<HTMLTableSectionElement>('#admin-pending-body');
-	const memberForm = el<HTMLFormElement>('#admin-member-form');
 	const paymentDialog = el<HTMLDialogElement>('#admin-payment-dialog');
 	const paymentMembershipId = el<HTMLInputElement>('#admin-payment-membership-id');
-	const memberEditWrap = el<HTMLElement>('#admin-member-edit-wrap');
+	const overviewMount = el<HTMLElement>('#admin-overview-mount');
+	const pendingBadge = el<HTMLElement>('#admin-pending-badge');
 	statusElGlobal = el<HTMLElement>('#admin-status');
 	const tabs = document.querySelectorAll<HTMLButtonElement>('[data-admin-tab]');
 	const panels = document.querySelectorAll<HTMLElement>('[data-admin-panel]');
 
-	let membersActivePage = 1;
-	let membersActiveTotalPages = 1;
-	let membersActiveSort = 'created_at_desc';
-	let membersNotRenewedPage = 1;
-	let membersNotRenewedTotalPages = 1;
-	let membersNotRenewedSort = 'created_at_desc';
-	let currentMemberListTab: MemberListTab = 'members-active';
-	let previousTabName = 'pending';
+	let membersPage = 1;
+	let membersTotalPages = 1;
+	let membersSort = 'created_at_desc';
 
 	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
 		setStatusGlobal(strings, msg, kind);
 	}
 
-	function getMemberListTab(): MemberListTab {
-		return currentMemberListTab;
-	}
-
-	function membersBody(): HTMLTableSectionElement | null {
-		return getMemberListTab() === 'members-active'
-			? el<HTMLTableSectionElement>('#admin-members-body-active')
-			: el<HTMLTableSectionElement>('#admin-members-body-not-renewed');
+	function setPendingBadge(count: number) {
+		if (!pendingBadge) return;
+		pendingBadge.textContent = count > 0 ? t(strings, 'adminPendingBadge', { count }) : '';
+		pendingBadge.hidden = count <= 0;
 	}
 
 	function getMemberFilterYear(): number {
-		const sel = getMemberListTab() === 'members-active' ? '#admin-members-year-active' : '#admin-members-year-not-renewed';
-		const raw = el<HTMLInputElement>(sel)?.value?.trim() ?? '';
+		const raw = el<HTMLInputElement>('#admin-members-year')?.value?.trim() ?? '';
 		const n = parseInt(raw, 10);
 		return Number.isFinite(n) ? n : defaultMembershipYear;
 	}
 
+	/** Keep "Active for {year}" / "Did not renew for {year}" in sync with the membership year field */
+	function syncMembersScopeLabels() {
+		const scope = el<HTMLSelectElement>('#admin-members-scope');
+		if (!scope) return;
+		const y = String(getMemberFilterYear());
+		const optActive = scope.querySelector<HTMLOptionElement>('option[value="active"]');
+		const optNot = scope.querySelector<HTMLOptionElement>('option[value="not_active"]');
+		if (optActive) optActive.textContent = t(strings, 'adminScopeActive', { year: y });
+		if (optNot) optNot.textContent = t(strings, 'adminScopeNotRenewed', { year: y });
+	}
+
 	function buildMembersListParams(): URLSearchParams {
-		const tab = getMemberListTab();
-		const isActive = tab === 'members-active';
-		const q = (
-			isActive ? el<HTMLInputElement>('#admin-members-q-active') : el<HTMLInputElement>('#admin-members-q-not-renewed')
-		)?.value?.trim() ?? '';
-		const page = isActive ? membersActivePage : membersNotRenewedPage;
-		const sort = isActive ? membersActiveSort : membersNotRenewedSort;
-		const membership = isActive ? 'active' : 'not_active';
-		const tier = isActive ? el<HTMLSelectElement>('#admin-members-tier')?.value ?? 'all' : 'all';
+		const q = el<HTMLInputElement>('#admin-members-q')?.value?.trim() ?? '';
+		const membership = el<HTMLSelectElement>('#admin-members-scope')?.value ?? 'active';
+		const tier = el<HTMLSelectElement>('#admin-members-tier')?.value ?? 'all';
 
 		const params = new URLSearchParams({
-			page: String(page),
+			page: String(membersPage),
 			limit: '25',
-			sort,
+			sort: membersSort,
 			year: String(getMemberFilterYear()),
 			membership,
 			tier,
@@ -346,37 +357,17 @@ export function initAdminConsole(
 			p.hidden = p.dataset.adminPanel !== name;
 		});
 
-		if (memberEditWrap) {
-			memberEditWrap.hidden = name !== 'members-active' && name !== 'members-not-renewed';
-		}
-
-		if (name === 'members-active' && previousTabName === 'members-not-renewed') {
-			const y = el<HTMLInputElement>('#admin-members-year-not-renewed')?.value;
-			if (y && el<HTMLInputElement>('#admin-members-year-active')) {
-				el<HTMLInputElement>('#admin-members-year-active')!.value = y;
-			}
-		}
-		if (name === 'members-not-renewed' && previousTabName === 'members-active') {
-			const y = el<HTMLInputElement>('#admin-members-year-active')?.value;
-			if (y && el<HTMLInputElement>('#admin-members-year-not-renewed')) {
-				el<HTMLInputElement>('#admin-members-year-not-renewed')!.value = y;
-			}
-		}
-		previousTabName = name;
-
-		if (name === 'members-active') {
-			currentMemberListTab = 'members-active';
-			void loadMembers();
-		} else if (name === 'members-not-renewed') {
-			currentMemberListTab = 'members-not-renewed';
+		if (name === 'members') {
 			void loadMembers();
 		} else if (name === 'pending') {
 			void loadPending();
+		} else if (name === 'overview') {
+			void loadOverview();
 		}
 	}
 
 	tabs.forEach((btn) => {
-		btn.addEventListener('click', () => showTab(btn.dataset.adminTab ?? 'pending'));
+		btn.addEventListener('click', () => showTab(btn.dataset.adminTab ?? 'overview'));
 	});
 
 	el<HTMLFormElement>('#admin-payment-form')?.addEventListener('submit', async (e) => {
@@ -407,62 +398,43 @@ export function initAdminConsole(
 		form.reset();
 		setStatus(t(strings, 'adminPaymentSaved'), 'success');
 		await loadPending();
+		void loadOverview();
 	});
 
 	el<HTMLButtonElement>('#admin-payment-cancel')?.addEventListener('click', () => paymentDialog?.close());
 
-	el<HTMLFormElement>('#admin-members-active-search')?.addEventListener('submit', (e) => {
+	el<HTMLFormElement>('#admin-members-search')?.addEventListener('submit', (e) => {
 		e.preventDefault();
-		currentMemberListTab = 'members-active';
-		membersActivePage = 1;
+		membersPage = 1;
 		void loadMembers();
 	});
 
-	el<HTMLFormElement>('#admin-members-not-renewed-search')?.addEventListener('submit', (e) => {
-		e.preventDefault();
-		currentMemberListTab = 'members-not-renewed';
-		membersNotRenewedPage = 1;
+	el<HTMLSelectElement>('#admin-members-sort')?.addEventListener('change', (e) => {
+		membersSort = (e.target as HTMLSelectElement).value;
+		membersPage = 1;
 		void loadMembers();
 	});
 
-	el<HTMLSelectElement>('#admin-members-sort-active')?.addEventListener('change', (e) => {
-		currentMemberListTab = 'members-active';
-		membersActiveSort = (e.target as HTMLSelectElement).value;
-		membersActivePage = 1;
+	el<HTMLInputElement>('#admin-members-year')?.addEventListener('input', () => {
+		syncMembersScopeLabels();
+	});
+	el<HTMLInputElement>('#admin-members-year')?.addEventListener('change', () => {
+		syncMembersScopeLabels();
+		membersPage = 1;
 		void loadMembers();
 	});
 
-	el<HTMLSelectElement>('#admin-members-sort-not-renewed')?.addEventListener('change', (e) => {
-		currentMemberListTab = 'members-not-renewed';
-		membersNotRenewedSort = (e.target as HTMLSelectElement).value;
-		membersNotRenewedPage = 1;
-		void loadMembers();
-	});
-
-	el<HTMLInputElement>('#admin-members-year-active')?.addEventListener('change', () => {
-		currentMemberListTab = 'members-active';
-		membersActivePage = 1;
-		void loadMembers();
-	});
-	el<HTMLInputElement>('#admin-members-year-not-renewed')?.addEventListener('change', () => {
-		currentMemberListTab = 'members-not-renewed';
-		membersNotRenewedPage = 1;
+	el<HTMLSelectElement>('#admin-members-scope')?.addEventListener('change', () => {
+		membersPage = 1;
 		void loadMembers();
 	});
 
 	el<HTMLSelectElement>('#admin-members-tier')?.addEventListener('change', () => {
-		currentMemberListTab = 'members-active';
-		membersActivePage = 1;
+		membersPage = 1;
 		void loadMembers();
 	});
 
-	el<HTMLButtonElement>('#admin-export-emails-active')?.addEventListener('click', () => {
-		currentMemberListTab = 'members-active';
-		void copyEmailsFromApi(strings, `/api/admin/member-emails-export?${buildMembersExportQueryParams()}`);
-	});
-
-	el<HTMLButtonElement>('#admin-export-emails-not-renewed')?.addEventListener('click', () => {
-		currentMemberListTab = 'members-not-renewed';
+	el<HTMLButtonElement>('#admin-export-emails-members')?.addEventListener('click', () => {
 		void copyEmailsFromApi(strings, `/api/admin/member-emails-export?${buildMembersExportQueryParams()}`);
 	});
 
@@ -470,115 +442,194 @@ export function initAdminConsole(
 		void copyEmailsFromApi(strings, '/api/admin/pending-member-emails');
 	});
 
-	el<HTMLButtonElement>('#admin-members-prev-active')?.addEventListener('click', () => {
-		currentMemberListTab = 'members-active';
-		if (membersActivePage > 1) {
-			membersActivePage--;
+	el<HTMLButtonElement>('#admin-members-prev')?.addEventListener('click', () => {
+		if (membersPage > 1) {
+			membersPage--;
 			void loadMembers();
 		}
 	});
-	el<HTMLButtonElement>('#admin-members-next-active')?.addEventListener('click', () => {
-		currentMemberListTab = 'members-active';
-		if (membersActivePage < membersActiveTotalPages) {
-			membersActivePage++;
-			void loadMembers();
-		}
-	});
-
-	el<HTMLButtonElement>('#admin-members-prev-not-renewed')?.addEventListener('click', () => {
-		currentMemberListTab = 'members-not-renewed';
-		if (membersNotRenewedPage > 1) {
-			membersNotRenewedPage--;
-			void loadMembers();
-		}
-	});
-	el<HTMLButtonElement>('#admin-members-next-not-renewed')?.addEventListener('click', () => {
-		currentMemberListTab = 'members-not-renewed';
-		if (membersNotRenewedPage < membersNotRenewedTotalPages) {
-			membersNotRenewedPage++;
+	el<HTMLButtonElement>('#admin-members-next')?.addEventListener('click', () => {
+		if (membersPage < membersTotalPages) {
+			membersPage++;
 			void loadMembers();
 		}
 	});
 
-	el<HTMLButtonElement>('#admin-clear-member')?.addEventListener('click', () => {
-		memberForm?.reset();
-		el<HTMLInputElement>('#admin-member-id')!.value = '';
-	});
-
-	memberForm?.addEventListener('submit', async (e) => {
-		e.preventDefault();
-		const id = el<HTMLInputElement>('#admin-member-id')?.value;
-		if (!id) {
-			setStatus(t(strings, 'adminSelectMemberHint'), 'error');
-			return;
-		}
-		const fd = new FormData(memberForm);
-		const body: Record<string, unknown> = {
-			first_name: fd.get('first_name') || null,
-			last_name: String(fd.get('last_name') ?? '').trim(),
-			primary_phone: fd.get('primary_phone') || null,
-			secondary_phone: fd.get('secondary_phone') || null,
-			lake_phone: fd.get('lake_phone') || null,
-			lake_civic_number: fd.get('lake_civic_number') || null,
-			lake_street_name: fd.get('lake_street_name') || null,
-			primary_address: fd.get('primary_address') || null,
-			primary_city: fd.get('primary_city') || null,
-			primary_province: fd.get('primary_province') || null,
-			primary_country: fd.get('primary_country') || null,
-			primary_postal_code: fd.get('primary_postal_code') || null,
-			email_opt_in: fd.get('email_opt_in') === 'on',
-			notes: fd.get('notes') ?? null,
-			secondary_email: fd.get('secondary_email') || null,
-			status: fd.get('status') || null,
-			user_id: fd.get('user_id') || null,
-			primary_email: fd.get('primary_email') || null,
-		};
-		setStatus(t(strings, 'adminLoading'));
-		const { ok, data } = await fetchJson<{ error?: string }>(`/api/admin/members/${encodeURIComponent(id)}`, {
-			method: 'PATCH',
-			body: JSON.stringify(body),
-		});
+	async function loadOverview() {
+		if (!overviewMount) return;
+		overviewMount.innerHTML = `<p class="adminHint">${t(strings, 'adminLoading')}</p>`;
+		const { ok, data } = await fetchJson<{
+			recentPayments?: unknown[];
+			newMembers?: unknown[];
+			recentMemberships?: unknown[];
+			counts?: {
+				pendingMemberships: number;
+				activeForYear: number;
+				totalMembers: number;
+				membershipYear: number;
+			};
+			recentAudit?: unknown[];
+			error?: string;
+		}>('/api/admin/activity');
 		if (!ok) {
-			setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
+			overviewMount.innerHTML = `<p class="adminHint">${data?.error ?? t(strings, 'adminErrorGeneric')}</p>`;
 			return;
 		}
-		setStatus(t(strings, 'adminMemberSaved'), 'success');
-		void loadMembers();
-	});
+		const c = data.counts;
+		if (c) {
+			setPendingBadge(c.pendingMemberships);
+		}
 
-	el<HTMLButtonElement>('#admin-promote-btn')?.addEventListener('click', async () => {
-		const id = el<HTMLInputElement>('#admin-member-id')?.value;
-		if (!id) return;
-		const userId = el<HTMLInputElement>('#admin-field-user_id')?.value?.trim();
-		if (!userId) {
-			alert(t(strings, 'adminPromoteNoAccount'));
-			return;
-		}
-		setStatus(t(strings, 'adminLoading'));
-		const { ok, data } = await fetchJson<{ error?: string }>(`/api/admin/members/${encodeURIComponent(id)}/promote-admin`, {
-			method: 'POST',
-			body: '{}',
-		});
-		if (!ok) {
-			setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
-			return;
-		}
-		setStatus(t(strings, 'adminPromoteSuccess'), 'success');
-	});
+		const payments = (data.recentPayments ?? []) as Array<{
+			id: number;
+			amount: number | null;
+			method: string | null;
+			date: string | null;
+			created_at: string;
+			membership_year: number | null;
+			member: { id: string; first_name: string | null; last_name: string; primary_email: string | null } | null;
+		}>;
+		const payRows = payments
+			.map((p) => {
+				const mem = p.member;
+				const name = mem ? `${mem.first_name ?? ''} ${mem.last_name}`.trim() : '—';
+				const href = mem ? `${adminMembersBase}/${encodeURIComponent(mem.id)}` : '#';
+				return `<tr>
+					<td><a href="${escapeHtml(href)}">${escapeHtml(name)}</a></td>
+					<td>${p.membership_year ?? '—'}</td>
+					<td>${escapeHtml(methodLabel(strings, p.method))}</td>
+					<td>${p.amount != null ? escapeHtml(String(p.amount)) : '—'}</td>
+					<td>${escapeHtml(fmtDate(p.date ?? p.created_at))}</td>
+				</tr>`;
+			})
+			.join('');
+
+		const newMems = (data.newMembers ?? []) as Array<{
+			id: string;
+			created_at: string;
+			first_name: string | null;
+			last_name: string;
+			primary_email: string | null;
+		}>;
+		const nmRows = newMems
+			.map((m) => {
+				const name = `${m.first_name ?? ''} ${m.last_name}`.trim();
+				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;
+				return `<tr>
+					<td><a href="${escapeHtml(href)}">${escapeHtml(name)}</a></td>
+					<td>${escapeHtml(m.primary_email ?? '—')}</td>
+					<td>${escapeHtml(fmtDate(m.created_at))}</td>
+				</tr>`;
+			})
+			.join('');
+
+		const recMs = (data.recentMemberships ?? []) as Array<{
+			id: string;
+			created_at: string;
+			year: number;
+			tier: string;
+			status: string;
+			member: { id: string; first_name: string | null; last_name: string; primary_email: string | null } | null;
+		}>;
+		const msRows = recMs
+			.map((m) => {
+				const mem = m.member;
+				const name = mem ? `${mem.first_name ?? ''} ${mem.last_name}`.trim() : '—';
+				const href = mem ? `${adminMembersBase}/${encodeURIComponent(mem.id)}` : '#';
+				const tier =
+					m.tier === 'general' ? tierLabels.general : m.tier === 'associate' ? tierLabels.associate : m.tier;
+				return `<tr>
+					<td><a href="${escapeHtml(href)}">${escapeHtml(name)}</a></td>
+					<td>${m.year}</td>
+					<td>${escapeHtml(tier)}</td>
+					<td>${statusPillHtml(m.status)}</td>
+					<td>${escapeHtml(fmtDate(m.created_at))}</td>
+				</tr>`;
+			})
+			.join('');
+
+		const audits = (data.recentAudit ?? []) as Array<{
+			created_at: string;
+			actor_user_id: string;
+			action: string;
+			entity_type: string | null;
+			entity_id: string | null;
+		}>;
+		const auditRows = audits
+			.map(
+				(a) =>
+					`<tr><td>${escapeHtml(fmtDate(a.created_at))}</td><td>${escapeHtml(a.action)}</td><td>${escapeHtml(a.entity_type ?? '')}</td><td>${escapeHtml(a.entity_id ?? '')}</td></tr>`,
+			)
+			.join('');
+
+		const kpi =
+			c ?
+				`<div class="adminKpiRow" role="region">
+				<div class="adminKpi adminKpi--pending"><span class="adminKpiValue">${c.pendingMemberships}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountPending'))}</span></div>
+				<div class="adminKpi adminKpi--activeYear"><span class="adminKpiValue">${c.activeForYear}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountActive', { year: c.membershipYear }))}</span></div>
+				<div class="adminKpi adminKpi--directory"><span class="adminKpiValue">${c.totalMembers}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountTotal'))}</span></div>
+			</div>`
+			:	'';
+
+		overviewMount.innerHTML = `
+			${kpi}
+			<section class="adminOverviewSection">
+			<h3 class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewPaymentsTitle'))}</h3>
+			<div class="tableWrap"><table class="adminTable"><thead><tr>
+				<th>${escapeHtml(t(strings, 'adminTableName'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableYear'))}</th>
+				<th>${escapeHtml(t(strings, 'adminMethodLabel'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableAmount'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTablePaymentDate'))}</th>
+			</tr></thead><tbody>${payRows || `<tr><td colspan="5">—</td></tr>`}</tbody></table></div>
+			</section>
+			<section class="adminOverviewSection">
+			<h3 class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewMembersTitle'))}</h3>
+			<div class="tableWrap"><table class="adminTable"><thead><tr>
+				<th>${escapeHtml(t(strings, 'adminTableName'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableEmail'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableCreated'))}</th>
+			</tr></thead><tbody>${nmRows || `<tr><td colspan="3">—</td></tr>`}</tbody></table></div>
+			</section>
+			<section class="adminOverviewSection">
+			<h3 class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewMembershipsTitle'))}</h3>
+			<div class="tableWrap"><table class="adminTable"><thead><tr>
+				<th>${escapeHtml(t(strings, 'adminTableName'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableYear'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableTier'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableStatus'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableCreated'))}</th>
+			</tr></thead><tbody>${msRows || `<tr><td colspan="5">—</td></tr>`}</tbody></table></div>
+			</section>
+			<section class="adminOverviewSection">
+			<h3 class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewAuditTitle'))}</h3>
+			<div class="tableWrap"><table class="adminTable"><thead><tr>
+				<th>${escapeHtml(t(strings, 'adminAuditWhen'))}</th>
+				<th>${escapeHtml(t(strings, 'adminAuditAction'))}</th>
+				<th>${escapeHtml(t(strings, 'adminAuditEntityType'))}</th>
+				<th>${escapeHtml(t(strings, 'adminAuditEntityId'))}</th>
+			</tr></thead><tbody>${auditRows || `<tr><td colspan="4">—</td></tr>`}</tbody></table></div>
+			</section>
+		`;
+	}
 
 	async function loadPending() {
 		if (!pendingBody) return;
-		pendingBody.innerHTML = `<tr><td colspan="6">${t(strings, 'adminLoading')}</td></tr>`;
-		const { ok, data } = await fetchJson<{ memberships?: MembershipEmbed[]; error?: string }>(
-			'/api/admin/memberships?status=pending&limit=100',
-		);
+		pendingBody.innerHTML = `<tr><td colspan="7">${t(strings, 'adminLoading')}</td></tr>`;
+		const { ok, data } = await fetchJson<{
+			memberships?: MembershipEmbed[];
+			total?: number;
+			error?: string;
+		}>('/api/admin/memberships?status=pending&limit=100');
 		if (!ok || !data.memberships) {
-			pendingBody.innerHTML = `<tr><td colspan="6">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
+			pendingBody.innerHTML = `<tr><td colspan="7">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
+			setPendingBadge(0);
 			return;
 		}
 		const rows = data.memberships;
+		setPendingBadge(typeof data.total === 'number' ? data.total : rows.length);
 		if (rows.length === 0) {
-			pendingBody.innerHTML = `<tr><td colspan="6">${t(strings, 'adminPendingEmpty')}</td></tr>`;
+			pendingBody.innerHTML = `<tr><td colspan="7">${t(strings, 'adminPendingEmpty')}</td></tr>`;
 			return;
 		}
 		pendingBody.innerHTML = rows
@@ -588,13 +639,16 @@ export function initAdminConsole(
 				const email = mem?.primary_email ?? '—';
 				const tier =
 					m.tier === 'general' ? tierLabels.general : m.tier === 'associate' ? tierLabels.associate : m.tier;
+				const detailHref = mem ? `${adminMembersBase}/${encodeURIComponent(mem.id)}` : '#';
+				const expected = formatExpectedMembershipFee(m.expected_membership_cents, numberLocale);
 				return `<tr>
-          <td>${escapeHtml(name)}</td>
+          <td><a href="${escapeHtml(detailHref)}">${escapeHtml(name)}</a></td>
           <td>${escapeHtml(email)}</td>
           <td>${m.year}</td>
           <td>${escapeHtml(tier)}</td>
           <td>${escapeHtml(m.status)}</td>
-          <td><button type="button" class="adminBtn adminBtn--outline" data-open-payment data-membership-id="${escapeHtml(m.id)}">${t(strings, 'adminRecordPaymentBtn')}</button></td>
+          <td>${escapeHtml(expected)}</td>
+          <td class="adminPendingActions"><button type="button" class="adminBtn adminBtn--outline" data-open-payment data-membership-id="${escapeHtml(m.id)}">${t(strings, 'adminRecordPaymentBtn')}</button><button type="button" class="adminPendingTrash" data-cancel-pending data-membership-id="${escapeHtml(m.id)}" aria-label="${escapeHtml(t(strings, 'adminCancelPendingAriaLabel'))}">${ADMIN_PENDING_TRASH_ICON}</button></td>
         </tr>`;
 			})
 			.join('');
@@ -607,12 +661,55 @@ export function initAdminConsole(
 				}
 			});
 		});
+		pendingBody.querySelectorAll<HTMLButtonElement>('[data-cancel-pending]').forEach((b) => {
+			b.addEventListener('click', async () => {
+				const id = b.dataset.membershipId;
+				if (!id) return;
+				if (!confirm(t(strings, 'adminCancelPendingConfirm'))) return;
+				setStatus(t(strings, 'adminLoading'));
+				const { ok, data } = await fetchJson<{ error?: string }>(
+					`/api/admin/memberships/${encodeURIComponent(id)}/cancel-pending`,
+					{ method: 'POST', body: '{}' },
+				);
+				if (!ok) {
+					const code = data?.error;
+					setStatus(
+						code === 'not_pending' ? t(strings, 'adminCancelPendingErrorNotPending') : t(strings, 'adminErrorGeneric'),
+						'error',
+					);
+					return;
+				}
+				setStatus(t(strings, 'adminCancelPendingSuccess'), 'success');
+				await loadPending();
+				void loadOverview();
+			});
+		});
+	}
+
+	function wireMembersTableRows(body: HTMLElement) {
+		body.querySelectorAll<HTMLTableRowElement>('tr[data-admin-member-href]').forEach((tr) => {
+			const go = () => {
+				const href = tr.dataset.adminMemberHref;
+				if (href) window.location.assign(href);
+			};
+			tr.addEventListener('click', (e) => {
+				const tgt = e.target as HTMLElement;
+				if (tgt.closest('a, button')) return;
+				go();
+			});
+			tr.addEventListener('keydown', (e) => {
+				if (e.key === 'Enter' || e.key === ' ') {
+					e.preventDefault();
+					go();
+				}
+			});
+		});
 	}
 
 	async function loadMembers() {
-		const body = membersBody();
+		const body = el<HTMLTableSectionElement>('#admin-members-body');
 		if (!body) return;
-		body.innerHTML = `<tr><td colspan="5">${t(strings, 'adminLoading')}</td></tr>`;
+		body.innerHTML = `<tr><td colspan="4">${t(strings, 'adminLoading')}</td></tr>`;
 		const params = buildMembersListParams();
 		const { ok, data } = await fetchJson<{
 			members?: MemberRow[];
@@ -622,27 +719,15 @@ export function initAdminConsole(
 			error?: string;
 		}>(`/api/admin/members?${params}`);
 		if (!ok || !data.members) {
-			body.innerHTML = `<tr><td colspan="5">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
+			body.innerHTML = `<tr><td colspan="4">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
 			return;
 		}
 		const total = data.total ?? 0;
 		const limit = data.limit ?? 25;
-		const tab = getMemberListTab();
-		if (tab === 'members-active') {
-			membersActiveTotalPages = Math.max(1, Math.ceil(total / limit));
-			const pageInfo = el('#admin-members-pageinfo-active');
-			if (pageInfo) {
-				pageInfo.textContent = t(strings, 'adminPageOf', { page: membersActivePage, total: membersActiveTotalPages });
-			}
-		} else {
-			membersNotRenewedTotalPages = Math.max(1, Math.ceil(total / limit));
-			const pageInfo = el('#admin-members-pageinfo-not-renewed');
-			if (pageInfo) {
-				pageInfo.textContent = t(strings, 'adminPageOf', {
-					page: membersNotRenewedPage,
-					total: membersNotRenewedTotalPages,
-				});
-			}
+		membersTotalPages = Math.max(1, Math.ceil(total / limit));
+		const pageInfo = el('#admin-members-pageinfo');
+		if (pageInfo) {
+			pageInfo.textContent = t(strings, 'adminPageOf', { page: membersPage, total: membersTotalPages });
 		}
 
 		body.innerHTML = data.members
@@ -654,60 +739,21 @@ export function initAdminConsole(
 				if (rawTier === 'general') tierCell = tierLabels.general;
 				else if (rawTier === 'associate') tierCell = tierLabels.associate;
 				else if (rawTier) tierCell = rawTier;
-				return `<tr data-member-id="${escapeHtml(m.id)}" style="cursor:pointer">
+				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;
+				const rowLabel = `${t(strings, 'adminMemberOpen')}: ${name}`;
+				return `<tr data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}">
           <td>${escapeHtml(name)}</td>
           <td>${escapeHtml(email)}</td>
           <td>${escapeHtml(tierCell)}</td>
           <td>${escapeHtml(fmtDate(m.created_at))}</td>
-          <td><button type="button" class="adminBtn adminBtn--outline">${t(strings, 'adminMemberEditHeading')}</button></td>
         </tr>`;
 			})
 			.join('');
-		body.querySelectorAll('tr[data-member-id]').forEach((row) => {
-			row.addEventListener('click', (ev) => {
-				const target = ev.target as HTMLElement;
-				if (target.closest('button')) return;
-				void selectMember(row.getAttribute('data-member-id') ?? '');
-			});
-			row.querySelector('button')?.addEventListener('click', (e) => {
-				e.stopPropagation();
-				void selectMember(row.getAttribute('data-member-id') ?? '');
-			});
-		});
+		wireMembersTableRows(body);
 	}
 
-	async function selectMember(id: string) {
-		if (!id || !memberForm) return;
-		setStatus(t(strings, 'adminLoading'));
-		const { ok, data } = await fetchJson<{ member?: MemberRow; error?: string }>(`/api/admin/members/${encodeURIComponent(id)}`);
-		if (!ok || !data.member) {
-			setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
-			return;
-		}
-		const m = data.member;
-		el<HTMLInputElement>('#admin-member-id')!.value = m.id;
-		el<HTMLInputElement>('#admin-field-first_name')!.value = m.first_name ?? '';
-		el<HTMLInputElement>('#admin-field-last_name')!.value = m.last_name ?? '';
-		el<HTMLInputElement>('#admin-field-primary_email')!.value = m.primary_email ?? '';
-		el<HTMLInputElement>('#admin-field-secondary_email')!.value = m.secondary_email ?? '';
-		el<HTMLInputElement>('#admin-field-primary_phone')!.value = m.primary_phone ?? '';
-		el<HTMLInputElement>('#admin-field-secondary_phone')!.value = m.secondary_phone ?? '';
-		el<HTMLInputElement>('#admin-field-lake_phone')!.value = m.lake_phone ?? '';
-		el<HTMLInputElement>('#admin-field-lake_civic_number')!.value = m.lake_civic_number ?? '';
-		el<HTMLInputElement>('#admin-field-lake_street_name')!.value = m.lake_street_name ?? '';
-		el<HTMLInputElement>('#admin-field-primary_address')!.value = m.primary_address ?? '';
-		el<HTMLInputElement>('#admin-field-primary_city')!.value = m.primary_city ?? '';
-		el<HTMLInputElement>('#admin-field-primary_province')!.value = m.primary_province ?? '';
-		el<HTMLInputElement>('#admin-field-primary_country')!.value = m.primary_country ?? '';
-		el<HTMLInputElement>('#admin-field-primary_postal_code')!.value = m.primary_postal_code ?? '';
-		el<HTMLInputElement>('#admin-field-email_opt_in')!.checked = m.email_opt_in;
-		el<HTMLTextAreaElement>('#admin-field-notes')!.value = m.notes ?? '';
-		el<HTMLInputElement>('#admin-field-status')!.value = m.status ?? '';
-		el<HTMLInputElement>('#admin-field-user_id')!.value = m.user_id ?? '';
-		setStatus('');
-	}
-
-	showTab('pending');
+	syncMembersScopeLabels();
+	showTab('overview');
 }
 
 function escapeHtml(s: string): string {
@@ -716,6 +762,18 @@ function escapeHtml(s: string): string {
 		.replace(/</g, '&lt;')
 		.replace(/>/g, '&gt;')
 		.replace(/"/g, '&quot;');
+}
+
+/** Overview tables — status column (scoped styles apply via `.adminOverviewMount :global`) */
+function statusPillHtml(status: string): string {
+	const s = status.toLowerCase();
+	const cls =
+		s === 'active'
+			? 'adminStatusPill adminStatusPill--active'
+			: s === 'pending'
+				? 'adminStatusPill adminStatusPill--pending'
+				: 'adminStatusPill adminStatusPill--neutral';
+	return `<span class="${cls}">${escapeHtml(status)}</span>`;
 }
 
 function fmtDate(iso: string): string {

@@ -6,6 +6,8 @@ export const memberPaths: Record<
 		account: string;
 		signIn: string;
 		admin: string;
+		/** Base path for per-member admin pages (no trailing slash). */
+		adminMembers: string;
 		enrollment: string;
 		renewal: string;
 		join: string;
@@ -16,6 +18,7 @@ export const memberPaths: Record<
 		account: '/en/membership/account',
 		signIn: '/en/membership/account/sign-in',
 		admin: '/en/membership/admin',
+		adminMembers: '/en/membership/admin/members',
 		enrollment: '/en/membership/enrollment',
 		renewal: '/en/membership/renewal',
 		join: '/en/membership/account/new',
@@ -25,6 +28,7 @@ export const memberPaths: Record<
 		account: '/fr/membership/account',
 		signIn: '/fr/membership/account/sign-in',
 		admin: '/fr/membership/admin',
+		adminMembers: '/fr/membership/admin/members',
 		enrollment: '/fr/membership/enrollment',
 		renewal: '/fr/membership/renewal',
 		join: '/fr/membership/account/new',
@@ -66,13 +70,53 @@ export const memberCopy: Record<
 		adminHero: string;
 		adminBody: string;
 		adminNavPending: string;
+		adminNavOverview: string;
+		adminNavMembers: string;
 		adminNavActiveMembers: string;
 		adminNavNotRenewed: string;
+		adminScopeLabel: string;
+		adminScopeEveryone: string;
+		adminScopeHasHistory: string;
+		adminScopeActive: string;
+		adminScopeNotRenewed: string;
+		adminDetailTitle: string;
+		adminDetailSectionProfile: string;
+		adminDetailSectionMemberships: string;
+		adminDetailPaymentsHeading: string;
+		adminBackToAdmin: string;
+		adminMethodStripe: string;
+		adminOverviewPaymentsTitle: string;
+		adminOverviewMembersTitle: string;
+		adminOverviewMembershipsTitle: string;
+		adminOverviewAuditTitle: string;
+		adminOverviewCountPending: string;
+		adminOverviewCountActive: string;
+		adminOverviewCountTotal: string;
+		adminTableAmount: string;
+		adminTablePaymentDate: string;
+		adminAuditWhen: string;
+		adminAuditAction: string;
+		adminAuditEntityType: string;
+		adminAuditEntityId: string;
+		adminPendingBadge: string;
+		adminDetailNoMemberships: string;
+		adminDetailPaymentsEmpty: string;
+		adminDetailFutureBadge: string;
+		adminDetailMembershipYearPicker: string;
+		adminDetailStandardFee: string;
+		adminDetailAmountMembership: string;
+		adminDetailAmountDonation: string;
+		adminDetailAmountTotal: string;
+		adminDetailNoMembershipForYear: string;
+		adminDetailDonationNoteLabel: string;
+		adminTablePaymentRef: string;
 		adminTableName: string;
 		adminTableEmail: string;
 		adminTableYear: string;
 		adminTableTier: string;
 		adminTableStatus: string;
+		/** Pending tab: standard membership fee for tier (before optional donation) */
+		adminTableExpectedFee: string;
 		adminTableCreated: string;
 		adminTableActions: string;
 		adminSearchLabel: string;
@@ -80,6 +124,11 @@ export const memberCopy: Record<
 		adminSortCreatedDesc: string;
 		adminSortNameAsc: string;
 		adminPendingEmpty: string;
+		/** Trash control on pending tab */
+		adminCancelPendingAriaLabel: string;
+		adminCancelPendingConfirm: string;
+		adminCancelPendingSuccess: string;
+		adminCancelPendingErrorNotPending: string;
 		adminRecordPaymentBtn: string;
 		adminPaymentHeading: string;
 		adminAmountLabel: string;
@@ -95,6 +144,7 @@ export const memberCopy: Record<
 		adminPromoteSuccess: string;
 		adminPromoteNoAccount: string;
 		adminMemberEditHeading: string;
+		adminMemberOpen: string;
 		adminSaveMemberBtn: string;
 		adminDetailHint: string;
 		adminLoading: string;
@@ -259,15 +309,54 @@ export const memberCopy: Record<
 		adminHeroAria: 'Administration',
 		adminHero: 'Administration',
 		adminBody:
-			'Review pending payments, list active or not-yet-renewed members by year, record manual payments, and grant admin access to linked accounts.',
+			'Review activity, pending payments, and the member directory; open a member to see full history, record manual payments, and grant admin access.',
 		adminNavPending: 'Pending payments',
+		adminNavOverview: 'Overview',
+		adminNavMembers: 'Members',
 		adminNavActiveMembers: 'Active members',
 		adminNavNotRenewed: 'Not renewed',
+		adminScopeLabel: 'Show',
+		adminScopeEveryone: 'Everyone',
+		adminScopeHasHistory: 'With membership history',
+		adminScopeActive: 'Active for {{year}}',
+		adminScopeNotRenewed: 'Did not renew for {{year}}',
+		adminDetailTitle: 'Member | Admin',
+		adminDetailSectionProfile: 'Profile',
+		adminDetailSectionMemberships: 'Memberships & payments',
+		adminDetailPaymentsHeading: 'Payments',
+		adminBackToAdmin: 'Back to admin',
+		adminMethodStripe: 'Card (Stripe)',
+		adminOverviewPaymentsTitle: 'Recent payments',
+		adminOverviewMembersTitle: 'New profiles',
+		adminOverviewMembershipsTitle: 'Recent memberships',
+		adminOverviewAuditTitle: 'Recent admin actions',
+		adminOverviewCountPending: 'Pending',
+		adminOverviewCountActive: 'Active {{year}}',
+		adminOverviewCountTotal: 'In directory',
+		adminTableAmount: 'Amount',
+		adminTablePaymentDate: 'Paid',
+		adminAuditWhen: 'When',
+		adminAuditAction: 'Action',
+		adminAuditEntityType: 'Entity',
+		adminAuditEntityId: 'Reference',
+		adminPendingBadge: '{{count}} pending',
+		adminDetailNoMemberships: 'No membership records for this person yet.',
+		adminDetailPaymentsEmpty: 'No payments recorded for this membership year.',
+		adminDetailFutureBadge: 'Future / prepaid',
+		adminDetailMembershipYearPicker: 'Membership year',
+		adminDetailStandardFee: 'Standard fee ({{tier}})',
+		adminDetailAmountMembership: 'Membership',
+		adminDetailAmountDonation: 'Donation',
+		adminDetailAmountTotal: 'Total paid',
+		adminDetailNoMembershipForYear: 'No membership on file for {{year}}.',
+		adminDetailDonationNoteLabel: 'Donation note',
+		adminTablePaymentRef: 'Reference',
 		adminTableName: 'Name',
 		adminTableEmail: 'Email',
 		adminTableYear: 'Year',
 		adminTableTier: 'Type',
 		adminTableStatus: 'Status',
+		adminTableExpectedFee: 'Expected fee',
 		adminTableCreated: 'Created',
 		adminTableActions: 'Actions',
 		adminSearchLabel: 'Search',
@@ -275,6 +364,11 @@ export const memberCopy: Record<
 		adminSortCreatedDesc: 'Newest first',
 		adminSortNameAsc: 'Last name A–Z',
 		adminPendingEmpty: 'No pending memberships.',
+		adminCancelPendingAriaLabel: 'Remove pending membership',
+		adminCancelPendingConfirm:
+			'Delete this pending membership? The member will need to choose their membership type again the next time they sign in.',
+		adminCancelPendingSuccess: 'Pending membership removed.',
+		adminCancelPendingErrorNotPending: 'This membership is no longer pending.',
 		adminRecordPaymentBtn: 'Record payment',
 		adminPaymentHeading: 'Record manual payment',
 		adminAmountLabel: 'Amount',
@@ -290,6 +384,7 @@ export const memberCopy: Record<
 		adminPromoteSuccess: 'Admin role granted. They may need to sign out and back in.',
 		adminPromoteNoAccount: 'This member has no linked sign-in account (user id).',
 		adminMemberEditHeading: 'Edit member',
+		adminMemberOpen: 'Open',
 		adminSaveMemberBtn: 'Save member',
 		adminDetailHint: 'Select a member in the list or search, then edit below.',
 		adminLoading: 'Loading…',
@@ -463,15 +558,54 @@ export const memberCopy: Record<
 		adminHeroAria: 'Administration',
 		adminHero: 'Administration',
 		adminBody:
-			'Consultez les paiements en attente, les membres actifs ou non renouvelés par année, enregistrez les paiements manuels et attribuez le rôle administrateur aux comptes liés.',
+			'Consultez l’activité, les paiements en attente et le répertoire; ouvrez un membre pour l’historique complet, enregistrer un paiement manuel ou attribuer le rôle administrateur.',
 		adminNavPending: 'Paiements en attente',
+		adminNavOverview: 'Aperçu',
+		adminNavMembers: 'Membres',
 		adminNavActiveMembers: 'Membres actifs',
 		adminNavNotRenewed: 'Non renouvelés',
+		adminScopeLabel: 'Afficher',
+		adminScopeEveryone: 'Tous',
+		adminScopeHasHistory: 'Avec antécédents d’adhésion',
+		adminScopeActive: 'Actifs pour {{year}}',
+		adminScopeNotRenewed: 'Non renouvelés pour {{year}}',
+		adminDetailTitle: 'Membre | Admin',
+		adminDetailSectionProfile: 'Profil',
+		adminDetailSectionMemberships: 'Adhésions et paiements',
+		adminDetailPaymentsHeading: 'Paiements',
+		adminBackToAdmin: 'Retour à l’administration',
+		adminMethodStripe: 'Carte (Stripe)',
+		adminOverviewPaymentsTitle: 'Paiements récents',
+		adminOverviewMembersTitle: 'Nouveaux profils',
+		adminOverviewMembershipsTitle: 'Adhésions récentes',
+		adminOverviewAuditTitle: 'Actions admin récentes',
+		adminOverviewCountPending: 'En attente',
+		adminOverviewCountActive: 'Actifs {{year}}',
+		adminOverviewCountTotal: 'Au répertoire',
+		adminTableAmount: 'Montant',
+		adminTablePaymentDate: 'Payé',
+		adminAuditWhen: 'Quand',
+		adminAuditAction: 'Action',
+		adminAuditEntityType: 'Entité',
+		adminAuditEntityId: 'Référence',
+		adminPendingBadge: '{{count}} en attente',
+		adminDetailNoMemberships: 'Aucune adhésion dans le dossier pour le moment.',
+		adminDetailPaymentsEmpty: 'Aucun paiement enregistré pour cette année d’adhésion.',
+		adminDetailFutureBadge: 'Futur / payé d’avance',
+		adminDetailMembershipYearPicker: 'Année d’adhésion',
+		adminDetailStandardFee: 'Cotisation de base ({{tier}})',
+		adminDetailAmountMembership: 'Adhésion',
+		adminDetailAmountDonation: 'Don',
+		adminDetailAmountTotal: 'Total payé',
+		adminDetailNoMembershipForYear: 'Aucune adhésion au dossier pour {{year}}.',
+		adminDetailDonationNoteLabel: 'Note du don',
+		adminTablePaymentRef: 'Référence',
 		adminTableName: 'Nom',
 		adminTableEmail: 'Courriel',
 		adminTableYear: 'Année',
 		adminTableTier: 'Type',
 		adminTableStatus: 'Statut',
+		adminTableExpectedFee: 'Cotisation prévue',
 		adminTableCreated: 'Créé',
 		adminTableActions: 'Actions',
 		adminSearchLabel: 'Recherche',
@@ -479,6 +613,11 @@ export const memberCopy: Record<
 		adminSortCreatedDesc: 'Plus récents',
 		adminSortNameAsc: 'Nom de famille A–Z',
 		adminPendingEmpty: 'Aucune adhésion en attente.',
+		adminCancelPendingAriaLabel: 'Retirer l’adhésion en attente',
+		adminCancelPendingConfirm:
+			'Supprimer cette adhésion en attente? La personne devra choisir de nouveau son type d’adhésion lors de sa prochaine connexion.',
+		adminCancelPendingSuccess: 'Adhésion en attente supprimée.',
+		adminCancelPendingErrorNotPending: 'Cette adhésion n’est plus en attente.',
 		adminRecordPaymentBtn: 'Enregistrer le paiement',
 		adminPaymentHeading: 'Paiement manuel',
 		adminAmountLabel: 'Montant',
@@ -494,6 +633,7 @@ export const memberCopy: Record<
 		adminPromoteSuccess: 'Rôle administrateur accordé. La personne devra peut-être se déconnecter et se reconnecter.',
 		adminPromoteNoAccount: 'Ce membre n’a pas de compte de connexion lié (identifiant utilisateur).',
 		adminMemberEditHeading: 'Modifier le membre',
+		adminMemberOpen: 'Ouvrir',
 		adminSaveMemberBtn: 'Enregistrer',
 		adminDetailHint: 'Sélectionnez un membre dans la liste pour modifier les détails.',
 		adminLoading: 'Chargement…',

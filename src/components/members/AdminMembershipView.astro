@@ -14,15 +14,21 @@ const paths = memberPaths[locale];
 const heroSubtitle = email;
 const defaultMembershipYear = getMembershipCalendarYear();
 
+const y = String(defaultMembershipYear);
+const scopeActiveLabel = t.adminScopeActive.replace(/\{\{year\}\}/g, y);
+const scopeNotRenewedLabel = t.adminScopeNotRenewed.replace(/\{\{year\}\}/g, y);
+const numberLocale = locale === 'fr' ? 'fr-CA' : 'en-CA';
+
 const adminKeys = [
 	'adminNavPending',
-	'adminNavActiveMembers',
-	'adminNavNotRenewed',
+	'adminNavOverview',
+	'adminNavMembers',
 	'adminTableName',
 	'adminTableEmail',
 	'adminTableYear',
 	'adminTableTier',
 	'adminTableStatus',
+	'adminTableExpectedFee',
 	'adminTableCreated',
 	'adminTableActions',
 	'adminSearchLabel',
@@ -30,6 +36,10 @@ const adminKeys = [
 	'adminSortCreatedDesc',
 	'adminSortNameAsc',
 	'adminPendingEmpty',
+	'adminCancelPendingAriaLabel',
+	'adminCancelPendingConfirm',
+	'adminCancelPendingSuccess',
+	'adminCancelPendingErrorNotPending',
 	'adminRecordPaymentBtn',
 	'adminPaymentHeading',
 	'adminAmountLabel',
@@ -38,35 +48,27 @@ const adminKeys = [
 	'adminMethodCheque',
 	'adminMethodCash',
 	'adminMethodUnknown',
+	'adminMethodStripe',
 	'adminDateLabel',
 	'adminNotesLabel',
 	'adminSubmitPaymentBtn',
-	'adminPromoteBtn',
-	'adminPromoteSuccess',
-	'adminPromoteNoAccount',
-	'adminMemberEditHeading',
-	'adminSaveMemberBtn',
-	'adminDetailHint',
+	'adminMemberOpen',
 	'adminLoading',
 	'adminErrorGeneric',
 	'adminPageOf',
 	'adminPrevPage',
 	'adminNextPage',
 	'adminFilterApply',
-	'adminSelectMemberHint',
-	'adminSecondaryEmailLabel',
-	'adminNotesFieldLabel',
-	'adminStatusMemberLabel',
-	'adminUserIdLabel',
-	'adminPrimaryEmailLabel',
-	'adminBackToList',
-	'adminMemberSaved',
-	'adminPaymentSaved',
 	'adminMembershipYearLabel',
 	'adminFilterTierLabel',
 	'adminFilterTierAll',
 	'adminFilterTierGeneral',
 	'adminFilterTierAssociate',
+	'adminScopeLabel',
+	'adminScopeEveryone',
+	'adminScopeHasHistory',
+	'adminScopeActive',
+	'adminScopeNotRenewed',
 	'adminExportEmails',
 	'adminExportEmailsCopied',
 	'adminCopyEmailsFallbackPrompt',
@@ -74,9 +76,23 @@ const adminKeys = [
 	'adminCopyEmailsDialogClose',
 	'adminExportEmailsHint',
 	'adminExportEmailsEmpty',
+	'adminOverviewPaymentsTitle',
+	'adminOverviewMembersTitle',
+	'adminOverviewMembershipsTitle',
+	'adminOverviewAuditTitle',
+	'adminOverviewCountPending',
+	'adminOverviewCountActive',
+	'adminOverviewCountTotal',
+	'adminTableAmount',
+	'adminTablePaymentDate',
+	'adminAuditWhen',
+	'adminAuditAction',
+	'adminAuditEntityType',
+	'adminAuditEntityId',
+	'adminPendingBadge',
 ] as const;
 
-const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k]])) as Record<string, string>;
+const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
 
 const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
 ---
@@ -87,6 +103,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
   description={t.adminDescription}
   heroTitle={t.adminHero}
   heroSubtitle={heroSubtitle}
+  alignHeroWithAdmin
 >
   <section class="section alt adminPage">
     <div class="container adminConsole">
@@ -97,15 +114,22 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
 
         <div class="adminTabBar">
           <div class="adminTabs" role="tablist" aria-label="Admin">
-            <button type="button" class="adminTab" role="tab" data-admin-tab="pending" aria-selected="true">{t.adminNavPending}</button>
-            <button type="button" class="adminTab" role="tab" data-admin-tab="members-active" aria-selected="false">{t.adminNavActiveMembers}</button>
-            <button type="button" class="adminTab" role="tab" data-admin-tab="members-not-renewed" aria-selected="false">{t.adminNavNotRenewed}</button>
+            <button type="button" class="adminTab" role="tab" data-admin-tab="overview" aria-selected="true">{t.adminNavOverview}</button>
+            <button type="button" class="adminTab" role="tab" data-admin-tab="pending" aria-selected="false">
+              {t.adminNavPending}
+              <span id="admin-pending-badge" class="adminTabBadge" hidden></span>
+            </button>
+            <button type="button" class="adminTab" role="tab" data-admin-tab="members" aria-selected="false">{t.adminNavMembers}</button>
           </div>
         </div>
 
         <p id="admin-status" class="adminStatus" aria-live="polite"></p>
 
-        <div data-admin-panel="pending" class="adminPanel adminCard">
+        <div data-admin-panel="overview" class="adminPanel adminCard">
+          <div id="admin-overview-mount" class="adminOverviewMount"></div>
+        </div>
+
+        <div data-admin-panel="pending" class="adminPanel adminCard" hidden>
           <div class="adminToolbar adminToolbar--lead">
             <button type="button" class="adminBtn adminBtn--outline" id="admin-export-emails-pending">{t.adminExportEmails}</button>
             <p class="adminHint adminHint--toolbar">{t.adminExportEmailsHint}</p>
@@ -119,6 +143,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
                   <th>{t.adminTableYear}</th>
                   <th>{t.adminTableTier}</th>
                   <th>{t.adminTableStatus}</th>
+                  <th>{t.adminTableExpectedFee}</th>
                   <th>{t.adminTableActions}</th>
                 </tr>
               </thead>
@@ -127,24 +152,33 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
           </div>
         </div>
 
-        <div data-admin-panel="members-active" class="adminPanel adminCard" hidden>
-          <form id="admin-members-active-search" class="adminToolbar">
+        <div data-admin-panel="members" class="adminPanel adminCard" hidden>
+          <form id="admin-members-search" class="adminToolbar">
             <label>
               {t.adminSearchLabel}
-              <input type="search" id="admin-members-q-active" name="q" class="adminInput" />
+              <input type="search" id="admin-members-q" name="q" class="adminInput" />
             </label>
             <label>
               {t.adminSortLabel}
-              <select id="admin-members-sort-active" class="adminInput">
+              <select id="admin-members-sort" class="adminInput">
                 <option value="created_at_desc">{t.adminSortCreatedDesc}</option>
                 <option value="last_name_asc">{t.adminSortNameAsc}</option>
+              </select>
+            </label>
+            <label>
+              {t.adminScopeLabel}
+              <select id="admin-members-scope" name="membership" class="adminInput">
+                <option value="all">{t.adminScopeEveryone}</option>
+                <option value="has_membership_history">{t.adminScopeHasHistory}</option>
+                <option value="active" selected>{scopeActiveLabel}</option>
+                <option value="not_active">{scopeNotRenewedLabel}</option>
               </select>
             </label>
             <label>
               {t.adminMembershipYearLabel}
               <input
                 type="number"
-                id="admin-members-year-active"
+                id="admin-members-year"
                 name="year"
                 class="adminInput adminInput--year"
                 min="2000"
@@ -162,113 +196,27 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
               </select>
             </label>
             <button type="submit" class="adminBtn adminBtn--outline">{t.adminFilterApply}</button>
-            <button type="button" class="adminBtn adminBtn--outline" id="admin-export-emails-active">{t.adminExportEmails}</button>
+            <button type="button" class="adminBtn adminBtn--outline" id="admin-export-emails-members">{t.adminExportEmails}</button>
           </form>
           <p class="adminHint">{t.adminExportEmailsHint}</p>
-          <p class="adminHint">{t.adminDetailHint}</p>
           <div class="tableWrap">
-            <table class="adminTable">
+            <table class="adminTable adminTable--members">
               <thead>
                 <tr>
                   <th>{t.adminTableName}</th>
                   <th>{t.adminTableEmail}</th>
                   <th>{t.adminTableTier}</th>
                   <th>{t.adminTableCreated}</th>
-                  <th>{t.adminTableActions}</th>
                 </tr>
               </thead>
-              <tbody id="admin-members-body-active"></tbody>
+              <tbody id="admin-members-body"></tbody>
             </table>
           </div>
           <div class="adminPager">
-            <button type="button" class="adminBtn adminBtn--ghost" id="admin-members-prev-active">{t.adminPrevPage}</button>
-            <span id="admin-members-pageinfo-active"></span>
-            <button type="button" class="adminBtn adminBtn--ghost" id="admin-members-next-active">{t.adminNextPage}</button>
+            <button type="button" class="adminBtn adminBtn--ghost" id="admin-members-prev">{t.adminPrevPage}</button>
+            <span id="admin-members-pageinfo"></span>
+            <button type="button" class="adminBtn adminBtn--ghost" id="admin-members-next">{t.adminNextPage}</button>
           </div>
-        </div>
-
-        <div data-admin-panel="members-not-renewed" class="adminPanel adminCard" hidden>
-          <form id="admin-members-not-renewed-search" class="adminToolbar">
-            <label>
-              {t.adminSearchLabel}
-              <input type="search" id="admin-members-q-not-renewed" name="q" class="adminInput" />
-            </label>
-            <label>
-              {t.adminSortLabel}
-              <select id="admin-members-sort-not-renewed" class="adminInput">
-                <option value="created_at_desc">{t.adminSortCreatedDesc}</option>
-                <option value="last_name_asc">{t.adminSortNameAsc}</option>
-              </select>
-            </label>
-            <label>
-              {t.adminMembershipYearLabel}
-              <input
-                type="number"
-                id="admin-members-year-not-renewed"
-                name="year"
-                class="adminInput adminInput--year"
-                min="2000"
-                max="2100"
-                step="1"
-                value={defaultMembershipYear}
-              />
-            </label>
-            <button type="submit" class="adminBtn adminBtn--outline">{t.adminFilterApply}</button>
-            <button type="button" class="adminBtn adminBtn--outline" id="admin-export-emails-not-renewed">{t.adminExportEmails}</button>
-          </form>
-          <p class="adminHint">{t.adminExportEmailsHint}</p>
-          <p class="adminHint">{t.adminDetailHint}</p>
-          <div class="tableWrap">
-            <table class="adminTable">
-              <thead>
-                <tr>
-                  <th>{t.adminTableName}</th>
-                  <th>{t.adminTableEmail}</th>
-                  <th>{t.adminTableTier}</th>
-                  <th>{t.adminTableCreated}</th>
-                  <th>{t.adminTableActions}</th>
-                </tr>
-              </thead>
-              <tbody id="admin-members-body-not-renewed"></tbody>
-            </table>
-          </div>
-          <div class="adminPager">
-            <button type="button" class="adminBtn adminBtn--ghost" id="admin-members-prev-not-renewed">{t.adminPrevPage}</button>
-            <span id="admin-members-pageinfo-not-renewed"></span>
-            <button type="button" class="adminBtn adminBtn--ghost" id="admin-members-next-not-renewed">{t.adminNextPage}</button>
-          </div>
-        </div>
-
-        <div id="admin-member-edit-wrap" class="adminPanel adminCard" hidden>
-          <h2 class="adminSubheading">{t.adminMemberEditHeading}</h2>
-          <form id="admin-member-form" class="adminMemberForm">
-            <input type="hidden" id="admin-member-id" name="member_id" value="" />
-            <div class="adminFormGrid">
-              <label>{t.profileFirstName} <input type="text" id="admin-field-first_name" name="first_name" class="adminInput" /></label>
-              <label>{t.profileLastName} * <input type="text" id="admin-field-last_name" name="last_name" class="adminInput" required /></label>
-              <label>{t.adminPrimaryEmailLabel} <input type="email" id="admin-field-primary_email" name="primary_email" class="adminInput" /></label>
-              <label>{t.adminSecondaryEmailLabel} <input type="email" id="admin-field-secondary_email" name="secondary_email" class="adminInput" /></label>
-              <label>{t.profilePrimaryPhone} <input type="text" id="admin-field-primary_phone" name="primary_phone" class="adminInput" /></label>
-              <label>{t.profileSecondaryPhone} <input type="text" id="admin-field-secondary_phone" name="secondary_phone" class="adminInput" /></label>
-              <label>{t.profileLakePhone} <input type="text" id="admin-field-lake_phone" name="lake_phone" class="adminInput" /></label>
-              <label>{t.profileLakeCivic} <input type="text" id="admin-field-lake_civic_number" name="lake_civic_number" class="adminInput" /></label>
-              <label>{t.profileLakeStreet} <input type="text" id="admin-field-lake_street_name" name="lake_street_name" class="adminInput" /></label>
-              <label>{t.profileStreetAddress} <input type="text" id="admin-field-primary_address" name="primary_address" class="adminInput" /></label>
-              <label>{t.profileCity} <input type="text" id="admin-field-primary_city" name="primary_city" class="adminInput" /></label>
-              <label>{t.profileProvince} <input type="text" id="admin-field-primary_province" name="primary_province" class="adminInput" /></label>
-              <label>{t.profileCountry} <input type="text" id="admin-field-primary_country" name="primary_country" class="adminInput" /></label>
-              <label>{t.profilePostal} <input type="text" id="admin-field-primary_postal_code" name="primary_postal_code" class="adminInput" /></label>
-              <label class="adminCheckbox"><input type="checkbox" id="admin-field-email_opt_in" name="email_opt_in" /> {t.profileEmailOptIn}</label>
-              <label>{t.adminStatusMemberLabel} <input type="text" id="admin-field-status" name="status" class="adminInput" /></label>
-              <label>{t.adminUserIdLabel} <input type="text" id="admin-field-user_id" name="user_id" class="adminInput" /></label>
-              <label class="adminNotes">{t.adminNotesFieldLabel} <textarea id="admin-field-notes" name="notes" class="adminInput" rows="3"></textarea></label>
-            </div>
-            <div class="adminFormActions">
-              <button type="submit" class="adminBtn adminBtn--solid">{t.adminSaveMemberBtn}</button>
-              <button type="button" class="adminBtn adminBtn--ghost" id="admin-clear-member">{t.adminBackToList}</button>
-              <button type="button" class="adminBtn adminBtn--ghost" id="admin-promote-btn">{t.adminPromoteBtn}</button>
-            </div>
-          </form>
         </div>
 
         <div class="adminShellFooter">
@@ -279,59 +227,59 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
         </div>
       </div>
     </div>
-  </section>
 
-  <dialog id="admin-payment-dialog" class="adminDialog">
-    <form id="admin-payment-form" class="adminPaymentForm">
-      <h3>{t.adminPaymentHeading}</h3>
-      <input type="hidden" id="admin-payment-membership-id" value="" />
-      <label>
-        {t.adminAmountLabel}
-        <input type="number" name="amount" min="0" step="0.01" required class="adminInput" />
-      </label>
-      <label>
-        {t.adminMethodLabel}
-        <select name="method" required class="adminInput">
-          <option value="e-transfer">{t.adminMethodEtransfer}</option>
-          <option value="cheque">{t.adminMethodCheque}</option>
-          <option value="cash">{t.adminMethodCash}</option>
-          <option value="unknown">{t.adminMethodUnknown}</option>
-        </select>
-      </label>
-      <label>
-        {t.adminDateLabel}
-        <input type="date" name="date" class="adminInput" />
-      </label>
-      <label>
-        {t.adminNotesLabel}
-        <input type="text" name="notes" class="adminInput" />
-      </label>
-      <div class="adminDialogActions">
-        <button type="submit" class="adminBtn adminBtn--solid" value="default">{t.adminSubmitPaymentBtn}</button>
-        <button type="button" class="adminBtn adminBtn--ghost" id="admin-payment-cancel">{t.adminBackToList}</button>
-      </div>
-    </form>
-  </dialog>
+    <dialog id="admin-payment-dialog" class="adminDialog">
+      <form id="admin-payment-form" class="adminPaymentForm">
+        <h3>{t.adminPaymentHeading}</h3>
+        <input type="hidden" id="admin-payment-membership-id" value="" />
+        <label>
+          {t.adminAmountLabel}
+          <input type="number" name="amount" min="0" step="0.01" required class="adminInput" />
+        </label>
+        <label>
+          {t.adminMethodLabel}
+          <select name="method" required class="adminInput">
+            <option value="e-transfer">{t.adminMethodEtransfer}</option>
+            <option value="cheque">{t.adminMethodCheque}</option>
+            <option value="cash">{t.adminMethodCash}</option>
+            <option value="unknown">{t.adminMethodUnknown}</option>
+          </select>
+        </label>
+        <label>
+          {t.adminDateLabel}
+          <input type="date" name="date" class="adminInput" />
+        </label>
+        <label>
+          {t.adminNotesLabel}
+          <input type="text" name="notes" class="adminInput" />
+        </label>
+        <div class="adminDialogActions">
+          <button type="submit" class="adminBtn adminBtn--solid" value="default">{t.adminSubmitPaymentBtn}</button>
+          <button type="button" class="adminBtn adminBtn--ghost" id="admin-payment-cancel">{t.checkoutModalCancel}</button>
+        </div>
+      </form>
+    </dialog>
+  </section>
 </MemberAppLayout>
 
-<!-- Config must be separate from the module script: define:vars + import in one <script> breaks Astro/Vite output. -->
-<script type="application/json" id="admin-console-data" set:html={JSON.stringify({ adminStrings, tierLabels, defaultMembershipYear })}></script>
+<script type="application/json" id="admin-console-data" set:html={JSON.stringify({ adminStrings, tierLabels, defaultMembershipYear, adminMembersBase: paths.adminMembers, numberLocale })}></script>
 <script>
   import { initAdminConsole } from '../../scripts/admin-console';
   const el = document.getElementById('admin-console-data');
   const raw = el?.textContent;
   if (raw) {
-    const { adminStrings, tierLabels, defaultMembershipYear } = JSON.parse(raw) as {
+    const { adminStrings, tierLabels, defaultMembershipYear, adminMembersBase, numberLocale } = JSON.parse(raw) as {
       adminStrings: Record<string, string>;
       tierLabels: { general: string; associate: string };
       defaultMembershipYear: number;
+      adminMembersBase: string;
+      numberLocale: string;
     };
-    initAdminConsole(adminStrings, tierLabels, defaultMembershipYear);
+    initAdminConsole(adminStrings, tierLabels, defaultMembershipYear, adminMembersBase, numberLocale);
   }
 </script>
 
 <style>
-  /* Functional admin UI — :global(.adminBtn) so client-rendered table buttons match */
   .adminPage {
     --admin-radius: 12px;
     --admin-radius-sm: 8px;
@@ -344,6 +292,8 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     --admin-text: var(--text);
     --admin-font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     font-family: var(--admin-font);
+    font-size: 15px;
+    line-height: 1.45;
     padding: 36px 0 48px;
   }
 
@@ -359,10 +309,10 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
 
   .adminLead {
     margin: 0;
-    font-size: 0.95rem;
-    line-height: 1.5;
+    font-size: 0.875rem;
+    line-height: 1.55;
     color: var(--muted);
-    max-width: 56ch;
+    max-width: 62ch;
   }
 
   .adminShell {
@@ -388,13 +338,13 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
   .adminTab {
     position: relative;
     margin: 0;
-    padding: 0.85rem 1.15rem;
+    padding: 0.75rem 1.1rem;
     border: none;
     border-bottom: 2px solid transparent;
     background: transparent;
     color: var(--muted);
     font: inherit;
-    font-size: 0.95rem;
+    font-size: 0.875rem;
     font-weight: 500;
     cursor: pointer;
     border-radius: var(--admin-radius-sm) var(--admin-radius-sm) 0 0;
@@ -413,6 +363,18 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     background: var(--admin-surface);
     border-bottom-color: var(--admin-accent);
     font-weight: 600;
+  }
+
+  .adminTabBadge {
+    display: inline-block;
+    margin-left: 0.35rem;
+    padding: 0.1rem 0.45rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    vertical-align: middle;
+    border-radius: 999px;
+    background: rgba(176, 120, 0, 0.2);
+    color: rgba(90, 60, 0, 0.95);
   }
 
   .adminStatus {
@@ -442,16 +404,11 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
   }
 
   .adminPanel {
-    padding: 1.25rem 1.35rem 1.5rem;
+    padding: 1.35rem 1.4rem 1.6rem;
   }
 
   .adminPanel + .adminPanel {
     border-top: 1px solid var(--admin-border);
-  }
-
-  .adminPanel > .adminSubheading:first-child {
-    margin-top: 0;
-    padding-top: 0;
   }
 
   .adminToolbar {
@@ -531,50 +488,116 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     box-shadow: 0 0 0 3px var(--admin-accent-soft);
   }
 
-  .tableWrap {
+  /**
+   * All admin data tables (overview injects HTML too — scoped `.adminTable` would miss it).
+   * One set of rules under `.adminPage` so pending, members, and overview match.
+   */
+  .adminPage :global(.tableWrap) {
     overflow-x: auto;
-    max-width: min(100%, 880px);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     margin: 0;
+    box-sizing: border-box;
     border-radius: var(--admin-radius-sm);
     border: 1px solid var(--admin-border);
+    background: var(--admin-surface);
   }
 
-  .adminTable {
+  .adminPage :global(.adminTable) {
     width: 100%;
-    min-width: 480px;
+    min-width: 420px;
     border-collapse: collapse;
-    font-size: 0.9rem;
-    line-height: 1.35;
+    font-size: 0.8125rem;
+    line-height: 1.4;
   }
 
-  .adminTable th,
-  .adminTable td {
-    padding: 0.55rem 0.85rem;
+  .adminPage :global(.adminTable th),
+  .adminPage :global(.adminTable td) {
+    padding: 0.55rem 0.75rem;
     text-align: left;
     vertical-align: middle;
     border-bottom: 1px solid var(--admin-border);
   }
 
-  .adminTable th {
-    font-size: 0.72rem;
+  .adminPage :global(.adminTable th) {
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.07em;
     color: var(--muted);
     background: var(--admin-surface-muted);
     white-space: nowrap;
   }
 
-  .adminTable tbody tr:last-child td {
+  .adminPage :global(.adminTable tbody tr:last-child td) {
     border-bottom: none;
   }
 
-  .adminTable tbody tr:nth-child(even) {
-    background: rgba(0, 0, 0, 0.015);
+  .adminPage :global(.adminTable tbody tr:nth-child(even)) {
+    background: rgba(0, 0, 0, 0.02);
   }
 
-  .adminTable tbody tr:hover {
-    background: rgba(72, 196, 255, 0.06);
+  .adminPage :global(.adminTable tbody tr:hover) {
+    background: rgba(72, 196, 255, 0.07);
+  }
+
+  .adminPage :global(.adminTable a) {
+    color: var(--admin-accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .adminPage :global(.adminTable a:hover) {
+    text-decoration: underline;
+  }
+
+  .adminPage :global(.adminPendingActions) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  .adminPage :global(.adminPendingTrash) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.32rem;
+    margin: 0;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    border-radius: 8px;
+    line-height: 0;
+    transition:
+      color 0.15s ease,
+      background 0.15s ease;
+  }
+
+  .adminPage :global(.adminPendingTrash:hover) {
+    color: #b71c1c;
+    background: rgba(183, 28, 28, 0.12);
+  }
+
+  .adminPage :global(.adminPendingTrash:focus-visible) {
+    outline: 2px solid var(--admin-accent);
+    outline-offset: 2px;
+  }
+
+  .adminPage :global(.adminTable--members tbody tr[data-admin-member-href]) {
+    cursor: pointer;
+  }
+
+  .adminPage :global(.adminTable--members tbody tr[data-admin-member-href]:focus-visible) {
+    outline: 2px solid rgba(28, 95, 118, 0.45);
+    outline-offset: -2px;
+  }
+
+  .adminPage :global(.adminTable--members tbody tr[data-admin-member-href]:hover) {
+    background: rgba(72, 196, 255, 0.1);
   }
 
   .adminShellFooter {
@@ -611,85 +634,122 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     font-variant-numeric: tabular-nums;
   }
 
-  .adminSubheading {
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin: 1.75rem 0 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--admin-border);
-    color: var(--admin-text);
-    letter-spacing: -0.02em;
+  /**
+   * Overview content is injected via innerHTML — scoped Astro CSS does not apply to it.
+   * Use `.adminOverviewMount :global(...)` so KPIs, sections, and tables pick up styles.
+   */
+  .adminOverviewMount :global(.adminKpiRow) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9.5rem, 1fr));
+    gap: 0.85rem 1rem;
+    margin: 0 0 1.75rem;
   }
 
-  .adminPanel > .adminSubheading:first-child {
-    margin-top: 0;
-  }
-
-  .adminMemberForm {
-    margin-top: 0.5rem;
-    font-size: 0.95rem;
-  }
-
-  .adminMemberForm label:not(.adminCheckbox) {
+  .adminOverviewMount :global(.adminKpi) {
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
     gap: 0.35rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--muted);
-  }
-
-  .adminMemberForm label:not(.adminCheckbox) .adminInput {
-    font-weight: 400;
-    color: var(--admin-text);
-  }
-
-  .adminFormGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem 1.25rem;
-    padding: 1rem;
-    background: var(--admin-surface-muted);
+    min-height: 4.25rem;
+    padding: 0.85rem 1rem 0.9rem 1rem;
+    text-align: left;
+    background: linear-gradient(165deg, rgba(255, 255, 255, 0.92) 0%, var(--admin-surface-muted) 100%);
     border: 1px solid var(--admin-border);
     border-radius: var(--admin-radius-sm);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
   }
 
-  .adminCheckbox {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: flex-start;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    font-weight: 500;
+  .adminOverviewMount :global(.adminKpi--pending) {
+    border-left: 3px solid rgba(176, 120, 0, 0.88);
+  }
+
+  .adminOverviewMount :global(.adminKpi--activeYear) {
+    border-left: 3px solid rgba(34, 120, 80, 0.85);
+  }
+
+  .adminOverviewMount :global(.adminKpi--directory) {
+    border-left: 3px solid rgba(28, 95, 118, 0.55);
+  }
+
+  .adminOverviewMount :global(.adminKpiValue) {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
     color: var(--admin-text);
-    cursor: pointer;
   }
 
-  .adminCheckbox input {
-    margin-top: 0.2rem;
-    width: 1rem;
-    height: 1rem;
-    accent-color: var(--admin-accent);
+  .adminOverviewMount :global(.adminKpiLabel) {
+    display: block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    line-height: 1.35;
+    max-width: 14rem;
   }
 
-  .adminNotes {
-    grid-column: 1 / -1;
+  .adminOverviewMount :global(.adminOverviewSection) {
+    margin: 0 0 1.65rem;
   }
 
-  .adminNotes textarea.adminInput {
-    max-width: 100%;
-    min-height: 4.5rem;
-    resize: vertical;
+  .adminOverviewMount :global(.adminOverviewSection:last-child) {
+    margin-bottom: 0;
   }
 
-  .adminFormActions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.6rem;
-    margin-top: 1.15rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--admin-border);
+  .adminOverviewMount :global(.adminOverviewHeading) {
+    margin: 0 0 0.65rem;
+    padding-bottom: 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: var(--muted);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .adminOverviewMount :global(.adminStatusPill) {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    line-height: 1.25;
+    border: 1px solid transparent;
+  }
+
+  .adminOverviewMount :global(.adminStatusPill--active) {
+    background: rgba(34, 120, 80, 0.12);
+    border-color: rgba(34, 120, 80, 0.28);
+    color: rgba(18, 75, 50, 0.95);
+  }
+
+  .adminOverviewMount :global(.adminStatusPill--pending) {
+    background: rgba(200, 130, 0, 0.12);
+    border-color: rgba(180, 110, 0, 0.28);
+    color: rgba(90, 55, 0, 0.95);
+  }
+
+  .adminOverviewMount :global(.adminStatusPill--neutral) {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: var(--admin-border);
+    color: var(--muted);
+    text-transform: none;
+    font-weight: 600;
+    font-size: 0.74rem;
+  }
+
+  .adminOverviewMount :global(.adminHint) {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--muted);
+    line-height: 1.5;
   }
 
   .adminDialog {
@@ -706,7 +766,6 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     backdrop-filter: blur(2px);
   }
 
-  /* Appended under .adminConsole so :global(.adminBtn) still applies */
   :global(.adminEmailExportDialog) {
     padding: 1.25rem 1.35rem 1.5rem;
     border: none;
@@ -789,7 +848,6 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     border-top: 1px solid var(--admin-border);
   }
 
-  /* Buttons: :global so rows injected via innerHTML still match */
   .adminPage :global(.adminBtn) {
     display: inline-flex;
     align-items: center;
@@ -831,6 +889,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     background: #fff;
     color: var(--admin-accent);
     border-color: rgba(28, 95, 118, 0.35);
+    text-decoration: none;
   }
 
   .adminPage :global(.adminBtn--outline:hover) {
