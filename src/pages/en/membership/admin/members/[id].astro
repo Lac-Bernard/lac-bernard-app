@@ -1,0 +1,35 @@
+---
+import AdminMemberDetailView from '../../../../../components/members/AdminMemberDetailView.astro';
+import { createSupabasePageClient } from '../../../../../lib/supabase/server';
+import { isAppAdmin } from '../../../../../lib/auth/admin';
+import { memberPaths } from '../../../../../lib/members/i18n';
+
+const paths = memberPaths.en;
+const { supabase, flushCookies, redirectWithCookies } = createSupabasePageClient(
+	Astro.request,
+	Astro.cookies,
+);
+const {
+	data: { user },
+	error,
+} = await supabase.auth.getUser();
+
+if (error || !user) {
+	return redirectWithCookies(`${paths.signIn}?next=${encodeURIComponent(Astro.url.pathname)}`);
+}
+
+if (!isAppAdmin(user)) {
+	return redirectWithCookies(paths.account);
+}
+
+flushCookies();
+
+const id = Astro.params.id;
+if (!id) {
+	return redirectWithCookies(paths.admin);
+}
+
+const email = user.email ?? '';
+---
+
+<AdminMemberDetailView locale="en" email={email} memberId={id} />

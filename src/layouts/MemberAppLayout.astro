@@ -12,9 +12,14 @@ interface Props {
   description: string;
   heroTitle: string;
   heroSubtitle?: string;
+  /** Smaller workspace title — useful for dense admin screens */
+  compactHero?: boolean;
+  /** Match hero title column width to `.adminConsole` (1100px), not the default member reading column (40rem). */
+  alignHeroWithAdmin?: boolean;
 }
 
-const { lang, title, description, heroTitle, heroSubtitle } = Astro.props;
+const { lang, title, description, heroTitle, heroSubtitle, compactHero = false, alignHeroWithAdmin = false } =
+  Astro.props;
 ---
 
 <html lang={lang}>
@@ -30,8 +35,14 @@ const { lang, title, description, heroTitle, heroSubtitle } = Astro.props;
     <SiteHeader />
 
     <main id="main-content" aria-labelledby="member-workspace-title">
-      <header class="memberWorkspaceHead">
-        <div class="container memberWorkspaceHeadInner">
+      <header class={compactHero ? 'memberWorkspaceHead memberWorkspaceHead--compact' : 'memberWorkspaceHead'}>
+        <div
+          class:list={[
+            'container',
+            'memberWorkspaceHeadInner',
+            { 'memberWorkspaceHeadInner--alignAdmin': alignHeroWithAdmin },
+          ]}
+        >
           <h1 class="memberWorkspaceTitle" id="member-workspace-title">{heroTitle}</h1>
           {heroSubtitle !== undefined && heroSubtitle !== '' && (
             <p class="memberWorkspaceLead">{heroSubtitle}</p>
@@ -60,6 +71,11 @@ const { lang, title, description, heroTitle, heroSubtitle } = Astro.props;
     margin-inline: auto;
   }
 
+  /* Admin shell uses `.adminConsole { max-width: 1100px }` — keep the “Administration” title on the same edges */
+  .memberWorkspaceHeadInner.memberWorkspaceHeadInner--alignAdmin {
+    max-width: min(1100px, 100%);
+  }
+
   .memberWorkspaceTitle {
     margin: 0;
     font-size: clamp(1.35rem, 2.2vw, 1.65rem);
@@ -77,8 +93,25 @@ const { lang, title, description, heroTitle, heroSubtitle } = Astro.props;
     max-width: 36rem;
   }
 
+  .memberWorkspaceHead--compact {
+    padding: 1rem 0 0.85rem;
+  }
+
+  .memberWorkspaceHead--compact .memberWorkspaceTitle {
+    font-size: clamp(1.1rem, 1.85vw, 1.35rem);
+  }
+
+  .memberWorkspaceHead--compact .memberWorkspaceLead {
+    font-size: 0.875rem;
+  }
+
   /* Tighter top gap than default `.section` now that there is no hero band */
   .memberWorkspaceBody :global(.section:first-child) {
     padding-top: 1.75rem;
+  }
+
+  /* Let member content shrink so nested tables can’t force horizontal page overflow */
+  .memberWorkspaceBody {
+    min-width: 0;
   }
 </style>
