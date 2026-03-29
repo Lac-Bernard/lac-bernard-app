@@ -1,4 +1,6 @@
 import type { APIRoute } from 'astro';
+import { insertAdminAudit } from '../../../lib/admin/audit';
+import { adminPatchToRow, parseAdminMemberPatch } from '../../../lib/admin/memberUpdate';
 import { parseAdminMemberListFilters } from '../../../lib/admin/memberListFilters';
 import { requireAdminSession } from '../../../lib/admin/session';
 import { createSupabaseServiceRoleClient } from '../../../lib/supabase/service';
@@ -70,4 +72,61 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 		}),
 		{ status: 200, headers: { 'Content-Type': 'application/json' } },
 	);
+};
+
+export const POST: APIRoute = async ({ request, cookies }) => {
+	const auth = await requireAdminSession(request, cookies);
+	if (!auth.ok) return auth.response;
+
+	let body: unknown;
+	try {
+		body = await request.json();
+	} catch {
+		return new Response(JSON.stringify({ error: 'invalid_json' }), {
+			status: 400,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
+
+	const parsed = parseAdminMemberPatch(body);
+	if (!parsed.ok) {
+		return new Response(JSON.stringify({ error: parsed.error }), {
+			status: 400,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
+
+	const row = adminPatchToRow(parsed.value);
+	if (!Object.prototype.hasOwnProperty.call(parsed.value, 'user_id')) {
+		row.user_id = null;
+	}
+
+	const service = createSupabaseServiceRoleClient();
+	const { data: inserted, error } = await service.from('members').insert(row).select('id').maybeSingle();
+
+	if (error) {
+		return new Response(JSON.stringify({ error: 'insert_failed', detail: error.message }), {
+			status: 500,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
+	if (!inserted?.id) {
+		return new Response(JSON.stringify({ error: 'insert_failed' }), {
+			status: 500,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
+
+	await insertAdminAudit(service, {
+		actorUserId: auth.user.id,
+		action: 'member_create',
+		entityType: 'member',
+		entityId: inserted.id,
+		metadata: {},
+	});
+
+	return new Response(JSON.stringify({ member: { id: inserted.id } }), {
+		status: 200,
+		headers: { 'Content-Type': 'application/json' },
+	});
 };

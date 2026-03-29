@@ -90,6 +90,7 @@ const adminKeys = [
 	'adminAuditEntityType',
 	'adminAuditEntityId',
 	'adminPendingBadge',
+	'adminAddMemberNav',
 ] as const;
 
 const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
@@ -110,6 +111,9 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
       <div class="adminShell">
         <div class="adminShellHeader">
           <p class="adminLead">{t.adminBody}</p>
+          <p class="adminHeaderAddMember">
+            <a href={paths.adminMemberNew} class="adminBtn adminBtn--outline">{t.adminAddMemberNav}</a>
+          </p>
         </div>
 
         <div class="adminTabBar">
@@ -302,9 +306,19 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
   }
 
   .adminShellHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem 1rem;
     padding: 1rem 1.35rem 1rem;
     border-bottom: 1px solid var(--admin-border);
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.7) 0%, var(--admin-surface) 100%);
+  }
+
+  .adminHeaderAddMember {
+    margin: 0;
+    flex-shrink: 0;
   }
 
   .adminLead {

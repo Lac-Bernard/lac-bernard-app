@@ -1,5 +1,6 @@
 /** Client-side admin member detail page. */
 
+import { MANUAL_PAYMENT_METHODS, isValidManualPaymentAmount } from '../lib/admin/manualPaymentClient';
 import { parseDonationNoteSnippet, sumYearPaymentBreakdown } from '../lib/admin/paymentBreakdown';
 import type { AdminConsoleStrings } from './admin-console';
 
@@ -124,6 +125,9 @@ export function initAdminMemberDetail(
 	const memberForm = el<HTMLFormElement>('#admin-member-detail-form');
 	const paymentDialog = el<HTMLDialogElement>('#admin-payment-dialog');
 	const paymentMembershipId = el<HTMLInputElement>('#admin-payment-membership-id');
+	const addMembershipDialog = el<HTMLDialogElement>('#admin-add-membership-dialog');
+	const addMembershipForm = el<HTMLFormElement>('#admin-add-membership-form');
+	const addMsPaidBlock = el<HTMLElement>('#admin-add-ms-paid');
 
 	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
 		if (!statusEl) return;
@@ -153,7 +157,9 @@ export function initAdminMemberDetail(
 	}
 
 	function getYearOptions(): number[] {
-		return [...new Set(allMemberships.map((m) => m.year))].sort((a, b) => b - a);
+		const set = new Set(allMemberships.map((m) => m.year));
+		set.add(calendarYear);
+		return [...set].sort((a, b) => b - a);
 	}
 
 	function pickDefaultYear(years: number[]): number {
@@ -195,10 +201,45 @@ export function initAdminMemberDetail(
 		});
 	}
 
+	function syncAddMsPaidVisibility() {
+		if (!addMsPaidBlock || !addMembershipDialog) return;
+		const initial = addMembershipDialog.querySelector<HTMLInputElement>('input[name="initial"]:checked')?.value;
+		addMsPaidBlock.hidden = initial !== 'active_with_payment';
+	}
+
+	function addMembershipErrorMessage(code: string | undefined): string {
+		if (code === 'no_lake_address') return t(strings, 'adminAddMemberErrorNoLake');
+		if (code === 'general_address_taken') return t(strings, 'adminAddMemberErrorAddressTaken');
+		if (code === 'already_exists') return t(strings, 'adminAddMemberErrorDuplicateYear');
+		return t(strings, 'adminErrorGeneric');
+	}
+
+	function wireAddMembershipButtons(root: ParentNode) {
+		root.querySelectorAll<HTMLButtonElement>('[data-open-add-membership]').forEach((b) => {
+			b.addEventListener('click', () => {
+				const y = b.dataset.year;
+				const yearInput = el<HTMLInputElement>('#admin-add-ms-year');
+				addMembershipForm?.reset();
+				if (yearInput && y) {
+					yearInput.value = y;
+				}
+				const pendingRadio = addMembershipDialog?.querySelector<HTMLInputElement>(
+					'input[name="initial"][value="pending"]',
+				);
+				pendingRadio?.click();
+				syncAddMsPaidVisibility();
+				addMembershipDialog?.showModal();
+			});
+		});
+	}
+
 	function renderYearPanelHtml(): string {
 		const ms = allMemberships.find((m) => m.year === selectedYear);
 		if (!ms) {
-			return `<p class="adminHint">${escapeHtml(t(strings, 'adminDetailNoMembershipForYear', { year: selectedYear }))}</p>`;
+			return `<div class="adminDetailNoMsWrap">
+				<p class="adminHint">${escapeHtml(t(strings, 'adminDetailNoMembershipForYear', { year: selectedYear }))}</p>
+				<p class="adminDetailAddMsActions"><button type="button" class="adminBtn adminBtn--outline" data-open-add-membership data-year="${selectedYear}">${escapeHtml(t(strings, 'adminAddMembershipOpen'))}</button></p>
+			</div>`;
 		}
 
 		const tier = tierLabelFor(ms);
@@ -302,10 +343,6 @@ export function initAdminMemberDetail(
 	function renderMembershipMount() {
 		if (!mount) return;
 		const years = getYearOptions();
-		if (years.length === 0) {
-			mount.innerHTML = `<p class="adminHint">${escapeHtml(t(strings, 'adminDetailNoMemberships'))}</p>`;
-			return;
-		}
 		if (!years.includes(selectedYear)) {
 			selectedYear = pickDefaultYear(years);
 		}
@@ -325,6 +362,7 @@ export function initAdminMemberDetail(
 		<div id="admin-detail-year-panel" class="adminDetailYearPanel">${renderYearPanelHtml()}</div>`;
 
 		wirePaymentButtons(mount);
+		wireAddMembershipButtons(mount);
 	}
 
 	if (mount) {
@@ -336,6 +374,7 @@ export function initAdminMemberDetail(
 			if (panel) {
 				panel.innerHTML = renderYearPanelHtml();
 				wirePaymentButtons(panel);
+				wireAddMembershipButtons(panel);
 			}
 		});
 	}
@@ -446,6 +485,65 @@ export function initAdminMemberDetail(
 
 	el<HTMLButtonElement>('#admin-payment-cancel')?.addEventListener('click', () => {
 		paymentDialog?.close();
+	});
+
+	addMembershipDialog?.querySelectorAll('input[name="initial"]').forEach((r) => {
+		r.addEventListener('change', syncAddMsPaidVisibility);
+	});
+
+	addMembershipForm?.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		if (!addMembershipForm) return;
+		const fd = new FormData(addMembershipForm);
+		const year = parseInt(String(fd.get('year') ?? ''), 10);
+		const tier = String(fd.get('tier') ?? '');
+		const initial = String(fd.get('initial') ?? '');
+		let payment: Record<string, unknown> | undefined;
+		if (initial === 'active_with_payment') {
+			const amount = parseFloat(String(fd.get('payment_amount') ?? ''));
+			const method = String(fd.get('payment_method') ?? '').trim();
+			if (!isValidManualPaymentAmount(amount)) {
+				setStatus(t(strings, 'adminErrorGeneric'), 'error');
+				return;
+			}
+			if (!MANUAL_PAYMENT_METHODS.has(method)) {
+				setStatus(t(strings, 'adminErrorGeneric'), 'error');
+				return;
+			}
+			const date = String(fd.get('payment_date') ?? '').trim();
+			const notes = String(fd.get('payment_notes') ?? '').trim();
+			payment = {
+				amount,
+				method,
+				...(date ? { date } : {}),
+				...(notes ? { notes } : {}),
+			};
+		}
+		setStatus(t(strings, 'adminLoading'));
+		const { ok, data } = await fetchJson<{ error?: string }>(
+			`/api/admin/members/${encodeURIComponent(memberId)}/memberships`,
+			{
+				method: 'POST',
+				body: JSON.stringify({
+					year,
+					tier,
+					initial,
+					...(payment ? { payment } : {}),
+				}),
+			},
+		);
+		if (!ok) {
+			setStatus(addMembershipErrorMessage(data?.error), 'error');
+			return;
+		}
+		setStatus(t(strings, 'adminMemberSaved'), 'success');
+		addMembershipDialog?.close();
+		addMembershipForm.reset();
+		void load();
+	});
+
+	el<HTMLButtonElement>('#admin-add-membership-cancel')?.addEventListener('click', () => {
+		addMembershipDialog?.close();
 	});
 
 	void load();

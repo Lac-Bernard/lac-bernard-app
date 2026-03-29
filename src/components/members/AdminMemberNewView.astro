@@ -1,0 +1,444 @@
+---
+import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
+import { memberCopy, memberPaths, type MemberLocale } from '../../lib/members/i18n';
+import { getMembershipCalendarYear } from '../../lib/members/membershipYear';
+
+interface Props {
+	locale: MemberLocale;
+	email: string;
+}
+
+const { locale, email } = Astro.props;
+const t = memberCopy[locale];
+const paths = memberPaths[locale];
+const calendarYear = getMembershipCalendarYear();
+
+const adminKeys = [
+	'adminAddMemberTitle',
+	'adminAddMemberSectionProfile',
+	'adminAddMemberSectionMembership',
+	'adminAddMemberCreateMembership',
+	'adminAddMemberSubmit',
+	'adminAddMemberInitialPending',
+	'adminAddMemberInitialPaid',
+	'adminBackToAdmin',
+	'adminPrimaryEmailLabel',
+	'adminSecondaryEmailLabel',
+	'adminNotesFieldLabel',
+	'adminMembershipYearLabel',
+	'adminLoading',
+	'adminErrorGeneric',
+	'adminAmountLabel',
+	'adminMethodLabel',
+	'adminMethodEtransfer',
+	'adminMethodCheque',
+	'adminMethodCash',
+	'adminMethodUnknown',
+	'adminDateLabel',
+	'adminNotesLabel',
+	'checkoutModalCancel',
+	'profileFirstName',
+	'profileLastName',
+	'profilePrimaryPhone',
+	'profileSecondaryPhone',
+	'profileLakePhone',
+	'profileLakeCivic',
+	'profileLakeStreet',
+	'profileStreetAddress',
+	'profileCity',
+	'profileProvince',
+	'profileCountry',
+	'profilePostal',
+	'profileEmailOptIn',
+	'signOut',
+] as const;
+
+const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
+---
+
+<MemberAppLayout
+  lang={locale}
+  title={t.adminAddMemberTitle}
+  description={t.adminDescription}
+  heroTitle={t.adminAddMemberTitle}
+  heroSubtitle={email}
+  compactHero
+  alignHeroWithAdmin
+>
+  <section class="section alt adminPage">
+    <div class="container adminConsole">
+      <div class="adminShell">
+        <div class="adminShellHeader">
+          <p class="adminLead">
+            <a href={paths.admin} class="adminBackLink">{t.adminBackToAdmin}</a>
+          </p>
+        </div>
+
+        <p id="admin-new-member-status" class="adminStatus" aria-live="polite"></p>
+
+        <form id="admin-new-member-form" class="adminMemberForm">
+          <div class="adminPanel adminCard">
+            <h2 class="adminSubheading">{t.adminAddMemberSectionProfile}</h2>
+            <div class="adminFormGrid">
+              <label>{t.profileFirstName} <input type="text" name="first_name" class="adminInput" /></label>
+              <label>{t.profileLastName} * <input type="text" name="last_name" class="adminInput" required /></label>
+              <label>{t.adminPrimaryEmailLabel} <input type="email" name="primary_email" class="adminInput" /></label>
+              <label>{t.adminSecondaryEmailLabel} <input type="email" name="secondary_email" class="adminInput" /></label>
+              <label>{t.profilePrimaryPhone} <input type="text" name="primary_phone" class="adminInput" /></label>
+              <label>{t.profileSecondaryPhone} <input type="text" name="secondary_phone" class="adminInput" /></label>
+              <label>{t.profileLakePhone} <input type="text" name="lake_phone" class="adminInput" /></label>
+              <label>{t.profileLakeCivic} <input type="text" name="lake_civic_number" class="adminInput" /></label>
+              <label>{t.profileLakeStreet} <input type="text" name="lake_street_name" class="adminInput" /></label>
+              <label>{t.profileStreetAddress} <input type="text" name="primary_address" class="adminInput" /></label>
+              <label>{t.profileCity} <input type="text" name="primary_city" class="adminInput" /></label>
+              <label>{t.profileProvince} <input type="text" name="primary_province" class="adminInput" /></label>
+              <label>{t.profileCountry} <input type="text" name="primary_country" class="adminInput" /></label>
+              <label>{t.profilePostal} <input type="text" name="primary_postal_code" class="adminInput" /></label>
+              <label class="adminCheckbox"><input type="checkbox" name="email_opt_in" /> {t.profileEmailOptIn}</label>
+              <label class="adminNotes">{t.adminNotesFieldLabel} <textarea name="notes" class="adminInput" rows="3"></textarea></label>
+            </div>
+          </div>
+
+          <div class="adminPanel adminCard" id="admin-new-member-membership-section">
+            <h2 class="adminSubheading">{t.adminAddMemberSectionMembership}</h2>
+            <label class="adminCheckbox adminCheckbox--lead">
+              <input type="checkbox" name="create_membership" id="admin-new-member-create-membership" checked />
+              {t.adminAddMemberCreateMembership}
+            </label>
+            <div id="admin-new-member-membership-fields" class="adminNewMemberMembershipFields">
+            <div class="adminFormGrid adminFormGrid--membership">
+              <label>
+                {t.adminMembershipYearLabel}
+                <input
+                  type="number"
+                  name="membership_year"
+                  class="adminInput"
+                  min="2000"
+                  max="2100"
+                  step="1"
+                  value={calendarYear}
+                />
+              </label>
+              <label>
+                {t.membershipTableType}
+                <select name="membership_tier" class="adminInput" required>
+                  <option value="general">{t.tierGeneral}</option>
+                  <option value="associate">{t.tierAssociate}</option>
+                </select>
+              </label>
+              <div class="adminRadioGroup">
+                <span class="adminRadioGroupLabel">{t.membershipTableStatus}</span>
+                <label class="adminRadioRow">
+                  <input type="radio" name="membership_initial" value="pending" checked />
+                  {t.adminAddMemberInitialPending}
+                </label>
+                <label class="adminRadioRow">
+                  <input type="radio" name="membership_initial" value="active_with_payment" />
+                  {t.adminAddMemberInitialPaid}
+                </label>
+              </div>
+            </div>
+            <div id="admin-new-member-paid-fields" class="adminFormGrid adminPaidFields" hidden>
+              <label>
+                {t.adminAmountLabel}
+                <input type="number" name="payment_amount" min="0" step="0.01" class="adminInput" />
+              </label>
+              <label>
+                {t.adminMethodLabel}
+                <select name="payment_method" class="adminInput">
+                  <option value="cash">{t.adminMethodCash}</option>
+                  <option value="e-transfer">{t.adminMethodEtransfer}</option>
+                  <option value="cheque">{t.adminMethodCheque}</option>
+                  <option value="unknown">{t.adminMethodUnknown}</option>
+                </select>
+              </label>
+              <label>
+                {t.adminDateLabel}
+                <input type="date" name="payment_date" class="adminInput" />
+              </label>
+              <label>
+                {t.adminNotesLabel}
+                <input type="text" name="payment_notes" class="adminInput" />
+              </label>
+            </div>
+            </div>
+          </div>
+
+          <div class="adminPanel adminCard adminPanel--actions">
+            <div class="adminFormActions">
+              <button type="submit" class="adminBtn adminBtn--solid">{t.adminAddMemberSubmit}</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="adminShellFooter">
+          <form method="POST" action="/api/auth/sign-out" class="adminSignOutForm">
+            <input type="hidden" name="redirect_to" value={paths.signIn} />
+            <button type="submit" class="adminBtn adminBtn--link">{t.signOut}</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+</MemberAppLayout>
+
+<script
+  type="application/json"
+  id="admin-member-new-data"
+  set:html={JSON.stringify({ adminStrings, adminMemberDetailBase: paths.adminMembers, calendarYear })}
+></script>
+<script>
+  import { initAdminMemberNew } from '../../scripts/admin-member-new';
+  const el = document.getElementById('admin-member-new-data');
+  const raw = el?.textContent;
+  if (raw) {
+    const { adminStrings, adminMemberDetailBase, calendarYear } = JSON.parse(raw) as {
+      adminStrings: Record<string, string>;
+      adminMemberDetailBase: string;
+      calendarYear: number;
+    };
+    initAdminMemberNew(adminStrings, adminMemberDetailBase, calendarYear);
+  }
+</script>
+
+<style>
+  .adminPage {
+    --admin-radius: 12px;
+    --admin-radius-sm: 8px;
+    --admin-border: var(--border);
+    --admin-surface: #fff;
+    --admin-surface-muted: var(--panel);
+    --admin-accent: rgba(28, 95, 118, 0.98);
+    --admin-text: var(--text);
+    --admin-font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--admin-font);
+    font-size: 0.875rem;
+    line-height: 1.45;
+    padding: 28px 0 40px;
+  }
+
+  .adminConsole {
+    max-width: 1100px;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .adminShellHeader {
+    padding: 1rem 1.35rem 1rem;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  .adminBackLink {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--admin-accent);
+    text-decoration: none;
+  }
+
+  .adminBackLink:hover {
+    text-decoration: underline;
+  }
+
+  .adminShell {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .adminStatus {
+    margin: 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    border-bottom: 1px solid var(--admin-border);
+    background: rgba(72, 196, 255, 0.08);
+    color: var(--admin-text);
+  }
+
+  .adminStatus[data-error='1'] {
+    background: rgba(176, 0, 32, 0.08);
+    color: #8a1024;
+  }
+
+  .adminStatus[data-success='1'] {
+    background: rgba(34, 120, 80, 0.1);
+    color: rgba(18, 75, 50, 0.95);
+  }
+
+  .adminStatus:empty {
+    display: none;
+    padding: 0;
+    border: none;
+  }
+
+  .adminPanel {
+    padding: 1rem 1.1rem 1.2rem;
+    min-width: 0;
+  }
+
+  .adminPanel + .adminPanel {
+    border-top: 1px solid var(--admin-border);
+  }
+
+  .adminPanel--actions {
+    padding-top: 0.5rem;
+  }
+
+  .adminSubheading {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text);
+  }
+
+  .adminMemberForm {
+    margin-top: 0;
+    font-size: 0.875rem;
+  }
+
+  .adminMemberForm label:not(.adminCheckbox):not(.adminRadioRow) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .adminFormGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem 1.25rem;
+    padding: 1rem;
+    background: var(--admin-surface-muted);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+  }
+
+  .adminNewMemberMembershipFields {
+    margin-top: 0.35rem;
+  }
+
+  .adminFormGrid--membership {
+    margin-top: 0.75rem;
+  }
+
+  .adminCheckbox {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--admin-text);
+    cursor: pointer;
+  }
+
+  .adminCheckbox--lead {
+    margin: 0 0 0.5rem;
+    padding: 0 0.15rem;
+    font-weight: 600;
+  }
+
+  .adminNotes {
+    grid-column: 1 / -1;
+  }
+
+  .adminFormActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .adminInput {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    max-width: 320px;
+    margin: 0;
+    padding: 0.4rem 0.55rem;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--admin-text);
+    background: #fff;
+    border: 1px solid var(--admin-border);
+    border-radius: 8px;
+  }
+
+  .adminRadioGroup {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.75rem 0 0;
+  }
+
+  .adminRadioGroupLabel {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .adminRadioRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--admin-text);
+    cursor: pointer;
+  }
+
+  .adminPaidFields {
+    margin-top: 0.75rem;
+  }
+
+  .adminShellFooter {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.65rem 1.25rem;
+    border-top: 1px solid var(--admin-border);
+    background: var(--admin-surface-muted);
+  }
+
+  .adminPage :global(.adminBtn) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.25rem;
+    padding: 0.45rem 1rem;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    text-decoration: none;
+  }
+
+  .adminPage :global(.adminBtn--solid) {
+    background: rgba(28, 95, 118, 0.98);
+    color: #fff;
+    border-color: rgba(22, 78, 98, 1);
+  }
+
+  .adminPage :global(.adminBtn--link) {
+    background: transparent;
+    color: var(--admin-accent);
+    border: none;
+    text-decoration: underline;
+    min-height: 0;
+    padding: 0.35rem 0.5rem;
+  }
+</style>

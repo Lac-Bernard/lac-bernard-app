@@ -64,6 +64,16 @@ const adminKeys = [
 	'adminDetailNoMembershipForYear',
 	'adminDetailDonationNoteLabel',
 	'adminTablePaymentRef',
+	'adminAddMembershipOpen',
+	'adminAddMembershipDialogTitle',
+	'adminAddMembershipSubmit',
+	'adminAddMemberInitialPending',
+	'adminAddMemberInitialPaid',
+	'adminAddMemberErrorNoLake',
+	'adminAddMemberErrorAddressTaken',
+	'adminAddMemberErrorDuplicateYear',
+	'adminMembershipYearLabel',
+	'checkoutModalCancel',
 ] as const;
 
 const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
@@ -163,6 +173,70 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
         <div class="adminDialogActions">
           <button type="submit" class="adminBtn adminBtn--solid" value="default">{t.adminSubmitPaymentBtn}</button>
           <button type="button" class="adminBtn adminBtn--ghost" id="admin-payment-cancel">{t.checkoutModalCancel}</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="admin-add-membership-dialog" class="adminDialog">
+      <form id="admin-add-membership-form" class="adminPaymentForm">
+        <h3>{t.adminAddMembershipDialogTitle}</h3>
+        <label>
+          {t.adminMembershipYearLabel}
+          <input
+            type="number"
+            name="year"
+            min="2000"
+            max="2100"
+            step="1"
+            required
+            class="adminInput"
+            id="admin-add-ms-year"
+            value={calendarYear}
+          />
+        </label>
+        <label>
+          {t.membershipTableType}
+          <select name="tier" required class="adminInput" id="admin-add-ms-tier">
+            <option value="general">{t.tierGeneral}</option>
+            <option value="associate">{t.tierAssociate}</option>
+          </select>
+        </label>
+        <div class="adminAddMsRadios" role="group" aria-label={t.membershipTableStatus}>
+          <label class="adminRadioRow">
+            <input type="radio" name="initial" value="pending" checked />
+            {t.adminAddMemberInitialPending}
+          </label>
+          <label class="adminRadioRow">
+            <input type="radio" name="initial" value="active_with_payment" />
+            {t.adminAddMemberInitialPaid}
+          </label>
+        </div>
+        <div id="admin-add-ms-paid" class="adminAddMsPaid" hidden>
+          <label>
+            {t.adminAmountLabel}
+            <input type="number" name="payment_amount" min="0" step="0.01" class="adminInput" />
+          </label>
+          <label>
+            {t.adminMethodLabel}
+            <select name="payment_method" class="adminInput">
+              <option value="cash">{t.adminMethodCash}</option>
+              <option value="e-transfer">{t.adminMethodEtransfer}</option>
+              <option value="cheque">{t.adminMethodCheque}</option>
+              <option value="unknown">{t.adminMethodUnknown}</option>
+            </select>
+          </label>
+          <label>
+            {t.adminDateLabel}
+            <input type="date" name="payment_date" class="adminInput" />
+          </label>
+          <label>
+            {t.adminNotesLabel}
+            <input type="text" name="payment_notes" class="adminInput" />
+          </label>
+        </div>
+        <div class="adminDialogActions">
+          <button type="submit" class="adminBtn adminBtn--solid">{t.adminAddMembershipSubmit}</button>
+          <button type="button" class="adminBtn adminBtn--ghost" id="admin-add-membership-cancel">{t.checkoutModalCancel}</button>
         </div>
       </form>
     </dialog>
@@ -700,6 +774,38 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     margin-top: 1.25rem;
     padding-top: 1rem;
     border-top: 1px solid var(--admin-border);
+  }
+
+  .adminAddMsRadios {
+    margin-bottom: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .adminRadioRow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--admin-text);
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: normal;
+  }
+
+  .adminAddMsPaid label {
+    display: block;
+    margin-bottom: 0.9rem;
+  }
+
+  .adminDetailNoMsWrap {
+    padding: 0.35rem 0 0;
+  }
+
+  .adminDetailAddMsActions {
+    margin: 0.5rem 0 0;
   }
 
   .adminPage :global(.adminBtn) {
