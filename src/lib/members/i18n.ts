@@ -8,6 +8,8 @@ export const memberPaths: Record<
 		admin: string;
 		/** Base path for per-member admin pages (no trailing slash). */
 		adminMembers: string;
+		/** Add member (walk-in) admin page */
+		adminMemberNew: string;
 		enrollment: string;
 		renewal: string;
 		join: string;
@@ -19,6 +21,7 @@ export const memberPaths: Record<
 		signIn: '/en/membership/account/sign-in',
 		admin: '/en/membership/admin',
 		adminMembers: '/en/membership/admin/members',
+		adminMemberNew: '/en/membership/admin/members/new',
 		enrollment: '/en/membership/enrollment',
 		renewal: '/en/membership/renewal',
 		join: '/en/membership/account/new',
@@ -29,6 +32,7 @@ export const memberPaths: Record<
 		signIn: '/fr/membership/account/sign-in',
 		admin: '/fr/membership/admin',
 		adminMembers: '/fr/membership/admin/members',
+		adminMemberNew: '/fr/membership/admin/members/new',
 		enrollment: '/fr/membership/enrollment',
 		renewal: '/fr/membership/renewal',
 		join: '/fr/membership/account/new',
@@ -147,6 +151,21 @@ export const memberCopy: Record<
 		adminMemberOpen: string;
 		adminSaveMemberBtn: string;
 		adminDetailHint: string;
+		adminAddMemberNav: string;
+		adminAddMemberTitle: string;
+		adminAddMemberSectionProfile: string;
+		adminAddMemberSectionMembership: string;
+		adminAddMemberCreateMembership: string;
+		adminAddMemberSubmit: string;
+		adminAddMemberInitialPending: string;
+		adminAddMemberInitialPaid: string;
+		adminAddMembershipOpen: string;
+		adminAddMembershipDialogTitle: string;
+		adminAddMembershipSubmit: string;
+		adminAddMemberErrorNoLake: string;
+		adminAddMemberErrorAddressTaken: string;
+		adminAddMemberErrorDuplicateYear: string;
+		adminAddMemberErrorMemberNotFound: string;
 		adminLoading: string;
 		adminErrorGeneric: string;
 		adminPageOf: string;
@@ -387,6 +406,23 @@ export const memberCopy: Record<
 		adminMemberOpen: 'Open',
 		adminSaveMemberBtn: 'Save member',
 		adminDetailHint: 'Select a member in the list or search, then edit below.',
+		adminAddMemberNav: 'Add member',
+		adminAddMemberTitle: 'Add member',
+		adminAddMemberSectionProfile: 'Profile',
+		adminAddMemberSectionMembership: 'Membership',
+		adminAddMemberCreateMembership: 'Add a membership for this calendar year',
+		adminAddMemberSubmit: 'Create member',
+		adminAddMemberInitialPending: 'Pending payment',
+		adminAddMemberInitialPaid: 'Record payment now (cash, e-Transfer, etc.)',
+		adminAddMembershipOpen: 'Add membership',
+		adminAddMembershipDialogTitle: 'Add membership',
+		adminAddMembershipSubmit: 'Add membership',
+		adminAddMemberErrorNoLake:
+			'General membership requires a lake civic number and street on this profile. Save the profile first, then try again.',
+		adminAddMemberErrorAddressTaken:
+			'Another member at this lake address already has a general membership for this year.',
+		adminAddMemberErrorDuplicateYear: 'This member already has a membership for that year.',
+		adminAddMemberErrorMemberNotFound: 'Member not found.',
 		adminLoading: 'Loading…',
 		adminErrorGeneric: 'Something went wrong.',
 		adminPageOf: 'Page {{page}} of {{total}}',
@@ -636,6 +672,23 @@ export const memberCopy: Record<
 		adminMemberOpen: 'Ouvrir',
 		adminSaveMemberBtn: 'Enregistrer',
 		adminDetailHint: 'Sélectionnez un membre dans la liste pour modifier les détails.',
+		adminAddMemberNav: 'Ajouter un membre',
+		adminAddMemberTitle: 'Ajouter un membre',
+		adminAddMemberSectionProfile: 'Profil',
+		adminAddMemberSectionMembership: 'Adhésion',
+		adminAddMemberCreateMembership: 'Ajouter une adhésion pour cette année civile',
+		adminAddMemberSubmit: 'Créer le membre',
+		adminAddMemberInitialPending: 'En attente de paiement',
+		adminAddMemberInitialPaid: 'Enregistrer le paiement maintenant (comptant, virement, etc.)',
+		adminAddMembershipOpen: 'Ajouter une adhésion',
+		adminAddMembershipDialogTitle: 'Ajouter une adhésion',
+		adminAddMembershipSubmit: 'Ajouter',
+		adminAddMemberErrorNoLake:
+			'L’adhésion générale exige un numéro civique et une rue au lac dans ce profil. Enregistrez le profil d’abord, puis réessayez.',
+		adminAddMemberErrorAddressTaken:
+			'Un autre membre à cette adresse au lac a déjà une adhésion générale pour cette année.',
+		adminAddMemberErrorDuplicateYear: 'Ce membre a déjà une adhésion pour cette année.',
+		adminAddMemberErrorMemberNotFound: 'Membre introuvable.',
 		adminLoading: 'Chargement…',
 		adminErrorGeneric: 'Une erreur s’est produite.',
 		adminPageOf: 'Page {{page}} sur {{total}}',
