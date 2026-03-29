@@ -50,6 +50,7 @@ const adminKeys = [
 	'adminMethodUnknown',
 	'adminMethodStripe',
 	'adminDateLabel',
+	'adminPaymentReferenceLabel',
 	'adminNotesLabel',
 	'adminSubmitPaymentBtn',
 	'adminMemberOpen',
@@ -84,6 +85,11 @@ const adminKeys = [
 	'adminOverviewCountActive',
 	'adminOverviewCountTotal',
 	'adminTableAmount',
+	'adminTableDuesPortion',
+	'adminTableDonationPortion',
+	'adminPaymentPreviewMembership',
+	'adminPaymentPreviewDonation',
+	'adminPaymentSaved',
 	'adminTablePaymentDate',
 	'adminAuditWhen',
 	'adminAuditAction',
@@ -236,10 +242,14 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
       <form id="admin-payment-form" class="adminPaymentForm">
         <h3>{t.adminPaymentHeading}</h3>
         <input type="hidden" id="admin-payment-membership-id" value="" />
+        <input type="hidden" id="admin-payment-tier" value="" />
+        <input type="hidden" id="admin-payment-status" value="" />
+        <input type="hidden" id="admin-payment-sum-paid" value="" />
         <label>
           {t.adminAmountLabel}
-          <input type="number" name="amount" min="0" step="0.01" required class="adminInput" />
+          <input id="admin-payment-amount" type="number" name="amount" min="0.01" step="0.01" required class="adminInput" />
         </label>
+        <p id="admin-payment-split-preview" class="adminPaymentSplitPreview" hidden aria-live="polite"></p>
         <label>
           {t.adminMethodLabel}
           <select name="method" required class="adminInput">
@@ -252,6 +262,10 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
         <label>
           {t.adminDateLabel}
           <input type="date" name="date" class="adminInput" />
+        </label>
+        <label>
+          {t.adminPaymentReferenceLabel}
+          <input type="text" name="reference" class="adminInput" autocomplete="off" maxlength="512" />
         </label>
         <label>
           {t.adminNotesLabel}
@@ -851,6 +865,13 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     text-transform: none;
     letter-spacing: normal;
     font-weight: 400;
+  }
+
+  .adminPaymentSplitPreview {
+    margin: 0.35rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    line-height: 1.4;
   }
 
   .adminDialogActions {

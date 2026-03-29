@@ -3,7 +3,7 @@ import { requireAdminSession } from '../../../../../lib/admin/session';
 import { createSupabaseServiceRoleClient } from '../../../../../lib/supabase/service';
 
 const select =
-	'*, memberships(id, created_at, member_id, year, tier, status, payments(id, created_at, membership_id, method, amount, date, notes, payment_id))';
+	'*, memberships(id, created_at, member_id, year, tier, status, payments(id, created_at, membership_id, method, amount, date, notes, payment_id, membership_amount, donation_amount, donation_note))';
 
 export const GET: APIRoute = async ({ request, cookies, params }) => {
 	const auth = await requireAdminSession(request, cookies);
@@ -42,6 +42,9 @@ export const GET: APIRoute = async ({ request, cookies, params }) => {
 		date: string | null;
 		notes: string | null;
 		payment_id: string | null;
+		membership_amount: number | null;
+		donation_amount: number | null;
+		donation_note: string | null;
 	};
 	type MembershipRow = {
 		id: string;

@@ -1,7 +1,8 @@
 /** Client-side admin member detail page. */
 
+import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymentSplit';
 import { MANUAL_PAYMENT_METHODS, isValidManualPaymentAmount } from '../lib/admin/manualPaymentClient';
-import { parseDonationNoteSnippet, sumYearPaymentBreakdown } from '../lib/admin/paymentBreakdown';
+import { parseDonationNoteSnippet, perPaymentMembershipDonation, sumYearPaymentBreakdown } from '../lib/admin/paymentBreakdown';
 import type { AdminConsoleStrings } from './admin-console';
 
 type MemberRow = {
@@ -36,6 +37,9 @@ type PaymentRow = {
 	date: string | null;
 	notes: string | null;
 	payment_id: string | null;
+	membership_amount?: number | null;
+	donation_amount?: number | null;
+	donation_note?: string | null;
 };
 
 type MembershipRow = {
@@ -146,6 +150,43 @@ export function initAdminMemberDetail(
 		new Intl.NumberFormat(numberLocale, { style: 'currency', currency: 'CAD' }).format(n);
 
 	let allMemberships: MembershipRow[] = [];
+	/** After first API load, pin year to calendar year when available (without resetting on later reloads). */
+	let appliedInitialYearDefault = false;
+
+	function updatePaymentPreview() {
+		const preview = el<HTMLElement>('#admin-payment-split-preview');
+		const amtInput = el<HTMLInputElement>('#admin-payment-amount');
+		const mid = paymentMembershipId?.value;
+		if (!preview || !amtInput || !mid) return;
+		const ms = allMemberships.find((m) => m.id === mid);
+		if (!ms) {
+			preview.hidden = true;
+			return;
+		}
+		const raw = parseFloat(String(amtInput.value ?? ''));
+		if (!Number.isFinite(raw) || raw <= 0) {
+			preview.hidden = true;
+			preview.textContent = '';
+			return;
+		}
+		const sumPaid = (ms.payments ?? []).reduce((s, p) => {
+			const v = p.membership_amount;
+			const n = typeof v === 'number' ? v : parseFloat(String(v ?? 0));
+			return s + (Number.isFinite(n) ? n : 0);
+		}, 0);
+		const split = computeManualPaymentSplit({
+			amount: roundMoney(raw),
+			tier: ms.tier,
+			membershipStatus: ms.status,
+			sumMembershipPaid: roundMoney(sumPaid),
+		});
+		preview.hidden = false;
+		preview.innerHTML = `${escapeHtml(
+			t(strings, 'adminPaymentPreviewMembership', { amount: fmtMoney(split.membershipAmount) }),
+		)}<br />${escapeHtml(
+			t(strings, 'adminPaymentPreviewDonation', { amount: fmtMoney(split.donationAmount) }),
+		)}`;
+	}
 	let selectedYear = calendarYear;
 
 	function tierLabelFor(ms: MembershipRow): string {
@@ -196,7 +237,32 @@ export function initAdminMemberDetail(
 				if (id && paymentMembershipId && paymentDialog) {
 					paymentMembershipId.value = id;
 					paymentDialog.showModal();
+					queueMicrotask(() => {
+						updatePaymentPreview();
+						el<HTMLInputElement>('#admin-payment-amount')?.focus();
+					});
 				}
+			});
+		});
+	}
+
+	function wireDeletePaymentButtons(root: ParentNode) {
+		root.querySelectorAll<HTMLButtonElement>('[data-delete-payment]').forEach((b) => {
+			b.addEventListener('click', async () => {
+				const pid = b.dataset.paymentId;
+				if (!pid) return;
+				if (!confirm(t(strings, 'adminDeletePaymentConfirm'))) return;
+				setStatus(t(strings, 'adminLoading'));
+				const { ok, data } = await fetchJson<{ error?: string }>(
+					`/api/admin/members/${encodeURIComponent(memberId)}/payments/${encodeURIComponent(pid)}`,
+					{ method: 'DELETE' },
+				);
+				if (!ok) {
+					setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
+					return;
+				}
+				setStatus(t(strings, 'adminPaymentDeleted'), 'success');
+				void load();
 			});
 		});
 	}
@@ -257,6 +323,11 @@ export function initAdminMemberDetail(
 					: 'adminDetailBadge adminDetailBadge--status adminDetailBadge--neutral';
 
 		const bd = sumYearPaymentBreakdown(ms.payments ?? [], ms.tier);
+		const remainingDues =
+			bd.expectedFee != null ?
+				Math.round(Math.max(0, bd.expectedFee - bd.membershipSubtotal) * 100) / 100
+			:	0;
+
 		const feeLine =
 			bd.expectedFee != null ?
 				`<div class="adminDetailSummaryRow">
@@ -265,13 +336,35 @@ export function initAdminMemberDetail(
 				</div>`
 			:	'';
 
-		const donationSnippets = [...new Set((ms.payments ?? []).map((p) => parseDonationNoteSnippet(p.notes)).filter((x): x is string => Boolean(x)))];
+		const balanceRow =
+			bd.expectedFee != null && remainingDues > 0 ?
+				`<div class="adminDetailSummaryRow adminDetailSummaryRow--balanceDue">
+					<span>${escapeHtml(t(strings, 'adminDetailBalanceDue'))}</span>
+					<span class="adminDetailSummaryValue adminDetailSummaryValue--due">${escapeHtml(fmtMoney(remainingDues))}</span>
+				</div>`
+			:	'';
+
+		const duesPaidHint =
+			bd.expectedFee != null && remainingDues <= 0 && bd.membershipSubtotal + 0.001 >= (bd.expectedFee ?? 0) ?
+				`<p class="adminDetailDuesPaidHint">${escapeHtml(t(strings, 'adminDetailDuesPaidInFull'))}</p>`
+			:	'';
+
+		const donationSnippets = [
+			...new Set(
+				(ms.payments ?? [])
+					.map((p) => parseDonationNoteSnippet(p.notes, p.donation_note))
+					.filter((x): x is string => Boolean(x)),
+			),
+		];
 		const donationNoteBlock =
 			donationSnippets.length > 0 ?
 				`<p class="adminDetailDonationNoteLine"><span class="adminDetailDonationNoteLabel">${escapeHtml(t(strings, 'adminDetailDonationNoteLabel'))}</span> ${escapeHtml(donationSnippets.join(' · '))}</p>`
 			:	'';
 
-		const summaryStrip = `<div class="adminDetailPaymentSummary" role="group" aria-label="${escapeHtml(t(strings, 'adminDetailSectionMemberships'))}">
+		const summaryStrip = `<div class="adminDetailPaymentSummary" role="group" aria-label="${escapeHtml(t(strings, 'adminDetailPaymentSummaryTitle'))}">
+			<div class="adminDetailPaymentSummaryTitleRow">
+				<span class="adminDetailPaymentSummaryKicker">${escapeHtml(t(strings, 'adminDetailPaymentSummaryTitle'))}</span>
+			</div>
 			${feeLine}
 			<div class="adminDetailSummaryRow">
 				<span>${escapeHtml(t(strings, 'adminDetailAmountMembership'))}</span>
@@ -281,46 +374,64 @@ export function initAdminMemberDetail(
 				<span>${escapeHtml(t(strings, 'adminDetailAmountDonation'))}</span>
 				<span class="adminDetailSummaryValue">${escapeHtml(fmtMoney(bd.donationSubtotal))}</span>
 			</div>
+			${balanceRow}
 			<div class="adminDetailSummaryRow adminDetailSummaryRow--total">
 				<span>${escapeHtml(t(strings, 'adminDetailAmountTotal'))}</span>
 				<span class="adminDetailSummaryValue">${escapeHtml(fmtMoney(bd.totalPaid))}</span>
 			</div>
+			${duesPaidHint}
 			${donationNoteBlock}
 		</div>`;
 
 		const payRows = (ms.payments ?? [])
-			.map(
-				(p) => `<tr>
+			.map((p) => {
+				const { membership, donation } = perPaymentMembershipDonation(p, ms.tier);
+				return `<tr>
 				<td>${escapeHtml(fmtDate(p.date ?? p.created_at))}</td>
 				<td>${escapeHtml(methodLabel(strings, p.method))}</td>
 				<td>${p.amount != null ? escapeHtml(fmtMoney(p.amount)) : '<span class="adminDetailCellEmpty">—</span>'}</td>
+				<td>${escapeHtml(fmtMoney(membership))}</td>
+				<td>${escapeHtml(fmtMoney(donation))}</td>
 				<td class="adminDetailTdLong">${longCell(p.notes)}</td>
 				<td class="adminDetailTdLong">${longCell(p.payment_id)}</td>
-			</tr>`,
-			)
+				<td class="adminDetailTdActions"><button type="button" class="adminBtn adminBtn--danger adminBtn--table" data-delete-payment data-payment-id="${String(p.id)}">${escapeHtml(t(strings, 'adminDeletePaymentBtn'))}</button></td>
+			</tr>`;
+			})
 			.join('');
 
-		const paymentsBlock =
-			ms.payments?.length ?
-				`<div class="adminDetailPaymentsSection">
-				<h4 class="adminDetailPaymentsTitle">${escapeHtml(t(strings, 'adminDetailPaymentsHeading'))}</h4>
-				${summaryStrip}
-				<div class="tableWrap adminDetailPaymentsTableWrap"><table class="adminTable adminTable--payments">
+		const recordBtn =
+			ms.status === 'pending' || ms.status === 'active' ?
+				`<button type="button" class="adminBtn adminBtn--solid" data-open-payment data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminRecordPaymentBtn'))}</button>`
+			:	'';
+
+		const tableOrEmpty = ms.payments?.length ?
+			`<div class="tableWrap adminDetailPaymentsTableWrap adminDetailPaymentsTableBleed"><table class="adminTable adminTable--payments">
 				<thead><tr>
 					<th>${escapeHtml(t(strings, 'adminTablePaymentDate'))}</th>
 					<th>${escapeHtml(t(strings, 'adminMethodLabel'))}</th>
 					<th>${escapeHtml(t(strings, 'adminTableAmount'))}</th>
+					<th>${escapeHtml(t(strings, 'adminTableDuesPortion'))}</th>
+					<th>${escapeHtml(t(strings, 'adminTableDonationPortion'))}</th>
 					<th>${escapeHtml(t(strings, 'adminNotesLabel'))}</th>
 					<th>${escapeHtml(t(strings, 'adminTablePaymentRef'))}</th>
+					<th class="adminDetailThActions">${escapeHtml(t(strings, 'adminTableActions'))}</th>
 				</tr></thead>
 				<tbody>${payRows}</tbody>
-			</table></div></div>`
-			:	`<div class="adminDetailPaymentsSection">${summaryStrip}<p class="adminDetailPaymentsEmpty">${escapeHtml(t(strings, 'adminDetailPaymentsEmpty'))}</p></div>`;
+			</table></div>`
+		:	`<p class="adminDetailPaymentsEmpty adminDetailPaymentsEmpty--inSection">${escapeHtml(t(strings, 'adminDetailPaymentsEmpty'))}</p>`;
 
-		const recordBtn =
-			ms.status === 'pending' ?
-				`<button type="button" class="adminBtn adminBtn--outline" data-open-payment data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminRecordPaymentBtn'))}</button>`
-			:	'';
+		const recordRow = recordBtn ? `<div class="adminDetailRecordPaymentRow">${recordBtn}</div>` : '';
+
+		const paymentsBlock = `<div class="adminDetailPaymentsSection">
+				<div class="adminDetailPaymentsSectionHead">
+					<h4 class="adminDetailPaymentsTitle">${escapeHtml(t(strings, 'adminDetailPaymentsHeading'))}</h4>
+				</div>
+				<div class="adminDetailPaymentsBody">
+					${tableOrEmpty}
+					${recordRow}
+					<div class="adminDetailPaymentSummaryReceipt">${summaryStrip}</div>
+				</div>
+			</div>`;
 
 		const futureBadge =
 			ms.year > calendarYear ?
@@ -329,12 +440,17 @@ export function initAdminMemberDetail(
 
 		return `<article class="adminDetailMembershipCard" data-membership-id="${escapeHtml(ms.id)}">
 			<header class="adminDetailMembershipHead">
-				<div class="adminDetailMembershipHeadMain">
+				<div class="adminDetailMembershipIdentity">
+					<div class="adminDetailIdentityBlock">
+						<span class="adminDetailIdentityLabel">${escapeHtml(t(strings, 'membershipTableType'))}</span>
+						<span class="adminDetailIdentityValue adminDetailIdentityValue--tier">${escapeHtml(tier)}</span>
+					</div>
+					<div class="adminDetailIdentityBlock">
+						<span class="adminDetailIdentityLabel">${escapeHtml(t(strings, 'membershipTableStatus'))}</span>
+						<span class="${statusBadgeClass} adminDetailBadge--statusEmphasis">${escapeHtml(statusLabel)}</span>
+					</div>
 					${futureBadge}
-					<span class="adminDetailBadge adminDetailBadge--tier">${escapeHtml(tier)}</span>
-					<span class="${statusBadgeClass}">${escapeHtml(statusLabel)}</span>
 				</div>
-				${recordBtn ? `<div class="adminDetailMembershipHeadActions">${recordBtn}</div>` : ''}
 			</header>
 			${paymentsBlock}
 		</article>`;
@@ -362,6 +478,7 @@ export function initAdminMemberDetail(
 		<div id="admin-detail-year-panel" class="adminDetailYearPanel">${renderYearPanelHtml()}</div>`;
 
 		wirePaymentButtons(mount);
+		wireDeletePaymentButtons(mount);
 		wireAddMembershipButtons(mount);
 	}
 
@@ -374,6 +491,7 @@ export function initAdminMemberDetail(
 			if (panel) {
 				panel.innerHTML = renderYearPanelHtml();
 				wirePaymentButtons(panel);
+				wireDeletePaymentButtons(panel);
 				wireAddMembershipButtons(panel);
 			}
 		});
@@ -391,6 +509,10 @@ export function initAdminMemberDetail(
 		}
 		fillForm(data.member);
 		allMemberships = data.memberships ?? [];
+		if (!appliedInitialYearDefault) {
+			selectedYear = pickDefaultYear(getYearOptions());
+			appliedInitialYearDefault = true;
+		}
 		renderMembershipMount();
 		setStatus('');
 	}
@@ -458,6 +580,7 @@ export function initAdminMemberDetail(
 		const method = String(fd.get('method') ?? '');
 		const date = String(fd.get('date') ?? '').trim();
 		const notes = String(fd.get('notes') ?? '').trim();
+		const reference = String(fd.get('reference') ?? '').trim();
 		const mid = paymentMembershipId?.value;
 		if (!mid) return;
 		setStatus(t(strings, 'adminLoading'));
@@ -470,6 +593,7 @@ export function initAdminMemberDetail(
 					method,
 					date: date || undefined,
 					notes: notes || undefined,
+					...(reference ? { reference } : {}),
 				}),
 			},
 		);
@@ -481,6 +605,16 @@ export function initAdminMemberDetail(
 		paymentDialog?.close();
 		form.reset();
 		void load();
+	});
+
+	el<HTMLInputElement>('#admin-payment-amount')?.addEventListener('input', updatePaymentPreview);
+
+	paymentDialog?.addEventListener('close', () => {
+		const preview = el<HTMLElement>('#admin-payment-split-preview');
+		if (preview) {
+			preview.hidden = true;
+			preview.textContent = '';
+		}
 	});
 
 	el<HTMLButtonElement>('#admin-payment-cancel')?.addEventListener('click', () => {

@@ -94,6 +94,8 @@ export const POST: APIRoute = async ({ request }) => {
 		typeof donationNoteRaw === 'string' ? donationNoteRaw.trim() : '';
 
 	const amountDollars = amountTotal / 100;
+	const membershipDollars = Math.round(membershipCents) / 100;
+	const donationDollars = Math.round(donationCents) / 100;
 	const notesParts = [`Stripe Checkout`, `session ${session.id}`];
 	if (donationCents > 0) {
 		notesParts.push(`donation $${(donationCents / 100).toFixed(2)} CAD`);
@@ -120,8 +122,11 @@ export const POST: APIRoute = async ({ request }) => {
 	const { data: rpcResult, error: rpcError } = await service.rpc('record_stripe_payment', {
 		p_membership_id: membershipId,
 		p_amount: amountDollars,
+		p_membership_amount: membershipDollars,
+		p_donation_amount: donationDollars,
 		p_stripe_payment_id: paymentIntentId,
 		p_notes: notes,
+		p_donation_note: donationNote.length > 0 ? donationNote : null,
 	});
 
 	if (rpcError) {

@@ -97,6 +97,10 @@ export const memberCopy: Record<
 		adminOverviewCountActive: string;
 		adminOverviewCountTotal: string;
 		adminTableAmount: string;
+		adminTableDuesPortion: string;
+		adminTableDonationPortion: string;
+		adminPaymentPreviewMembership: string;
+		adminPaymentPreviewDonation: string;
 		adminTablePaymentDate: string;
 		adminAuditWhen: string;
 		adminAuditAction: string;
@@ -111,6 +115,12 @@ export const memberCopy: Record<
 		adminDetailAmountMembership: string;
 		adminDetailAmountDonation: string;
 		adminDetailAmountTotal: string;
+		adminDetailPaymentSummaryTitle: string;
+		adminDetailBalanceDue: string;
+		adminDetailDuesPaidInFull: string;
+		adminDeletePaymentBtn: string;
+		adminDeletePaymentConfirm: string;
+		adminPaymentDeleted: string;
 		adminDetailNoMembershipForYear: string;
 		adminDetailDonationNoteLabel: string;
 		adminTablePaymentRef: string;
@@ -142,6 +152,8 @@ export const memberCopy: Record<
 		adminMethodCash: string;
 		adminMethodUnknown: string;
 		adminDateLabel: string;
+		/** External reference stored in payments.payment_id (e-transfer, cheque #, Stripe id if entered manually) */
+		adminPaymentReferenceLabel: string;
 		adminNotesLabel: string;
 		adminSubmitPaymentBtn: string;
 		adminPromoteBtn: string;
@@ -352,7 +364,11 @@ export const memberCopy: Record<
 		adminOverviewCountPending: 'Pending',
 		adminOverviewCountActive: 'Active {{year}}',
 		adminOverviewCountTotal: 'In directory',
-		adminTableAmount: 'Amount',
+		adminTableAmount: 'Total',
+		adminTableDuesPortion: 'Dues',
+		adminTableDonationPortion: 'Donation',
+		adminPaymentPreviewMembership: 'Toward membership: {{amount}}',
+		adminPaymentPreviewDonation: 'Donation: {{amount}}',
 		adminTablePaymentDate: 'Paid',
 		adminAuditWhen: 'When',
 		adminAuditAction: 'Action',
@@ -367,6 +383,13 @@ export const memberCopy: Record<
 		adminDetailAmountMembership: 'Membership',
 		adminDetailAmountDonation: 'Donation',
 		adminDetailAmountTotal: 'Total paid',
+		adminDetailPaymentSummaryTitle: 'Summary',
+		adminDetailBalanceDue: 'Balance due (dues)',
+		adminDetailDuesPaidInFull: 'Annual dues fully paid',
+		adminDeletePaymentBtn: 'Remove',
+		adminDeletePaymentConfirm:
+			'Delete this payment? Membership status will be recalculated from remaining payments. This cannot be undone.',
+		adminPaymentDeleted: 'Payment deleted.',
 		adminDetailNoMembershipForYear: 'No membership on file for {{year}}.',
 		adminDetailDonationNoteLabel: 'Donation note',
 		adminTablePaymentRef: 'Reference',
@@ -397,8 +420,9 @@ export const memberCopy: Record<
 		adminMethodCash: 'Cash',
 		adminMethodUnknown: 'Unknown',
 		adminDateLabel: 'Payment date',
+		adminPaymentReferenceLabel: 'Reference (optional) — e-transfer, cheque #, etc.',
 		adminNotesLabel: 'Notes (optional)',
-		adminSubmitPaymentBtn: 'Save payment & activate',
+		adminSubmitPaymentBtn: 'Save payment',
 		adminPromoteBtn: 'Grant admin role',
 		adminPromoteSuccess: 'Admin role granted. They may need to sign out and back in.',
 		adminPromoteNoAccount: 'This member has no linked sign-in account (user id).',
@@ -437,7 +461,7 @@ export const memberCopy: Record<
 		adminPrimaryEmailLabel: 'Primary email',
 		adminBackToList: 'Clear selection',
 		adminMemberSaved: 'Member saved.',
-		adminPaymentSaved: 'Payment recorded and membership activated.',
+		adminPaymentSaved: 'Payment recorded.',
 		adminMembershipYearLabel: 'Membership year',
 		adminFilterTierLabel: 'Membership type',
 		adminFilterTierAll: 'All types',
@@ -618,7 +642,11 @@ export const memberCopy: Record<
 		adminOverviewCountPending: 'En attente',
 		adminOverviewCountActive: 'Actifs {{year}}',
 		adminOverviewCountTotal: 'Au répertoire',
-		adminTableAmount: 'Montant',
+		adminTableAmount: 'Total',
+		adminTableDuesPortion: 'Cotisation',
+		adminTableDonationPortion: 'Don',
+		adminPaymentPreviewMembership: 'Vers la cotisation : {{amount}}',
+		adminPaymentPreviewDonation: 'Don : {{amount}}',
 		adminTablePaymentDate: 'Payé',
 		adminAuditWhen: 'Quand',
 		adminAuditAction: 'Action',
@@ -633,6 +661,13 @@ export const memberCopy: Record<
 		adminDetailAmountMembership: 'Adhésion',
 		adminDetailAmountDonation: 'Don',
 		adminDetailAmountTotal: 'Total payé',
+		adminDetailPaymentSummaryTitle: 'Sommaire',
+		adminDetailBalanceDue: 'Solde dû (cotisation)',
+		adminDetailDuesPaidInFull: 'Cotisation annuelle entièrement payée',
+		adminDeletePaymentBtn: 'Retirer',
+		adminDeletePaymentConfirm:
+			'Supprimer ce paiement? Le statut d’adhésion sera recalculé selon les paiements restants. Action irréversible.',
+		adminPaymentDeleted: 'Paiement supprimé.',
 		adminDetailNoMembershipForYear: 'Aucune adhésion au dossier pour {{year}}.',
 		adminDetailDonationNoteLabel: 'Note du don',
 		adminTablePaymentRef: 'Référence',
@@ -663,8 +698,9 @@ export const memberCopy: Record<
 		adminMethodCash: 'Comptant',
 		adminMethodUnknown: 'Inconnu',
 		adminDateLabel: 'Date du paiement',
+		adminPaymentReferenceLabel: 'Référence (facultatif) — virement, nº de chèque, etc.',
 		adminNotesLabel: 'Notes (facultatif)',
-		adminSubmitPaymentBtn: 'Enregistrer et activer',
+		adminSubmitPaymentBtn: 'Enregistrer le paiement',
 		adminPromoteBtn: 'Accorder le rôle admin',
 		adminPromoteSuccess: 'Rôle administrateur accordé. La personne devra peut-être se déconnecter et se reconnecter.',
 		adminPromoteNoAccount: 'Ce membre n’a pas de compte de connexion lié (identifiant utilisateur).',
@@ -703,7 +739,7 @@ export const memberCopy: Record<
 		adminPrimaryEmailLabel: 'Courriel principal',
 		adminBackToList: 'Effacer la sélection',
 		adminMemberSaved: 'Membre enregistré.',
-		adminPaymentSaved: 'Paiement enregistré et adhésion activée.',
+		adminPaymentSaved: 'Paiement enregistré.',
 		adminMembershipYearLabel: 'Année d’adhésion',
 		adminFilterTierLabel: 'Type d’adhésion',
 		adminFilterTierAll: 'Tous les types',

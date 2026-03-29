@@ -16,11 +16,31 @@ export function expectedMembershipFeeDollars(tier: string): number | null {
 	return c == null ? null : c / 100;
 }
 
-/** Split one payment into membership vs donation portions (best effort). */
+export type PaymentSplitInput = {
+	amount: number | null;
+	method: string | null;
+	notes: string | null;
+	membership_amount?: number | null;
+	donation_amount?: number | null;
+};
+
+/** Split one payment into membership vs donation portions (best effort). Prefer stored columns when present. */
 export function perPaymentMembershipDonation(
-	p: { amount: number | null; method: string | null; notes: string | null },
+	p: PaymentSplitInput,
 	tier: string,
 ): { membership: number; donation: number } {
+	const ma = p.membership_amount;
+	const da = p.donation_amount;
+	if (
+		ma != null &&
+		da != null &&
+		typeof ma === 'number' &&
+		typeof da === 'number' &&
+		Number.isFinite(ma) &&
+		Number.isFinite(da)
+	) {
+		return { membership: ma, donation: da };
+	}
 	const amt = p.amount ?? 0;
 	const fromNote = parseDonationDollarsFromNotes(p.notes);
 	if (fromNote != null) {
@@ -39,8 +59,13 @@ export function perPaymentMembershipDonation(
 	return { membership: amt, donation: 0 };
 }
 
-/** Text after `Donation note:` in Stripe webhook notes. */
-export function parseDonationNoteSnippet(notes: string | null | undefined): string | null {
+/** Text after `Donation note:` in Stripe webhook notes, or structured column. */
+export function parseDonationNoteSnippet(
+	notes: string | null | undefined,
+	donationNote?: string | null | undefined,
+): string | null {
+	const fromCol = donationNote?.trim();
+	if (fromCol) return fromCol;
 	if (notes == null || notes === '') return null;
 	const m = notes.match(/Donation note:\s*(.+?)(?:\s*·\s*|$)/i);
 	if (!m) return null;
@@ -49,7 +74,7 @@ export function parseDonationNoteSnippet(notes: string | null | undefined): stri
 }
 
 export function sumYearPaymentBreakdown(
-	payments: { amount: number | null; method: string | null; notes: string | null }[],
+	payments: PaymentSplitInput[],
 	tier: string,
 ): {
 	totalPaid: number;

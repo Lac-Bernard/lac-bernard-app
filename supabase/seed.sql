@@ -38,16 +38,16 @@ insert into public.memberships (id, member_id, year, tier, status, created_at) v
   ('aaaaaaaa-aaaa-4aaa-8aaa-000000000020'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000007'::uuid, 2025, 'general', 'active', '2025-07-01T12:00:00Z'::timestamptz),
   ('aaaaaaaa-aaaa-4aaa-8aaa-000000000021'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000008'::uuid, 2026, 'general', 'active', '2026-03-25T18:10:00Z'::timestamptz);
 
-insert into public.payments (membership_id, method, amount, date, notes, payment_id) values
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000014'::uuid, 'e-transfer', 75, '2024-05-12', 'Renewal · e-Transfer', NULL),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000015'::uuid, 'cheque', 75, '2025-04-05', NULL, NULL),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000017'::uuid, 'stripe', 125, '2026-03-19', 'Stripe Checkout · session cs_devseed_marie_01 · donation $50.00 CAD · Donation note: Lake cleanup fund', 'pi_devseed_marie_001'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000018'::uuid, 'e-transfer', 25, '2026-03-13', 'Cotisation associé', NULL),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000019'::uuid, 'cash', 25, '2024-06-03', NULL, NULL),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001a'::uuid, 'e-transfer', 75, '2025-05-22', NULL, NULL),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001b'::uuid, 'stripe', 75, '2026-03-06', 'Stripe Checkout · session cs_devseed_sophie_01 · donation $0.00 CAD', 'pi_devseed_sophie_001'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000020'::uuid, 'unknown', 75, '2025-07-05', NULL, NULL),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000021'::uuid, 'cheque', 75, '2026-03-26', 'Chèque #1042', NULL);
+insert into public.payments (membership_id, method, amount, date, notes, payment_id, membership_amount, donation_amount, donation_note) values
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000014'::uuid, 'e-transfer', 75, '2024-05-12', 'Renewal · e-Transfer', NULL, 75, 0, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000015'::uuid, 'cheque', 75, '2025-04-05', NULL, NULL, 75, 0, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000017'::uuid, 'stripe', 125, '2026-03-19', 'Stripe Checkout · session cs_devseed_marie_01 · donation $50.00 CAD · Donation note: Lake cleanup fund', 'pi_devseed_marie_001', 75, 50, 'Lake cleanup fund'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000018'::uuid, 'e-transfer', 25, '2026-03-13', 'Cotisation associé', NULL, 25, 0, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000019'::uuid, 'cash', 25, '2024-06-03', NULL, NULL, 25, 0, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001a'::uuid, 'e-transfer', 75, '2025-05-22', NULL, NULL, 75, 0, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001b'::uuid, 'stripe', 75, '2026-03-06', 'Stripe Checkout · session cs_devseed_sophie_01 · donation $0.00 CAD', 'pi_devseed_sophie_001', 75, 0, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000020'::uuid, 'unknown', 75, '2025-07-05', NULL, NULL, 75, 0, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000021'::uuid, 'cheque', 75, '2026-03-26', 'Chèque #1042', NULL, 75, 0, NULL);
 
 insert into public.admin_audit_log (actor_user_id, action, entity_type, entity_id, metadata) values
   ('00000000-0000-4000-8000-00000000c0de'::uuid, 'dummy_seed_record_manual_payment', 'membership', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000017', '{"source":"dummy_seed","label":"Synthetic manual payment"}'::jsonb),
