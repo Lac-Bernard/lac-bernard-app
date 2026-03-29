@@ -46,6 +46,27 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 	}
 
 	const list = rows ?? [];
+	const membershipIds = list.map((r) => r.id);
+	let paidByMembership = new Map<string, number>();
+	if (membershipIds.length > 0) {
+		const { data: payRows, error: payErr } = await service
+			.from('payments')
+			.select('membership_id, membership_amount')
+			.in('membership_id', membershipIds);
+		if (payErr) {
+			return new Response(JSON.stringify({ error: 'payments_query_failed' }), {
+				status: 500,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+		for (const pr of payRows ?? []) {
+			const mid = pr.membership_id as string;
+			const raw = pr.membership_amount;
+			const n = typeof raw === 'number' ? raw : parseFloat(String(raw ?? 0));
+			const add = Number.isFinite(n) ? n : 0;
+			paidByMembership.set(mid, (paidByMembership.get(mid) ?? 0) + add);
+		}
+	}
 	const memberIds = [...new Set(list.map((r) => r.member_id))];
 	let memberMap = new Map<
 		string,
@@ -70,6 +91,7 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 	const memberships = list.map((m) => ({
 		...m,
 		expected_membership_cents: membershipCentsForTier(m.tier),
+		sum_membership_paid: paidByMembership.get(m.id) ?? 0,
 		members: memberMap.get(m.member_id) ?? null,
 	}));
 

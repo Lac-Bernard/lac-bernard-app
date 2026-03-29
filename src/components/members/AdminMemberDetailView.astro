@@ -31,6 +31,7 @@ const adminKeys = [
 	'adminMethodUnknown',
 	'adminMethodStripe',
 	'adminDateLabel',
+	'adminPaymentReferenceLabel',
 	'adminNotesLabel',
 	'adminSubmitPaymentBtn',
 	'adminPromoteBtn',
@@ -46,12 +47,16 @@ const adminKeys = [
 	'adminStatusMemberLabel',
 	'adminUserIdLabel',
 	'adminPrimaryEmailLabel',
-	'membershipTableYear',
-	'membershipTableType',
-	'membershipTableStatus',
+  'membershipTableYear',
+  'membershipTableType',
+  'membershipTableStatus',
 	'membershipStatusActive',
 	'membershipStatusPending',
 	'adminTableAmount',
+	'adminTableDuesPortion',
+	'adminTableDonationPortion',
+	'adminPaymentPreviewMembership',
+	'adminPaymentPreviewDonation',
 	'adminTablePaymentDate',
 	'adminDetailNoMemberships',
 	'adminDetailPaymentsEmpty',
@@ -61,6 +66,13 @@ const adminKeys = [
 	'adminDetailAmountMembership',
 	'adminDetailAmountDonation',
 	'adminDetailAmountTotal',
+	'adminDetailPaymentSummaryTitle',
+	'adminDetailBalanceDue',
+	'adminDetailDuesPaidInFull',
+	'adminDeletePaymentBtn',
+	'adminDeletePaymentConfirm',
+	'adminPaymentDeleted',
+	'adminTableActions',
 	'adminDetailNoMembershipForYear',
 	'adminDetailDonationNoteLabel',
 	'adminTablePaymentRef',
@@ -151,8 +163,9 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
         <input type="hidden" id="admin-payment-membership-id" value="" />
         <label>
           {t.adminAmountLabel}
-          <input type="number" name="amount" min="0" step="0.01" required class="adminInput" />
+          <input id="admin-payment-amount" type="number" name="amount" min="0.01" step="0.01" required class="adminInput" />
         </label>
+        <p id="admin-payment-split-preview" class="adminPaymentSplitPreview" hidden aria-live="polite"></p>
         <label>
           {t.adminMethodLabel}
           <select name="method" required class="adminInput">
@@ -165,6 +178,10 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
         <label>
           {t.adminDateLabel}
           <input type="date" name="date" class="adminInput" />
+        </label>
+        <label>
+          {t.adminPaymentReferenceLabel}
+          <input type="text" name="reference" class="adminInput" autocomplete="off" maxlength="512" />
         </label>
         <label>
           {t.adminNotesLabel}
@@ -263,6 +280,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
 <style>
   .adminPage {
     --admin-radius: 12px;
+    --admin-radius-md: 10px;
     --admin-radius-sm: 8px;
     --admin-border: var(--border);
     --admin-surface: #fff;
@@ -361,16 +379,19 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     gap: 1rem;
   }
 
-  .adminDetailYearToolbar {
+  .adminDetailMembershipList :global(.adminDetailYearToolbar) {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.75rem 1rem;
-    margin-bottom: 1.15rem;
-    padding-bottom: 0.15rem;
+    margin: 0 0 1.1rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: var(--admin-radius-sm);
+    border: 1px solid var(--admin-border);
+    background: var(--admin-surface-muted);
   }
 
-  .adminDetailYearToolbarLabel {
+  .adminDetailMembershipList :global(.adminDetailYearToolbarLabel) {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -381,26 +402,77 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     color: var(--admin-text);
   }
 
-  .adminDetailYearToolbarText {
+  .adminDetailMembershipList :global(.adminDetailYearToolbarText) {
     color: var(--muted);
     font-weight: 600;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
-  .adminDetailYearPanel {
+  .adminDetailMembershipList :global(.adminDetailYearPanel) {
     min-width: 0;
   }
 
-  .adminDetailPaymentSummary {
+  .adminDetailMembershipList :global(.adminDetailPaymentSummary) {
     margin: 0;
-    padding: 0.85rem 1rem 0.95rem;
+    padding: 0.85rem 1rem 0.95rem 1rem;
     border-radius: var(--admin-radius-sm);
     border: 1px solid var(--admin-border);
-    background: rgba(255, 255, 255, 0.55);
+    border-left: 3px solid rgba(28, 95, 118, 0.55);
+    background: var(--admin-surface-muted);
     font-size: 0.8125rem;
-    line-height: 1.35;
+    line-height: 1.4;
   }
 
-  .adminDetailSummaryRow {
+  .adminDetailMembershipList :global(.adminDetailPaymentSummaryTitleRow) {
+    margin: 0 0 0.6rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  }
+
+  .adminDetailMembershipList :global(.adminDetailPaymentSummaryKicker) {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  .adminDetailMembershipList :global(.adminDetailSummaryRow--balanceDue > span:first-child) {
+    color: rgba(120, 55, 0, 0.92);
+    font-weight: 600;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailSummaryValue--due) {
+    color: rgba(150, 65, 0, 0.98) !important;
+    font-weight: 800 !important;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailDuesPaidHint) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin: 0.7rem 0 0;
+    padding: 0.4rem 0.65rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: rgba(18, 75, 50, 0.95);
+    background: rgba(34, 120, 80, 0.09);
+    border: 1px solid rgba(34, 120, 80, 0.22);
+  }
+
+  .adminDetailMembershipList :global(.adminDetailDuesPaidHint::before) {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: rgba(34, 120, 80, 0.85);
+  }
+
+  .adminDetailMembershipList :global(.adminDetailSummaryRow) {
     display: grid;
     grid-template-columns: minmax(0, 1fr) minmax(5.25rem, max-content);
     column-gap: 1.25rem;
@@ -409,17 +481,17 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     border-bottom: 1px solid rgba(0, 0, 0, 0.055);
   }
 
-  .adminDetailSummaryRow:has(+ .adminDetailSummaryRow--total) {
+  .adminDetailMembershipList :global(.adminDetailSummaryRow:has(+ .adminDetailSummaryRow--total)) {
     border-bottom: none;
     padding-bottom: 0.2rem;
   }
 
-  .adminDetailSummaryRow > span:first-child {
+  .adminDetailMembershipList :global(.adminDetailSummaryRow > span:first-child) {
     color: var(--muted);
     font-weight: 500;
   }
 
-  .adminDetailSummaryRow--total {
+  .adminDetailMembershipList :global(.adminDetailSummaryRow--total) {
     margin-top: 0.2rem;
     padding-top: 0.55rem;
     padding-bottom: 0.15rem;
@@ -427,12 +499,12 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     border-top: 1px solid var(--admin-border);
   }
 
-  .adminDetailSummaryRow--total > span:first-child {
+  .adminDetailMembershipList :global(.adminDetailSummaryRow--total > span:first-child) {
     color: var(--admin-text);
     font-weight: 700;
   }
 
-  .adminDetailSummaryValue {
+  .adminDetailMembershipList :global(.adminDetailSummaryValue) {
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     text-align: right;
@@ -440,12 +512,12 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     color: var(--admin-text);
   }
 
-  .adminDetailSummaryRow--total .adminDetailSummaryValue {
+  .adminDetailMembershipList :global(.adminDetailSummaryRow--total .adminDetailSummaryValue) {
     font-weight: 700;
     font-size: 0.9375rem;
   }
 
-  .adminDetailDonationNoteLine {
+  .adminDetailMembershipList :global(.adminDetailDonationNoteLine) {
     margin: 0.65rem 0 0;
     padding-top: 0.55rem;
     border-top: 1px dashed rgba(0, 0, 0, 0.1);
@@ -454,52 +526,70 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     line-height: 1.45;
   }
 
-  .adminDetailDonationNoteLabel {
+  .adminDetailMembershipList :global(.adminDetailDonationNoteLabel) {
     font-weight: 700;
     color: var(--admin-text);
     margin-right: 0.35rem;
   }
 
-  .adminDetailMembershipCard {
+  .adminDetailMembershipList :global(.adminDetailMembershipCard) {
     margin: 0;
-    padding: 1rem 1.1rem 1.15rem;
+    padding: 0;
     border: 1px solid var(--admin-border);
-    border-radius: var(--admin-radius-sm);
-    background: var(--admin-surface-muted);
-  }
-
-  .adminDetailMembershipHead {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 0.65rem 1rem;
-    margin: 0 0 0.85rem;
-    padding-bottom: 0.85rem;
-    border-bottom: 1px solid var(--admin-border);
-  }
-
-  .adminDetailMembershipHeadMain {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.45rem 0.6rem;
+    border-radius: var(--admin-radius-md);
+    background: var(--admin-surface);
+    box-shadow: 0 1px 3px rgba(15, 25, 35, 0.045);
+    overflow: hidden;
     min-width: 0;
   }
 
-  .adminDetailMembershipHeadActions {
-    flex-shrink: 0;
+  .adminDetailMembershipList :global(.adminDetailMembershipHead) {
+    margin: 0;
+    padding: 1rem 1.1rem 0.95rem;
+    border-bottom: 1px solid var(--admin-border);
+    background: rgba(0, 0, 0, 0.015);
   }
 
-  .adminDetailYear {
-    font-size: 1.1rem;
+  .adminDetailMembershipList :global(.adminDetailMembershipIdentity) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem 1.5rem;
+    min-width: 0;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailIdentityBlock) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailIdentityLabel) {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+  }
+
+  .adminDetailMembershipList :global(.adminDetailIdentityValue--tier) {
+    font-size: 1.2rem;
     font-weight: 800;
     letter-spacing: -0.03em;
-    line-height: 1.2;
+    line-height: 1.15;
     color: var(--admin-text);
   }
 
-  .adminDetailBadge {
+  .adminDetailMembershipList :global(.adminDetailBadge--statusEmphasis) {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailBadge) {
     display: inline-block;
     padding: 0.2rem 0.55rem;
     border-radius: 999px;
@@ -511,7 +601,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     border: 1px solid transparent;
   }
 
-  .adminDetailBadge--tier {
+  .adminDetailMembershipList :global(.adminDetailBadge--tier) {
     background: rgba(255, 255, 255, 0.65);
     border-color: var(--admin-border);
     color: var(--admin-text);
@@ -521,7 +611,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     letter-spacing: 0;
   }
 
-  .adminDetailBadge--future {
+  .adminDetailMembershipList :global(.adminDetailBadge--future) {
     background: rgba(72, 196, 255, 0.14);
     border-color: rgba(28, 95, 118, 0.22);
     color: var(--admin-accent);
@@ -530,19 +620,19 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     letter-spacing: 0.02em;
   }
 
-  .adminDetailBadge--status.adminDetailBadge--active {
+  .adminDetailMembershipList :global(.adminDetailBadge--status.adminDetailBadge--active) {
     background: rgba(34, 120, 80, 0.12);
     border-color: rgba(34, 120, 80, 0.28);
     color: rgba(18, 75, 50, 0.95);
   }
 
-  .adminDetailBadge--status.adminDetailBadge--pending {
+  .adminDetailMembershipList :global(.adminDetailBadge--status.adminDetailBadge--pending) {
     background: rgba(200, 130, 0, 0.12);
     border-color: rgba(180, 110, 0, 0.28);
     color: rgba(90, 55, 0, 0.95);
   }
 
-  .adminDetailBadge--status.adminDetailBadge--neutral {
+  .adminDetailMembershipList :global(.adminDetailBadge--status.adminDetailBadge--neutral) {
     background: rgba(0, 0, 0, 0.04);
     border-color: var(--admin-border);
     color: var(--muted);
@@ -550,47 +640,102 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     font-size: 0.78rem;
   }
 
-  .adminDetailPaymentsSection {
+  .adminDetailMembershipList :global(.adminDetailPaymentsSection) {
     display: flex;
     flex-direction: column;
-    gap: 0.85rem;
-    margin-top: 0.15rem;
+    gap: 0;
+    margin: 0;
+    min-width: 0;
   }
 
-  .adminDetailPaymentsTitle {
+  .adminDetailMembershipList :global(.adminDetailPaymentsSectionHead) {
     margin: 0;
-    font-size: 0.72rem;
+    padding: 0.65rem 1.1rem 0.55rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: var(--admin-surface);
+  }
+
+  .adminDetailMembershipList :global(.adminDetailPaymentsTitle) {
+    margin: 0;
+    font-size: 0.8125rem;
     font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--muted);
+    letter-spacing: -0.015em;
+    color: var(--admin-text);
   }
 
-  .adminDetailPaymentsEmpty {
+  .adminDetailMembershipList :global(.adminDetailPaymentsBody) {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailRecordPaymentRow) {
+    padding: 0.65rem 1.1rem 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: var(--admin-surface);
+  }
+
+  .adminDetailMembershipList :global(.adminDetailPaymentSummaryReceipt) {
+    padding: 0.75rem 1.1rem 1rem;
+    border-top: none;
+    background: var(--admin-surface-muted);
+  }
+
+  .adminDetailMembershipList :global(.adminDetailPaymentSummaryReceipt .adminDetailPaymentSummary) {
     margin: 0;
-    padding: 0.5rem 0 0;
+    border: 1px solid var(--admin-border);
+    border-left: 3px solid rgba(28, 95, 118, 0.45);
+    background: var(--admin-surface);
+    box-shadow: none;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailPaymentsEmpty) {
+    margin: 0;
+    padding: 0.75rem 1.1rem;
     font-size: 0.8125rem;
     font-style: italic;
     color: var(--muted);
     line-height: 1.45;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    background: var(--admin-surface);
   }
 
-  .adminDetailPaymentsTableWrap {
+  .adminDetailMembershipList :global(.adminDetailPaymentsEmpty--inSection) {
+    margin: 0;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap) {
     margin-top: 0;
   }
 
-  .adminTable--payments th:nth-child(4),
-  .adminTable--payments td:nth-child(4) {
+  .adminDetailMembershipList :global(.adminDetailPaymentsTableBleed.tableWrap) {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    border-bottom: 1px solid var(--admin-border);
+  }
+
+  .adminDetailMembershipList :global(.adminTable--payments th:nth-child(6)),
+  .adminDetailMembershipList :global(.adminTable--payments td:nth-child(6)) {
     max-width: min(28rem, 42vw);
   }
 
-  .adminDetailTdLong {
+  .adminDetailMembershipList :global(.adminDetailTdLong) {
     vertical-align: top;
-    padding-top: 0.65rem;
-    padding-bottom: 0.65rem;
   }
 
-  .adminDetailCellLong {
+  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments td.adminDetailTdLong) {
+    vertical-align: top;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailCellLong) {
     display: block;
     word-break: break-word;
     overflow-wrap: anywhere;
@@ -600,7 +745,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     box-sizing: border-box;
   }
 
-  .adminDetailCellEmpty {
+  .adminDetailMembershipList :global(.adminDetailCellEmpty) {
     color: var(--muted);
     font-style: italic;
   }
@@ -691,7 +836,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     outline-offset: 1px;
   }
 
-  .tableWrap {
+  .adminDetailMembershipList :global(.tableWrap) {
     overflow-x: auto;
     width: 100%;
     max-width: 100%;
@@ -702,21 +847,21 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     border: 1px solid var(--admin-border);
   }
 
-  .adminTable {
+  .adminDetailMembershipList :global(.adminTable) {
     width: 100%;
     min-width: 480px;
     border-collapse: collapse;
     font-size: 0.8125rem;
   }
 
-  .adminTable th,
-  .adminTable td {
+  .adminDetailMembershipList :global(.adminTable th),
+  .adminDetailMembershipList :global(.adminTable td) {
     padding: 0.55rem 0.85rem;
     text-align: left;
     border-bottom: 1px solid var(--admin-border);
   }
 
-  .adminTable th {
+  .adminDetailMembershipList :global(.adminTable th) {
     font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -731,6 +876,13 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     padding: 0.65rem 1.25rem;
     border-top: 1px solid var(--admin-border);
     background: var(--admin-surface-muted);
+  }
+
+  .adminPaymentSplitPreview {
+    margin: 0.35rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    line-height: 1.4;
   }
 
   .adminDialog {
@@ -800,11 +952,11 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     margin-bottom: 0.9rem;
   }
 
-  .adminDetailNoMsWrap {
+  .adminDetailMembershipList :global(.adminDetailNoMsWrap) {
     padding: 0.35rem 0 0;
   }
 
-  .adminDetailAddMsActions {
+  .adminDetailMembershipList :global(.adminDetailAddMsActions) {
     margin: 0.5rem 0 0;
   }
 
@@ -824,10 +976,32 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     cursor: pointer;
   }
 
+  .adminPage :global(.adminBtn:focus-visible) {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--admin-accent-soft);
+  }
+
   .adminPage :global(.adminBtn--solid) {
     background: var(--admin-accent);
     color: #fff;
     border-color: var(--admin-accent);
+  }
+
+  .adminPage :global(.adminBtn--solid:hover) {
+    background: var(--admin-accent-hover);
+    border-color: var(--admin-accent-hover);
+  }
+
+  .adminPage :global(.adminBtn--outline) {
+    background: #fff;
+    color: var(--admin-accent);
+    border-color: rgba(28, 95, 118, 0.35);
+    text-decoration: none;
+  }
+
+  .adminPage :global(.adminBtn--outline:hover) {
+    background: rgba(72, 196, 255, 0.1);
+    border-color: rgba(28, 95, 118, 0.55);
   }
 
   .adminPage :global(.adminBtn--ghost) {
@@ -846,64 +1020,182 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     text-decoration: underline;
   }
 
+  .adminPage :global(.adminBtn--danger) {
+    color: #9a1a2e;
+    border-color: rgba(176, 32, 48, 0.35);
+    background: rgba(176, 32, 48, 0.06);
+  }
+
+  .adminPage :global(.adminBtn--danger:hover) {
+    background: rgba(176, 32, 48, 0.12);
+    border-color: rgba(176, 32, 48, 0.45);
+  }
+
+  .adminPage :global(.adminBtn--table) {
+    padding: 0.28rem 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailTdActions) {
+    vertical-align: middle;
+    text-align: right;
+    width: 5.5rem;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailThActions) {
+    text-align: right;
+    width: 5.5rem;
+  }
+
   .adminHint {
     font-size: 0.8125rem;
     color: var(--muted);
     margin: 0;
   }
 
-  /* Payments table: stay inside card — unbroken Stripe ids must wrap */
-  .adminDetailPaymentsTableWrap.tableWrap {
+  /* Payments table: full width of card; Stripe ids wrap (injected — :global) */
+  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap.tableWrap) {
     max-width: 100%;
     width: 100%;
     min-width: 0;
     box-sizing: border-box;
   }
 
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments {
+  .adminDetailMembershipList :global(.adminDetailPaymentsBody .tableWrap.adminDetailPaymentsTableWrap) {
+    margin: 0;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments) {
     min-width: 0 !important;
     max-width: 100%;
     width: 100%;
     table-layout: fixed;
-    font-size: 0.78rem;
+    font-size: 0.8125rem;
   }
 
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(1),
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(1) {
-    width: 11%;
+  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments thead th) {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0.6rem 0.55rem;
+    border-bottom: 2px solid rgba(0, 0, 0, 0.08);
+    background: var(--admin-surface-muted);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
   }
 
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(2),
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(2) {
-    width: 12%;
+  .adminDetailMembershipList
+    :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments tbody tr:nth-child(even) td) {
+    background: rgba(248, 250, 252, 0.85);
   }
 
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(3),
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(3) {
+  .adminDetailMembershipList
+    :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments tbody tr:hover td) {
+    background: rgba(72, 196, 255, 0.06);
+  }
+
+  .adminDetailMembershipList
+    :global(
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(1),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(1)
+    ) {
     width: 9%;
   }
 
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(4),
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(4),
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(5),
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(5) {
-    width: 34%;
+  .adminDetailMembershipList
+    :global(
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(2),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(2)
+    ) {
+    width: 9%;
   }
 
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th,
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td {
-    padding: 0.4rem 0.45rem;
+  .adminDetailMembershipList
+    :global(
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(3),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(3)
+    ) {
+    width: 8%;
   }
 
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th {
-    font-size: 0.62rem;
+  .adminDetailMembershipList
+    :global(
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(4),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(4)
+    ) {
+    width: 7%;
   }
 
-  .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td {
+  .adminDetailMembershipList
+    :global(
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(5),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(5)
+    ) {
+    width: 7%;
+  }
+
+  .adminDetailMembershipList
+    :global(
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(6),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(6)
+    ) {
+    width: 22%;
+  }
+
+  .adminDetailMembershipList
+    :global(
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(7),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(7)
+    ) {
+    width: 18%;
+  }
+
+  .adminDetailMembershipList
+    :global(
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(8),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(8)
+    ) {
+    width: 12%;
+  }
+
+  .adminDetailMembershipList
+    :global(
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th,
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td
+    ) {
+    padding: 0.55rem 0.55rem;
+    vertical-align: middle;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments th) {
+    font-size: 0.68rem;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments td) {
     min-width: 0;
   }
 
-  .adminDetailPaymentsTableWrap .adminDetailCellLong {
+  .adminDetailMembershipList
+    :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(1)) {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .adminDetailMembershipList
+    :global(
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(3),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(4),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(5),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(3),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(4),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(5)
+    ) {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap .adminDetailCellLong) {
     font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
     font-size: 0.7rem;
     word-break: break-all;

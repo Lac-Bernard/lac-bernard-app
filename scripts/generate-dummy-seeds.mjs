@@ -387,6 +387,9 @@ function buildDataset(cy) {
 			date: `${cy - 2}-05-12`,
 			notes: 'Renewal · e-Transfer',
 			payment_id: null,
+			membership_amount: 75,
+			donation_amount: 0,
+			donation_note: null,
 		},
 		{
 			membership_id: memberships.find((m) => m.member_id === M.alex && m.year === cy - 1).id,
@@ -395,6 +398,9 @@ function buildDataset(cy) {
 			date: `${cy - 1}-04-05`,
 			notes: null,
 			payment_id: null,
+			membership_amount: 75,
+			donation_amount: 0,
+			donation_note: null,
 		},
 		{
 			membership_id: marieCy,
@@ -403,6 +409,9 @@ function buildDataset(cy) {
 			date: `${cy}-03-19`,
 			notes: stripeNotes('cs_devseed_marie_01', 50, 'Lake cleanup fund'),
 			payment_id: 'pi_devseed_marie_001',
+			membership_amount: 75,
+			donation_amount: 50,
+			donation_note: 'Lake cleanup fund',
 		},
 		{
 			membership_id: jeanCy,
@@ -411,6 +420,9 @@ function buildDataset(cy) {
 			date: `${cy}-03-13`,
 			notes: 'Cotisation associé',
 			payment_id: null,
+			membership_amount: 25,
+			donation_amount: 0,
+			donation_note: null,
 		},
 		{
 			membership_id: sophieIds[0],
@@ -419,6 +431,9 @@ function buildDataset(cy) {
 			date: `${cy - 2}-06-03`,
 			notes: null,
 			payment_id: null,
+			membership_amount: 25,
+			donation_amount: 0,
+			donation_note: null,
 		},
 		{
 			membership_id: sophieIds[1],
@@ -427,6 +442,9 @@ function buildDataset(cy) {
 			date: `${cy - 1}-05-22`,
 			notes: null,
 			payment_id: null,
+			membership_amount: 75,
+			donation_amount: 0,
+			donation_note: null,
 		},
 		{
 			membership_id: sophieIds[2],
@@ -435,6 +453,9 @@ function buildDataset(cy) {
 			date: `${cy}-03-06`,
 			notes: stripeNotes('cs_devseed_sophie_01', 0, ''),
 			payment_id: 'pi_devseed_sophie_001',
+			membership_amount: 75,
+			donation_amount: 0,
+			donation_note: null,
 		},
 		{
 			membership_id: noahPrev,
@@ -443,6 +464,9 @@ function buildDataset(cy) {
 			date: `${cy - 1}-07-05`,
 			notes: null,
 			payment_id: null,
+			membership_amount: 75,
+			donation_amount: 0,
+			donation_note: null,
 		},
 		{
 			membership_id: chloeCy,
@@ -451,6 +475,9 @@ function buildDataset(cy) {
 			date: `${cy}-03-26`,
 			notes: 'Chèque #1042',
 			payment_id: null,
+			membership_amount: 75,
+			donation_amount: 0,
+			donation_note: null,
 		},
 	];
 
@@ -534,7 +561,17 @@ function buildSeedSql(dataset) {
 	const paymentValues = payments
 		.map(
 			(p) =>
-				`(${[sqlUuid(p.membership_id), sqlText(p.method), sqlNum(p.amount), sqlDate(p.date), sqlText(p.notes), sqlText(p.payment_id)].join(', ')})`,
+				`(${[
+					sqlUuid(p.membership_id),
+					sqlText(p.method),
+					sqlNum(p.amount),
+					sqlDate(p.date),
+					sqlText(p.notes),
+					sqlText(p.payment_id),
+					sqlNum(p.membership_amount),
+					sqlNum(p.donation_amount),
+					sqlText(p.donation_note),
+				].join(', ')})`,
 		)
 		.join(',\n  ');
 
@@ -563,7 +600,7 @@ insert into public.members (
 insert into public.memberships (id, member_id, year, tier, status, created_at) values
   ${membershipValues};
 
-insert into public.payments (membership_id, method, amount, date, notes, payment_id) values
+insert into public.payments (membership_id, method, amount, date, notes, payment_id, membership_amount, donation_amount, donation_note) values
   ${paymentValues};
 
 insert into public.admin_audit_log (actor_user_id, action, entity_type, entity_id, metadata) values

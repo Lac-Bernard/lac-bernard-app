@@ -1,5 +1,7 @@
 /** Client-side admin console (membership admin page). */
 
+import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymentSplit';
+
 export type AdminConsoleStrings = Record<string, string>;
 
 type MemberRow = {
@@ -36,6 +38,8 @@ type MembershipEmbed = {
 	status: string;
 	/** Standard membership fee for tier (cents); null if tier is unknown */
 	expected_membership_cents?: number | null;
+	/** Sum of membership_amount already recorded toward this membership year */
+	sum_membership_paid?: number;
 	members: null | {
 		id: string;
 		first_name: string | null;
@@ -291,6 +295,37 @@ export function initAdminConsole(
 	const tabs = document.querySelectorAll<HTMLButtonElement>('[data-admin-tab]');
 	const panels = document.querySelectorAll<HTMLElement>('[data-admin-panel]');
 
+	const fmtCad = (n: number) =>
+		new Intl.NumberFormat(numberLocale, { style: 'currency', currency: 'CAD' }).format(n);
+
+	function updatePaymentPreviewConsole() {
+		const preview = el<HTMLElement>('#admin-payment-split-preview');
+		const amtInput = el<HTMLInputElement>('#admin-payment-amount');
+		if (!preview || !amtInput) return;
+		const tier = el<HTMLInputElement>('#admin-payment-tier')?.value ?? 'general';
+		const status = el<HTMLInputElement>('#admin-payment-status')?.value ?? 'pending';
+		const sumPaidRaw = el<HTMLInputElement>('#admin-payment-sum-paid')?.value ?? '0';
+		const sumPaid = roundMoney(parseFloat(sumPaidRaw) || 0);
+		const raw = parseFloat(String(amtInput.value ?? ''));
+		if (!Number.isFinite(raw) || raw <= 0) {
+			preview.hidden = true;
+			preview.textContent = '';
+			return;
+		}
+		const split = computeManualPaymentSplit({
+			amount: roundMoney(raw),
+			tier,
+			membershipStatus: status,
+			sumMembershipPaid: sumPaid,
+		});
+		preview.hidden = false;
+		preview.innerHTML = `${escapeHtml(
+			t(strings, 'adminPaymentPreviewMembership', { amount: fmtCad(split.membershipAmount) }),
+		)}<br />${escapeHtml(
+			t(strings, 'adminPaymentPreviewDonation', { amount: fmtCad(split.donationAmount) }),
+		)}`;
+	}
+
 	let membersPage = 1;
 	let membersTotalPages = 1;
 	let membersSort = 'created_at_desc';
@@ -370,6 +405,16 @@ export function initAdminConsole(
 		btn.addEventListener('click', () => showTab(btn.dataset.adminTab ?? 'overview'));
 	});
 
+	el<HTMLInputElement>('#admin-payment-amount')?.addEventListener('input', updatePaymentPreviewConsole);
+
+	paymentDialog?.addEventListener('close', () => {
+		const preview = el<HTMLElement>('#admin-payment-split-preview');
+		if (preview) {
+			preview.hidden = true;
+			preview.textContent = '';
+		}
+	});
+
 	el<HTMLFormElement>('#admin-payment-form')?.addEventListener('submit', async (e) => {
 		e.preventDefault();
 		const form = e.target as HTMLFormElement;
@@ -378,8 +423,13 @@ export function initAdminConsole(
 		const method = String(fd.get('method') ?? '');
 		const date = String(fd.get('date') ?? '').trim();
 		const notes = String(fd.get('notes') ?? '').trim();
+		const reference = String(fd.get('reference') ?? '').trim();
 		const mid = paymentMembershipId?.value;
 		if (!mid) return;
+		if (!Number.isFinite(amount) || amount <= 0) {
+			setStatus(t(strings, 'adminErrorGeneric'), 'error');
+			return;
+		}
 		setStatus(t(strings, 'adminLoading'));
 		const { ok, data } = await fetchJson<{ error?: string }>(`/api/admin/memberships/${encodeURIComponent(mid)}/record-payment`, {
 			method: 'POST',
@@ -388,6 +438,7 @@ export function initAdminConsole(
 				method,
 				date: date || undefined,
 				notes: notes || undefined,
+				...(reference ? { reference } : {}),
 			}),
 		});
 		if (!ok) {
@@ -641,6 +692,10 @@ export function initAdminConsole(
 					m.tier === 'general' ? tierLabels.general : m.tier === 'associate' ? tierLabels.associate : m.tier;
 				const detailHref = mem ? `${adminMembersBase}/${encodeURIComponent(mem.id)}` : '#';
 				const expected = formatExpectedMembershipFee(m.expected_membership_cents, numberLocale);
+				const sumPaid =
+					typeof m.sum_membership_paid === 'number' && Number.isFinite(m.sum_membership_paid) ?
+						m.sum_membership_paid
+					:	0;
 				return `<tr>
           <td><a href="${escapeHtml(detailHref)}">${escapeHtml(name)}</a></td>
           <td>${escapeHtml(email)}</td>
@@ -648,7 +703,7 @@ export function initAdminConsole(
           <td>${escapeHtml(tier)}</td>
           <td>${escapeHtml(m.status)}</td>
           <td>${escapeHtml(expected)}</td>
-          <td class="adminPendingActions"><button type="button" class="adminBtn adminBtn--outline" data-open-payment data-membership-id="${escapeHtml(m.id)}">${t(strings, 'adminRecordPaymentBtn')}</button><button type="button" class="adminPendingTrash" data-cancel-pending data-membership-id="${escapeHtml(m.id)}" aria-label="${escapeHtml(t(strings, 'adminCancelPendingAriaLabel'))}">${ADMIN_PENDING_TRASH_ICON}</button></td>
+          <td class="adminPendingActions"><button type="button" class="adminBtn adminBtn--outline" data-open-payment data-membership-id="${escapeHtml(m.id)}" data-tier="${escapeHtml(m.tier)}" data-status="${escapeHtml(m.status)}" data-sum-paid="${String(sumPaid)}">${t(strings, 'adminRecordPaymentBtn')}</button><button type="button" class="adminPendingTrash" data-cancel-pending data-membership-id="${escapeHtml(m.id)}" aria-label="${escapeHtml(t(strings, 'adminCancelPendingAriaLabel'))}">${ADMIN_PENDING_TRASH_ICON}</button></td>
         </tr>`;
 			})
 			.join('');
@@ -657,7 +712,17 @@ export function initAdminConsole(
 				const id = b.dataset.membershipId;
 				if (id && paymentMembershipId && paymentDialog) {
 					paymentMembershipId.value = id;
+					const tierEl = el<HTMLInputElement>('#admin-payment-tier');
+					const statusEl = el<HTMLInputElement>('#admin-payment-status');
+					const sumEl = el<HTMLInputElement>('#admin-payment-sum-paid');
+					if (tierEl) tierEl.value = b.dataset.tier ?? 'general';
+					if (statusEl) statusEl.value = b.dataset.status ?? 'pending';
+					if (sumEl) sumEl.value = b.dataset.sumPaid ?? '0';
 					paymentDialog.showModal();
+					queueMicrotask(() => {
+						updatePaymentPreviewConsole();
+						el<HTMLInputElement>('#admin-payment-amount')?.focus();
+					});
 				}
 			});
 		});
