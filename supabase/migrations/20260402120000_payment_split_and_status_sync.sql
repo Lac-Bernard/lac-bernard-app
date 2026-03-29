@@ -32,7 +32,7 @@ begin
       end;
 
     v_donation := 0;
-    v_mem := r.amount;
+    v_mem := coalesce(r.amount, 0);
     v_dnote := null;
 
     if r.method = 'stripe' and r.notes is not null then
@@ -40,13 +40,13 @@ begin
       m2 := regexp_match(r.notes, 'donation\s*\$\s*([0-9]+(?:\.[0-9]{1,2})?)(?:\s*CAD)?', 'i');
       if m1 is not null then
         v_donation := m1[1]::numeric;
-        v_mem := round((r.amount - v_donation)::numeric, 2);
+        v_mem := round((coalesce(r.amount, 0) - v_donation)::numeric, 2);
       elsif m2 is not null then
         v_donation := m2[1]::numeric;
-        v_mem := round((r.amount - v_donation)::numeric, 2);
-      elsif v_fee is not null and r.amount > v_fee then
+        v_mem := round((coalesce(r.amount, 0) - v_donation)::numeric, 2);
+      elsif v_fee is not null and coalesce(r.amount, 0) > v_fee then
         v_mem := v_fee;
-        v_donation := round((r.amount - v_fee)::numeric, 2);
+        v_donation := round((coalesce(r.amount, 0) - v_fee)::numeric, 2);
       end if;
 
       m3 := regexp_match(r.notes, 'Donation note:\s*(.+?)(?:\s*·\s*|$)', 'i');
@@ -71,9 +71,12 @@ $$;
 select public._backfill_payment_split_migration();
 drop function public._backfill_payment_split_migration();
 
+-- amount can be null in legacy rows; coalesce so NOT NULL + split check can succeed
 update public.payments
-set membership_amount = amount, donation_amount = 0
-where membership_amount is null;
+set
+  membership_amount = coalesce(membership_amount, coalesce(amount, 0)),
+  donation_amount = coalesce(donation_amount, 0)
+where membership_amount is null or donation_amount is null;
 
 alter table public.payments
   alter column membership_amount set not null,
