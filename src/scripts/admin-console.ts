@@ -1,6 +1,8 @@
 /** Client-side admin console (membership admin page). */
 
+import { formatAdminLocaleDate } from '../lib/admin/formatLocaleDate';
 import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymentSplit';
+import { formatMemberPrimaryName } from '../lib/members/memberDisplayName';
 
 export type AdminConsoleStrings = Record<string, string>;
 
@@ -543,14 +545,14 @@ export function initAdminConsole(
 		const payRows = payments
 			.map((p) => {
 				const mem = p.member;
-				const name = mem ? `${mem.first_name ?? ''} ${mem.last_name}`.trim() : '—';
+				const name = mem ? formatMemberPrimaryName(mem) : '—';
 				const href = mem ? `${adminMembersBase}/${encodeURIComponent(mem.id)}` : '#';
 				return `<tr>
 					<td><a href="${escapeHtml(href)}">${escapeHtml(name)}</a></td>
 					<td>${p.membership_year ?? '—'}</td>
 					<td>${escapeHtml(methodLabel(strings, p.method))}</td>
 					<td>${p.amount != null ? escapeHtml(String(p.amount)) : '—'}</td>
-					<td>${escapeHtml(fmtDate(p.date ?? p.created_at))}</td>
+					<td>${escapeHtml(formatAdminLocaleDate(p.date ?? p.created_at))}</td>
 				</tr>`;
 			})
 			.join('');
@@ -564,12 +566,12 @@ export function initAdminConsole(
 		}>;
 		const nmRows = newMems
 			.map((m) => {
-				const name = `${m.first_name ?? ''} ${m.last_name}`.trim();
+				const name = formatMemberPrimaryName(m);
 				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;
 				return `<tr>
 					<td><a href="${escapeHtml(href)}">${escapeHtml(name)}</a></td>
 					<td>${escapeHtml(m.primary_email ?? '—')}</td>
-					<td>${escapeHtml(fmtDate(m.created_at))}</td>
+					<td>${escapeHtml(formatAdminLocaleDate(m.created_at))}</td>
 				</tr>`;
 			})
 			.join('');
@@ -585,7 +587,7 @@ export function initAdminConsole(
 		const msRows = recMs
 			.map((m) => {
 				const mem = m.member;
-				const name = mem ? `${mem.first_name ?? ''} ${mem.last_name}`.trim() : '—';
+				const name = mem ? formatMemberPrimaryName(mem) : '—';
 				const href = mem ? `${adminMembersBase}/${encodeURIComponent(mem.id)}` : '#';
 				const tier =
 					m.tier === 'general' ? tierLabels.general : m.tier === 'associate' ? tierLabels.associate : m.tier;
@@ -594,7 +596,7 @@ export function initAdminConsole(
 					<td>${m.year}</td>
 					<td>${escapeHtml(tier)}</td>
 					<td>${statusPillHtml(m.status)}</td>
-					<td>${escapeHtml(fmtDate(m.created_at))}</td>
+					<td>${escapeHtml(formatAdminLocaleDate(m.created_at))}</td>
 				</tr>`;
 			})
 			.join('');
@@ -609,7 +611,7 @@ export function initAdminConsole(
 		const auditRows = audits
 			.map(
 				(a) =>
-					`<tr><td>${escapeHtml(fmtDate(a.created_at))}</td><td>${escapeHtml(a.action)}</td><td>${escapeHtml(a.entity_type ?? '')}</td><td>${escapeHtml(a.entity_id ?? '')}</td></tr>`,
+					`<tr><td>${escapeHtml(formatAdminLocaleDate(a.created_at))}</td><td>${escapeHtml(a.action)}</td><td>${escapeHtml(a.entity_type ?? '')}</td><td>${escapeHtml(a.entity_id ?? '')}</td></tr>`,
 			)
 			.join('');
 
@@ -686,7 +688,7 @@ export function initAdminConsole(
 		pendingBody.innerHTML = rows
 			.map((m) => {
 				const mem = m.members;
-				const name = mem ? `${mem.first_name ?? ''} ${mem.last_name}`.trim() : '—';
+				const name = mem ? formatMemberPrimaryName(mem) : '—';
 				const email = mem?.primary_email ?? '—';
 				const tier =
 					m.tier === 'general' ? tierLabels.general : m.tier === 'associate' ? tierLabels.associate : m.tier;
@@ -797,7 +799,7 @@ export function initAdminConsole(
 
 		body.innerHTML = data.members
 			.map((m) => {
-				const name = `${m.first_name ?? ''} ${m.last_name}`.trim();
+				const name = formatMemberPrimaryName(m);
 				const email = m.primary_email ?? '—';
 				const rawTier = m.membership_tier_for_year;
 				let tierCell = '';
@@ -810,7 +812,7 @@ export function initAdminConsole(
           <td>${escapeHtml(name)}</td>
           <td>${escapeHtml(email)}</td>
           <td>${escapeHtml(tierCell)}</td>
-          <td>${escapeHtml(fmtDate(m.created_at))}</td>
+          <td>${escapeHtml(formatAdminLocaleDate(m.created_at))}</td>
         </tr>`;
 			})
 			.join('');
@@ -839,12 +841,4 @@ function statusPillHtml(status: string): string {
 				? 'adminStatusPill adminStatusPill--pending'
 				: 'adminStatusPill adminStatusPill--neutral';
 	return `<span class="${cls}">${escapeHtml(status)}</span>`;
-}
-
-function fmtDate(iso: string): string {
-	try {
-		return new Date(iso).toLocaleDateString();
-	} catch {
-		return iso;
-	}
 }

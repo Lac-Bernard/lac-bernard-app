@@ -291,8 +291,11 @@ export const memberCopy: Record<
 		profileSectionLake: string;
 		profileSectionMailing: string;
 		profileSignInEmail: string;
+		profileSectionNamesOnMembership: string;
 		profileFirstName: string;
 		profileLastName: string;
+		profileOtherFirstName: string;
+		profileOtherLastName: string;
 		profilePrimaryPhone: string;
 		profileSecondaryPhone: string;
 		profileLakePhone: string;
@@ -570,8 +573,11 @@ export const memberCopy: Record<
 		profileSectionLake: 'At the lake',
 		profileSectionMailing: 'Mailing address',
 		profileSignInEmail: 'Sign-in email',
+		profileSectionNamesOnMembership: 'Names on membership',
 		profileFirstName: 'First name',
 		profileLastName: 'Last name',
+		profileOtherFirstName: 'Other first name',
+		profileOtherLastName: 'Other last name',
 		profilePrimaryPhone: 'Primary phone',
 		profileSecondaryPhone: 'Secondary phone',
 		profileLakePhone: 'Lake phone',
@@ -850,8 +856,11 @@ export const memberCopy: Record<
 		profileSectionLake: 'Au lac',
 		profileSectionMailing: 'Adresse postale',
 		profileSignInEmail: 'Courriel de connexion',
+		profileSectionNamesOnMembership: 'Noms sur l’adhésion',
 		profileFirstName: 'Prénom',
 		profileLastName: 'Nom',
+		profileOtherFirstName: 'Autre prénom',
+		profileOtherLastName: 'Autre nom de famille',
 		profilePrimaryPhone: 'Téléphone principal',
 		profileSecondaryPhone: 'Téléphone secondaire',
 		profileLakePhone: 'Téléphone au lac',

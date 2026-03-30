@@ -24,6 +24,8 @@ const v = (s: string | null | undefined) => (s ?? '').trim();
 
 const firstName = isEdit ? v(member?.first_name) : '';
 const lastName = isEdit ? v(member?.last_name) : '';
+const otherFirstName = isEdit ? v(member?.other_first_name) : '';
+const otherLastName = isEdit ? v(member?.other_last_name) : '';
 const primaryPhone = isEdit ? v(member?.primary_phone) : '';
 const secondaryPhone = isEdit ? v(member?.secondary_phone) : '';
 const lakePhone = isEdit ? v(member?.lake_phone) : '';
@@ -58,19 +60,42 @@ const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 						aria-readonly="true"
 					/>
 
-					<label class="fieldLabel" for="first_name">{t.profileFirstName}</label>
-					<input class="fieldInput" id="first_name" name="first_name" type="text" autocomplete="given-name" value={firstName} />
+					<fieldset class="profileNamesGroup">
+						<legend class="profileLegend">{t.profileSectionNamesOnMembership}</legend>
+						<label class="fieldLabel" for="first_name">{t.profileFirstName}</label>
+						<input class="fieldInput" id="first_name" name="first_name" type="text" autocomplete="given-name" value={firstName} />
 
-					<label class="fieldLabel" for="last_name">{t.profileLastName}</label>
-					<input
-						class="fieldInput"
-						id="last_name"
-						name="last_name"
-						type="text"
-						autocomplete="family-name"
-						required
-						value={lastName}
-					/>
+						<label class="fieldLabel" for="last_name">{t.profileLastName}</label>
+						<input
+							class="fieldInput"
+							id="last_name"
+							name="last_name"
+							type="text"
+							autocomplete="family-name"
+							required
+							value={lastName}
+						/>
+
+						<label class="fieldLabel" for="other_first_name">{t.profileOtherFirstName}</label>
+						<input
+							class="fieldInput"
+							id="other_first_name"
+							name="other_first_name"
+							type="text"
+							autocomplete="off"
+							value={otherFirstName}
+						/>
+
+						<label class="fieldLabel" for="other_last_name">{t.profileOtherLastName}</label>
+						<input
+							class="fieldInput"
+							id="other_last_name"
+							name="other_last_name"
+							type="text"
+							autocomplete="off"
+							value={otherLastName}
+						/>
+					</fieldset>
 
 					<label class="fieldLabel" for="primary_phone">{t.profilePrimaryPhone}</label>
 					<input class="fieldInput" id="primary_phone" name="primary_phone" type="text" autocomplete="tel" value={primaryPhone} />
@@ -230,6 +255,19 @@ const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
+	}
+
+	.profileNamesGroup {
+		border: none;
+		margin: 0.35rem 0 0.5rem;
+		padding: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.profileNamesGroup .profileLegend {
+		padding: 0 6px;
 	}
 
 	.profileLegend {

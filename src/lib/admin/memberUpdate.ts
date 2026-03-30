@@ -91,7 +91,9 @@ export function parseAdminMemberPatch(body: unknown): { ok: true; value: AdminMe
 export function adminPatchToRow(p: AdminMemberPatch): Record<string, unknown> {
 	const row: Record<string, unknown> = {
 		first_name: p.first_name,
+		other_first_name: p.other_first_name,
 		last_name: p.last_name,
+		other_last_name: p.other_last_name,
 		primary_phone: p.primary_phone,
 		secondary_phone: p.secondary_phone,
 		lake_phone: p.lake_phone,

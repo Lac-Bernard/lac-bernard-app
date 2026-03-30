@@ -1,5 +1,6 @@
 /** Client-side admin member detail page. */
 
+import { formatAdminLocaleDate } from '../lib/admin/formatLocaleDate';
 import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymentSplit';
 import { MANUAL_PAYMENT_METHODS, isValidManualPaymentAmount } from '../lib/admin/manualPaymentClient';
 import { parseDonationNoteSnippet, perPaymentMembershipDonation, sumYearPaymentBreakdown } from '../lib/admin/paymentBreakdown';
@@ -9,7 +10,9 @@ type MemberRow = {
 	id: string;
 	created_at: string;
 	first_name: string | null;
+	other_first_name: string | null;
 	last_name: string;
+	other_last_name: string | null;
 	primary_email: string | null;
 	secondary_email: string | null;
 	primary_phone: string | null;
@@ -87,15 +90,6 @@ function escapeHtml(s: string): string {
 		.replace(/</g, '&lt;')
 		.replace(/>/g, '&gt;')
 		.replace(/"/g, '&quot;');
-}
-
-function fmtDate(iso: string | null | undefined): string {
-	if (!iso) return '—';
-	try {
-		return new Date(iso).toLocaleDateString();
-	} catch {
-		return iso;
-	}
 }
 
 function methodLabel(strings: AdminConsoleStrings, m: string | null): string {
@@ -212,6 +206,8 @@ export function initAdminMemberDetail(
 	function fillForm(m: MemberRow) {
 		el<HTMLInputElement>('#admin-field-first_name')!.value = m.first_name ?? '';
 		el<HTMLInputElement>('#admin-field-last_name')!.value = m.last_name ?? '';
+		el<HTMLInputElement>('#admin-field-other_first_name')!.value = m.other_first_name ?? '';
+		el<HTMLInputElement>('#admin-field-other_last_name')!.value = m.other_last_name ?? '';
 		el<HTMLInputElement>('#admin-field-primary_email')!.value = m.primary_email ?? '';
 		el<HTMLInputElement>('#admin-field-secondary_email')!.value = m.secondary_email ?? '';
 		el<HTMLInputElement>('#admin-field-primary_phone')!.value = m.primary_phone ?? '';
@@ -387,7 +383,7 @@ export function initAdminMemberDetail(
 			.map((p) => {
 				const { membership, donation } = perPaymentMembershipDonation(p, ms.tier);
 				return `<tr>
-				<td>${escapeHtml(fmtDate(p.date ?? p.created_at))}</td>
+				<td>${escapeHtml(formatAdminLocaleDate(p.date ?? p.created_at))}</td>
 				<td>${escapeHtml(methodLabel(strings, p.method))}</td>
 				<td>${p.amount != null ? escapeHtml(fmtMoney(p.amount)) : '<span class="adminDetailCellEmpty">—</span>'}</td>
 				<td>${escapeHtml(fmtMoney(membership))}</td>
@@ -523,7 +519,9 @@ export function initAdminMemberDetail(
 		const fd = new FormData(memberForm);
 		const body: Record<string, unknown> = {
 			first_name: fd.get('first_name') || null,
+			other_first_name: fd.get('other_first_name') || null,
 			last_name: String(fd.get('last_name') ?? '').trim(),
+			other_last_name: fd.get('other_last_name') || null,
 			primary_phone: fd.get('primary_phone') || null,
 			secondary_phone: fd.get('secondary_phone') || null,
 			lake_phone: fd.get('lake_phone') || null,

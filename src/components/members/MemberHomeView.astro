@@ -7,6 +7,7 @@ import {
 	type MemberLocale,
 } from '../../lib/members/i18n';
 import type { MemberAccountPayload } from '../../lib/members/accountData';
+import { formatMemberWithOtherNames } from '../../lib/members/memberDisplayName';
 import { membershipCentsForTier } from '../../lib/membership/stripeCheckout';
 
 interface Props {
@@ -84,6 +85,7 @@ const associateFeeCad =
 	associateCents != null ? (associateCents / 100).toFixed(2) : '0.00';
 
 const displayEmail = member ? (member.primary_email?.trim() || email) : '';
+const displayMemberName = member ? formatMemberWithOtherNames(member) : '';
 
 let mailingLine: string | null = null;
 if (member) {
@@ -128,10 +130,7 @@ if (member) {
             <div class="memberSummaryCard">
               <div class="memberSummaryHeader">
                 <div class="memberSummaryIdentity">
-                  <p class="memberSummaryName">
-                    {member.first_name ? `${member.first_name} ` : ''}
-                    {member.last_name}
-                  </p>
+                  <p class="memberSummaryName">{displayMemberName}</p>
                   <p class="memberSummaryEmail">{displayEmail}</p>
                 </div>
                 <a class="profileEditLink memberSummaryEdit" href={paths.edit}>{t.linkEditProfile}</a>
