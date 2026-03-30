@@ -14,7 +14,7 @@ export function formatMemberPrimaryName(m: MemberNameFields): string {
 	return `${f} ${l}`.trim();
 }
 
-/** Profile / detail: full co-listing when other_* are set. */
+/** Profile / detail: full co-listing when other_* are set (plain text, slash separator). */
 export function formatMemberWithOtherNames(m: MemberNameFields): string {
 	const primary = formatMemberPrimaryName(m);
 	const of = (m.other_first_name ?? '').trim();
@@ -23,4 +23,14 @@ export function formatMemberWithOtherNames(m: MemberNameFields): string {
 	const other = [of, ol].filter(Boolean).join(' ').trim();
 	if (!other) return primary;
 	return `${primary} / ${other}`;
+}
+
+/** When co-listed names exist, split for UI: `primary` & `other` (other = other first + other last). */
+export function memberSummaryNameParts(m: MemberNameFields): { primary: string; other: string } | null {
+	const primary = formatMemberPrimaryName(m);
+	const of = (m.other_first_name ?? '').trim();
+	const ol = (m.other_last_name ?? '').trim();
+	const other = [of, ol].filter(Boolean).join(' ').trim();
+	if (!other) return null;
+	return { primary, other };
 }

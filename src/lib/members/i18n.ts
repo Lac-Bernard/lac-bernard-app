@@ -313,6 +313,8 @@ export const memberCopy: Record<
 		profileErrorLastName: string;
 		profileErrorAlreadyMember: string;
 		profileErrorSave: string;
+		/** Spaced conjunction between primary and co-listed names on the account card, e.g. " and " / " et ". */
+		memberSummaryNameAnd: string;
 	}
 > = {
 	en: {
@@ -595,6 +597,7 @@ export const memberCopy: Record<
 		profileErrorLastName: 'Last name is required.',
 		profileErrorAlreadyMember: 'A profile already exists for this account. Returning to the member area.',
 		profileErrorSave: 'Could not save your profile. Please try again.',
+		memberSummaryNameAnd: ' and ',
 	},
 	fr: {
 		homeTitle: 'Espace membre | Association du lac Bernard',
@@ -878,6 +881,7 @@ export const memberCopy: Record<
 		profileErrorLastName: 'Le nom est obligatoire.',
 		profileErrorAlreadyMember: 'Un profil existe déjà pour ce compte. Retour à l’espace membre.',
 		profileErrorSave: 'Enregistrement impossible. Veuillez réessayer.',
+		memberSummaryNameAnd: ' et ',
 	},
 };
 
