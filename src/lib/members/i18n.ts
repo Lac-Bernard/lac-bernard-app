@@ -90,24 +90,22 @@ export const memberCopy: Record<
 		adminDetailPaymentsHeading: string;
 		adminBackToAdmin: string;
 		adminMethodStripe: string;
-		adminOverviewPaymentsTitle: string;
-		adminOverviewMembersTitle: string;
-		adminOverviewMembershipsTitle: string;
-		adminOverviewAuditTitle: string;
+		adminOverviewRecentTitle: string;
+		adminOverviewRecentVerifiedSubtitle: string;
+		adminOverviewRecentActiveSubtitle: string;
+		adminOverviewColWhen: string;
 		adminOverviewCountPending: string;
 		adminOverviewCountActive: string;
-		adminOverviewCountTotal: string;
 		adminOverviewCountNewMembers: string;
+		adminOverviewKpiAriaMembers: string;
+		adminOverviewKpiAriaPending: string;
+		adminOverviewKpiAriaNewMembers: string;
 		adminTableAmount: string;
 		adminTableDuesPortion: string;
 		adminTableDonationPortion: string;
 		adminPaymentPreviewMembership: string;
 		adminPaymentPreviewDonation: string;
 		adminTablePaymentDate: string;
-		adminAuditWhen: string;
-		adminAuditAction: string;
-		adminAuditEntityType: string;
-		adminAuditEntityId: string;
 		adminPendingBadge: string;
 		adminDetailNoMemberships: string;
 		adminDetailPaymentsEmpty: string;
@@ -377,24 +375,22 @@ export const memberCopy: Record<
 		adminDetailPaymentsHeading: 'Payments',
 		adminBackToAdmin: 'Back to admin',
 		adminMethodStripe: 'Card (Stripe)',
-		adminOverviewPaymentsTitle: 'Recent payments',
-		adminOverviewMembersTitle: 'New profiles',
-		adminOverviewMembershipsTitle: 'Recent memberships',
-		adminOverviewAuditTitle: 'Recent admin actions',
-		adminOverviewCountPending: 'Pending',
-		adminOverviewCountActive: 'Active {{year}}',
-		adminOverviewCountTotal: 'Verified in directory',
-		adminOverviewCountNewMembers: 'Awaiting review',
+		adminOverviewRecentTitle: 'Recent members',
+		adminOverviewRecentVerifiedSubtitle: 'Recently added verified profiles',
+		adminOverviewRecentActiveSubtitle: 'Recent active memberships',
+		adminOverviewColWhen: 'When',
+		adminOverviewCountPending: 'Pending memberships',
+		adminOverviewCountActive: 'Active memberships ({{year}})',
+		adminOverviewCountNewMembers: 'New members',
+		adminOverviewKpiAriaMembers: '{{count}} active memberships for {{year}}. Open members directory.',
+		adminOverviewKpiAriaPending: '{{count}} pending memberships. Open pending tab.',
+		adminOverviewKpiAriaNewMembers: '{{count}} new member profiles. Open new members tab.',
 		adminTableAmount: 'Total',
 		adminTableDuesPortion: 'Dues',
 		adminTableDonationPortion: 'Donation',
 		adminPaymentPreviewMembership: 'Toward membership: {{amount}}',
 		adminPaymentPreviewDonation: 'Donation: {{amount}}',
 		adminTablePaymentDate: 'Paid',
-		adminAuditWhen: 'When',
-		adminAuditAction: 'Action',
-		adminAuditEntityType: 'Entity',
-		adminAuditEntityId: 'Reference',
 		adminPendingBadge: '{{count}} pending',
 		adminDetailNoMemberships: 'No membership records for this person yet.',
 		adminDetailPaymentsEmpty: 'No payments recorded for this membership year.',
@@ -674,24 +670,23 @@ export const memberCopy: Record<
 		adminDetailPaymentsHeading: 'Paiements',
 		adminBackToAdmin: 'Retour à l’administration',
 		adminMethodStripe: 'Carte (Stripe)',
-		adminOverviewPaymentsTitle: 'Paiements récents',
-		adminOverviewMembersTitle: 'Nouveaux profils',
-		adminOverviewMembershipsTitle: 'Adhésions récentes',
-		adminOverviewAuditTitle: 'Actions admin récentes',
-		adminOverviewCountPending: 'En attente',
-		adminOverviewCountActive: 'Actifs {{year}}',
-		adminOverviewCountTotal: 'Vérifiés au répertoire',
-		adminOverviewCountNewMembers: 'En attente de révision',
+		adminOverviewRecentTitle: 'Membres récents',
+		adminOverviewRecentVerifiedSubtitle: 'Profils vérifiés ajoutés récemment',
+		adminOverviewRecentActiveSubtitle: 'Adhésions actives récentes',
+		adminOverviewColWhen: 'Date',
+		adminOverviewCountPending: 'Adhésions en attente',
+		adminOverviewCountActive: 'Adhésions actives ({{year}})',
+		adminOverviewCountNewMembers: 'Nouveaux membres',
+		adminOverviewKpiAriaMembers:
+			'{{count}} adhésions actives pour {{year}}. Ouvrir le répertoire des membres.',
+		adminOverviewKpiAriaPending: '{{count}} adhésions en attente. Ouvrir l’onglet En attente.',
+		adminOverviewKpiAriaNewMembers: '{{count}} nouveaux profils membres. Ouvrir l’onglet Nouveaux membres.',
 		adminTableAmount: 'Total',
 		adminTableDuesPortion: 'Cotisation',
 		adminTableDonationPortion: 'Don',
 		adminPaymentPreviewMembership: 'Vers la cotisation : {{amount}}',
 		adminPaymentPreviewDonation: 'Don : {{amount}}',
 		adminTablePaymentDate: 'Payé',
-		adminAuditWhen: 'Quand',
-		adminAuditAction: 'Action',
-		adminAuditEntityType: 'Entité',
-		adminAuditEntityId: 'Référence',
 		adminPendingBadge: '{{count}} en attente',
 		adminDetailNoMemberships: 'Aucune adhésion dans le dossier pour le moment.',
 		adminDetailPaymentsEmpty: 'Aucun paiement enregistré pour cette année d’adhésion.',

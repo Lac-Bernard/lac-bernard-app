@@ -70,13 +70,21 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 	const memberIds = [...new Set(list.map((r) => r.member_id))];
 	let memberMap = new Map<
 		string,
-		{ id: string; first_name: string | null; last_name: string; primary_email: string | null; secondary_email: string | null }
+		{
+			id: string;
+			first_name: string | null;
+			last_name: string;
+			other_first_name: string | null;
+			other_last_name: string | null;
+			primary_email: string | null;
+			secondary_email: string | null;
+		}
 	>();
 
 	if (memberIds.length > 0) {
 		const { data: members, error: mErr } = await service
 			.from('members')
-			.select('id, first_name, last_name, primary_email, secondary_email')
+			.select('id, first_name, last_name, other_first_name, other_last_name, primary_email, secondary_email')
 			.in('id', memberIds);
 
 		if (mErr) {

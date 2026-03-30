@@ -3,10 +3,34 @@ import { getMembershipCalendarYear } from '../../../lib/members/membershipYear';
 import { requireAdminSession } from '../../../lib/admin/session';
 import { createSupabaseServiceRoleClient } from '../../../lib/supabase/service';
 
-const LIMIT_PAYMENTS = 25;
-const LIMIT_MEMBERS = 15;
-const LIMIT_MEMBERSHIPS = 15;
-const LIMIT_AUDIT = 15;
+const LIMIT_VERIFIED_RECENT = 15;
+const LIMIT_ACTIVE_RECENT = 15;
+
+type MemberNameRow = {
+	id: string;
+	first_name: string | null;
+	last_name: string;
+	other_first_name?: string | null;
+	other_last_name?: string | null;
+	primary_email?: string | null;
+	created_at?: string;
+};
+
+/** Pick display tier for filter year: prefer active row, then pending, then newest. */
+function tierForMembershipYear(
+	rows: Array<{ member_id: string; tier: string; status: string; created_at: string }>,
+	memberId: string,
+): string | null {
+	const forMember = rows.filter((r) => r.member_id === memberId);
+	if (forMember.length === 0) return null;
+	const rank = (s: string) => (s === 'active' ? 0 : s === 'pending' ? 1 : 2);
+	forMember.sort((a, b) => {
+		const d = rank(a.status) - rank(b.status);
+		if (d !== 0) return d;
+		return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+	});
+	return forMember[0]?.tier ?? null;
+}
 
 export const GET: APIRoute = async ({ request, cookies }) => {
 	const auth = await requireAdminSession(request, cookies);
@@ -16,56 +40,40 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 	const year = getMembershipCalendarYear();
 
 	const [
-		paymentsRaw,
-		newMembersRes,
-		newMembershipsRaw,
 		pendingRes,
 		activeRes,
-		totalRes,
 		newMembersCountRes,
-		auditRes,
+		verifiedRecentRes,
+		activeRecentRes,
 	] = await Promise.all([
-		service
-			.from('payments')
-			.select('id, created_at, method, amount, date, notes, payment_id, membership_id')
-			.order('date', { ascending: false, nullsFirst: false })
-			.order('created_at', { ascending: false })
-			.limit(LIMIT_PAYMENTS),
-		service
-			.from('members')
-			.select('id, created_at, first_name, last_name, primary_email')
-			.eq('status', 'new')
-			.order('created_at', { ascending: false })
-			.limit(LIMIT_MEMBERS),
-		service
-			.from('memberships')
-			.select('id, created_at, year, tier, status, member_id')
-			.order('created_at', { ascending: false })
-			.limit(LIMIT_MEMBERSHIPS),
 		service.from('memberships').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
 		service
 			.from('memberships')
 			.select('id', { count: 'exact', head: true })
 			.eq('year', year)
 			.eq('status', 'active'),
-		service.from('members').select('id', { count: 'exact', head: true }).eq('status', 'verified'),
 		service.from('members').select('id', { count: 'exact', head: true }).eq('status', 'new'),
 		service
-			.from('admin_audit_log')
-			.select('id, created_at, actor_user_id, action, entity_type, entity_id, metadata')
+			.from('members')
+			.select('id, created_at, first_name, last_name, other_first_name, other_last_name')
+			.eq('status', 'verified')
 			.order('created_at', { ascending: false })
-			.limit(LIMIT_AUDIT),
+			.limit(LIMIT_VERIFIED_RECENT),
+		service
+			.from('memberships')
+			.select('id, created_at, activated_at, year, tier, member_id')
+			.eq('status', 'active')
+			.order('activated_at', { ascending: false, nullsFirst: false })
+			.order('created_at', { ascending: false })
+			.limit(LIMIT_ACTIVE_RECENT),
 	]);
 
 	const err =
-		paymentsRaw.error ||
-		newMembersRes.error ||
-		newMembershipsRaw.error ||
 		pendingRes.error ||
 		activeRes.error ||
-		totalRes.error ||
 		newMembersCountRes.error ||
-		auditRes.error;
+		verifiedRecentRes.error ||
+		activeRecentRes.error;
 	if (err) {
 		return new Response(JSON.stringify({ error: 'query_failed', detail: err.message }), {
 			status: 500,
@@ -73,89 +81,71 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 		});
 	}
 
-	const payments = paymentsRaw.data ?? [];
-	const mids = [...new Set(payments.map((p) => p.membership_id))];
-	let msById = new Map<string, { id: string; year: number; member_id: string }>();
-	if (mids.length > 0) {
-		const { data: mships, error: msErr } = await service
+	const verifiedMembers = (verifiedRecentRes.data ?? []) as MemberNameRow[];
+	const verifiedIds = verifiedMembers.map((m) => m.id);
+
+	let tierByMemberId = new Map<string, string | null>();
+	if (verifiedIds.length > 0) {
+		const { data: msForYear, error: msErr } = await service
 			.from('memberships')
-			.select('id, year, member_id')
-			.in('id', mids);
+			.select('member_id, tier, status, created_at')
+			.in('member_id', verifiedIds)
+			.eq('year', year);
 		if (msErr) {
 			return new Response(JSON.stringify({ error: 'query_failed', detail: msErr.message }), {
 				status: 500,
 				headers: { 'Content-Type': 'application/json' },
 			});
 		}
-		msById = new Map((mships ?? []).map((m) => [m.id, m]));
+		for (const id of verifiedIds) {
+			tierByMemberId.set(id, tierForMembershipYear(msForYear ?? [], id));
+		}
 	}
-	const memberIds = [...new Set([...msById.values()].map((m) => m.member_id))];
-	let memById = new Map<string, { id: string; first_name: string | null; last_name: string; primary_email: string | null }>();
-	if (memberIds.length > 0) {
+
+	const recentVerifiedMembers = verifiedMembers.map((m) => ({
+		member: m,
+		tier: tierByMemberId.get(m.id) ?? null,
+		eventAt: m.created_at ?? '',
+	}));
+
+	const activeMsRows = activeRecentRes.data ?? [];
+	const activeMemberIds = [...new Set(activeMsRows.map((r) => r.member_id))];
+	let memById = new Map<string, MemberNameRow>();
+	if (activeMemberIds.length > 0) {
 		const { data: mems, error: memErr } = await service
 			.from('members')
-			.select('id, first_name, last_name, primary_email')
-			.in('id', memberIds);
+			.select('id, first_name, last_name, other_first_name, other_last_name, primary_email')
+			.in('id', activeMemberIds);
 		if (memErr) {
 			return new Response(JSON.stringify({ error: 'query_failed', detail: memErr.message }), {
 				status: 500,
 				headers: { 'Content-Type': 'application/json' },
 			});
 		}
-		memById = new Map((mems ?? []).map((m) => [m.id, m]));
+		memById = new Map((mems ?? []).map((m) => [m.id, m as MemberNameRow]));
 	}
 
-	const recentPayments = payments.map((p) => {
-		const ms = msById.get(p.membership_id);
-		const mem = ms ? memById.get(ms.member_id) : undefined;
-		return {
-			...p,
-			membership_year: ms?.year ?? null,
-			member: mem
-				? {
-						id: mem.id,
-						first_name: mem.first_name,
-						last_name: mem.last_name,
-						primary_email: mem.primary_email,
-					}
-				: null,
-		};
-	});
-
-	const mshipRows = newMembershipsRaw.data ?? [];
-	const mIds2 = [...new Set(mshipRows.map((m) => m.member_id))];
-	let memById2 = new Map<string, { id: string; first_name: string | null; last_name: string; primary_email: string | null }>();
-	if (mIds2.length > 0) {
-		const { data: mems2, error: memErr2 } = await service
-			.from('members')
-			.select('id, first_name, last_name, primary_email')
-			.in('id', mIds2);
-		if (memErr2) {
-			return new Response(JSON.stringify({ error: 'query_failed', detail: memErr2.message }), {
-				status: 500,
-				headers: { 'Content-Type': 'application/json' },
-			});
-		}
-		memById2 = new Map((mems2 ?? []).map((m) => [m.id, m]));
-	}
-	const recentMemberships = mshipRows.map((ms) => ({
-		...ms,
-		member: memById2.get(ms.member_id) ?? null,
+	const recentActiveMemberships = activeMsRows.map((ms) => ({
+		membership: {
+			id: ms.id,
+			year: ms.year,
+			tier: ms.tier,
+			created_at: ms.created_at,
+			activated_at: ms.activated_at,
+		},
+		member: memById.get(ms.member_id) ?? null,
 	}));
 
 	return new Response(
 		JSON.stringify({
-			recentPayments,
-			newMembers: newMembersRes.data ?? [],
-			recentMemberships,
+			recentVerifiedMembers,
+			recentActiveMemberships,
 			counts: {
 				pendingMemberships: pendingRes.count ?? 0,
 				activeForYear: activeRes.count ?? 0,
-				totalMembers: totalRes.count ?? 0,
 				newMembersPending: newMembersCountRes.count ?? 0,
 				membershipYear: year,
 			},
-			recentAudit: auditRes.data ?? [],
 		}),
 		{ status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } },
 	);

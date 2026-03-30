@@ -12,6 +12,7 @@ Imports align with the current schema (tier fees, payment split, membership stat
   Payment/membership created_at and payment date: Jan 1 (America/Toronto) of
   min(membership_year, current_year) so prepaid future years do not sort above
   current activity in the admin UI. Actual membership year stays on memberships.year.
+  For paid (active) membership rows, activated_at uses the same Jan 1 / cap-year rule.
   Payment notes mark legacy import (and prepaid-for year when applicable).
 
 Prerequisites (use a venv — system Python often blocks global pip; see README):
@@ -487,16 +488,17 @@ def main() -> None:
             fee = TIER_FEE_DOLLARS[tier]
             ts_year = cap_year_for_synthetic_timestamps(year, current_year)
 
-            membership_rows.append(
-                {
-                    "id": membership_id,
-                    "member_id": member_id,
-                    "year": year,
-                    "tier": tier,
-                    "status": "active" if is_paid else "pending",
-                    "created_at": jan1_iso_timestamp(ts_year),
-                }
-            )
+            mrow = {
+                "id": membership_id,
+                "member_id": member_id,
+                "year": year,
+                "tier": tier,
+                "status": "active" if is_paid else "pending",
+                "created_at": jan1_iso_timestamp(ts_year),
+            }
+            if is_paid:
+                mrow["activated_at"] = jan1_iso_timestamp(ts_year)
+            membership_rows.append(mrow)
 
             if is_paid:
                 payment_rows.append(

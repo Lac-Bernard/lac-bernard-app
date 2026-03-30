@@ -85,14 +85,16 @@ const adminKeys = [
 	'adminCopyEmailsDialogClose',
 	'adminExportEmailsHint',
 	'adminExportEmailsEmpty',
-	'adminOverviewPaymentsTitle',
-	'adminOverviewMembersTitle',
-	'adminOverviewMembershipsTitle',
-	'adminOverviewAuditTitle',
+	'adminOverviewRecentTitle',
+	'adminOverviewRecentVerifiedSubtitle',
+	'adminOverviewRecentActiveSubtitle',
+	'adminOverviewColWhen',
 	'adminOverviewCountPending',
 	'adminOverviewCountActive',
-	'adminOverviewCountTotal',
 	'adminOverviewCountNewMembers',
+	'adminOverviewKpiAriaMembers',
+	'adminOverviewKpiAriaPending',
+	'adminOverviewKpiAriaNewMembers',
 	'adminTableAmount',
 	'adminTableDuesPortion',
 	'adminTableDonationPortion',
@@ -100,10 +102,6 @@ const adminKeys = [
 	'adminPaymentPreviewDonation',
 	'adminPaymentSaved',
 	'adminTablePaymentDate',
-	'adminAuditWhen',
-	'adminAuditAction',
-	'adminAuditEntityType',
-	'adminAuditEntityId',
 	'adminPendingBadge',
 	'adminAddMemberNav',
 ] as const;
@@ -658,16 +656,16 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     outline-offset: 2px;
   }
 
-  .adminPage :global(.adminTable--members tbody tr[data-admin-member-href]) {
+  .adminPage :global(.adminTable tbody tr[data-admin-member-href]) {
     cursor: pointer;
   }
 
-  .adminPage :global(.adminTable--members tbody tr[data-admin-member-href]:focus-visible) {
+  .adminPage :global(.adminTable tbody tr[data-admin-member-href]:focus-visible) {
     outline: 2px solid rgba(28, 95, 118, 0.45);
     outline-offset: -2px;
   }
 
-  .adminPage :global(.adminTable--members tbody tr[data-admin-member-href]:hover) {
+  .adminPage :global(.adminTable tbody tr[data-admin-member-href]:hover) {
     background: rgba(72, 196, 255, 0.1);
   }
 
@@ -731,6 +729,24 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
   }
 
+  .adminOverviewMount :global(button.adminKpi) {
+    width: 100%;
+    margin: 0;
+    font: inherit;
+    cursor: pointer;
+    appearance: none;
+    color: inherit;
+  }
+
+  .adminOverviewMount :global(button.adminKpi:hover) {
+    filter: brightness(0.98);
+  }
+
+  .adminOverviewMount :global(button.adminKpi:focus-visible) {
+    outline: 2px solid rgba(28, 95, 118, 0.5);
+    outline-offset: 2px;
+  }
+
   .adminOverviewMount :global(.adminKpi--pending) {
     border-left: 3px solid rgba(176, 120, 0, 0.88);
   }
@@ -739,7 +755,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     border-left: 3px solid rgba(34, 120, 80, 0.85);
   }
 
-  .adminOverviewMount :global(.adminKpi--directory) {
+  .adminOverviewMount :global(.adminKpi--newMembers) {
     border-left: 3px solid rgba(28, 95, 118, 0.55);
   }
 
@@ -781,6 +797,27 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     letter-spacing: 0.09em;
     color: var(--muted);
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .adminOverviewMount :global(.adminOverviewSubheading) {
+    margin: 1rem 0 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--admin-text);
+  }
+
+  .adminOverviewMount :global(.adminOverviewSubheading:first-of-type) {
+    margin-top: 0;
+  }
+
+  .adminPage :global(.adminMemberNameCell) {
+    line-height: 1.35;
+  }
+
+  .adminPage :global(.adminMemberNameJoiner) {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 0.92em;
   }
 
   .adminOverviewMount :global(.adminStatusPill) {

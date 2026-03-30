@@ -613,10 +613,19 @@ function buildSeedSql(dataset) {
 		.join(',\n  ');
 
 	const membershipValues = memberships
-		.map(
-			(r) =>
-				`(${[sqlUuid(r.id), sqlUuid(r.member_id), String(r.year), sqlText(r.tier), sqlText(r.status), sqlTs(r.created_at)].join(', ')})`,
-		)
+		.map((r) => {
+			const activated =
+				r.status === 'active' ? sqlTs(r.created_at) : 'NULL';
+			return `(${[
+				sqlUuid(r.id),
+				sqlUuid(r.member_id),
+				String(r.year),
+				sqlText(r.tier),
+				sqlText(r.status),
+				sqlTs(r.created_at),
+				activated,
+			].join(', ')})`;
+		})
 		.join(',\n  ');
 
 	const paymentValues = payments
@@ -658,7 +667,7 @@ insert into public.members (
 ) values
   ${memberValues};
 
-insert into public.memberships (id, member_id, year, tier, status, created_at) values
+insert into public.memberships (id, member_id, year, tier, status, created_at, activated_at) values
   ${membershipValues};
 
 insert into public.payments (membership_id, method, amount, date, notes, payment_id, membership_amount, donation_amount, donation_note) values
@@ -719,7 +728,11 @@ async function applyDataset(supabase, dataset, { reset, dryRun }) {
 		process.exit(1);
 	}
 
-	const { error: ems } = await supabase.from('memberships').insert(dataset.memberships);
+	const membershipsWithActivated = dataset.memberships.map((m) => ({
+		...m,
+		activated_at: m.status === 'active' ? m.created_at : null,
+	}));
+	const { error: ems } = await supabase.from('memberships').insert(membershipsWithActivated);
 	if (ems) {
 		console.error('Insert memberships:', ems.message);
 		process.exit(1);
