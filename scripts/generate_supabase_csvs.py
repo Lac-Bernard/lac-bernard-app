@@ -32,6 +32,9 @@ Usage:
 Or via npm — **npm requires `--` before script flags**:
   npm run db:import-members-csv -- --reset /path/to/Master_Membership_List.csv
   (Wrong: `npm run db:import-members-csv --reset file.csv` — npm eats `--reset` and the import runs without wiping.)
+
+`--reset` here deletes all rows in payments, memberships, and members. That is broader than
+`scripts/generate-dummy-seeds.mjs --apply --reset`, which only removes dummy-seed–tagged rows.
 """
 
 from __future__ import annotations
@@ -446,7 +449,7 @@ def main() -> None:
         _email_raw = str(row["E-mail address"]).strip() if pd.notna(row["E-mail address"]) else ""
         primary_email = _email_raw if _email_raw else None
 
-        status = "inactive" if str(row.get("Inactive?", "")).strip().lower() == "inactive" else "active"
+        status = "disabled" if str(row.get("Inactive?", "")).strip().lower() == "inactive" else "verified"
 
         fn_primary, fn_other = parse_first_name_cell(row.get("First Name"))
 

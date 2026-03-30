@@ -12,7 +12,7 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 	if (!auth.ok) return auth.response;
 
 	const searchParams = url.searchParams;
-	const { year, membership, tier, q } = parseAdminMemberListFilters(searchParams);
+	const { year, membership, tier, memberStatus, q } = parseAdminMemberListFilters(searchParams);
 	const sort = searchParams.get('sort') ?? 'created_at_desc';
 	const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1);
 	const limit = Math.min(MAX_LIMIT, Math.max(1, parseInt(searchParams.get('limit') ?? '25', 10) || 25));
@@ -24,6 +24,7 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 		p_year: year,
 		p_membership: membership,
 		p_tier: tier,
+		p_member_status: memberStatus,
 		p_q: q || null,
 		p_sort: sort,
 		p_limit: limit,
@@ -57,6 +58,13 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 		});
 	}
 
+	if (payload?.error === 'invalid_member_status_filter') {
+		return new Response(JSON.stringify({ error: 'invalid_member_status_filter' }), {
+			status: 400,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
+
 	const members = Array.isArray(payload?.members) ? payload!.members : [];
 	const total = typeof payload?.total === 'number' ? payload!.total : 0;
 
@@ -69,6 +77,7 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 			year,
 			membership,
 			tier,
+			memberStatus,
 		}),
 		{ status: 200, headers: { 'Content-Type': 'application/json' } },
 	);
@@ -99,6 +108,10 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 	const row = adminPatchToRow(parsed.value);
 	if (!Object.prototype.hasOwnProperty.call(parsed.value, 'user_id')) {
 		row.user_id = null;
+	}
+	/** Admin-created members are directory-ready unless status was explicitly set. */
+	if (!Object.prototype.hasOwnProperty.call(parsed.value, 'status')) {
+		row.status = 'verified';
 	}
 
 	const service = createSupabaseServiceRoleClient();

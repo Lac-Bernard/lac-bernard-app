@@ -64,6 +64,12 @@ export function parseAdminMemberPatch(body: unknown): { ok: true; value: AdminMe
 	if (has('status') && o.status !== null && typeof o.status !== 'string') {
 		return { ok: false, error: 'invalid_status' };
 	}
+	if (has('status') && typeof o.status === 'string') {
+		const st = o.status.trim().toLowerCase();
+		if (st !== '' && st !== 'new' && st !== 'verified' && st !== 'disabled') {
+			return { ok: false, error: 'invalid_status' };
+		}
+	}
 
 	const value: AdminMemberPatch = { ...base.value };
 
@@ -82,7 +88,11 @@ export function parseAdminMemberPatch(body: unknown): { ok: true; value: AdminMe
 		value.notes = o.notes === null ? null : (o.notes as string);
 	}
 	if (has('status')) {
-		value.status = o.status === null ? null : (o.status as string).trim();
+		if (o.status === null) value.status = null;
+		else {
+			const st = (o.status as string).trim().toLowerCase();
+			value.status = st === '' ? null : st;
+		}
 	}
 
 	return { ok: true, value };
@@ -109,7 +119,11 @@ export function adminPatchToRow(p: AdminMemberPatch): Record<string, unknown> {
 	if (Object.prototype.hasOwnProperty.call(p, 'notes')) row.notes = p.notes ?? null;
 	if (Object.prototype.hasOwnProperty.call(p, 'secondary_email')) row.secondary_email = p.secondary_email ?? null;
 	if (Object.prototype.hasOwnProperty.call(p, 'status')) {
-		row.status = p.status != null && p.status.trim() !== '' ? p.status : null;
+		if (p.status == null || p.status.trim() === '') row.status = null;
+		else {
+			const st = p.status.trim().toLowerCase();
+			row.status = st === 'new' || st === 'verified' || st === 'disabled' ? st : null;
+		}
 	}
 	if (Object.prototype.hasOwnProperty.call(p, 'primary_email')) {
 		row.primary_email = p.primary_email ?? null;

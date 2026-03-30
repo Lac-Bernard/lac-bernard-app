@@ -76,6 +76,7 @@ export const memberCopy: Record<
 		adminNavPending: string;
 		adminNavOverview: string;
 		adminNavMembers: string;
+		adminNavNewMembers: string;
 		adminNavActiveMembers: string;
 		adminNavNotRenewed: string;
 		adminScopeLabel: string;
@@ -96,6 +97,7 @@ export const memberCopy: Record<
 		adminOverviewCountPending: string;
 		adminOverviewCountActive: string;
 		adminOverviewCountTotal: string;
+		adminOverviewCountNewMembers: string;
 		adminTableAmount: string;
 		adminTableDuesPortion: string;
 		adminTableDonationPortion: string;
@@ -188,6 +190,11 @@ export const memberCopy: Record<
 		adminSecondaryEmailLabel: string;
 		adminNotesFieldLabel: string;
 		adminStatusMemberLabel: string;
+		adminStatusMemberOptionNew: string;
+		adminStatusMemberOptionVerified: string;
+		adminStatusMemberOptionDisabled: string;
+		adminStatusMemberFieldTitle: string;
+		adminPromoteAdminTitle: string;
 		adminUserIdLabel: string;
 		adminPrimaryEmailLabel: string;
 		adminBackToList: string;
@@ -198,6 +205,13 @@ export const memberCopy: Record<
 		adminFilterTierAll: string;
 		adminFilterTierGeneral: string;
 		adminFilterTierAssociate: string;
+		adminMemberStatusFilterLabel: string;
+		adminMemberStatusFilterVerified: string;
+		adminMemberStatusFilterNew: string;
+		adminMemberStatusFilterDisabled: string;
+		adminMemberStatusFilterAll: string;
+		adminNewMembersEmpty: string;
+		adminNewMembersBadge: string;
 		adminExportEmails: string;
 		adminExportEmailsCopied: string;
 		adminCopyEmailsFallbackPrompt: string;
@@ -349,6 +363,7 @@ export const memberCopy: Record<
 		adminNavPending: 'Pending payments',
 		adminNavOverview: 'Overview',
 		adminNavMembers: 'Members',
+		adminNavNewMembers: 'New members',
 		adminNavActiveMembers: 'Active members',
 		adminNavNotRenewed: 'Not renewed',
 		adminScopeLabel: 'Show',
@@ -368,7 +383,8 @@ export const memberCopy: Record<
 		adminOverviewAuditTitle: 'Recent admin actions',
 		adminOverviewCountPending: 'Pending',
 		adminOverviewCountActive: 'Active {{year}}',
-		adminOverviewCountTotal: 'In directory',
+		adminOverviewCountTotal: 'Verified in directory',
+		adminOverviewCountNewMembers: 'Awaiting review',
 		adminTableAmount: 'Total',
 		adminTableDuesPortion: 'Dues',
 		adminTableDonationPortion: 'Donation',
@@ -462,6 +478,12 @@ export const memberCopy: Record<
 		adminSecondaryEmailLabel: 'Secondary email',
 		adminNotesFieldLabel: 'Internal notes',
 		adminStatusMemberLabel: 'Member status',
+		adminStatusMemberOptionNew: 'New — not yet reviewed',
+		adminStatusMemberOptionVerified: 'Verified — OK for directory and comms',
+		adminStatusMemberOptionDisabled: 'Disabled — excluded from default directory and exports',
+		adminStatusMemberFieldTitle:
+			'New: self-serve profile not yet reviewed. Verified: ready for directory. Disabled: inactive / do not contact.',
+		adminPromoteAdminTitle: 'Grant this member the admin role in app metadata (they may need to sign out and back in).',
 		adminUserIdLabel: 'Linked auth user id',
 		adminPrimaryEmailLabel: 'Primary email',
 		adminBackToList: 'Clear selection',
@@ -472,6 +494,13 @@ export const memberCopy: Record<
 		adminFilterTierAll: 'All types',
 		adminFilterTierGeneral: 'General only',
 		adminFilterTierAssociate: 'Associate only',
+		adminMemberStatusFilterLabel: 'Record status',
+		adminMemberStatusFilterVerified: 'Verified (default)',
+		adminMemberStatusFilterNew: 'New',
+		adminMemberStatusFilterDisabled: 'Disabled',
+		adminMemberStatusFilterAll: 'All',
+		adminNewMembersEmpty: 'No member profiles awaiting review.',
+		adminNewMembersBadge: '{{count}} new',
 		adminExportEmails: 'Copy email list',
 		adminExportEmailsCopied: 'Comma-separated emails copied to clipboard.',
 		adminCopyEmailsFallbackPrompt:
@@ -631,6 +660,7 @@ export const memberCopy: Record<
 		adminNavPending: 'Paiements en attente',
 		adminNavOverview: 'Aperçu',
 		adminNavMembers: 'Membres',
+		adminNavNewMembers: 'Nouveaux membres',
 		adminNavActiveMembers: 'Membres actifs',
 		adminNavNotRenewed: 'Non renouvelés',
 		adminScopeLabel: 'Afficher',
@@ -650,7 +680,8 @@ export const memberCopy: Record<
 		adminOverviewAuditTitle: 'Actions admin récentes',
 		adminOverviewCountPending: 'En attente',
 		adminOverviewCountActive: 'Actifs {{year}}',
-		adminOverviewCountTotal: 'Au répertoire',
+		adminOverviewCountTotal: 'Vérifiés au répertoire',
+		adminOverviewCountNewMembers: 'En attente de révision',
 		adminTableAmount: 'Total',
 		adminTableDuesPortion: 'Cotisation',
 		adminTableDonationPortion: 'Don',
@@ -744,6 +775,13 @@ export const memberCopy: Record<
 		adminSecondaryEmailLabel: 'Courriel secondaire',
 		adminNotesFieldLabel: 'Notes internes',
 		adminStatusMemberLabel: 'Statut du membre',
+		adminStatusMemberOptionNew: 'Nouveau — pas encore révisé',
+		adminStatusMemberOptionVerified: 'Vérifié — OK pour le répertoire et les envois',
+		adminStatusMemberOptionDisabled: 'Désactivé — exclu du répertoire par défaut et des exports',
+		adminStatusMemberFieldTitle:
+			'Nouveau : profil créé par le membre, non révisé. Vérifié : prêt pour le répertoire. Désactivé : inactif / ne pas contacter.',
+		adminPromoteAdminTitle:
+			'Accorder le rôle admin dans les métadonnées de l’application (déconnexion / reconnexion peut être nécessaire).',
 		adminUserIdLabel: 'Identifiant de compte lié',
 		adminPrimaryEmailLabel: 'Courriel principal',
 		adminBackToList: 'Effacer la sélection',
@@ -754,6 +792,13 @@ export const memberCopy: Record<
 		adminFilterTierAll: 'Tous les types',
 		adminFilterTierGeneral: 'Générale seulement',
 		adminFilterTierAssociate: 'Associée seulement',
+		adminMemberStatusFilterLabel: 'Statut du dossier',
+		adminMemberStatusFilterVerified: 'Vérifiés (défaut)',
+		adminMemberStatusFilterNew: 'Nouveau',
+		adminMemberStatusFilterDisabled: 'Désactivé',
+		adminMemberStatusFilterAll: 'Tous',
+		adminNewMembersEmpty: 'Aucun profil en attente de révision.',
+		adminNewMembersBadge: '{{count}} nouveaux',
 		adminExportEmails: 'Copier la liste de courriels',
 		adminExportEmailsCopied: 'Courriels séparés par des virgules copiés dans le presse-papiers.',
 		adminCopyEmailsFallbackPrompt:

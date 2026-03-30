@@ -22,6 +22,7 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 		pendingRes,
 		activeRes,
 		totalRes,
+		newMembersCountRes,
 		auditRes,
 	] = await Promise.all([
 		service
@@ -33,6 +34,7 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 		service
 			.from('members')
 			.select('id, created_at, first_name, last_name, primary_email')
+			.eq('status', 'new')
 			.order('created_at', { ascending: false })
 			.limit(LIMIT_MEMBERS),
 		service
@@ -46,7 +48,8 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 			.select('id', { count: 'exact', head: true })
 			.eq('year', year)
 			.eq('status', 'active'),
-		service.from('members').select('id', { count: 'exact', head: true }),
+		service.from('members').select('id', { count: 'exact', head: true }).eq('status', 'verified'),
+		service.from('members').select('id', { count: 'exact', head: true }).eq('status', 'new'),
 		service
 			.from('admin_audit_log')
 			.select('id, created_at, actor_user_id, action, entity_type, entity_id, metadata')
@@ -61,6 +64,7 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 		pendingRes.error ||
 		activeRes.error ||
 		totalRes.error ||
+		newMembersCountRes.error ||
 		auditRes.error;
 	if (err) {
 		return new Response(JSON.stringify({ error: 'query_failed', detail: err.message }), {
@@ -148,6 +152,7 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 				pendingMemberships: pendingRes.count ?? 0,
 				activeForYear: activeRes.count ?? 0,
 				totalMembers: totalRes.count ?? 0,
+				newMembersPending: newMembersCountRes.count ?? 0,
 				membershipYear: year,
 			},
 			recentAudit: auditRes.data ?? [],

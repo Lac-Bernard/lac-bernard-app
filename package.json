@@ -10,6 +10,7 @@
     "db:seed": "node scripts/generate-dummy-seeds.mjs",
     "db:seed:local": "npm run db:seed && supabase db reset",
     "db:seed:apply": "ALLOW_DUMMY_SEED_APPLY=1 node scripts/generate-dummy-seeds.mjs --apply",
+    "db:seed:apply:reset": "ALLOW_DUMMY_SEED_APPLY=1 ALLOW_DUMMY_SEED_RESET=1 node scripts/generate-dummy-seeds.mjs --apply --reset",
     "db:clear-memberships-dev": "ALLOW_CLEAR_MEMBERSHIPS=1 node scripts/clear-memberships-dev.mjs",
     "db:seed-membership-history": "ALLOW_SEED_MEMBERSHIP_HISTORY=1 node scripts/seed-membership-history.mjs",
     "dev:grant-admin": "ALLOW_GRANT_ADMIN_DEV=1 node scripts/grant-admin-dev.mjs",

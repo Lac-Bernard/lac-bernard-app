@@ -293,6 +293,7 @@ export function initAdminConsole(
 	const paymentMembershipId = el<HTMLInputElement>('#admin-payment-membership-id');
 	const overviewMount = el<HTMLElement>('#admin-overview-mount');
 	const pendingBadge = el<HTMLElement>('#admin-pending-badge');
+	const newMembersBadge = el<HTMLElement>('#admin-new-members-badge');
 	statusElGlobal = el<HTMLElement>('#admin-status');
 	const tabs = document.querySelectorAll<HTMLButtonElement>('[data-admin-tab]');
 	const panels = document.querySelectorAll<HTMLElement>('[data-admin-panel]');
@@ -330,6 +331,8 @@ export function initAdminConsole(
 
 	let membersPage = 1;
 	let membersTotalPages = 1;
+	let newMembersPage = 1;
+	let newMembersTotalPages = 1;
 	let membersSort = 'created_at_desc';
 
 	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
@@ -340,6 +343,12 @@ export function initAdminConsole(
 		if (!pendingBadge) return;
 		pendingBadge.textContent = count > 0 ? t(strings, 'adminPendingBadge', { count }) : '';
 		pendingBadge.hidden = count <= 0;
+	}
+
+	function setNewMembersBadge(count: number) {
+		if (!newMembersBadge) return;
+		newMembersBadge.textContent = count > 0 ? t(strings, 'adminNewMembersBadge', { count }) : '';
+		newMembersBadge.hidden = count <= 0;
 	}
 
 	function getMemberFilterYear(): number {
@@ -363,6 +372,7 @@ export function initAdminConsole(
 		const q = el<HTMLInputElement>('#admin-members-q')?.value?.trim() ?? '';
 		const membership = el<HTMLSelectElement>('#admin-members-scope')?.value ?? 'active';
 		const tier = el<HTMLSelectElement>('#admin-members-tier')?.value ?? 'all';
+		const memberStatus = el<HTMLSelectElement>('#admin-members-member-status')?.value ?? 'verified';
 
 		const params = new URLSearchParams({
 			page: String(membersPage),
@@ -371,6 +381,23 @@ export function initAdminConsole(
 			year: String(getMemberFilterYear()),
 			membership,
 			tier,
+			memberStatus,
+		});
+		if (q) params.set('q', q);
+		return params;
+	}
+
+	function buildNewMembersListParams(): URLSearchParams {
+		const q = el<HTMLInputElement>('#admin-members-q')?.value?.trim() ?? '';
+		/** Match overview `newMembersPending` count: any `members.status = new`, not directory scope (active for year). */
+		const params = new URLSearchParams({
+			page: String(newMembersPage),
+			limit: '25',
+			sort: membersSort,
+			year: String(getMemberFilterYear()),
+			membership: 'all',
+			tier: 'all',
+			memberStatus: 'new',
 		});
 		if (q) params.set('q', q);
 		return params;
@@ -398,6 +425,8 @@ export function initAdminConsole(
 			void loadMembers();
 		} else if (name === 'pending') {
 			void loadPending();
+		} else if (name === 'newMembers') {
+			void loadNewMembers();
 		} else if (name === 'overview') {
 			void loadOverview();
 		}
@@ -459,12 +488,14 @@ export function initAdminConsole(
 	el<HTMLFormElement>('#admin-members-search')?.addEventListener('submit', (e) => {
 		e.preventDefault();
 		membersPage = 1;
+		newMembersPage = 1;
 		void loadMembers();
 	});
 
 	el<HTMLSelectElement>('#admin-members-sort')?.addEventListener('change', (e) => {
 		membersSort = (e.target as HTMLSelectElement).value;
 		membersPage = 1;
+		newMembersPage = 1;
 		void loadMembers();
 	});
 
@@ -474,15 +505,23 @@ export function initAdminConsole(
 	el<HTMLInputElement>('#admin-members-year')?.addEventListener('change', () => {
 		syncMembersScopeLabels();
 		membersPage = 1;
+		newMembersPage = 1;
 		void loadMembers();
 	});
 
 	el<HTMLSelectElement>('#admin-members-scope')?.addEventListener('change', () => {
 		membersPage = 1;
+		newMembersPage = 1;
 		void loadMembers();
 	});
 
 	el<HTMLSelectElement>('#admin-members-tier')?.addEventListener('change', () => {
+		membersPage = 1;
+		newMembersPage = 1;
+		void loadMembers();
+	});
+
+	el<HTMLSelectElement>('#admin-members-member-status')?.addEventListener('change', () => {
 		membersPage = 1;
 		void loadMembers();
 	});
@@ -508,6 +547,19 @@ export function initAdminConsole(
 		}
 	});
 
+	el<HTMLButtonElement>('#admin-new-members-prev')?.addEventListener('click', () => {
+		if (newMembersPage > 1) {
+			newMembersPage--;
+			void loadNewMembers();
+		}
+	});
+	el<HTMLButtonElement>('#admin-new-members-next')?.addEventListener('click', () => {
+		if (newMembersPage < newMembersTotalPages) {
+			newMembersPage++;
+			void loadNewMembers();
+		}
+	});
+
 	async function loadOverview() {
 		if (!overviewMount) return;
 		overviewMount.innerHTML = `<p class="adminHint">${t(strings, 'adminLoading')}</p>`;
@@ -519,6 +571,7 @@ export function initAdminConsole(
 				pendingMemberships: number;
 				activeForYear: number;
 				totalMembers: number;
+				newMembersPending?: number;
 				membershipYear: number;
 			};
 			recentAudit?: unknown[];
@@ -531,6 +584,7 @@ export function initAdminConsole(
 		const c = data.counts;
 		if (c) {
 			setPendingBadge(c.pendingMemberships);
+			setNewMembersBadge(typeof c.newMembersPending === 'number' ? c.newMembersPending : 0);
 		}
 
 		const payments = (data.recentPayments ?? []) as Array<{
@@ -621,6 +675,7 @@ export function initAdminConsole(
 				<div class="adminKpi adminKpi--pending"><span class="adminKpiValue">${c.pendingMemberships}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountPending'))}</span></div>
 				<div class="adminKpi adminKpi--activeYear"><span class="adminKpiValue">${c.activeForYear}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountActive', { year: c.membershipYear }))}</span></div>
 				<div class="adminKpi adminKpi--directory"><span class="adminKpiValue">${c.totalMembers}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountTotal'))}</span></div>
+				<div class="adminKpi adminKpi--newMembers"><span class="adminKpiValue">${typeof c.newMembersPending === 'number' ? c.newMembersPending : 0}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountNewMembers'))}</span></div>
 			</div>`
 			:	'';
 
@@ -795,6 +850,57 @@ export function initAdminConsole(
 		const pageInfo = el('#admin-members-pageinfo');
 		if (pageInfo) {
 			pageInfo.textContent = t(strings, 'adminPageOf', { page: membersPage, total: membersTotalPages });
+		}
+
+		body.innerHTML = data.members
+			.map((m) => {
+				const name = formatMemberPrimaryName(m);
+				const email = m.primary_email ?? '—';
+				const rawTier = m.membership_tier_for_year;
+				let tierCell = '';
+				if (rawTier === 'general') tierCell = tierLabels.general;
+				else if (rawTier === 'associate') tierCell = tierLabels.associate;
+				else if (rawTier) tierCell = rawTier;
+				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;
+				const rowLabel = `${t(strings, 'adminMemberOpen')}: ${name}`;
+				return `<tr data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}">
+          <td>${escapeHtml(name)}</td>
+          <td>${escapeHtml(email)}</td>
+          <td>${escapeHtml(tierCell)}</td>
+          <td>${escapeHtml(formatAdminLocaleDate(m.created_at))}</td>
+        </tr>`;
+			})
+			.join('');
+		wireMembersTableRows(body);
+	}
+
+	async function loadNewMembers() {
+		const body = el<HTMLTableSectionElement>('#admin-new-members-body');
+		if (!body) return;
+		body.innerHTML = `<tr><td colspan="4">${t(strings, 'adminLoading')}</td></tr>`;
+		const params = buildNewMembersListParams();
+		const { ok, data } = await fetchJson<{
+			members?: MemberRow[];
+			total?: number;
+			page?: number;
+			limit?: number;
+			error?: string;
+		}>(`/api/admin/members?${params}`);
+		if (!ok || !data.members) {
+			body.innerHTML = `<tr><td colspan="4">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
+			return;
+		}
+		const total = data.total ?? 0;
+		const limit = data.limit ?? 25;
+		newMembersTotalPages = Math.max(1, Math.ceil(total / limit));
+		const pageInfo = el('#admin-new-members-pageinfo');
+		if (pageInfo) {
+			pageInfo.textContent = t(strings, 'adminPageOf', { page: newMembersPage, total: newMembersTotalPages });
+		}
+
+		if (data.members.length === 0) {
+			body.innerHTML = `<tr><td colspan="4">${t(strings, 'adminNewMembersEmpty')}</td></tr>`;
+			return;
 		}
 
 		body.innerHTML = data.members

@@ -222,7 +222,15 @@ export function initAdminMemberDetail(
 		el<HTMLInputElement>('#admin-field-primary_postal_code')!.value = m.primary_postal_code ?? '';
 		el<HTMLInputElement>('#admin-field-email_opt_in')!.checked = m.email_opt_in;
 		el<HTMLTextAreaElement>('#admin-field-notes')!.value = m.notes ?? '';
-		el<HTMLInputElement>('#admin-field-status')!.value = m.status ?? '';
+		const statusSel = el<HTMLSelectElement>('#admin-field-status');
+		if (statusSel) {
+			const v = (m.status ?? '').trim().toLowerCase();
+			if (v === 'new' || v === 'verified' || v === 'disabled') {
+				statusSel.value = v;
+			} else {
+				statusSel.value = 'verified';
+			}
+		}
 		el<HTMLInputElement>('#admin-field-user_id')!.value = m.user_id ?? '';
 	}
 

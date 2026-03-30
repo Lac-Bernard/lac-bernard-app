@@ -45,6 +45,11 @@ const adminKeys = [
 	'adminSecondaryEmailLabel',
 	'adminNotesFieldLabel',
 	'adminStatusMemberLabel',
+	'adminStatusMemberOptionNew',
+	'adminStatusMemberOptionVerified',
+	'adminStatusMemberOptionDisabled',
+	'adminStatusMemberFieldTitle',
+	'adminPromoteAdminTitle',
 	'adminUserIdLabel',
 	'adminPrimaryEmailLabel',
   'membershipTableYear',
@@ -134,13 +139,22 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
               <label>{t.profileCountry} <input type="text" id="admin-field-primary_country" name="primary_country" class="adminInput" /></label>
               <label>{t.profilePostal} <input type="text" id="admin-field-primary_postal_code" name="primary_postal_code" class="adminInput" /></label>
               <label class="adminCheckbox"><input type="checkbox" id="admin-field-email_opt_in" name="email_opt_in" /> {t.profileEmailOptIn}</label>
-              <label>{t.adminStatusMemberLabel} <input type="text" id="admin-field-status" name="status" class="adminInput" /></label>
+              <label>
+                {t.adminStatusMemberLabel}
+                <select id="admin-field-status" name="status" class="adminInput" title={t.adminStatusMemberFieldTitle}>
+                  <option value="new">{t.adminStatusMemberOptionNew}</option>
+                  <option value="verified">{t.adminStatusMemberOptionVerified}</option>
+                  <option value="disabled">{t.adminStatusMemberOptionDisabled}</option>
+                </select>
+              </label>
               <label>{t.adminUserIdLabel} <input type="text" id="admin-field-user_id" name="user_id" class="adminInput" /></label>
               <label class="adminNotes">{t.adminNotesFieldLabel} <textarea id="admin-field-notes" name="notes" class="adminInput" rows="3"></textarea></label>
             </div>
             <div class="adminFormActions">
               <button type="submit" class="adminBtn adminBtn--solid">{t.adminSaveMemberBtn}</button>
-              <button type="button" class="adminBtn adminBtn--ghost" id="admin-promote-btn">{t.adminPromoteBtn}</button>
+              <button type="button" class="adminBtn adminBtn--ghost" id="admin-promote-btn" title={t.adminPromoteAdminTitle}>
+                {t.adminPromoteBtn}
+              </button>
             </div>
           </form>
         </div>

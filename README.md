@@ -66,6 +66,9 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 | `npm run preview`         | Preview production build locally                  |
 | `npm run astro ...`       | Run Astro CLI commands (e.g., `astro check`)     |
 | `npm run db:seed`         | Regenerate `supabase/seed.sql` with dummy member data (run before `supabase db reset` if you change the script) |
+| `npm run db:seed:local`   | `db:seed` then `supabase db reset` (full local DB wipe + migrations + seed) |
+| `npm run db:seed:apply`   | Insert dummy rows via Supabase API (needs `ALLOW_DUMMY_SEED_APPLY=1` and `.env` credentials) |
+| `npm run db:seed:apply:reset` | Same as `db:seed:apply`, but remove prior dummy seed rows first (`ALLOW_DUMMY_SEED_RESET=1` as well). Not the same as CSV `--reset` — see `node scripts/generate-dummy-seeds.mjs --help` |
 | `npm run db:import-members-csv` | Import the association master membership CSV into Supabase (Python deps in a **venv** — see below; needs `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` in `.env`) |
 | `npm run db:import-members-csv:local` | Same, but targets the **local** Docker stack (`supabase start`); credentials come from `supabase status` |
 

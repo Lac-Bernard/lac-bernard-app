@@ -23,6 +23,7 @@ const adminKeys = [
 	'adminNavPending',
 	'adminNavOverview',
 	'adminNavMembers',
+	'adminNavNewMembers',
 	'adminTableName',
 	'adminTableEmail',
 	'adminTableYear',
@@ -65,6 +66,13 @@ const adminKeys = [
 	'adminFilterTierAll',
 	'adminFilterTierGeneral',
 	'adminFilterTierAssociate',
+	'adminMemberStatusFilterLabel',
+	'adminMemberStatusFilterVerified',
+	'adminMemberStatusFilterNew',
+	'adminMemberStatusFilterDisabled',
+	'adminMemberStatusFilterAll',
+	'adminNewMembersEmpty',
+	'adminNewMembersBadge',
 	'adminScopeLabel',
 	'adminScopeEveryone',
 	'adminScopeHasHistory',
@@ -84,6 +92,7 @@ const adminKeys = [
 	'adminOverviewCountPending',
 	'adminOverviewCountActive',
 	'adminOverviewCountTotal',
+	'adminOverviewCountNewMembers',
 	'adminTableAmount',
 	'adminTableDuesPortion',
 	'adminTableDonationPortion',
@@ -129,6 +138,10 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
               {t.adminNavPending}
               <span id="admin-pending-badge" class="adminTabBadge" hidden></span>
             </button>
+            <button type="button" class="adminTab" role="tab" data-admin-tab="newMembers" aria-selected="false">
+              {t.adminNavNewMembers}
+              <span id="admin-new-members-badge" class="adminTabBadge" hidden></span>
+            </button>
             <button type="button" class="adminTab" role="tab" data-admin-tab="members" aria-selected="false">{t.adminNavMembers}</button>
           </div>
         </div>
@@ -159,6 +172,27 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
               </thead>
               <tbody id="admin-pending-body"></tbody>
             </table>
+          </div>
+        </div>
+
+        <div data-admin-panel="newMembers" class="adminPanel adminCard" hidden>
+          <div class="tableWrap">
+            <table class="adminTable adminTable--members">
+              <thead>
+                <tr>
+                  <th>{t.adminTableName}</th>
+                  <th>{t.adminTableEmail}</th>
+                  <th>{t.adminTableTier}</th>
+                  <th>{t.adminTableCreated}</th>
+                </tr>
+              </thead>
+              <tbody id="admin-new-members-body"></tbody>
+            </table>
+          </div>
+          <div class="adminPager">
+            <button type="button" class="adminBtn adminBtn--ghost" id="admin-new-members-prev">{t.adminPrevPage}</button>
+            <span id="admin-new-members-pageinfo"></span>
+            <button type="button" class="adminBtn adminBtn--ghost" id="admin-new-members-next">{t.adminNextPage}</button>
           </div>
         </div>
 
@@ -203,6 +237,15 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
                 <option value="all">{t.adminFilterTierAll}</option>
                 <option value="general">{t.adminFilterTierGeneral}</option>
                 <option value="associate">{t.adminFilterTierAssociate}</option>
+              </select>
+            </label>
+            <label>
+              {t.adminMemberStatusFilterLabel}
+              <select id="admin-members-member-status" name="memberStatus" class="adminInput">
+                <option value="verified">{t.adminMemberStatusFilterVerified}</option>
+                <option value="new">{t.adminMemberStatusFilterNew}</option>
+                <option value="disabled">{t.adminMemberStatusFilterDisabled}</option>
+                <option value="all">{t.adminMemberStatusFilterAll}</option>
               </select>
             </label>
             <button type="submit" class="adminBtn adminBtn--outline">{t.adminFilterApply}</button>
