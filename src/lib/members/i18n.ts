@@ -76,6 +76,14 @@ export const memberCopy: Record<
 		adminNavPending: string;
 		adminNavOverview: string;
 		adminNavMembers: string;
+		adminNavNewMembers: string;
+		adminNavAuditLog: string;
+		adminAuditColWhen: string;
+		adminAuditColActor: string;
+		adminAuditColAction: string;
+		adminAuditColEntity: string;
+		adminAuditColMetadata: string;
+		adminAuditEmpty: string;
 		adminNavActiveMembers: string;
 		adminNavNotRenewed: string;
 		adminScopeLabel: string;
@@ -89,23 +97,22 @@ export const memberCopy: Record<
 		adminDetailPaymentsHeading: string;
 		adminBackToAdmin: string;
 		adminMethodStripe: string;
-		adminOverviewPaymentsTitle: string;
-		adminOverviewMembersTitle: string;
-		adminOverviewMembershipsTitle: string;
-		adminOverviewAuditTitle: string;
+		adminOverviewRecentTitle: string;
+		adminOverviewRecentVerifiedSubtitle: string;
+		adminOverviewRecentActiveSubtitle: string;
+		adminOverviewColWhen: string;
 		adminOverviewCountPending: string;
 		adminOverviewCountActive: string;
-		adminOverviewCountTotal: string;
+		adminOverviewCountNewMembers: string;
+		adminOverviewKpiAriaMembers: string;
+		adminOverviewKpiAriaPending: string;
+		adminOverviewKpiAriaNewMembers: string;
 		adminTableAmount: string;
 		adminTableDuesPortion: string;
 		adminTableDonationPortion: string;
 		adminPaymentPreviewMembership: string;
 		adminPaymentPreviewDonation: string;
 		adminTablePaymentDate: string;
-		adminAuditWhen: string;
-		adminAuditAction: string;
-		adminAuditEntityType: string;
-		adminAuditEntityId: string;
 		adminPendingBadge: string;
 		adminDetailNoMemberships: string;
 		adminDetailPaymentsEmpty: string;
@@ -188,6 +195,11 @@ export const memberCopy: Record<
 		adminSecondaryEmailLabel: string;
 		adminNotesFieldLabel: string;
 		adminStatusMemberLabel: string;
+		adminStatusMemberOptionNew: string;
+		adminStatusMemberOptionVerified: string;
+		adminStatusMemberOptionDisabled: string;
+		adminStatusMemberFieldTitle: string;
+		adminPromoteAdminTitle: string;
 		adminUserIdLabel: string;
 		adminPrimaryEmailLabel: string;
 		adminBackToList: string;
@@ -198,6 +210,13 @@ export const memberCopy: Record<
 		adminFilterTierAll: string;
 		adminFilterTierGeneral: string;
 		adminFilterTierAssociate: string;
+		adminMemberStatusFilterLabel: string;
+		adminMemberStatusFilterVerified: string;
+		adminMemberStatusFilterNew: string;
+		adminMemberStatusFilterDisabled: string;
+		adminMemberStatusFilterAll: string;
+		adminNewMembersEmpty: string;
+		adminNewMembersBadge: string;
 		adminExportEmails: string;
 		adminExportEmailsCopied: string;
 		adminCopyEmailsFallbackPrompt: string;
@@ -291,8 +310,11 @@ export const memberCopy: Record<
 		profileSectionLake: string;
 		profileSectionMailing: string;
 		profileSignInEmail: string;
+		profileSectionNamesOnMembership: string;
 		profileFirstName: string;
 		profileLastName: string;
+		profileOtherFirstName: string;
+		profileOtherLastName: string;
 		profilePrimaryPhone: string;
 		profileSecondaryPhone: string;
 		profileLakePhone: string;
@@ -310,6 +332,8 @@ export const memberCopy: Record<
 		profileErrorLastName: string;
 		profileErrorAlreadyMember: string;
 		profileErrorSave: string;
+		/** Spaced conjunction between primary and co-listed names on the account card, e.g. " and " / " et ". */
+		memberSummaryNameAnd: string;
 	}
 > = {
 	en: {
@@ -344,6 +368,14 @@ export const memberCopy: Record<
 		adminNavPending: 'Pending payments',
 		adminNavOverview: 'Overview',
 		adminNavMembers: 'Members',
+		adminNavNewMembers: 'New members',
+		adminNavAuditLog: 'Audit log',
+		adminAuditColWhen: 'When',
+		adminAuditColActor: 'Admin',
+		adminAuditColAction: 'Action',
+		adminAuditColEntity: 'Target',
+		adminAuditColMetadata: 'Details',
+		adminAuditEmpty: 'No audit entries yet.',
 		adminNavActiveMembers: 'Active members',
 		adminNavNotRenewed: 'Not renewed',
 		adminScopeLabel: 'Show',
@@ -357,23 +389,22 @@ export const memberCopy: Record<
 		adminDetailPaymentsHeading: 'Payments',
 		adminBackToAdmin: 'Back to admin',
 		adminMethodStripe: 'Card (Stripe)',
-		adminOverviewPaymentsTitle: 'Recent payments',
-		adminOverviewMembersTitle: 'New profiles',
-		adminOverviewMembershipsTitle: 'Recent memberships',
-		adminOverviewAuditTitle: 'Recent admin actions',
-		adminOverviewCountPending: 'Pending',
-		adminOverviewCountActive: 'Active {{year}}',
-		adminOverviewCountTotal: 'In directory',
+		adminOverviewRecentTitle: 'Recent members',
+		adminOverviewRecentVerifiedSubtitle: 'Recently added verified profiles',
+		adminOverviewRecentActiveSubtitle: 'Recent active memberships',
+		adminOverviewColWhen: 'When',
+		adminOverviewCountPending: 'Pending memberships',
+		adminOverviewCountActive: 'Active memberships ({{year}})',
+		adminOverviewCountNewMembers: 'New members',
+		adminOverviewKpiAriaMembers: '{{count}} active memberships for {{year}}. Open members directory.',
+		adminOverviewKpiAriaPending: '{{count}} pending memberships. Open pending tab.',
+		adminOverviewKpiAriaNewMembers: '{{count}} new member profiles. Open new members tab.',
 		adminTableAmount: 'Total',
 		adminTableDuesPortion: 'Dues',
 		adminTableDonationPortion: 'Donation',
 		adminPaymentPreviewMembership: 'Toward membership: {{amount}}',
 		adminPaymentPreviewDonation: 'Donation: {{amount}}',
 		adminTablePaymentDate: 'Paid',
-		adminAuditWhen: 'When',
-		adminAuditAction: 'Action',
-		adminAuditEntityType: 'Entity',
-		adminAuditEntityId: 'Reference',
 		adminPendingBadge: '{{count}} pending',
 		adminDetailNoMemberships: 'No membership records for this person yet.',
 		adminDetailPaymentsEmpty: 'No payments recorded for this membership year.',
@@ -457,6 +488,12 @@ export const memberCopy: Record<
 		adminSecondaryEmailLabel: 'Secondary email',
 		adminNotesFieldLabel: 'Internal notes',
 		adminStatusMemberLabel: 'Member status',
+		adminStatusMemberOptionNew: 'New — not yet reviewed',
+		adminStatusMemberOptionVerified: 'Verified — OK for directory and comms',
+		adminStatusMemberOptionDisabled: 'Disabled — excluded from default directory and exports',
+		adminStatusMemberFieldTitle:
+			'New: self-serve profile not yet reviewed. Verified: ready for directory. Disabled: inactive / do not contact.',
+		adminPromoteAdminTitle: 'Grant this member the admin role in app metadata (they may need to sign out and back in).',
 		adminUserIdLabel: 'Linked auth user id',
 		adminPrimaryEmailLabel: 'Primary email',
 		adminBackToList: 'Clear selection',
@@ -467,6 +504,13 @@ export const memberCopy: Record<
 		adminFilterTierAll: 'All types',
 		adminFilterTierGeneral: 'General only',
 		adminFilterTierAssociate: 'Associate only',
+		adminMemberStatusFilterLabel: 'Record status',
+		adminMemberStatusFilterVerified: 'Verified (default)',
+		adminMemberStatusFilterNew: 'New',
+		adminMemberStatusFilterDisabled: 'Disabled',
+		adminMemberStatusFilterAll: 'All',
+		adminNewMembersEmpty: 'No member profiles awaiting review.',
+		adminNewMembersBadge: '{{count}} new',
 		adminExportEmails: 'Copy email list',
 		adminExportEmailsCopied: 'Comma-separated emails copied to clipboard.',
 		adminCopyEmailsFallbackPrompt:
@@ -570,8 +614,11 @@ export const memberCopy: Record<
 		profileSectionLake: 'At the lake',
 		profileSectionMailing: 'Mailing address',
 		profileSignInEmail: 'Sign-in email',
+		profileSectionNamesOnMembership: 'Names on membership',
 		profileFirstName: 'First name',
 		profileLastName: 'Last name',
+		profileOtherFirstName: 'Other first name',
+		profileOtherLastName: 'Other last name',
 		profilePrimaryPhone: 'Primary phone',
 		profileSecondaryPhone: 'Secondary phone',
 		profileLakePhone: 'Lake phone',
@@ -589,6 +636,7 @@ export const memberCopy: Record<
 		profileErrorLastName: 'Last name is required.',
 		profileErrorAlreadyMember: 'A profile already exists for this account. Returning to the member area.',
 		profileErrorSave: 'Could not save your profile. Please try again.',
+		memberSummaryNameAnd: ' and ',
 	},
 	fr: {
 		homeTitle: 'Espace membre | Association du lac Bernard',
@@ -622,6 +670,14 @@ export const memberCopy: Record<
 		adminNavPending: 'Paiements en attente',
 		adminNavOverview: 'Aperçu',
 		adminNavMembers: 'Membres',
+		adminNavNewMembers: 'Nouveaux membres',
+		adminNavAuditLog: 'Journal d’audit',
+		adminAuditColWhen: 'Date et heure',
+		adminAuditColActor: 'Administrateur',
+		adminAuditColAction: 'Action',
+		adminAuditColEntity: 'Cible',
+		adminAuditColMetadata: 'Détails',
+		adminAuditEmpty: 'Aucune entrée d’audit pour le moment.',
 		adminNavActiveMembers: 'Membres actifs',
 		adminNavNotRenewed: 'Non renouvelés',
 		adminScopeLabel: 'Afficher',
@@ -635,23 +691,23 @@ export const memberCopy: Record<
 		adminDetailPaymentsHeading: 'Paiements',
 		adminBackToAdmin: 'Retour à l’administration',
 		adminMethodStripe: 'Carte (Stripe)',
-		adminOverviewPaymentsTitle: 'Paiements récents',
-		adminOverviewMembersTitle: 'Nouveaux profils',
-		adminOverviewMembershipsTitle: 'Adhésions récentes',
-		adminOverviewAuditTitle: 'Actions admin récentes',
-		adminOverviewCountPending: 'En attente',
-		adminOverviewCountActive: 'Actifs {{year}}',
-		adminOverviewCountTotal: 'Au répertoire',
+		adminOverviewRecentTitle: 'Membres récents',
+		adminOverviewRecentVerifiedSubtitle: 'Profils vérifiés ajoutés récemment',
+		adminOverviewRecentActiveSubtitle: 'Adhésions actives récentes',
+		adminOverviewColWhen: 'Date',
+		adminOverviewCountPending: 'Adhésions en attente',
+		adminOverviewCountActive: 'Adhésions actives ({{year}})',
+		adminOverviewCountNewMembers: 'Nouveaux membres',
+		adminOverviewKpiAriaMembers:
+			'{{count}} adhésions actives pour {{year}}. Ouvrir le répertoire des membres.',
+		adminOverviewKpiAriaPending: '{{count}} adhésions en attente. Ouvrir l’onglet En attente.',
+		adminOverviewKpiAriaNewMembers: '{{count}} nouveaux profils membres. Ouvrir l’onglet Nouveaux membres.',
 		adminTableAmount: 'Total',
 		adminTableDuesPortion: 'Cotisation',
 		adminTableDonationPortion: 'Don',
 		adminPaymentPreviewMembership: 'Vers la cotisation : {{amount}}',
 		adminPaymentPreviewDonation: 'Don : {{amount}}',
 		adminTablePaymentDate: 'Payé',
-		adminAuditWhen: 'Quand',
-		adminAuditAction: 'Action',
-		adminAuditEntityType: 'Entité',
-		adminAuditEntityId: 'Référence',
 		adminPendingBadge: '{{count}} en attente',
 		adminDetailNoMemberships: 'Aucune adhésion dans le dossier pour le moment.',
 		adminDetailPaymentsEmpty: 'Aucun paiement enregistré pour cette année d’adhésion.',
@@ -735,6 +791,13 @@ export const memberCopy: Record<
 		adminSecondaryEmailLabel: 'Courriel secondaire',
 		adminNotesFieldLabel: 'Notes internes',
 		adminStatusMemberLabel: 'Statut du membre',
+		adminStatusMemberOptionNew: 'Nouveau — pas encore révisé',
+		adminStatusMemberOptionVerified: 'Vérifié — OK pour le répertoire et les envois',
+		adminStatusMemberOptionDisabled: 'Désactivé — exclu du répertoire par défaut et des exports',
+		adminStatusMemberFieldTitle:
+			'Nouveau : profil créé par le membre, non révisé. Vérifié : prêt pour le répertoire. Désactivé : inactif / ne pas contacter.',
+		adminPromoteAdminTitle:
+			'Accorder le rôle admin dans les métadonnées de l’application (déconnexion / reconnexion peut être nécessaire).',
 		adminUserIdLabel: 'Identifiant de compte lié',
 		adminPrimaryEmailLabel: 'Courriel principal',
 		adminBackToList: 'Effacer la sélection',
@@ -745,6 +808,13 @@ export const memberCopy: Record<
 		adminFilterTierAll: 'Tous les types',
 		adminFilterTierGeneral: 'Générale seulement',
 		adminFilterTierAssociate: 'Associée seulement',
+		adminMemberStatusFilterLabel: 'Statut du dossier',
+		adminMemberStatusFilterVerified: 'Vérifiés (défaut)',
+		adminMemberStatusFilterNew: 'Nouveau',
+		adminMemberStatusFilterDisabled: 'Désactivé',
+		adminMemberStatusFilterAll: 'Tous',
+		adminNewMembersEmpty: 'Aucun profil en attente de révision.',
+		adminNewMembersBadge: '{{count}} nouveaux',
 		adminExportEmails: 'Copier la liste de courriels',
 		adminExportEmailsCopied: 'Courriels séparés par des virgules copiés dans le presse-papiers.',
 		adminCopyEmailsFallbackPrompt:
@@ -850,8 +920,11 @@ export const memberCopy: Record<
 		profileSectionLake: 'Au lac',
 		profileSectionMailing: 'Adresse postale',
 		profileSignInEmail: 'Courriel de connexion',
+		profileSectionNamesOnMembership: 'Noms sur l’adhésion',
 		profileFirstName: 'Prénom',
 		profileLastName: 'Nom',
+		profileOtherFirstName: 'Autre prénom',
+		profileOtherLastName: 'Autre nom de famille',
 		profilePrimaryPhone: 'Téléphone principal',
 		profileSecondaryPhone: 'Téléphone secondaire',
 		profileLakePhone: 'Téléphone au lac',
@@ -869,6 +942,7 @@ export const memberCopy: Record<
 		profileErrorLastName: 'Le nom est obligatoire.',
 		profileErrorAlreadyMember: 'Un profil existe déjà pour ce compte. Retour à l’espace membre.',
 		profileErrorSave: 'Enregistrement impossible. Veuillez réessayer.',
+		memberSummaryNameAnd: ' et ',
 	},
 };
 

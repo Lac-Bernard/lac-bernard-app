@@ -39,6 +39,8 @@ const adminKeys = [
 	'checkoutModalCancel',
 	'profileFirstName',
 	'profileLastName',
+	'profileOtherFirstName',
+	'profileOtherLastName',
 	'profilePrimaryPhone',
 	'profileSecondaryPhone',
 	'profileLakePhone',
@@ -82,6 +84,8 @@ const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof ty
             <div class="adminFormGrid">
               <label>{t.profileFirstName} <input type="text" name="first_name" class="adminInput" /></label>
               <label>{t.profileLastName} * <input type="text" name="last_name" class="adminInput" required /></label>
+              <label>{t.profileOtherFirstName} <input type="text" name="other_first_name" class="adminInput" /></label>
+              <label>{t.profileOtherLastName} <input type="text" name="other_last_name" class="adminInput" /></label>
               <label>{t.adminPrimaryEmailLabel} <input type="email" name="primary_email" class="adminInput" /></label>
               <label>{t.adminSecondaryEmailLabel} <input type="email" name="secondary_email" class="adminInput" /></label>
               <label>{t.profilePrimaryPhone} <input type="text" name="primary_phone" class="adminInput" /></label>

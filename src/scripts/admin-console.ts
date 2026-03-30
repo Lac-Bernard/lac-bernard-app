@@ -1,6 +1,8 @@
 /** Client-side admin console (membership admin page). */
 
+import { formatAdminLocaleDate, formatAdminLocaleDateTime } from '../lib/admin/formatLocaleDate';
 import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymentSplit';
+import { formatAdminMemberNameTd, formatMemberJoinedNames } from '../lib/members/memberDisplayName';
 
 export type AdminConsoleStrings = Record<string, string>;
 
@@ -11,6 +13,8 @@ type MemberRow = {
 	membership_tier_for_year: string | null;
 	first_name: string | null;
 	last_name: string;
+	other_first_name?: string | null;
+	other_last_name?: string | null;
 	primary_email: string | null;
 	secondary_email: string | null;
 	primary_phone: string | null;
@@ -44,6 +48,8 @@ type MembershipEmbed = {
 		id: string;
 		first_name: string | null;
 		last_name: string;
+		other_first_name: string | null;
+		other_last_name: string | null;
 		primary_email: string | null;
 		secondary_email: string | null;
 	};
@@ -290,7 +296,9 @@ export function initAdminConsole(
 	const paymentDialog = el<HTMLDialogElement>('#admin-payment-dialog');
 	const paymentMembershipId = el<HTMLInputElement>('#admin-payment-membership-id');
 	const overviewMount = el<HTMLElement>('#admin-overview-mount');
+	const auditBody = el<HTMLTableSectionElement>('#admin-audit-body');
 	const pendingBadge = el<HTMLElement>('#admin-pending-badge');
+	const newMembersBadge = el<HTMLElement>('#admin-new-members-badge');
 	statusElGlobal = el<HTMLElement>('#admin-status');
 	const tabs = document.querySelectorAll<HTMLButtonElement>('[data-admin-tab]');
 	const panels = document.querySelectorAll<HTMLElement>('[data-admin-panel]');
@@ -328,6 +336,10 @@ export function initAdminConsole(
 
 	let membersPage = 1;
 	let membersTotalPages = 1;
+	let newMembersPage = 1;
+	let newMembersTotalPages = 1;
+	let auditPage = 1;
+	let auditTotalPages = 1;
 	let membersSort = 'created_at_desc';
 
 	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
@@ -338,6 +350,12 @@ export function initAdminConsole(
 		if (!pendingBadge) return;
 		pendingBadge.textContent = count > 0 ? t(strings, 'adminPendingBadge', { count }) : '';
 		pendingBadge.hidden = count <= 0;
+	}
+
+	function setNewMembersBadge(count: number) {
+		if (!newMembersBadge) return;
+		newMembersBadge.textContent = count > 0 ? t(strings, 'adminNewMembersBadge', { count }) : '';
+		newMembersBadge.hidden = count <= 0;
 	}
 
 	function getMemberFilterYear(): number {
@@ -361,6 +379,7 @@ export function initAdminConsole(
 		const q = el<HTMLInputElement>('#admin-members-q')?.value?.trim() ?? '';
 		const membership = el<HTMLSelectElement>('#admin-members-scope')?.value ?? 'active';
 		const tier = el<HTMLSelectElement>('#admin-members-tier')?.value ?? 'all';
+		const memberStatus = el<HTMLSelectElement>('#admin-members-member-status')?.value ?? 'verified';
 
 		const params = new URLSearchParams({
 			page: String(membersPage),
@@ -369,6 +388,23 @@ export function initAdminConsole(
 			year: String(getMemberFilterYear()),
 			membership,
 			tier,
+			memberStatus,
+		});
+		if (q) params.set('q', q);
+		return params;
+	}
+
+	function buildNewMembersListParams(): URLSearchParams {
+		const q = el<HTMLInputElement>('#admin-members-q')?.value?.trim() ?? '';
+		/** Match overview `newMembersPending` count: any `members.status = new`, not directory scope (active for year). */
+		const params = new URLSearchParams({
+			page: String(newMembersPage),
+			limit: '25',
+			sort: membersSort,
+			year: String(getMemberFilterYear()),
+			membership: 'all',
+			tier: 'all',
+			memberStatus: 'new',
 		});
 		if (q) params.set('q', q);
 		return params;
@@ -396,13 +432,27 @@ export function initAdminConsole(
 			void loadMembers();
 		} else if (name === 'pending') {
 			void loadPending();
+		} else if (name === 'newMembers') {
+			void loadNewMembers();
 		} else if (name === 'overview') {
 			void loadOverview();
+		} else if (name === 'auditLog') {
+			void loadAuditLog();
 		}
 	}
 
 	tabs.forEach((btn) => {
 		btn.addEventListener('click', () => showTab(btn.dataset.adminTab ?? 'overview'));
+	});
+
+	overviewMount?.addEventListener('click', (e) => {
+		const nav = (e.target as HTMLElement).closest('[data-admin-kpi-nav]');
+		if (!nav) return;
+		const dest = nav.getAttribute('data-admin-kpi-nav');
+		if (dest === 'members' || dest === 'pending' || dest === 'newMembers') {
+			e.preventDefault();
+			showTab(dest);
+		}
 	});
 
 	el<HTMLInputElement>('#admin-payment-amount')?.addEventListener('input', updatePaymentPreviewConsole);
@@ -457,12 +507,14 @@ export function initAdminConsole(
 	el<HTMLFormElement>('#admin-members-search')?.addEventListener('submit', (e) => {
 		e.preventDefault();
 		membersPage = 1;
+		newMembersPage = 1;
 		void loadMembers();
 	});
 
 	el<HTMLSelectElement>('#admin-members-sort')?.addEventListener('change', (e) => {
 		membersSort = (e.target as HTMLSelectElement).value;
 		membersPage = 1;
+		newMembersPage = 1;
 		void loadMembers();
 	});
 
@@ -472,15 +524,23 @@ export function initAdminConsole(
 	el<HTMLInputElement>('#admin-members-year')?.addEventListener('change', () => {
 		syncMembersScopeLabels();
 		membersPage = 1;
+		newMembersPage = 1;
 		void loadMembers();
 	});
 
 	el<HTMLSelectElement>('#admin-members-scope')?.addEventListener('change', () => {
 		membersPage = 1;
+		newMembersPage = 1;
 		void loadMembers();
 	});
 
 	el<HTMLSelectElement>('#admin-members-tier')?.addEventListener('change', () => {
+		membersPage = 1;
+		newMembersPage = 1;
+		void loadMembers();
+	});
+
+	el<HTMLSelectElement>('#admin-members-member-status')?.addEventListener('change', () => {
 		membersPage = 1;
 		void loadMembers();
 	});
@@ -506,20 +566,163 @@ export function initAdminConsole(
 		}
 	});
 
+	el<HTMLButtonElement>('#admin-new-members-prev')?.addEventListener('click', () => {
+		if (newMembersPage > 1) {
+			newMembersPage--;
+			void loadNewMembers();
+		}
+	});
+	el<HTMLButtonElement>('#admin-new-members-next')?.addEventListener('click', () => {
+		if (newMembersPage < newMembersTotalPages) {
+			newMembersPage++;
+			void loadNewMembers();
+		}
+	});
+
+	el<HTMLButtonElement>('#admin-audit-prev')?.addEventListener('click', () => {
+		if (auditPage > 1) {
+			auditPage--;
+			void loadAuditLog();
+		}
+	});
+	el<HTMLButtonElement>('#admin-audit-next')?.addEventListener('click', () => {
+		if (auditPage < auditTotalPages) {
+			auditPage++;
+			void loadAuditLog();
+		}
+	});
+
+	function auditEntityLabel(entityType: string | null | undefined, entityId: string | null | undefined): string {
+		const typeStr = entityType?.trim() ?? '';
+		const id = entityId?.trim() ?? '';
+		if (typeStr && id) return `${typeStr} · ${id}`;
+		if (typeStr) return typeStr;
+		if (id) return id;
+		return '—';
+	}
+
+	function auditMetadataHtml(metadata: unknown): string {
+		if (metadata == null) return '—';
+		if (typeof metadata === 'object' && metadata !== null && !Array.isArray(metadata) && Object.keys(metadata).length === 0) {
+			return '—';
+		}
+		let text: string;
+		try {
+			text = typeof metadata === 'string' ? metadata : JSON.stringify(metadata, null, 2);
+		} catch {
+			text = String(metadata);
+		}
+		if (!text || text === '{}' || text === 'null') return '—';
+		return `<pre class="adminAuditMetadata">${escapeHtml(text)}</pre>`;
+	}
+
+	async function loadAuditLog() {
+		if (!auditBody) return;
+		auditBody.innerHTML = `<tr><td colspan="5">${t(strings, 'adminLoading')}</td></tr>`;
+		const { ok, data } = await fetchJson<{
+			entries?: Array<{
+				id: number;
+				created_at: string;
+				actor_email?: string | null;
+				action: string;
+				entity_type?: string | null;
+				entity_id?: string | null;
+				metadata?: unknown;
+			}>;
+			total?: number;
+			page?: number;
+			limit?: number;
+			error?: string;
+			detail?: string;
+		}>(`/api/admin/audit-log?page=${auditPage}&limit=25`);
+		if (!ok || !data.entries) {
+			auditBody.innerHTML = `<tr><td colspan="5">${escapeHtml(data?.detail ?? data?.error ?? t(strings, 'adminErrorGeneric'))}</td></tr>`;
+			return;
+		}
+		const total = data.total ?? 0;
+		const limit = data.limit ?? 25;
+		auditTotalPages = Math.max(1, Math.ceil(total / limit));
+		const pageInfo = el('#admin-audit-pageinfo');
+		if (pageInfo) {
+			pageInfo.textContent = t(strings, 'adminPageOf', { page: auditPage, total: auditTotalPages });
+		}
+		if (data.entries.length === 0) {
+			auditBody.innerHTML = `<tr><td colspan="5">${escapeHtml(t(strings, 'adminAuditEmpty'))}</td></tr>`;
+			return;
+		}
+		auditBody.innerHTML = data.entries
+			.map((row) => {
+				const when = formatAdminLocaleDateTime(row.created_at, numberLocale);
+				const actor = row.actor_email?.trim() || '—';
+				const entity = auditEntityLabel(row.entity_type, row.entity_id);
+				return `<tr>
+					<td>${escapeHtml(when)}</td>
+					<td>${escapeHtml(actor)}</td>
+					<td>${escapeHtml(row.action)}</td>
+					<td>${escapeHtml(entity)}</td>
+					<td class="adminAuditTdMetadata">${auditMetadataHtml(row.metadata)}</td>
+				</tr>`;
+			})
+			.join('');
+	}
+
+	function overviewTierLabel(raw: string | null | undefined): string {
+		if (raw == null || raw === '') return '—';
+		if (raw === 'general') return tierLabels.general;
+		if (raw === 'associate') return tierLabels.associate;
+		return raw;
+	}
+
+	function memberRowOpenAttrs(mem: {
+		id: string;
+		first_name: string | null;
+		last_name: string;
+		other_first_name?: string | null;
+		other_last_name?: string | null;
+	}): string {
+		const href = `${adminMembersBase}/${encodeURIComponent(mem.id)}`;
+		const name = formatMemberJoinedNames(mem);
+		const rowLabel = `${t(strings, 'adminMemberOpen')}: ${name}`;
+		return ` data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}"`;
+	}
+
 	async function loadOverview() {
 		if (!overviewMount) return;
 		overviewMount.innerHTML = `<p class="adminHint">${t(strings, 'adminLoading')}</p>`;
 		const { ok, data } = await fetchJson<{
-			recentPayments?: unknown[];
-			newMembers?: unknown[];
-			recentMemberships?: unknown[];
+			recentVerifiedMembers?: Array<{
+				member: {
+					id: string;
+					created_at: string;
+					first_name: string | null;
+					last_name: string;
+					other_first_name?: string | null;
+					other_last_name?: string | null;
+				};
+				tier: string | null;
+				eventAt: string;
+			}>;
+			recentActiveMemberships?: Array<{
+				membership: {
+					year: number;
+					tier: string;
+					created_at: string;
+					activated_at: string | null;
+				};
+				member: {
+					id: string;
+					first_name: string | null;
+					last_name: string;
+					other_first_name?: string | null;
+					other_last_name?: string | null;
+				} | null;
+			}>;
 			counts?: {
 				pendingMemberships: number;
 				activeForYear: number;
-				totalMembers: number;
+				newMembersPending?: number;
 				membershipYear: number;
 			};
-			recentAudit?: unknown[];
 			error?: string;
 		}>('/api/admin/activity');
 		if (!ok) {
@@ -529,139 +732,62 @@ export function initAdminConsole(
 		const c = data.counts;
 		if (c) {
 			setPendingBadge(c.pendingMemberships);
+			setNewMembersBadge(typeof c.newMembersPending === 'number' ? c.newMembersPending : 0);
 		}
 
-		const payments = (data.recentPayments ?? []) as Array<{
-			id: number;
-			amount: number | null;
-			method: string | null;
-			date: string | null;
-			created_at: string;
-			membership_year: number | null;
-			member: { id: string; first_name: string | null; last_name: string; primary_email: string | null } | null;
-		}>;
-		const payRows = payments
-			.map((p) => {
-				const mem = p.member;
-				const name = mem ? `${mem.first_name ?? ''} ${mem.last_name}`.trim() : '—';
-				const href = mem ? `${adminMembersBase}/${encodeURIComponent(mem.id)}` : '#';
-				return `<tr>
-					<td><a href="${escapeHtml(href)}">${escapeHtml(name)}</a></td>
-					<td>${p.membership_year ?? '—'}</td>
-					<td>${escapeHtml(methodLabel(strings, p.method))}</td>
-					<td>${p.amount != null ? escapeHtml(String(p.amount)) : '—'}</td>
-					<td>${escapeHtml(fmtDate(p.date ?? p.created_at))}</td>
-				</tr>`;
+		const verifiedRows = (data.recentVerifiedMembers ?? [])
+			.map(({ member: m, tier }) => {
+				const nameTd = formatAdminMemberNameTd(m, escapeHtml);
+				const when = m.created_at ? formatAdminLocaleDate(m.created_at) : '—';
+				return `<tr${memberRowOpenAttrs(m)}>${nameTd}<td>${escapeHtml(overviewTierLabel(tier))}</td><td>${escapeHtml(when)}</td></tr>`;
 			})
 			.join('');
 
-		const newMems = (data.newMembers ?? []) as Array<{
-			id: string;
-			created_at: string;
-			first_name: string | null;
-			last_name: string;
-			primary_email: string | null;
-		}>;
-		const nmRows = newMems
-			.map((m) => {
-				const name = `${m.first_name ?? ''} ${m.last_name}`.trim();
-				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;
-				return `<tr>
-					<td><a href="${escapeHtml(href)}">${escapeHtml(name)}</a></td>
-					<td>${escapeHtml(m.primary_email ?? '—')}</td>
-					<td>${escapeHtml(fmtDate(m.created_at))}</td>
-				</tr>`;
+		const activeRows = (data.recentActiveMemberships ?? [])
+			.filter((row): row is typeof row & { member: NonNullable<(typeof row)['member']> } => row.member != null)
+			.map(({ membership: ms, member: m }) => {
+				const nameTd = formatAdminMemberNameTd(m, escapeHtml);
+				const whenRaw = ms.activated_at ?? ms.created_at;
+				const when = whenRaw ? formatAdminLocaleDate(whenRaw) : '—';
+				return `<tr${memberRowOpenAttrs(m)}>${nameTd}<td>${escapeHtml(overviewTierLabel(ms.tier))}</td><td>${ms.year}</td><td>${escapeHtml(when)}</td></tr>`;
 			})
 			.join('');
 
-		const recMs = (data.recentMemberships ?? []) as Array<{
-			id: string;
-			created_at: string;
-			year: number;
-			tier: string;
-			status: string;
-			member: { id: string; first_name: string | null; last_name: string; primary_email: string | null } | null;
-		}>;
-		const msRows = recMs
-			.map((m) => {
-				const mem = m.member;
-				const name = mem ? `${mem.first_name ?? ''} ${mem.last_name}`.trim() : '—';
-				const href = mem ? `${adminMembersBase}/${encodeURIComponent(mem.id)}` : '#';
-				const tier =
-					m.tier === 'general' ? tierLabels.general : m.tier === 'associate' ? tierLabels.associate : m.tier;
-				return `<tr>
-					<td><a href="${escapeHtml(href)}">${escapeHtml(name)}</a></td>
-					<td>${m.year}</td>
-					<td>${escapeHtml(tier)}</td>
-					<td>${statusPillHtml(m.status)}</td>
-					<td>${escapeHtml(fmtDate(m.created_at))}</td>
-				</tr>`;
-			})
-			.join('');
-
-		const audits = (data.recentAudit ?? []) as Array<{
-			created_at: string;
-			actor_user_id: string;
-			action: string;
-			entity_type: string | null;
-			entity_id: string | null;
-		}>;
-		const auditRows = audits
-			.map(
-				(a) =>
-					`<tr><td>${escapeHtml(fmtDate(a.created_at))}</td><td>${escapeHtml(a.action)}</td><td>${escapeHtml(a.entity_type ?? '')}</td><td>${escapeHtml(a.entity_id ?? '')}</td></tr>`,
-			)
-			.join('');
-
+		const nNew = typeof c?.newMembersPending === 'number' ? c.newMembersPending : 0;
 		const kpi =
 			c ?
 				`<div class="adminKpiRow" role="region">
-				<div class="adminKpi adminKpi--pending"><span class="adminKpiValue">${c.pendingMemberships}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountPending'))}</span></div>
-				<div class="adminKpi adminKpi--activeYear"><span class="adminKpiValue">${c.activeForYear}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountActive', { year: c.membershipYear }))}</span></div>
-				<div class="adminKpi adminKpi--directory"><span class="adminKpiValue">${c.totalMembers}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountTotal'))}</span></div>
+				<button type="button" class="adminKpi adminKpi--activeYear" data-admin-kpi-nav="members"
+					aria-label="${escapeHtml(t(strings, 'adminOverviewKpiAriaMembers', { count: c.activeForYear, year: c.membershipYear }))}"><span class="adminKpiValue">${c.activeForYear}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountActive', { year: c.membershipYear }))}</span></button>
+				<button type="button" class="adminKpi adminKpi--pending" data-admin-kpi-nav="pending"
+					aria-label="${escapeHtml(t(strings, 'adminOverviewKpiAriaPending', { count: c.pendingMemberships }))}"><span class="adminKpiValue">${c.pendingMemberships}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountPending'))}</span></button>
+				<button type="button" class="adminKpi adminKpi--newMembers" data-admin-kpi-nav="newMembers"
+					aria-label="${escapeHtml(t(strings, 'adminOverviewKpiAriaNewMembers', { count: nNew }))}"><span class="adminKpiValue">${nNew}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountNewMembers'))}</span></button>
 			</div>`
 			:	'';
 
 		overviewMount.innerHTML = `
 			${kpi}
 			<section class="adminOverviewSection">
-			<h3 class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewPaymentsTitle'))}</h3>
+			<h3 class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewRecentTitle'))}</h3>
+			<h4 class="adminOverviewSubheading">${escapeHtml(t(strings, 'adminOverviewRecentVerifiedSubtitle'))}</h4>
 			<div class="tableWrap"><table class="adminTable"><thead><tr>
 				<th>${escapeHtml(t(strings, 'adminTableName'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableYear'))}</th>
-				<th>${escapeHtml(t(strings, 'adminMethodLabel'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableAmount'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTablePaymentDate'))}</th>
-			</tr></thead><tbody>${payRows || `<tr><td colspan="5">—</td></tr>`}</tbody></table></div>
-			</section>
-			<section class="adminOverviewSection">
-			<h3 class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewMembersTitle'))}</h3>
-			<div class="tableWrap"><table class="adminTable"><thead><tr>
-				<th>${escapeHtml(t(strings, 'adminTableName'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableEmail'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableCreated'))}</th>
-			</tr></thead><tbody>${nmRows || `<tr><td colspan="3">—</td></tr>`}</tbody></table></div>
-			</section>
-			<section class="adminOverviewSection">
-			<h3 class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewMembershipsTitle'))}</h3>
-			<div class="tableWrap"><table class="adminTable"><thead><tr>
-				<th>${escapeHtml(t(strings, 'adminTableName'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableYear'))}</th>
 				<th>${escapeHtml(t(strings, 'adminTableTier'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableStatus'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableCreated'))}</th>
-			</tr></thead><tbody>${msRows || `<tr><td colspan="5">—</td></tr>`}</tbody></table></div>
-			</section>
-			<section class="adminOverviewSection">
-			<h3 class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewAuditTitle'))}</h3>
+				<th>${escapeHtml(t(strings, 'adminOverviewColWhen'))}</th>
+			</tr></thead><tbody>${verifiedRows || `<tr><td colspan="3">—</td></tr>`}</tbody></table></div>
+			<h4 class="adminOverviewSubheading">${escapeHtml(t(strings, 'adminOverviewRecentActiveSubtitle'))}</h4>
 			<div class="tableWrap"><table class="adminTable"><thead><tr>
-				<th>${escapeHtml(t(strings, 'adminAuditWhen'))}</th>
-				<th>${escapeHtml(t(strings, 'adminAuditAction'))}</th>
-				<th>${escapeHtml(t(strings, 'adminAuditEntityType'))}</th>
-				<th>${escapeHtml(t(strings, 'adminAuditEntityId'))}</th>
-			</tr></thead><tbody>${auditRows || `<tr><td colspan="4">—</td></tr>`}</tbody></table></div>
+				<th>${escapeHtml(t(strings, 'adminTableName'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableTier'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableYear'))}</th>
+				<th>${escapeHtml(t(strings, 'adminOverviewColWhen'))}</th>
+			</tr></thead><tbody>${activeRows || `<tr><td colspan="4">—</td></tr>`}</tbody></table></div>
 			</section>
 		`;
+		overviewMount.querySelectorAll<HTMLTableSectionElement>('.adminOverviewSection tbody').forEach((tbody) => {
+			wireMembersTableRows(tbody);
+		});
 	}
 
 	async function loadPending() {
@@ -686,18 +812,29 @@ export function initAdminConsole(
 		pendingBody.innerHTML = rows
 			.map((m) => {
 				const mem = m.members;
-				const name = mem ? `${mem.first_name ?? ''} ${mem.last_name}`.trim() : '—';
+				const nameTd =
+					mem ?
+						formatAdminMemberNameTd(
+							{
+								first_name: mem.first_name,
+								last_name: mem.last_name,
+								other_first_name: mem.other_first_name,
+								other_last_name: mem.other_last_name,
+							},
+							escapeHtml,
+						)
+					:	`<td>—</td>`;
 				const email = mem?.primary_email ?? '—';
 				const tier =
 					m.tier === 'general' ? tierLabels.general : m.tier === 'associate' ? tierLabels.associate : m.tier;
-				const detailHref = mem ? `${adminMembersBase}/${encodeURIComponent(mem.id)}` : '#';
 				const expected = formatExpectedMembershipFee(m.expected_membership_cents, numberLocale);
 				const sumPaid =
 					typeof m.sum_membership_paid === 'number' && Number.isFinite(m.sum_membership_paid) ?
 						m.sum_membership_paid
 					:	0;
-				return `<tr>
-          <td><a href="${escapeHtml(detailHref)}">${escapeHtml(name)}</a></td>
+				const rowOpen = mem ? memberRowOpenAttrs(mem) : '';
+				return `<tr${rowOpen}>
+          ${nameTd}
           <td>${escapeHtml(email)}</td>
           <td>${m.year}</td>
           <td>${escapeHtml(tier)}</td>
@@ -749,6 +886,7 @@ export function initAdminConsole(
 				void loadOverview();
 			});
 		});
+		wireMembersTableRows(pendingBody);
 	}
 
 	function wireMembersTableRows(body: HTMLElement) {
@@ -797,7 +935,7 @@ export function initAdminConsole(
 
 		body.innerHTML = data.members
 			.map((m) => {
-				const name = `${m.first_name ?? ''} ${m.last_name}`.trim();
+				const nameTd = formatAdminMemberNameTd(m, escapeHtml);
 				const email = m.primary_email ?? '—';
 				const rawTier = m.membership_tier_for_year;
 				let tierCell = '';
@@ -805,12 +943,63 @@ export function initAdminConsole(
 				else if (rawTier === 'associate') tierCell = tierLabels.associate;
 				else if (rawTier) tierCell = rawTier;
 				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;
-				const rowLabel = `${t(strings, 'adminMemberOpen')}: ${name}`;
+				const rowLabel = `${t(strings, 'adminMemberOpen')}: ${formatMemberJoinedNames(m)}`;
 				return `<tr data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}">
-          <td>${escapeHtml(name)}</td>
+          ${nameTd}
           <td>${escapeHtml(email)}</td>
           <td>${escapeHtml(tierCell)}</td>
-          <td>${escapeHtml(fmtDate(m.created_at))}</td>
+          <td>${escapeHtml(formatAdminLocaleDate(m.created_at))}</td>
+        </tr>`;
+			})
+			.join('');
+		wireMembersTableRows(body);
+	}
+
+	async function loadNewMembers() {
+		const body = el<HTMLTableSectionElement>('#admin-new-members-body');
+		if (!body) return;
+		body.innerHTML = `<tr><td colspan="4">${t(strings, 'adminLoading')}</td></tr>`;
+		const params = buildNewMembersListParams();
+		const { ok, data } = await fetchJson<{
+			members?: MemberRow[];
+			total?: number;
+			page?: number;
+			limit?: number;
+			error?: string;
+		}>(`/api/admin/members?${params}`);
+		if (!ok || !data.members) {
+			body.innerHTML = `<tr><td colspan="4">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
+			return;
+		}
+		const total = data.total ?? 0;
+		const limit = data.limit ?? 25;
+		newMembersTotalPages = Math.max(1, Math.ceil(total / limit));
+		const pageInfo = el('#admin-new-members-pageinfo');
+		if (pageInfo) {
+			pageInfo.textContent = t(strings, 'adminPageOf', { page: newMembersPage, total: newMembersTotalPages });
+		}
+
+		if (data.members.length === 0) {
+			body.innerHTML = `<tr><td colspan="4">${t(strings, 'adminNewMembersEmpty')}</td></tr>`;
+			return;
+		}
+
+		body.innerHTML = data.members
+			.map((m) => {
+				const nameTd = formatAdminMemberNameTd(m, escapeHtml);
+				const email = m.primary_email ?? '—';
+				const rawTier = m.membership_tier_for_year;
+				let tierCell = '';
+				if (rawTier === 'general') tierCell = tierLabels.general;
+				else if (rawTier === 'associate') tierCell = tierLabels.associate;
+				else if (rawTier) tierCell = rawTier;
+				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;
+				const rowLabel = `${t(strings, 'adminMemberOpen')}: ${formatMemberJoinedNames(m)}`;
+				return `<tr data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}">
+          ${nameTd}
+          <td>${escapeHtml(email)}</td>
+          <td>${escapeHtml(tierCell)}</td>
+          <td>${escapeHtml(formatAdminLocaleDate(m.created_at))}</td>
         </tr>`;
 			})
 			.join('');
@@ -829,22 +1018,3 @@ function escapeHtml(s: string): string {
 		.replace(/"/g, '&quot;');
 }
 
-/** Overview tables — status column (scoped styles apply via `.adminOverviewMount :global`) */
-function statusPillHtml(status: string): string {
-	const s = status.toLowerCase();
-	const cls =
-		s === 'active'
-			? 'adminStatusPill adminStatusPill--active'
-			: s === 'pending'
-				? 'adminStatusPill adminStatusPill--pending'
-				: 'adminStatusPill adminStatusPill--neutral';
-	return `<span class="${cls}">${escapeHtml(status)}</span>`;
-}
-
-function fmtDate(iso: string): string {
-	try {
-		return new Date(iso).toLocaleDateString();
-	} catch {
-		return iso;
-	}
-}

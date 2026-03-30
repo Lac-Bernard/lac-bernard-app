@@ -21,13 +21,14 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 		const auth = await requireAdminSession(request, cookies);
 		if (!auth.ok) return auth.response;
 
-		const { year, membership, tier, q } = parseAdminMemberListFilters(url.searchParams);
+		const { year, membership, tier, memberStatus, q } = parseAdminMemberListFilters(url.searchParams);
 
 		const service = createSupabaseServiceRoleClient();
 		const { data, error } = await service.rpc('admin_members_export_emails', {
 			p_year: year,
 			p_membership: membership,
 			p_tier: tier,
+			p_member_status: memberStatus,
 			p_q: q || null,
 		});
 

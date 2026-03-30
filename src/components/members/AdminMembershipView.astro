@@ -23,6 +23,14 @@ const adminKeys = [
 	'adminNavPending',
 	'adminNavOverview',
 	'adminNavMembers',
+	'adminNavNewMembers',
+	'adminNavAuditLog',
+	'adminAuditColWhen',
+	'adminAuditColActor',
+	'adminAuditColAction',
+	'adminAuditColEntity',
+	'adminAuditColMetadata',
+	'adminAuditEmpty',
 	'adminTableName',
 	'adminTableEmail',
 	'adminTableYear',
@@ -65,6 +73,13 @@ const adminKeys = [
 	'adminFilterTierAll',
 	'adminFilterTierGeneral',
 	'adminFilterTierAssociate',
+	'adminMemberStatusFilterLabel',
+	'adminMemberStatusFilterVerified',
+	'adminMemberStatusFilterNew',
+	'adminMemberStatusFilterDisabled',
+	'adminMemberStatusFilterAll',
+	'adminNewMembersEmpty',
+	'adminNewMembersBadge',
 	'adminScopeLabel',
 	'adminScopeEveryone',
 	'adminScopeHasHistory',
@@ -77,13 +92,16 @@ const adminKeys = [
 	'adminCopyEmailsDialogClose',
 	'adminExportEmailsHint',
 	'adminExportEmailsEmpty',
-	'adminOverviewPaymentsTitle',
-	'adminOverviewMembersTitle',
-	'adminOverviewMembershipsTitle',
-	'adminOverviewAuditTitle',
+	'adminOverviewRecentTitle',
+	'adminOverviewRecentVerifiedSubtitle',
+	'adminOverviewRecentActiveSubtitle',
+	'adminOverviewColWhen',
 	'adminOverviewCountPending',
 	'adminOverviewCountActive',
-	'adminOverviewCountTotal',
+	'adminOverviewCountNewMembers',
+	'adminOverviewKpiAriaMembers',
+	'adminOverviewKpiAriaPending',
+	'adminOverviewKpiAriaNewMembers',
 	'adminTableAmount',
 	'adminTableDuesPortion',
 	'adminTableDonationPortion',
@@ -91,10 +109,6 @@ const adminKeys = [
 	'adminPaymentPreviewDonation',
 	'adminPaymentSaved',
 	'adminTablePaymentDate',
-	'adminAuditWhen',
-	'adminAuditAction',
-	'adminAuditEntityType',
-	'adminAuditEntityId',
 	'adminPendingBadge',
 	'adminAddMemberNav',
 ] as const;
@@ -129,7 +143,12 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
               {t.adminNavPending}
               <span id="admin-pending-badge" class="adminTabBadge" hidden></span>
             </button>
+            <button type="button" class="adminTab" role="tab" data-admin-tab="newMembers" aria-selected="false">
+              {t.adminNavNewMembers}
+              <span id="admin-new-members-badge" class="adminTabBadge" hidden></span>
+            </button>
             <button type="button" class="adminTab" role="tab" data-admin-tab="members" aria-selected="false">{t.adminNavMembers}</button>
+            <button type="button" class="adminTab" role="tab" data-admin-tab="auditLog" aria-selected="false">{t.adminNavAuditLog}</button>
           </div>
         </div>
 
@@ -159,6 +178,27 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
               </thead>
               <tbody id="admin-pending-body"></tbody>
             </table>
+          </div>
+        </div>
+
+        <div data-admin-panel="newMembers" class="adminPanel adminCard" hidden>
+          <div class="tableWrap">
+            <table class="adminTable adminTable--members">
+              <thead>
+                <tr>
+                  <th>{t.adminTableName}</th>
+                  <th>{t.adminTableEmail}</th>
+                  <th>{t.adminTableTier}</th>
+                  <th>{t.adminTableCreated}</th>
+                </tr>
+              </thead>
+              <tbody id="admin-new-members-body"></tbody>
+            </table>
+          </div>
+          <div class="adminPager">
+            <button type="button" class="adminBtn adminBtn--ghost" id="admin-new-members-prev">{t.adminPrevPage}</button>
+            <span id="admin-new-members-pageinfo"></span>
+            <button type="button" class="adminBtn adminBtn--ghost" id="admin-new-members-next">{t.adminNextPage}</button>
           </div>
         </div>
 
@@ -205,6 +245,15 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
                 <option value="associate">{t.adminFilterTierAssociate}</option>
               </select>
             </label>
+            <label>
+              {t.adminMemberStatusFilterLabel}
+              <select id="admin-members-member-status" name="memberStatus" class="adminInput">
+                <option value="verified">{t.adminMemberStatusFilterVerified}</option>
+                <option value="new">{t.adminMemberStatusFilterNew}</option>
+                <option value="disabled">{t.adminMemberStatusFilterDisabled}</option>
+                <option value="all">{t.adminMemberStatusFilterAll}</option>
+              </select>
+            </label>
             <button type="submit" class="adminBtn adminBtn--outline">{t.adminFilterApply}</button>
             <button type="button" class="adminBtn adminBtn--outline" id="admin-export-emails-members">{t.adminExportEmails}</button>
           </form>
@@ -226,6 +275,28 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
             <button type="button" class="adminBtn adminBtn--ghost" id="admin-members-prev">{t.adminPrevPage}</button>
             <span id="admin-members-pageinfo"></span>
             <button type="button" class="adminBtn adminBtn--ghost" id="admin-members-next">{t.adminNextPage}</button>
+          </div>
+        </div>
+
+        <div data-admin-panel="auditLog" class="adminPanel adminCard" hidden>
+          <div class="tableWrap adminAuditTableWrap">
+            <table class="adminTable adminTable--audit">
+              <thead>
+                <tr>
+                  <th>{t.adminAuditColWhen}</th>
+                  <th>{t.adminAuditColActor}</th>
+                  <th>{t.adminAuditColAction}</th>
+                  <th>{t.adminAuditColEntity}</th>
+                  <th>{t.adminAuditColMetadata}</th>
+                </tr>
+              </thead>
+              <tbody id="admin-audit-body"></tbody>
+            </table>
+          </div>
+          <div class="adminPager">
+            <button type="button" class="adminBtn adminBtn--ghost" id="admin-audit-prev">{t.adminPrevPage}</button>
+            <span id="admin-audit-pageinfo"></span>
+            <button type="button" class="adminBtn adminBtn--ghost" id="admin-audit-next">{t.adminNextPage}</button>
           </div>
         </div>
 
@@ -580,6 +651,26 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     text-decoration: underline;
   }
 
+  .adminPage :global(.adminTable--audit) {
+    min-width: 720px;
+  }
+
+  .adminPage :global(.adminAuditTdMetadata) {
+    max-width: 28rem;
+    vertical-align: top;
+    word-break: break-word;
+    white-space: normal;
+  }
+
+  .adminPage :global(.adminAuditMetadata) {
+    margin: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.75rem;
+    line-height: 1.35;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
   .adminPage :global(.adminPendingActions) {
     display: inline-flex;
     align-items: center;
@@ -615,16 +706,16 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     outline-offset: 2px;
   }
 
-  .adminPage :global(.adminTable--members tbody tr[data-admin-member-href]) {
+  .adminPage :global(.adminTable tbody tr[data-admin-member-href]) {
     cursor: pointer;
   }
 
-  .adminPage :global(.adminTable--members tbody tr[data-admin-member-href]:focus-visible) {
+  .adminPage :global(.adminTable tbody tr[data-admin-member-href]:focus-visible) {
     outline: 2px solid rgba(28, 95, 118, 0.45);
     outline-offset: -2px;
   }
 
-  .adminPage :global(.adminTable--members tbody tr[data-admin-member-href]:hover) {
+  .adminPage :global(.adminTable tbody tr[data-admin-member-href]:hover) {
     background: rgba(72, 196, 255, 0.1);
   }
 
@@ -688,6 +779,24 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
   }
 
+  .adminOverviewMount :global(button.adminKpi) {
+    width: 100%;
+    margin: 0;
+    font: inherit;
+    cursor: pointer;
+    appearance: none;
+    color: inherit;
+  }
+
+  .adminOverviewMount :global(button.adminKpi:hover) {
+    filter: brightness(0.98);
+  }
+
+  .adminOverviewMount :global(button.adminKpi:focus-visible) {
+    outline: 2px solid rgba(28, 95, 118, 0.5);
+    outline-offset: 2px;
+  }
+
   .adminOverviewMount :global(.adminKpi--pending) {
     border-left: 3px solid rgba(176, 120, 0, 0.88);
   }
@@ -696,7 +805,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     border-left: 3px solid rgba(34, 120, 80, 0.85);
   }
 
-  .adminOverviewMount :global(.adminKpi--directory) {
+  .adminOverviewMount :global(.adminKpi--newMembers) {
     border-left: 3px solid rgba(28, 95, 118, 0.55);
   }
 
@@ -738,6 +847,27 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     letter-spacing: 0.09em;
     color: var(--muted);
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  }
+
+  .adminOverviewMount :global(.adminOverviewSubheading) {
+    margin: 1rem 0 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--admin-text);
+  }
+
+  .adminOverviewMount :global(.adminOverviewSubheading:first-of-type) {
+    margin-top: 0;
+  }
+
+  .adminPage :global(.adminMemberNameCell) {
+    line-height: 1.35;
+  }
+
+  .adminPage :global(.adminMemberNameJoiner) {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 0.92em;
   }
 
   .adminOverviewMount :global(.adminStatusPill) {

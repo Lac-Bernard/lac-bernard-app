@@ -7,6 +7,7 @@ import {
 	type MemberLocale,
 } from '../../lib/members/i18n';
 import type { MemberAccountPayload } from '../../lib/members/accountData';
+import { formatMemberPrimaryName, memberSummaryNameParts } from '../../lib/members/memberDisplayName';
 import { membershipCentsForTier } from '../../lib/membership/stripeCheckout';
 
 interface Props {
@@ -84,6 +85,8 @@ const associateFeeCad =
 	associateCents != null ? (associateCents / 100).toFixed(2) : '0.00';
 
 const displayEmail = member ? (member.primary_email?.trim() || email) : '';
+const memberSummaryName = member ? memberSummaryNameParts(member) : null;
+const memberPrimaryNameOnly = member ? formatMemberPrimaryName(member) : '';
 
 let mailingLine: string | null = null;
 if (member) {
@@ -129,8 +132,15 @@ if (member) {
               <div class="memberSummaryHeader">
                 <div class="memberSummaryIdentity">
                   <p class="memberSummaryName">
-                    {member.first_name ? `${member.first_name} ` : ''}
-                    {member.last_name}
+                    {memberSummaryName ? (
+                      <>
+                        <span class="memberSummaryNamePrimary">{memberSummaryName.primary}</span>
+                        <span class="memberSummaryNameAnd">{t.memberSummaryNameAnd}</span>
+                        <span class="memberSummaryNameOther">{memberSummaryName.other}</span>
+                      </>
+                    ) : (
+                      memberPrimaryNameOnly
+                    )}
                   </p>
                   <p class="memberSummaryEmail">{displayEmail}</p>
                 </div>
@@ -662,6 +672,16 @@ if (member) {
     line-height: 1.25;
     margin-bottom: 0.35rem;
     color: var(--text, rgba(0, 0, 0, 0.92));
+  }
+
+  .memberSummaryNameAnd {
+    font-weight: 600;
+    color: var(--muted, #6a6a6a);
+  }
+
+  .memberSummaryNamePrimary,
+  .memberSummaryNameOther {
+    font-weight: 700;
   }
 
   .memberSummaryEmail {

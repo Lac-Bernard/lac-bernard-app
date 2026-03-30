@@ -1,26 +1,21 @@
 /**
  * Dummy database seed for local dev and admin UI testing.
  *
- * What actually loads data into Postgres:
+ * Three “reset” ideas (different tools — not interchangeable):
  *
- * - Local Supabase CLI: `npm run db:seed:local` → regenerates `supabase/seed.sql`, then runs
- *   `supabase db reset` (migrations + seed). That is the usual “fill my dev DB” command.
- *   `supabase db reset` wipes the local DB and reapplies everything — use only when that’s OK.
+ * 1. `npm run db:seed` — writes `supabase/seed.sql` only (no DB).
+ * 2. `npm run db:seed:local` — (1) then `supabase db reset`: **full local DB** wipe + migrations + seed.
+ * 3. `npm run db:seed:apply` / `db:seed:apply:reset` — insert via API into whatever DB `.env` points at.
+ *    `--reset` here deletes **only** rows tagged with the dummy seed marker, then re-inserts (needs
+ *    `ALLOW_DUMMY_SEED_RESET=1`). Unlike `db:import-members-csv --reset`, it does not truncate all members.
  *
- * - Hosted / any URL in `.env`: `npm run db:seed:apply` → inserts via API (needs
- *   ALLOW_DUMMY_SEED_APPLY=1 + SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY). Optional `--reset`
- *   + ALLOW_DUMMY_SEED_RESET=1 replaces prior dummy rows only.
- *
- * This script alone (`npm run db:seed`) only **writes** `supabase/seed.sql` to disk. It does not
- * connect to a database. The file is what Supabase runs after migrations when `[db.seed]` is
- * enabled (see `supabase/config.toml`).
- *
- * Optional: `--cy=2026` when generating SQL to pin the membership calendar year.
+ * See also: `scripts/load-dotenv.mjs` (shared `.env` load), `generate_supabase_csvs.py --reset` (full import wipe).
  */
-import { readFileSync, existsSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createClient } from '@supabase/supabase-js';
+import { loadDotEnvFromRepoRoot } from './load-dotenv.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const root = join(__dirname, '..');
@@ -31,27 +26,6 @@ const SEED_MARKER = 'Dashboard dummy seed · __dummy_seed__';
 
 const AUDIT_ACTION_PREFIX = 'dummy_seed_';
 const AUDIT_ACTOR = '00000000-0000-4000-8000-00000000c0de';
-
-function loadDotEnv() {
-	const p = join(root, '.env');
-	if (!existsSync(p)) return;
-	const content = readFileSync(p, 'utf8');
-	for (const line of content.split(/\r?\n/)) {
-		const trimmed = line.trim();
-		if (!trimmed || trimmed.startsWith('#')) continue;
-		const eq = trimmed.indexOf('=');
-		if (eq === -1) continue;
-		const k = trimmed.slice(0, eq).trim();
-		let v = trimmed.slice(eq + 1).trim();
-		if (
-			(v.startsWith('"') && v.endsWith('"')) ||
-			(v.startsWith("'") && v.endsWith("'"))
-		) {
-			v = v.slice(1, -1);
-		}
-		if (process.env[k] === undefined) process.env[k] = v;
-	}
-}
 
 function uid(n) {
 	const hex = n.toString(16).padStart(12, '0').slice(-12);
@@ -71,15 +45,39 @@ function parseArgs(argv) {
 	let reset = false;
 	let apply = false;
 	let cyOverride = null;
+	let help = false;
 	for (let i = 2; i < argv.length; i++) {
 		const a = argv[i];
 		if (a === '--dry-run' || a === '-n') dryRun = true;
 		else if (a === '--reset') reset = true;
 		else if (a === '--apply') apply = true;
+		else if (a === '-h' || a === '--help') help = true;
 		else if (a.startsWith('--cy=')) cyOverride = Number(a.slice('--cy='.length));
 		else if (a === '--cy') cyOverride = Number(argv[++i]);
 	}
-	return { dryRun, reset, apply, cyOverride };
+	return { dryRun, reset, apply, cyOverride, help };
+}
+
+function printUsage() {
+	console.log(`Usage: node scripts/generate-dummy-seeds.mjs [options]
+
+Write supabase/seed.sql (default) or apply dummy rows to Supabase.
+
+npm shortcuts:
+  npm run db:seed                  Regenerate seed.sql only (no database).
+  npm run db:seed:local            Regenerate seed.sql + supabase db reset (full local wipe).
+  npm run db:seed:apply            Insert via API (requires ALLOW_DUMMY_SEED_APPLY=1).
+  npm run db:seed:apply:reset      Apply after removing prior dummy seed (also ALLOW_DUMMY_SEED_RESET=1).
+
+Options:
+  --apply              Connect with SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY and insert rows.
+  --reset              With --apply: delete prior dummy-tagged rows first (needs ALLOW_DUMMY_SEED_RESET=1).
+  --dry-run, -n        With --apply: print only, no writes.
+  --cy, --cy=YYYY      Membership calendar year in generated data (default: Toronto calendar year).
+  -h, --help           Show this message.
+
+Other scripts use different flags: CSV import uses --reset to wipe members/memberships/payments;
+this script’s --reset only applies with --apply and only removes dummy seed rows.`);
 }
 
 function sqlText(s) {
@@ -121,6 +119,10 @@ function buildDataset(cy) {
 		chloe: uid(8),
 		marc: uid(9),
 		julie: uid(10),
+		/** members.status = new — appears on New members tab; verify flow */
+		nova: uid(11),
+		/** members.status = disabled — soft-off; excluded from default directory / exports */
+		riley: uid(12),
 	};
 
 	const members = [
@@ -136,7 +138,7 @@ function buildDataset(cy) {
 			primary_country: 'CA',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'member',
+			status: 'verified',
 		},
 		{
 			id: M.marie,
@@ -149,7 +151,7 @@ function buildDataset(cy) {
 			primary_province: 'QC',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'member',
+			status: 'verified',
 		},
 		{
 			id: M.jean,
@@ -161,7 +163,7 @@ function buildDataset(cy) {
 			primary_province: 'QC',
 			email_opt_in: false,
 			notes: SEED_MARKER,
-			status: 'member',
+			status: 'verified',
 		},
 		{
 			id: M.sophie,
@@ -173,7 +175,7 @@ function buildDataset(cy) {
 			primary_province: 'QC',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'member',
+			status: 'verified',
 		},
 		{
 			id: M.lucas,
@@ -185,7 +187,7 @@ function buildDataset(cy) {
 			primary_province: 'QC',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'member',
+			status: 'verified',
 		},
 		{
 			id: M.emma,
@@ -197,7 +199,7 @@ function buildDataset(cy) {
 			primary_province: 'QC',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'member',
+			status: 'verified',
 		},
 		{
 			id: M.noah,
@@ -209,7 +211,7 @@ function buildDataset(cy) {
 			primary_province: 'QC',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'member',
+			status: 'verified',
 		},
 		{
 			id: M.chloe,
@@ -221,7 +223,7 @@ function buildDataset(cy) {
 			primary_province: 'QC',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'member',
+			status: 'verified',
 		},
 		{
 			id: M.marc,
@@ -233,7 +235,7 @@ function buildDataset(cy) {
 			primary_province: 'QC',
 			email_opt_in: false,
 			notes: SEED_MARKER,
-			status: 'member',
+			status: 'verified',
 		},
 		{
 			id: M.julie,
@@ -245,7 +247,35 @@ function buildDataset(cy) {
 			primary_province: 'QC',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'member',
+			status: 'verified',
+		},
+		{
+			id: M.nova,
+			first_name: 'Nova',
+			last_name: 'Review',
+			primary_email: 'nova.newsignup.devseed@example.invalid',
+			secondary_email: null,
+			primary_phone: '514-555-0199',
+			primary_city: 'Montréal',
+			primary_province: 'QC',
+			primary_country: 'CA',
+			email_opt_in: true,
+			notes: `${SEED_MARKER} · members.status=new (self-serve; use New members tab + Verify)`,
+			status: 'new',
+		},
+		{
+			id: M.riley,
+			first_name: 'Riley',
+			last_name: 'Former',
+			primary_email: 'inactive.sheet.devseed@example.invalid',
+			secondary_email: null,
+			primary_phone: '450-555-0198',
+			primary_city: 'Blainville',
+			primary_province: 'QC',
+			primary_country: 'CA',
+			email_opt_in: false,
+			notes: `${SEED_MARKER} · members.status=disabled (import “inactive” / soft-off)`,
+			status: 'disabled',
 		},
 	];
 
@@ -373,6 +403,26 @@ function buildDataset(cy) {
 		created_at: `${cy}-03-25T18:10:00Z`,
 	});
 
+	const novaPendingCy = mid();
+	memberships.push({
+		id: novaPendingCy,
+		member_id: M.nova,
+		year: cy,
+		tier: 'general',
+		status: 'pending',
+		created_at: `${cy}-03-28T10:00:00Z`,
+	});
+
+	const rileyPrevYear = mid();
+	memberships.push({
+		id: rileyPrevYear,
+		member_id: M.riley,
+		year: cy - 1,
+		tier: 'general',
+		status: 'active',
+		created_at: `${cy - 1}-09-01T12:00:00Z`,
+	});
+
 	const stripeNotes = (sessionId, donationDollars, donationNote) => {
 		const parts = ['Stripe Checkout', `session ${sessionId}`, `donation $${donationDollars.toFixed(2)} CAD`];
 		if (donationNote) parts.push(`Donation note: ${donationNote}`);
@@ -479,6 +529,17 @@ function buildDataset(cy) {
 			donation_amount: 0,
 			donation_note: null,
 		},
+		{
+			membership_id: rileyPrevYear,
+			method: 'e-transfer',
+			amount: 75,
+			date: `${cy - 1}-09-03`,
+			notes: 'Prior year (row marked inactive in sheet)',
+			payment_id: null,
+			membership_amount: 75,
+			donation_amount: 0,
+			donation_note: null,
+		},
 	];
 
 	const audit = [
@@ -552,10 +613,19 @@ function buildSeedSql(dataset) {
 		.join(',\n  ');
 
 	const membershipValues = memberships
-		.map(
-			(r) =>
-				`(${[sqlUuid(r.id), sqlUuid(r.member_id), String(r.year), sqlText(r.tier), sqlText(r.status), sqlTs(r.created_at)].join(', ')})`,
-		)
+		.map((r) => {
+			const activated =
+				r.status === 'active' ? sqlTs(r.created_at) : 'NULL';
+			return `(${[
+				sqlUuid(r.id),
+				sqlUuid(r.member_id),
+				String(r.year),
+				sqlText(r.tier),
+				sqlText(r.status),
+				sqlTs(r.created_at),
+				activated,
+			].join(', ')})`;
+		})
 		.join(',\n  ');
 
 	const paymentValues = payments
@@ -597,7 +667,7 @@ insert into public.members (
 ) values
   ${memberValues};
 
-insert into public.memberships (id, member_id, year, tier, status, created_at) values
+insert into public.memberships (id, member_id, year, tier, status, created_at, activated_at) values
   ${membershipValues};
 
 insert into public.payments (membership_id, method, amount, date, notes, payment_id, membership_amount, donation_amount, donation_note) values
@@ -658,7 +728,11 @@ async function applyDataset(supabase, dataset, { reset, dryRun }) {
 		process.exit(1);
 	}
 
-	const { error: ems } = await supabase.from('memberships').insert(dataset.memberships);
+	const membershipsWithActivated = dataset.memberships.map((m) => ({
+		...m,
+		activated_at: m.status === 'active' ? m.created_at : null,
+	}));
+	const { error: ems } = await supabase.from('memberships').insert(membershipsWithActivated);
 	if (ems) {
 		console.error('Insert memberships:', ems.message);
 		process.exit(1);
@@ -680,8 +754,12 @@ async function applyDataset(supabase, dataset, { reset, dryRun }) {
 }
 
 async function main() {
-	loadDotEnv();
+	loadDotEnvFromRepoRoot();
 	const args = parseArgs(process.argv);
+	if (args.help) {
+		printUsage();
+		return;
+	}
 	const cy =
 		args.cyOverride != null && Number.isFinite(args.cyOverride) && args.cyOverride >= 2000 && args.cyOverride <= 2100
 			? args.cyOverride

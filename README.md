@@ -66,6 +66,11 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 | `npm run preview`         | Preview production build locally                  |
 | `npm run astro ...`       | Run Astro CLI commands (e.g., `astro check`)     |
 | `npm run db:seed`         | Regenerate `supabase/seed.sql` with dummy member data (run before `supabase db reset` if you change the script) |
+| `npm run db:seed:local`   | `db:seed` then `supabase db reset` (full local DB wipe + migrations + seed) |
+| `npm run db:seed:apply`   | Insert dummy rows via Supabase API (needs `ALLOW_DUMMY_SEED_APPLY=1` and `.env` credentials) |
+| `npm run db:seed:apply:reset` | Same as `db:seed:apply`, but remove prior dummy seed rows first (`ALLOW_DUMMY_SEED_RESET=1` as well). Not the same as CSV `--reset` — see `node scripts/generate-dummy-seeds.mjs --help` |
+| `npm run db:import-members-csv` | Import the association master membership CSV into Supabase (Python deps in a **venv** — see below; needs `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` in `.env`) |
+| `npm run db:import-members-csv:local` | Same, but targets the **local** Docker stack (`supabase start`); credentials come from `supabase status` |
 
 ## 🗄️ Supabase (optional, local)
 
@@ -77,6 +82,18 @@ For local member auth and data without touching production:
 4. Regenerate dummy seed data when needed: `npm run db:seed`, then `supabase db reset` again.
 
 Use `supabase status` for the local **API URL** and **anon key** to put in `.env`. Magic-link emails in dev are captured by the local mail UI (Inbucket), usually at `http://127.0.0.1:54324`—open the message there and click the link. Redirect URLs for the app are configured in `supabase/config.toml` under `[auth]` (defaults include `http://localhost:4321` for Astro).
+
+**Master membership list (CSV import):** Homebrew / system Python often raises `externally-managed-environment` if you `pip install` globally. Create a **project venv** once, then install deps there:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r scripts/requirements-membership-import.txt
+```
+
+The npm scripts `db:import-members-csv` / `db:import-members-csv:local` use `scripts/run-membership-import.sh`, which runs **`.venv/bin/python3`** when that file exists, so you do not need to activate the venv for `npm run`. You can still call `.venv/bin/python3 scripts/generate_supabase_csvs.py` directly if you prefer.
+
+After `supabase db reset`, run `npm run db:import-members-csv:local -- /path/to/Master_Membership_List.csv`. To wipe first, **put `--reset` after the `--`** (e.g. `npm run db:import-members-csv -- --reset ./sheet.csv`). If you write `npm run db:import-members-csv --reset ./sheet.csv`, npm never passes `--reset` to the script and old rows remain. The import uses the **service role** key; with `:local`, URL and key come from `supabase status`. For production, use `npm run db:import-members-csv` with credentials in `.env` (or a CI secret).
 
 To match a real sign-in email to a seeded member row, update `primary_email` (or `secondary_email`) in the `members` table in your local DB (Table Editor in local Studio, or SQL).
 

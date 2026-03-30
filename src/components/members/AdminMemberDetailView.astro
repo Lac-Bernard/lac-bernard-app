@@ -45,6 +45,11 @@ const adminKeys = [
 	'adminSecondaryEmailLabel',
 	'adminNotesFieldLabel',
 	'adminStatusMemberLabel',
+	'adminStatusMemberOptionNew',
+	'adminStatusMemberOptionVerified',
+	'adminStatusMemberOptionDisabled',
+	'adminStatusMemberFieldTitle',
+	'adminPromoteAdminTitle',
 	'adminUserIdLabel',
 	'adminPrimaryEmailLabel',
   'membershipTableYear',
@@ -115,10 +120,13 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
 
         <div class="adminPanel adminCard">
           <h2 class="adminSubheading">{t.adminDetailSectionProfile}</h2>
+          <p id="admin-member-display-name" class="adminDetailReadonlyMemberName" aria-live="polite"></p>
           <form id="admin-member-detail-form" class="adminMemberForm">
             <div class="adminFormGrid">
               <label>{t.profileFirstName} <input type="text" id="admin-field-first_name" name="first_name" class="adminInput" /></label>
               <label>{t.profileLastName} * <input type="text" id="admin-field-last_name" name="last_name" class="adminInput" required /></label>
+              <label>{t.profileOtherFirstName} <input type="text" id="admin-field-other_first_name" name="other_first_name" class="adminInput" /></label>
+              <label>{t.profileOtherLastName} <input type="text" id="admin-field-other_last_name" name="other_last_name" class="adminInput" /></label>
               <label>{t.adminPrimaryEmailLabel} <input type="email" id="admin-field-primary_email" name="primary_email" class="adminInput" /></label>
               <label>{t.adminSecondaryEmailLabel} <input type="email" id="admin-field-secondary_email" name="secondary_email" class="adminInput" /></label>
               <label>{t.profilePrimaryPhone} <input type="text" id="admin-field-primary_phone" name="primary_phone" class="adminInput" /></label>
@@ -132,13 +140,22 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
               <label>{t.profileCountry} <input type="text" id="admin-field-primary_country" name="primary_country" class="adminInput" /></label>
               <label>{t.profilePostal} <input type="text" id="admin-field-primary_postal_code" name="primary_postal_code" class="adminInput" /></label>
               <label class="adminCheckbox"><input type="checkbox" id="admin-field-email_opt_in" name="email_opt_in" /> {t.profileEmailOptIn}</label>
-              <label>{t.adminStatusMemberLabel} <input type="text" id="admin-field-status" name="status" class="adminInput" /></label>
+              <label>
+                {t.adminStatusMemberLabel}
+                <select id="admin-field-status" name="status" class="adminInput" title={t.adminStatusMemberFieldTitle}>
+                  <option value="new">{t.adminStatusMemberOptionNew}</option>
+                  <option value="verified">{t.adminStatusMemberOptionVerified}</option>
+                  <option value="disabled">{t.adminStatusMemberOptionDisabled}</option>
+                </select>
+              </label>
               <label>{t.adminUserIdLabel} <input type="text" id="admin-field-user_id" name="user_id" class="adminInput" /></label>
               <label class="adminNotes">{t.adminNotesFieldLabel} <textarea id="admin-field-notes" name="notes" class="adminInput" rows="3"></textarea></label>
             </div>
             <div class="adminFormActions">
               <button type="submit" class="adminBtn adminBtn--solid">{t.adminSaveMemberBtn}</button>
-              <button type="button" class="adminBtn adminBtn--ghost" id="admin-promote-btn">{t.adminPromoteBtn}</button>
+              <button type="button" class="adminBtn adminBtn--ghost" id="admin-promote-btn" title={t.adminPromoteAdminTitle}>
+                {t.adminPromoteBtn}
+              </button>
             </div>
           </form>
         </div>
@@ -371,6 +388,25 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     padding-bottom: 0.4rem;
     border-bottom: 1px solid var(--admin-border);
     color: var(--admin-text);
+  }
+
+  .adminDetailReadonlyMemberName {
+    margin: -0.35rem 0 1rem;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--admin-text);
+  }
+
+  .adminDetailReadonlyMemberName:empty {
+    display: none;
+    margin: 0;
+  }
+
+  .adminPage :global(.adminMemberNameJoiner) {
+    color: var(--muted);
+    font-weight: 400;
+    font-size: 0.92em;
   }
 
   .adminDetailMembershipList {

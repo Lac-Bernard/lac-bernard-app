@@ -1,7 +1,9 @@
 /** Editable member profile fields (API ↔ DB). */
 export type MemberProfilePayload = {
 	first_name: string | null;
+	other_first_name: string | null;
 	last_name: string;
+	other_last_name: string | null;
 	primary_phone: string | null;
 	secondary_phone: string | null;
 	lake_phone: string | null;
@@ -42,7 +44,9 @@ export function parseMemberProfilePayload(body: unknown): { ok: true; value: Mem
 		ok: true,
 		value: {
 			first_name: trimOrNull(o.first_name),
+			other_first_name: trimOrNull(o.other_first_name),
 			last_name: last,
+			other_last_name: trimOrNull(o.other_last_name),
 			primary_phone: trimOrNull(o.primary_phone),
 			secondary_phone: trimOrNull(o.secondary_phone),
 			lake_phone: trimOrNull(o.lake_phone),
@@ -66,7 +70,9 @@ export function payloadToRow(
 		user_id: extra.user_id,
 		primary_email: extra.primary_email,
 		first_name: p.first_name,
+		other_first_name: p.other_first_name,
 		last_name: p.last_name,
+		other_last_name: p.other_last_name,
 		primary_phone: p.primary_phone,
 		secondary_phone: p.secondary_phone,
 		lake_phone: p.lake_phone,
@@ -88,7 +94,9 @@ export function payloadToUpdate(
 	return {
 		primary_email,
 		first_name: p.first_name,
+		other_first_name: p.other_first_name,
 		last_name: p.last_name,
+		other_last_name: p.other_last_name,
 		primary_phone: p.primary_phone,
 		secondary_phone: p.secondary_phone,
 		lake_phone: p.lake_phone,

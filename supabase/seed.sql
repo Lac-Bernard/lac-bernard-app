@@ -11,32 +11,36 @@ insert into public.members (
   primary_address, primary_city, primary_province, primary_country, primary_postal_code,
   email_opt_in, notes, status
 ) values
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000001'::uuid, 'Alex', 'Profeit', 'alex.devseed@example.invalid', NULL, '514-555-0101', NULL, NULL, NULL, NULL, NULL, 'Montréal', 'QC', 'CA', NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'member'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000002'::uuid, 'Marie', 'Dubois', 'marie.devseed@example.invalid', 'marie.alt@example.invalid', '514-555-0102', NULL, NULL, NULL, NULL, NULL, 'Gatineau', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'member'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000003'::uuid, 'Jean', 'Tremblay', 'jean.devseed@example.invalid', NULL, '418-555-0103', NULL, NULL, NULL, NULL, NULL, 'Québec', 'QC', NULL, NULL, false, 'Dashboard dummy seed · __dummy_seed__', 'member'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000004'::uuid, 'Sophie', 'Lavoie', 'sophie.devseed@example.invalid', NULL, '450-555-0104', NULL, NULL, NULL, NULL, NULL, 'Laval', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'member'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000005'::uuid, 'Lucas', 'Martin', 'lucas.devseed@example.invalid', NULL, '819-555-0105', NULL, NULL, NULL, NULL, NULL, 'Sherbrooke', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'member'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000006'::uuid, 'Emma', 'Fortin', 'emma.devseed@example.invalid', NULL, '438-555-0106', NULL, NULL, NULL, NULL, NULL, 'Montréal', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'member'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000007'::uuid, 'Noah', 'Bergeron', 'noah.devseed@example.invalid', NULL, '514-555-0107', NULL, NULL, NULL, NULL, NULL, 'Montréal', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'member'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000008'::uuid, 'Chloé', 'Gagnon', 'chloe.devseed@example.invalid', NULL, '514-555-0108', NULL, NULL, NULL, NULL, NULL, 'Longueuil', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'member'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000009'::uuid, 'Marc', 'Pelletier', 'marc.devseed@example.invalid', NULL, '418-555-0109', NULL, NULL, NULL, NULL, NULL, 'Rimouski', 'QC', NULL, NULL, false, 'Dashboard dummy seed · __dummy_seed__', 'member'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000000a'::uuid, 'Julie', 'Roy', 'julie.devseed@example.invalid', NULL, '450-555-0110', NULL, NULL, NULL, NULL, NULL, 'Terrebonne', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'member');
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000001'::uuid, 'Alex', 'Profeit', 'alex.devseed@example.invalid', NULL, '514-555-0101', NULL, NULL, NULL, NULL, NULL, 'Montréal', 'QC', 'CA', NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000002'::uuid, 'Marie', 'Dubois', 'marie.devseed@example.invalid', 'marie.alt@example.invalid', '514-555-0102', NULL, NULL, NULL, NULL, NULL, 'Gatineau', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000003'::uuid, 'Jean', 'Tremblay', 'jean.devseed@example.invalid', NULL, '418-555-0103', NULL, NULL, NULL, NULL, NULL, 'Québec', 'QC', NULL, NULL, false, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000004'::uuid, 'Sophie', 'Lavoie', 'sophie.devseed@example.invalid', NULL, '450-555-0104', NULL, NULL, NULL, NULL, NULL, 'Laval', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000005'::uuid, 'Lucas', 'Martin', 'lucas.devseed@example.invalid', NULL, '819-555-0105', NULL, NULL, NULL, NULL, NULL, 'Sherbrooke', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000006'::uuid, 'Emma', 'Fortin', 'emma.devseed@example.invalid', NULL, '438-555-0106', NULL, NULL, NULL, NULL, NULL, 'Montréal', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000007'::uuid, 'Noah', 'Bergeron', 'noah.devseed@example.invalid', NULL, '514-555-0107', NULL, NULL, NULL, NULL, NULL, 'Montréal', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000008'::uuid, 'Chloé', 'Gagnon', 'chloe.devseed@example.invalid', NULL, '514-555-0108', NULL, NULL, NULL, NULL, NULL, 'Longueuil', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000009'::uuid, 'Marc', 'Pelletier', 'marc.devseed@example.invalid', NULL, '418-555-0109', NULL, NULL, NULL, NULL, NULL, 'Rimouski', 'QC', NULL, NULL, false, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000000a'::uuid, 'Julie', 'Roy', 'julie.devseed@example.invalid', NULL, '450-555-0110', NULL, NULL, NULL, NULL, NULL, 'Terrebonne', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000000b'::uuid, 'Nova', 'Review', 'nova.newsignup.devseed@example.invalid', NULL, '514-555-0199', NULL, NULL, NULL, NULL, NULL, 'Montréal', 'QC', 'CA', NULL, true, 'Dashboard dummy seed · __dummy_seed__ · members.status=new (self-serve; use New members tab + Verify)', 'new'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000000c'::uuid, 'Riley', 'Former', 'inactive.sheet.devseed@example.invalid', NULL, '450-555-0198', NULL, NULL, NULL, NULL, NULL, 'Blainville', 'QC', 'CA', NULL, false, 'Dashboard dummy seed · __dummy_seed__ · members.status=disabled (import “inactive” / soft-off)', 'disabled');
 
-insert into public.memberships (id, member_id, year, tier, status, created_at) values
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000014'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001'::uuid, 2024, 'general', 'active', '2024-05-10T14:00:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000015'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001'::uuid, 2025, 'general', 'active', '2025-04-02T11:20:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000016'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001'::uuid, 2026, 'general', 'pending', '2026-03-01T09:00:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000017'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000002'::uuid, 2026, 'general', 'active', '2026-03-18T16:45:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000018'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000003'::uuid, 2026, 'associate', 'active', '2026-03-12T10:15:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000019'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000004'::uuid, 2024, 'associate', 'active', '2024-06-01T12:00:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001a'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000004'::uuid, 2025, 'general', 'active', '2025-05-20T12:00:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001b'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000004'::uuid, 2026, 'general', 'active', '2026-03-05T13:30:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001c'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000005'::uuid, 2026, 'general', 'pending', '2026-03-18T08:00:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001d'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000009'::uuid, 2026, 'general', 'pending', '2026-03-19T08:00:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001e'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-00000000000a'::uuid, 2026, 'associate', 'pending', '2026-03-20T08:00:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001f'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000006'::uuid, 2028, 'general', 'pending', '2026-03-22T15:00:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000020'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000007'::uuid, 2025, 'general', 'active', '2025-07-01T12:00:00Z'::timestamptz),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000021'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000008'::uuid, 2026, 'general', 'active', '2026-03-25T18:10:00Z'::timestamptz);
+insert into public.memberships (id, member_id, year, tier, status, created_at, activated_at) values
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000014'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001'::uuid, 2024, 'general', 'active', '2024-05-10T14:00:00Z'::timestamptz, '2024-05-10T14:00:00Z'::timestamptz),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000015'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001'::uuid, 2025, 'general', 'active', '2025-04-02T11:20:00Z'::timestamptz, '2025-04-02T11:20:00Z'::timestamptz),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000016'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001'::uuid, 2026, 'general', 'pending', '2026-03-01T09:00:00Z'::timestamptz, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000017'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000002'::uuid, 2026, 'general', 'active', '2026-03-18T16:45:00Z'::timestamptz, '2026-03-18T16:45:00Z'::timestamptz),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000018'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000003'::uuid, 2026, 'associate', 'active', '2026-03-12T10:15:00Z'::timestamptz, '2026-03-12T10:15:00Z'::timestamptz),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000019'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000004'::uuid, 2024, 'associate', 'active', '2024-06-01T12:00:00Z'::timestamptz, '2024-06-01T12:00:00Z'::timestamptz),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001a'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000004'::uuid, 2025, 'general', 'active', '2025-05-20T12:00:00Z'::timestamptz, '2025-05-20T12:00:00Z'::timestamptz),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001b'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000004'::uuid, 2026, 'general', 'active', '2026-03-05T13:30:00Z'::timestamptz, '2026-03-05T13:30:00Z'::timestamptz),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001c'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000005'::uuid, 2026, 'general', 'pending', '2026-03-18T08:00:00Z'::timestamptz, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001d'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000009'::uuid, 2026, 'general', 'pending', '2026-03-19T08:00:00Z'::timestamptz, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001e'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-00000000000a'::uuid, 2026, 'associate', 'pending', '2026-03-20T08:00:00Z'::timestamptz, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001f'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000006'::uuid, 2028, 'general', 'pending', '2026-03-22T15:00:00Z'::timestamptz, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000020'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000007'::uuid, 2025, 'general', 'active', '2025-07-01T12:00:00Z'::timestamptz, '2025-07-01T12:00:00Z'::timestamptz),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000021'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000008'::uuid, 2026, 'general', 'active', '2026-03-25T18:10:00Z'::timestamptz, '2026-03-25T18:10:00Z'::timestamptz),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000022'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-00000000000b'::uuid, 2026, 'general', 'pending', '2026-03-28T10:00:00Z'::timestamptz, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000023'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-00000000000c'::uuid, 2025, 'general', 'active', '2025-09-01T12:00:00Z'::timestamptz, '2025-09-01T12:00:00Z'::timestamptz);
 
 insert into public.payments (membership_id, method, amount, date, notes, payment_id, membership_amount, donation_amount, donation_note) values
   ('aaaaaaaa-aaaa-4aaa-8aaa-000000000014'::uuid, 'e-transfer', 75, '2024-05-12', 'Renewal · e-Transfer', NULL, 75, 0, NULL),
@@ -47,7 +51,8 @@ insert into public.payments (membership_id, method, amount, date, notes, payment
   ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001a'::uuid, 'e-transfer', 75, '2025-05-22', NULL, NULL, 75, 0, NULL),
   ('aaaaaaaa-aaaa-4aaa-8aaa-00000000001b'::uuid, 'stripe', 75, '2026-03-06', 'Stripe Checkout · session cs_devseed_sophie_01 · donation $0.00 CAD', 'pi_devseed_sophie_001', 75, 0, NULL),
   ('aaaaaaaa-aaaa-4aaa-8aaa-000000000020'::uuid, 'unknown', 75, '2025-07-05', NULL, NULL, 75, 0, NULL),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000021'::uuid, 'cheque', 75, '2026-03-26', 'Chèque #1042', NULL, 75, 0, NULL);
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000021'::uuid, 'cheque', 75, '2026-03-26', 'Chèque #1042', NULL, 75, 0, NULL),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000023'::uuid, 'e-transfer', 75, '2025-09-03', 'Prior year (row marked inactive in sheet)', NULL, 75, 0, NULL);
 
 insert into public.admin_audit_log (actor_user_id, action, entity_type, entity_id, metadata) values
   ('00000000-0000-4000-8000-00000000c0de'::uuid, 'dummy_seed_record_manual_payment', 'membership', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000017', '{"source":"dummy_seed","label":"Synthetic manual payment"}'::jsonb),
