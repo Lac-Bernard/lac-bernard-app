@@ -77,6 +77,13 @@ export const memberCopy: Record<
 		adminNavOverview: string;
 		adminNavMembers: string;
 		adminNavNewMembers: string;
+		adminNavAuditLog: string;
+		adminAuditColWhen: string;
+		adminAuditColActor: string;
+		adminAuditColAction: string;
+		adminAuditColEntity: string;
+		adminAuditColMetadata: string;
+		adminAuditEmpty: string;
 		adminNavActiveMembers: string;
 		adminNavNotRenewed: string;
 		adminScopeLabel: string;
@@ -362,6 +369,13 @@ export const memberCopy: Record<
 		adminNavOverview: 'Overview',
 		adminNavMembers: 'Members',
 		adminNavNewMembers: 'New members',
+		adminNavAuditLog: 'Audit log',
+		adminAuditColWhen: 'When',
+		adminAuditColActor: 'Admin',
+		adminAuditColAction: 'Action',
+		adminAuditColEntity: 'Target',
+		adminAuditColMetadata: 'Details',
+		adminAuditEmpty: 'No audit entries yet.',
 		adminNavActiveMembers: 'Active members',
 		adminNavNotRenewed: 'Not renewed',
 		adminScopeLabel: 'Show',
@@ -657,6 +671,13 @@ export const memberCopy: Record<
 		adminNavOverview: 'Aperçu',
 		adminNavMembers: 'Membres',
 		adminNavNewMembers: 'Nouveaux membres',
+		adminNavAuditLog: 'Journal d’audit',
+		adminAuditColWhen: 'Date et heure',
+		adminAuditColActor: 'Administrateur',
+		adminAuditColAction: 'Action',
+		adminAuditColEntity: 'Cible',
+		adminAuditColMetadata: 'Détails',
+		adminAuditEmpty: 'Aucune entrée d’audit pour le moment.',
 		adminNavActiveMembers: 'Membres actifs',
 		adminNavNotRenewed: 'Non renouvelés',
 		adminScopeLabel: 'Afficher',

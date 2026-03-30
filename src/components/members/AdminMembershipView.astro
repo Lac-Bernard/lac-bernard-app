@@ -24,6 +24,13 @@ const adminKeys = [
 	'adminNavOverview',
 	'adminNavMembers',
 	'adminNavNewMembers',
+	'adminNavAuditLog',
+	'adminAuditColWhen',
+	'adminAuditColActor',
+	'adminAuditColAction',
+	'adminAuditColEntity',
+	'adminAuditColMetadata',
+	'adminAuditEmpty',
 	'adminTableName',
 	'adminTableEmail',
 	'adminTableYear',
@@ -141,6 +148,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
               <span id="admin-new-members-badge" class="adminTabBadge" hidden></span>
             </button>
             <button type="button" class="adminTab" role="tab" data-admin-tab="members" aria-selected="false">{t.adminNavMembers}</button>
+            <button type="button" class="adminTab" role="tab" data-admin-tab="auditLog" aria-selected="false">{t.adminNavAuditLog}</button>
           </div>
         </div>
 
@@ -267,6 +275,28 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
             <button type="button" class="adminBtn adminBtn--ghost" id="admin-members-prev">{t.adminPrevPage}</button>
             <span id="admin-members-pageinfo"></span>
             <button type="button" class="adminBtn adminBtn--ghost" id="admin-members-next">{t.adminNextPage}</button>
+          </div>
+        </div>
+
+        <div data-admin-panel="auditLog" class="adminPanel adminCard" hidden>
+          <div class="tableWrap adminAuditTableWrap">
+            <table class="adminTable adminTable--audit">
+              <thead>
+                <tr>
+                  <th>{t.adminAuditColWhen}</th>
+                  <th>{t.adminAuditColActor}</th>
+                  <th>{t.adminAuditColAction}</th>
+                  <th>{t.adminAuditColEntity}</th>
+                  <th>{t.adminAuditColMetadata}</th>
+                </tr>
+              </thead>
+              <tbody id="admin-audit-body"></tbody>
+            </table>
+          </div>
+          <div class="adminPager">
+            <button type="button" class="adminBtn adminBtn--ghost" id="admin-audit-prev">{t.adminPrevPage}</button>
+            <span id="admin-audit-pageinfo"></span>
+            <button type="button" class="adminBtn adminBtn--ghost" id="admin-audit-next">{t.adminNextPage}</button>
           </div>
         </div>
 
@@ -619,6 +649,26 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
 
   .adminPage :global(.adminTable a:hover) {
     text-decoration: underline;
+  }
+
+  .adminPage :global(.adminTable--audit) {
+    min-width: 720px;
+  }
+
+  .adminPage :global(.adminAuditTdMetadata) {
+    max-width: 28rem;
+    vertical-align: top;
+    word-break: break-word;
+    white-space: normal;
+  }
+
+  .adminPage :global(.adminAuditMetadata) {
+    margin: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.75rem;
+    line-height: 1.35;
+    white-space: pre-wrap;
+    word-break: break-word;
   }
 
   .adminPage :global(.adminPendingActions) {

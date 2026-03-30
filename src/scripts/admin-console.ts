@@ -1,6 +1,6 @@
 /** Client-side admin console (membership admin page). */
 
-import { formatAdminLocaleDate } from '../lib/admin/formatLocaleDate';
+import { formatAdminLocaleDate, formatAdminLocaleDateTime } from '../lib/admin/formatLocaleDate';
 import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymentSplit';
 import { formatAdminMemberNameTd, formatMemberJoinedNames } from '../lib/members/memberDisplayName';
 
@@ -296,6 +296,7 @@ export function initAdminConsole(
 	const paymentDialog = el<HTMLDialogElement>('#admin-payment-dialog');
 	const paymentMembershipId = el<HTMLInputElement>('#admin-payment-membership-id');
 	const overviewMount = el<HTMLElement>('#admin-overview-mount');
+	const auditBody = el<HTMLTableSectionElement>('#admin-audit-body');
 	const pendingBadge = el<HTMLElement>('#admin-pending-badge');
 	const newMembersBadge = el<HTMLElement>('#admin-new-members-badge');
 	statusElGlobal = el<HTMLElement>('#admin-status');
@@ -337,6 +338,8 @@ export function initAdminConsole(
 	let membersTotalPages = 1;
 	let newMembersPage = 1;
 	let newMembersTotalPages = 1;
+	let auditPage = 1;
+	let auditTotalPages = 1;
 	let membersSort = 'created_at_desc';
 
 	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
@@ -433,6 +436,8 @@ export function initAdminConsole(
 			void loadNewMembers();
 		} else if (name === 'overview') {
 			void loadOverview();
+		} else if (name === 'auditLog') {
+			void loadAuditLog();
 		}
 	}
 
@@ -573,6 +578,93 @@ export function initAdminConsole(
 			void loadNewMembers();
 		}
 	});
+
+	el<HTMLButtonElement>('#admin-audit-prev')?.addEventListener('click', () => {
+		if (auditPage > 1) {
+			auditPage--;
+			void loadAuditLog();
+		}
+	});
+	el<HTMLButtonElement>('#admin-audit-next')?.addEventListener('click', () => {
+		if (auditPage < auditTotalPages) {
+			auditPage++;
+			void loadAuditLog();
+		}
+	});
+
+	function auditEntityLabel(entityType: string | null | undefined, entityId: string | null | undefined): string {
+		const typeStr = entityType?.trim() ?? '';
+		const id = entityId?.trim() ?? '';
+		if (typeStr && id) return `${typeStr} · ${id}`;
+		if (typeStr) return typeStr;
+		if (id) return id;
+		return '—';
+	}
+
+	function auditMetadataHtml(metadata: unknown): string {
+		if (metadata == null) return '—';
+		if (typeof metadata === 'object' && metadata !== null && !Array.isArray(metadata) && Object.keys(metadata).length === 0) {
+			return '—';
+		}
+		let text: string;
+		try {
+			text = typeof metadata === 'string' ? metadata : JSON.stringify(metadata, null, 2);
+		} catch {
+			text = String(metadata);
+		}
+		if (!text || text === '{}' || text === 'null') return '—';
+		return `<pre class="adminAuditMetadata">${escapeHtml(text)}</pre>`;
+	}
+
+	async function loadAuditLog() {
+		if (!auditBody) return;
+		auditBody.innerHTML = `<tr><td colspan="5">${t(strings, 'adminLoading')}</td></tr>`;
+		const { ok, data } = await fetchJson<{
+			entries?: Array<{
+				id: number;
+				created_at: string;
+				actor_email?: string | null;
+				action: string;
+				entity_type?: string | null;
+				entity_id?: string | null;
+				metadata?: unknown;
+			}>;
+			total?: number;
+			page?: number;
+			limit?: number;
+			error?: string;
+			detail?: string;
+		}>(`/api/admin/audit-log?page=${auditPage}&limit=25`);
+		if (!ok || !data.entries) {
+			auditBody.innerHTML = `<tr><td colspan="5">${escapeHtml(data?.detail ?? data?.error ?? t(strings, 'adminErrorGeneric'))}</td></tr>`;
+			return;
+		}
+		const total = data.total ?? 0;
+		const limit = data.limit ?? 25;
+		auditTotalPages = Math.max(1, Math.ceil(total / limit));
+		const pageInfo = el('#admin-audit-pageinfo');
+		if (pageInfo) {
+			pageInfo.textContent = t(strings, 'adminPageOf', { page: auditPage, total: auditTotalPages });
+		}
+		if (data.entries.length === 0) {
+			auditBody.innerHTML = `<tr><td colspan="5">${escapeHtml(t(strings, 'adminAuditEmpty'))}</td></tr>`;
+			return;
+		}
+		auditBody.innerHTML = data.entries
+			.map((row) => {
+				const when = formatAdminLocaleDateTime(row.created_at, numberLocale);
+				const actor = row.actor_email?.trim() || '—';
+				const entity = auditEntityLabel(row.entity_type, row.entity_id);
+				return `<tr>
+					<td>${escapeHtml(when)}</td>
+					<td>${escapeHtml(actor)}</td>
+					<td>${escapeHtml(row.action)}</td>
+					<td>${escapeHtml(entity)}</td>
+					<td class="adminAuditTdMetadata">${auditMetadataHtml(row.metadata)}</td>
+				</tr>`;
+			})
+			.join('');
+	}
 
 	function overviewTierLabel(raw: string | null | undefined): string {
 		if (raw == null || raw === '') return '—';

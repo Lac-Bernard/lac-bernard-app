@@ -21,3 +21,15 @@ export function formatAdminLocaleDate(value: string | null | undefined): string 
 		return s;
 	}
 }
+
+/** Full timestamp for audit log and similar admin UI. */
+export function formatAdminLocaleDateTime(value: string | null | undefined, locale = 'en-CA'): string {
+	if (value == null || value === '') return '—';
+	try {
+		const d = new Date(value.trim());
+		if (Number.isNaN(d.getTime())) return value;
+		return d.toLocaleString(locale, { dateStyle: 'medium', timeStyle: 'short' });
+	} catch {
+		return String(value);
+	}
+}
