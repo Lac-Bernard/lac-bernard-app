@@ -27,6 +27,7 @@
     "@vercel/analytics": "^2.0.1",
     "astro": "^5.16.0",
     "cookie": "^1.1.1",
+    "googleapis": "^171.4.0",
     "sharp": "^0.34.3",
     "stripe": "^17.7.0",
     "tinacms": "^2.9.5"

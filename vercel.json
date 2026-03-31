@@ -1,4 +1,10 @@
 {
+  "crons": [
+    {
+      "path": "/api/cron/sync-google-sheets",
+      "schedule": "0 12 * * *"
+    }
+  ],
   "redirects": [
     {
       "source": "/a-propos",
