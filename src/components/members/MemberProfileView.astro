@@ -42,6 +42,13 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 ---
 
 <MemberAppLayout lang={locale} title={title} description={description} heroTitle={heroTitle}>
+	<div slot="hero-meta" class="profileSessionBar">
+		<p class="profileSessionText">{t.signedInAs} <strong>{email}</strong></p>
+		<form method="POST" action="/api/auth/sign-out">
+			<input type="hidden" name="redirect_to" value={paths.signIn} />
+			<button type="submit" class="profileSessionSignOut">{t.signOut}</button>
+		</form>
+	</div>
 	<section class="section">
 		<div class="container narrow">
 			{!isEdit && <p class="intro">{t.profileJoinIntro}</p>}
@@ -51,8 +58,7 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 
 				<fieldset class="profileFieldset">
 					<legend class="profileLegend">{t.profileSectionContact}</legend>
-					<fieldset class="profileNamesGroup">
-						<legend class="profileLegend">{t.profileSectionPrimaryMember}</legend>
+					<div class="profileNamesGroup">
 						<label class="fieldLabel" for="profile-email-readonly">{t.profileSignInEmail}</label>
 						<input
 							class="fieldInput fieldInputReadonly"
@@ -80,9 +86,15 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 
 						<label class="fieldLabel" for="primary_phone">{t.profilePrimaryPhone}</label>
 						<input class="fieldInput" id="primary_phone" name="primary_phone" type="text" autocomplete="tel" value={primaryPhone} />
-					</fieldset>
 
-					<div class="profileNamesGroup">
+						<label class="fieldLabel" for="lake_phone">{t.profileLakePhone}</label>
+						<input class="fieldInput" id="lake_phone" name="lake_phone" type="text" autocomplete="tel" value={lakePhone} />
+					</div>
+
+					<div
+						id="secondary-contact-group"
+						class:list={['profileNamesGroup', { 'profileNamesGroup--collapsed': !hasSecondaryContact }]}
+					>
 						<label class="toggleLabel" for="show_secondary_contact">
 							<input
 								class="toggleInput"
@@ -94,7 +106,12 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 							<span>{t.profileShowSecondaryMember}</span>
 						</label>
 						<p class="fieldHelp">{t.profileSecondaryMemberHelp}</p>
-						<div id="secondary-contact-fields" class:list={['secondaryFields', { 'secondaryFields--hidden': !hasSecondaryContact }]}>
+						<div
+							id="secondary-contact-fields"
+							hidden={!hasSecondaryContact}
+							aria-hidden={!hasSecondaryContact ? 'true' : 'false'}
+							class:list={['secondaryFields', { 'secondaryFields--hidden': !hasSecondaryContact }]}
+						>
 							<label class="fieldLabel" for="secondary_first_name">{t.profileSecondaryFirstName}</label>
 							<input
 								class="fieldInput"
@@ -134,9 +151,6 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 				<fieldset class="profileFieldset">
 					<legend class="profileLegend">{t.profileSectionLake}</legend>
 					<p class="fieldHelp">{t.profileLakeHelp}</p>
-					<label class="fieldLabel" for="lake_phone">{t.profileLakePhone}</label>
-					<input class="fieldInput" id="lake_phone" name="lake_phone" type="text" value={lakePhone} />
-
 					<label class="fieldLabel" for="lake_civic_number">{t.profileLakeCivic}</label>
 					<input class="fieldInput" id="lake_civic_number" name="lake_civic_number" type="text" value={lakeCivic} />
 
@@ -155,7 +169,9 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 					<button type="submit" class="btnPrimary" id="profile-submit">
 						{isEdit ? t.profileSaveSubmit : t.profileCreateSubmit}
 					</button>
-					<a class="btnGhost profileBack" href={paths.account}>{t.profileBackToAccount}</a>
+					{isEdit && (
+						<a class="btnGhost profileBack" href={paths.account}>{t.profileBackToAccount}</a>
+					)}
 				</div>
 			</form>
 		</div>
@@ -188,6 +204,7 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 	const msg = document.getElementById('profile-form-message');
 	const submitBtn = document.getElementById('profile-submit');
 	const showSecondaryContact = document.getElementById('show_secondary_contact');
+	const secondaryGroup = document.getElementById('secondary-contact-group');
 	const secondaryFields = document.getElementById('secondary-contact-fields');
 
 	if (showSecondaryContact) {
@@ -197,7 +214,10 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 	function syncSecondaryFields() {
 		if (!showSecondaryContact || !secondaryFields) return;
 		const enabled = showSecondaryContact.checked;
+		secondaryGroup?.classList.toggle('profileNamesGroup--collapsed', !enabled);
 		secondaryFields.classList.toggle('secondaryFields--hidden', !enabled);
+		secondaryFields.hidden = !enabled;
+		secondaryFields.setAttribute('aria-hidden', enabled ? 'false' : 'true');
 		secondaryFields.querySelectorAll('input').forEach((input) => {
 			input.disabled = !enabled;
 		});
@@ -332,24 +352,57 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 
 <style>
 	.narrow {
-		max-width: 720px;
+		max-width: min(var(--member-column-max), 100%);
 	}
 
 	.intro {
-		margin: 0 0 1.5rem;
-		padding: 1rem 1.15rem;
+		margin: 0 0 1.35rem;
+		padding: 1.05rem 1.15rem;
 		border: 1px solid rgba(15, 23, 42, 0.08);
-		border-radius: 14px;
-		background: linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.98));
+		border-radius: 18px;
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 250, 252, 0.92));
 		line-height: 1.6;
-		color: var(--color-muted, #475569);
-		box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+		color: var(--text, #334155);
+		box-shadow:
+			0 1px 2px rgba(15, 23, 42, 0.04),
+			0 12px 32px rgba(15, 23, 42, 0.05);
+		font-size: 0.96rem;
 	}
 
 	.profileForm {
 		display: flex;
 		flex-direction: column;
 		gap: 1.5rem;
+	}
+
+	.profileSessionBar {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.15rem;
+		margin: 0.5rem 0 0;
+		font-size: 0.92rem;
+		color: var(--color-muted, #475569);
+	}
+
+	.profileSessionText {
+		margin: 0;
+		line-height: 1.4;
+	}
+
+	.profileSessionSignOut {
+		border: 0;
+		background: none;
+		padding: 0;
+		font: inherit;
+		font-weight: 500;
+		color: var(--color-muted, #64748b);
+		cursor: pointer;
+		text-decoration: none;
+	}
+
+	.profileSessionSignOut:hover {
+		color: var(--text, #334155);
 	}
 
 	.profileFieldset {
@@ -455,6 +508,10 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 	}
 
 	.secondaryFields--hidden {
+		display: none;
+	}
+
+	.secondaryFields[hidden] {
 		display: none;
 	}
 

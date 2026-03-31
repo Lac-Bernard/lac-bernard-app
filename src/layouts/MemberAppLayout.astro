@@ -44,6 +44,7 @@ const { lang, title, description, heroTitle, heroSubtitle, compactHero = false, 
           ]}
         >
           <h1 class="memberWorkspaceTitle" id="member-workspace-title">{heroTitle}</h1>
+          <slot name="hero-meta" />
           {heroSubtitle !== undefined && heroSubtitle !== '' && (
             <p class="memberWorkspaceLead">{heroSubtitle}</p>
           )}

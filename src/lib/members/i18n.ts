@@ -626,7 +626,7 @@ export const memberCopy: Record<
 		profileJoinHeroAria: 'New member profile',
 		profileJoinHero: 'Create your profile',
 		profileJoinIntro:
-			'Enter your contact details as they should appear in our records. Your sign-in email is shown below and cannot be changed here.',
+			'Complete your profile to get your household details on file, then you can purchase a membership.',
 		profileEditTitle: 'Edit profile | Lac Bernard Association',
 		profileEditDescription: 'Update your contact information on file with the association.',
 		profileEditHeroAria: 'Edit profile',
@@ -952,7 +952,7 @@ export const memberCopy: Record<
 		profileJoinHeroAria: 'Nouveau profil membre',
 		profileJoinHero: 'Créer votre profil',
 		profileJoinIntro:
-			'Indiquez vos coordonnées telles qu’elles doivent figurer dans nos dossiers. Votre courriel de connexion est affiché ci-dessous; il ne peut pas être modifié ici.',
+			'Complétez votre profil pour ajouter les renseignements de votre foyer à votre dossier, puis vous pourrez acheter une adhésion.',
 		profileEditTitle: 'Profil | Association du lac Bernard',
 		profileEditDescription: 'Mettez à jour les coordonnées associées à votre dossier.',
 		profileEditHeroAria: 'Modifier le profil',
