@@ -549,10 +549,6 @@ export function initAdminConsole(
 		void copyEmailsFromApi(strings, `/api/admin/member-emails-export?${buildMembersExportQueryParams()}`);
 	});
 
-	el<HTMLButtonElement>('#admin-export-emails-pending')?.addEventListener('click', () => {
-		void copyEmailsFromApi(strings, '/api/admin/pending-member-emails');
-	});
-
 	el<HTMLButtonElement>('#admin-members-prev')?.addEventListener('click', () => {
 		if (membersPage > 1) {
 			membersPage--;
