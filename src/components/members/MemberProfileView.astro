@@ -166,6 +166,12 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 	define:vars={{
 		mode,
 		nextUrl,
+		initialHasSecondaryContact: hasSecondaryContact,
+		preservedPrimaryAddress: addr,
+		preservedPrimaryCity: city,
+		preservedPrimaryProvince: province,
+		preservedPrimaryCountry: country,
+		preservedPrimaryPostalCode: postal,
 		errNetwork: t.errorNetwork,
 		errLastName: t.profileErrorLastName,
 		errAlreadyMember: t.profileErrorAlreadyMember,
@@ -178,6 +184,10 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 	const submitBtn = document.getElementById('profile-submit');
 	const showSecondaryContact = document.getElementById('show_secondary_contact');
 	const secondaryFields = document.getElementById('secondary-contact-fields');
+
+	if (showSecondaryContact) {
+		showSecondaryContact.checked = Boolean(initialHasSecondaryContact);
+	}
 
 	function syncSecondaryFields() {
 		if (!showSecondaryContact || !secondaryFields) return;
@@ -208,11 +218,11 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 			lake_phone: fd.get('lake_phone') || null,
 			lake_civic_number: fd.get('lake_civic_number') || null,
 			lake_street_name: fd.get('lake_street_name') || null,
-			primary_address: addr || null,
-			primary_city: city || null,
-			primary_province: province || null,
-			primary_country: country || null,
-			primary_postal_code: postal || null,
+			primary_address: preservedPrimaryAddress || null,
+			primary_city: preservedPrimaryCity || null,
+			primary_province: preservedPrimaryProvince || null,
+			primary_country: preservedPrimaryCountry || null,
+			primary_postal_code: preservedPrimaryPostalCode || null,
 			email_opt_in: fd.get('email_opt_in') === 'on',
 		};
 	}
