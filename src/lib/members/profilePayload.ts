@@ -1,9 +1,10 @@
 /** Editable member profile fields (API ↔ DB). */
 export type MemberProfilePayload = {
 	first_name: string | null;
-	other_first_name: string | null;
+	secondary_first_name: string | null;
 	last_name: string;
-	other_last_name: string | null;
+	secondary_last_name: string | null;
+	secondary_email: string | null;
 	primary_phone: string | null;
 	secondary_phone: string | null;
 	lake_phone: string | null;
@@ -31,6 +32,13 @@ function bool(v: unknown, defaultFalse: boolean): boolean {
 	return defaultFalse;
 }
 
+function parseEmail(v: unknown): string | null {
+	const t = trimOrNull(v);
+	if (!t) return null;
+	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)) return null;
+	return t.toLowerCase();
+}
+
 export function parseMemberProfilePayload(body: unknown): { ok: true; value: MemberProfilePayload } | { ok: false; error: string } {
 	if (body === null || typeof body !== 'object') {
 		return { ok: false, error: 'invalid_json' };
@@ -40,13 +48,20 @@ export function parseMemberProfilePayload(body: unknown): { ok: true; value: Mem
 	if (!last) {
 		return { ok: false, error: 'last_name_required' };
 	}
+	if (Object.prototype.hasOwnProperty.call(o, 'secondary_email')) {
+		const secondary = parseEmail(o.secondary_email);
+		if (o.secondary_email !== null && o.secondary_email !== '' && !secondary) {
+			return { ok: false, error: 'invalid_secondary_email' };
+		}
+	}
 	return {
 		ok: true,
 		value: {
 			first_name: trimOrNull(o.first_name),
-			other_first_name: trimOrNull(o.other_first_name),
+			secondary_first_name: trimOrNull(o.secondary_first_name),
 			last_name: last,
-			other_last_name: trimOrNull(o.other_last_name),
+			secondary_last_name: trimOrNull(o.secondary_last_name),
+			secondary_email: parseEmail(o.secondary_email),
 			primary_phone: trimOrNull(o.primary_phone),
 			secondary_phone: trimOrNull(o.secondary_phone),
 			lake_phone: trimOrNull(o.lake_phone),
@@ -70,9 +85,10 @@ export function payloadToRow(
 		user_id: extra.user_id,
 		primary_email: extra.primary_email,
 		first_name: p.first_name,
-		other_first_name: p.other_first_name,
+		secondary_first_name: p.secondary_first_name,
 		last_name: p.last_name,
-		other_last_name: p.other_last_name,
+		secondary_last_name: p.secondary_last_name,
+		secondary_email: p.secondary_email,
 		primary_phone: p.primary_phone,
 		secondary_phone: p.secondary_phone,
 		lake_phone: p.lake_phone,
@@ -94,9 +110,10 @@ export function payloadToUpdate(
 	return {
 		primary_email,
 		first_name: p.first_name,
-		other_first_name: p.other_first_name,
+		secondary_first_name: p.secondary_first_name,
 		last_name: p.last_name,
-		other_last_name: p.other_last_name,
+		secondary_last_name: p.secondary_last_name,
+		secondary_email: p.secondary_email,
 		primary_phone: p.primary_phone,
 		secondary_phone: p.secondary_phone,
 		lake_phone: p.lake_phone,

@@ -136,7 +136,7 @@ if (member) {
                       <>
                         <span class="memberSummaryNamePrimary">{memberSummaryName.primary}</span>
                         <span class="memberSummaryNameAnd">{t.memberSummaryNameAnd}</span>
-                        <span class="memberSummaryNameOther">{memberSummaryName.other}</span>
+                        <span class="memberSummaryNameSecondary">{memberSummaryName.secondary}</span>
                       </>
                     ) : (
                       memberPrimaryNameOnly
@@ -680,7 +680,7 @@ if (member) {
   }
 
   .memberSummaryNamePrimary,
-  .memberSummaryNameOther {
+  .memberSummaryNameSecondary {
     font-weight: 700;
   }
 

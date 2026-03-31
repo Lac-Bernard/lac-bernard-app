@@ -24,6 +24,10 @@ const adminKeys = [
 	'adminBackToAdmin',
 	'adminPrimaryEmailLabel',
 	'adminSecondaryEmailLabel',
+	'adminSecondaryFirstNameLabel',
+	'adminSecondaryLastNameLabel',
+	'adminSecondaryPhoneLabel',
+	'adminSpousePartnerHelp',
 	'adminNotesFieldLabel',
 	'adminMembershipYearLabel',
 	'adminLoading',
@@ -37,20 +41,21 @@ const adminKeys = [
 	'adminDateLabel',
 	'adminNotesLabel',
 	'checkoutModalCancel',
+	'profileSectionPrimaryMember',
+	'profileSectionSecondaryMember',
+	'profileShowSecondaryMember',
+	'profileSecondaryMemberHelp',
+	'profileLakeHelp',
 	'profileFirstName',
 	'profileLastName',
-	'profileOtherFirstName',
-	'profileOtherLastName',
+	'profileSecondaryFirstName',
+	'profileSecondaryLastName',
+	'profileSecondaryEmail',
 	'profilePrimaryPhone',
 	'profileSecondaryPhone',
 	'profileLakePhone',
 	'profileLakeCivic',
 	'profileLakeStreet',
-	'profileStreetAddress',
-	'profileCity',
-	'profileProvince',
-	'profileCountry',
-	'profilePostal',
 	'profileEmailOptIn',
 	'signOut',
 ] as const;
@@ -81,25 +86,41 @@ const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof ty
         <form id="admin-new-member-form" class="adminMemberForm">
           <div class="adminPanel adminCard">
             <h2 class="adminSubheading">{t.adminAddMemberSectionProfile}</h2>
-            <div class="adminFormGrid">
-              <label>{t.profileFirstName} <input type="text" name="first_name" class="adminInput" /></label>
-              <label>{t.profileLastName} * <input type="text" name="last_name" class="adminInput" required /></label>
-              <label>{t.profileOtherFirstName} <input type="text" name="other_first_name" class="adminInput" /></label>
-              <label>{t.profileOtherLastName} <input type="text" name="other_last_name" class="adminInput" /></label>
-              <label>{t.adminPrimaryEmailLabel} <input type="email" name="primary_email" class="adminInput" /></label>
-              <label>{t.adminSecondaryEmailLabel} <input type="email" name="secondary_email" class="adminInput" /></label>
-              <label>{t.profilePrimaryPhone} <input type="text" name="primary_phone" class="adminInput" /></label>
-              <label>{t.profileSecondaryPhone} <input type="text" name="secondary_phone" class="adminInput" /></label>
-              <label>{t.profileLakePhone} <input type="text" name="lake_phone" class="adminInput" /></label>
-              <label>{t.profileLakeCivic} <input type="text" name="lake_civic_number" class="adminInput" /></label>
-              <label>{t.profileLakeStreet} <input type="text" name="lake_street_name" class="adminInput" /></label>
-              <label>{t.profileStreetAddress} <input type="text" name="primary_address" class="adminInput" /></label>
-              <label>{t.profileCity} <input type="text" name="primary_city" class="adminInput" /></label>
-              <label>{t.profileProvince} <input type="text" name="primary_province" class="adminInput" /></label>
-              <label>{t.profileCountry} <input type="text" name="primary_country" class="adminInput" /></label>
-              <label>{t.profilePostal} <input type="text" name="primary_postal_code" class="adminInput" /></label>
-              <label class="adminCheckbox"><input type="checkbox" name="email_opt_in" /> {t.profileEmailOptIn}</label>
-              <label class="adminNotes">{t.adminNotesFieldLabel} <textarea name="notes" class="adminInput" rows="3"></textarea></label>
+            <div class="adminProfileSections">
+              <fieldset class="adminProfileSection">
+                <legend class="adminProfileLegend">{t.profileSectionPrimaryMember}</legend>
+                <div class="adminFormGrid">
+                  <label>{t.profileFirstName} <input type="text" name="first_name" class="adminInput" /></label>
+                  <label>{t.profileLastName} * <input type="text" name="last_name" class="adminInput" required /></label>
+                  <label>{t.adminPrimaryEmailLabel} <input type="email" name="primary_email" class="adminInput" /></label>
+                  <label>{t.profilePrimaryPhone} <input type="text" name="primary_phone" class="adminInput" /></label>
+                </div>
+              </fieldset>
+
+              <div class="adminProfileSection">
+                <p class="adminSectionHelp">{t.adminSpousePartnerHelp}</p>
+                <div id="admin-new-secondary-contact-fields" class="adminFormGrid">
+                  <label>{t.adminSecondaryFirstNameLabel} <input type="text" name="secondary_first_name" class="adminInput" /></label>
+                  <label>{t.adminSecondaryLastNameLabel} <input type="text" name="secondary_last_name" class="adminInput" /></label>
+                  <label>{t.adminSecondaryEmailLabel} <input type="email" name="secondary_email" class="adminInput" /></label>
+                  <label>{t.adminSecondaryPhoneLabel} <input type="text" name="secondary_phone" class="adminInput" /></label>
+                </div>
+              </div>
+
+              <fieldset class="adminProfileSection">
+                <legend class="adminProfileLegend">{t.profileSectionLake}</legend>
+                <p class="adminSectionHelp">{t.profileLakeHelp}</p>
+                <div class="adminFormGrid">
+                  <label>{t.profileLakePhone} <input type="text" name="lake_phone" class="adminInput" /></label>
+                  <label>{t.profileLakeCivic} <input type="text" name="lake_civic_number" class="adminInput" /></label>
+                  <label>{t.profileLakeStreet} <input type="text" name="lake_street_name" class="adminInput" /></label>
+                </div>
+              </fieldset>
+
+              <div class="adminFormGrid">
+                <label class="adminCheckbox"><input type="checkbox" name="email_opt_in" /> {t.profileEmailOptIn}</label>
+                <label class="adminNotes">{t.adminNotesFieldLabel} <textarea name="notes" class="adminInput" rows="3"></textarea></label>
+              </div>
             </div>
           </div>
 
@@ -324,6 +345,33 @@ const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof ty
     background: var(--admin-surface-muted);
     border: 1px solid var(--admin-border);
     border-radius: var(--admin-radius-sm);
+  }
+
+  .adminProfileSections {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .adminProfileSection {
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  .adminProfileLegend {
+    padding: 0;
+    margin-bottom: 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--admin-text);
+  }
+
+  .adminSectionHelp {
+    margin: 0 0 0.75rem;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--muted);
   }
 
   .adminNewMemberMembershipFields {

@@ -3,8 +3,8 @@ Import the master membership spreadsheet (exported as CSV) into Supabase.
 
 The CSV is not stored in this repo — pass the path when you run the script.
 
-Name columns: Last Name → last_name; Other LName → other_last_name (not merged into last_name).
-First Name is split on the first `` & ``, `` / ``, or `` and `` into first_name / other_first_name.
+Name columns: Last Name → last_name; Other LName → secondary_last_name (not merged into last_name).
+First Name is split on the first `` & ``, `` / ``, or `` and `` into first_name / secondary_first_name.
 
 Imports align with the current schema (tier fees, payment split, membership status):
   payments.amount = membership_amount + donation_amount; donation_amount is 0 for these rows.
@@ -106,8 +106,8 @@ def primary_last_name(row) -> str:
     return str(row["Last Name"]).strip()
 
 
-def parse_other_last_name(row) -> str | None:
-    """Maps CSV Other LName → other_last_name; empty cells → None."""
+def parse_secondary_last_name(row) -> str | None:
+    """Maps CSV Other LName → secondary_last_name; empty cells → None."""
     other = row.get("Other LName")
     if pd.isna(other):
         return None
@@ -117,16 +117,16 @@ def parse_other_last_name(row) -> str | None:
 
 # First delimiter wins (left = primary first name, right = co-listed first name).
 # Order: ` & `, ` / `, word-boundary ` and ` (case-insensitive). Only one split; if the cell
-# contains three or more names, everything after the first delimiter stays in other_first_name.
+# contains three or more names, everything after the first delimiter stays in secondary_first_name.
 _FIRST_NAME_SPLIT = re.compile(r"\s+&\s+|\s+/\s+|\s+and\s+", re.IGNORECASE)
 
 
 def parse_first_name_cell(raw) -> tuple[str | None, str | None]:
     """
-    Split legacy "First Name" into first_name + other_first_name.
+    Split legacy "First Name" into first_name + secondary_first_name.
 
     Uses the first match of `` & ``, `` / ``, or `` and `` (case-insensitive). If there is
-    no delimiter, the whole cell is primary. Remainder after the first split is other_first_name
+    no delimiter, the whole cell is primary. Remainder after the first split is secondary_first_name
     (may contain additional delimiters; re-import or manual cleanup if needed).
     """
     if pd.isna(raw):
@@ -452,14 +452,14 @@ def main() -> None:
 
         status = "disabled" if str(row.get("Inactive?", "")).strip().lower() == "inactive" else "verified"
 
-        fn_primary, fn_other = parse_first_name_cell(row.get("First Name"))
+        fn_primary, fn_secondary = parse_first_name_cell(row.get("First Name"))
 
         member_record: dict = {
             "id": member_id,
             "first_name": fn_primary,
-            "other_first_name": fn_other,
+            "secondary_first_name": fn_secondary,
             "last_name": primary_last_name(row),
-            "other_last_name": parse_other_last_name(row),
+            "secondary_last_name": parse_secondary_last_name(row),
             "primary_email": primary_email,
             "status": status,
             "secondary_email": str(row["Email 2 Address"]).strip() if pd.notna(row["Email 2 Address"]) else None,

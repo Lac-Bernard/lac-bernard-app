@@ -11,9 +11,9 @@ type MemberRow = {
 	id: string;
 	created_at: string;
 	first_name: string | null;
-	other_first_name: string | null;
+	secondary_first_name: string | null;
 	last_name: string;
-	other_last_name: string | null;
+	secondary_last_name: string | null;
 	primary_email: string | null;
 	secondary_email: string | null;
 	primary_phone: string | null;
@@ -127,6 +127,7 @@ export function initAdminMemberDetail(
 	const addMembershipDialog = el<HTMLDialogElement>('#admin-add-membership-dialog');
 	const addMembershipForm = el<HTMLFormElement>('#admin-add-membership-form');
 	const addMsPaidBlock = el<HTMLElement>('#admin-add-ms-paid');
+	let currentMember: MemberRow | null = null;
 
 	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
 		if (!statusEl) return;
@@ -205,10 +206,11 @@ export function initAdminMemberDetail(
 	}
 
 	function fillForm(m: MemberRow) {
+		currentMember = m;
 		el<HTMLInputElement>('#admin-field-first_name')!.value = m.first_name ?? '';
 		el<HTMLInputElement>('#admin-field-last_name')!.value = m.last_name ?? '';
-		el<HTMLInputElement>('#admin-field-other_first_name')!.value = m.other_first_name ?? '';
-		el<HTMLInputElement>('#admin-field-other_last_name')!.value = m.other_last_name ?? '';
+		el<HTMLInputElement>('#admin-field-secondary_first_name')!.value = m.secondary_first_name ?? '';
+		el<HTMLInputElement>('#admin-field-secondary_last_name')!.value = m.secondary_last_name ?? '';
 		el<HTMLInputElement>('#admin-field-primary_email')!.value = m.primary_email ?? '';
 		el<HTMLInputElement>('#admin-field-secondary_email')!.value = m.secondary_email ?? '';
 		el<HTMLInputElement>('#admin-field-primary_phone')!.value = m.primary_phone ?? '';
@@ -216,11 +218,6 @@ export function initAdminMemberDetail(
 		el<HTMLInputElement>('#admin-field-lake_phone')!.value = m.lake_phone ?? '';
 		el<HTMLInputElement>('#admin-field-lake_civic_number')!.value = m.lake_civic_number ?? '';
 		el<HTMLInputElement>('#admin-field-lake_street_name')!.value = m.lake_street_name ?? '';
-		el<HTMLInputElement>('#admin-field-primary_address')!.value = m.primary_address ?? '';
-		el<HTMLInputElement>('#admin-field-primary_city')!.value = m.primary_city ?? '';
-		el<HTMLInputElement>('#admin-field-primary_province')!.value = m.primary_province ?? '';
-		el<HTMLInputElement>('#admin-field-primary_country')!.value = m.primary_country ?? '';
-		el<HTMLInputElement>('#admin-field-primary_postal_code')!.value = m.primary_postal_code ?? '';
 		el<HTMLInputElement>('#admin-field-email_opt_in')!.checked = m.email_opt_in;
 		el<HTMLTextAreaElement>('#admin-field-notes')!.value = m.notes ?? '';
 		const statusSel = el<HTMLSelectElement>('#admin-field-status');
@@ -506,6 +503,7 @@ export function initAdminMemberDetail(
 		});
 	}
 
+
 	async function load() {
 		setStatus(t(strings, 'adminLoading'));
 		const { ok, data } = await fetchJson<{ member?: MemberRow; memberships?: MembershipRow[]; error?: string }>(
@@ -534,19 +532,19 @@ export function initAdminMemberDetail(
 		const fd = new FormData(memberForm);
 		const body: Record<string, unknown> = {
 			first_name: fd.get('first_name') || null,
-			other_first_name: fd.get('other_first_name') || null,
+			secondary_first_name: fd.get('secondary_first_name') || null,
 			last_name: String(fd.get('last_name') ?? '').trim(),
-			other_last_name: fd.get('other_last_name') || null,
+			secondary_last_name: fd.get('secondary_last_name') || null,
 			primary_phone: fd.get('primary_phone') || null,
 			secondary_phone: fd.get('secondary_phone') || null,
 			lake_phone: fd.get('lake_phone') || null,
 			lake_civic_number: fd.get('lake_civic_number') || null,
 			lake_street_name: fd.get('lake_street_name') || null,
-			primary_address: fd.get('primary_address') || null,
-			primary_city: fd.get('primary_city') || null,
-			primary_province: fd.get('primary_province') || null,
-			primary_country: fd.get('primary_country') || null,
-			primary_postal_code: fd.get('primary_postal_code') || null,
+			primary_address: currentMember?.primary_address ?? null,
+			primary_city: currentMember?.primary_city ?? null,
+			primary_province: currentMember?.primary_province ?? null,
+			primary_country: currentMember?.primary_country ?? null,
+			primary_postal_code: currentMember?.primary_postal_code ?? null,
 			email_opt_in: fd.get('email_opt_in') === 'on',
 			notes: fd.get('notes') ?? null,
 			secondary_email: fd.get('secondary_email') || null,

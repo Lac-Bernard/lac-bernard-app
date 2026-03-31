@@ -31,8 +31,8 @@ type MemberRow = {
 	status: string;
 	user_id: string | null;
 	stripe_customer_id: string | null;
-	other_first_name: string | null;
-	other_last_name: string | null;
+	secondary_first_name: string | null;
+	secondary_last_name: string | null;
 };
 
 type MembershipRow = {
@@ -81,8 +81,8 @@ const MEMBER_COLUMNS: (keyof MemberRow)[] = [
 	'status',
 	'user_id',
 	'stripe_customer_id',
-	'other_first_name',
-	'other_last_name',
+	'secondary_first_name',
+	'secondary_last_name',
 ];
 
 const MEMBERSHIP_COLUMNS: (keyof MembershipRow)[] = [
@@ -123,7 +123,9 @@ function normalizeSheetValue(value: unknown): string | number | boolean {
 	return JSON.stringify(value);
 }
 
-function memberName(member: Pick<MemberRow, 'first_name' | 'last_name' | 'other_first_name' | 'other_last_name'> | null): string {
+function memberName(
+	member: Pick<MemberRow, 'first_name' | 'last_name' | 'secondary_first_name' | 'secondary_last_name'> | null,
+): string {
 	if (!member) return '';
 	return formatMemberJoinedNames(member);
 }
