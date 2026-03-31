@@ -7,6 +7,7 @@ const PAGE_SIZE = 1000;
 const MEMBERS_SHEET_NAME = 'Members';
 const MEMBERSHIPS_SHEET_NAME = 'Memberships';
 const PAYMENTS_SHEET_NAME = 'Payments';
+const CREATED_AT_COLUMN_INDEX = 1;
 
 type MemberRow = {
 	id: string;
@@ -381,6 +382,12 @@ async function applySheetPresentation(
 								startColumnIndex: 0,
 								endColumnIndex: columnCount,
 							},
+							sortSpecs: [
+								{
+									dimensionIndex: CREATED_AT_COLUMN_INDEX,
+									sortOrder: 'DESCENDING',
+								},
+							],
 						},
 					},
 				},
