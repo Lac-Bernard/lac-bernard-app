@@ -174,6 +174,11 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 		preservedPrimaryPostalCode: postal,
 		errNetwork: t.errorNetwork,
 		errLastName: t.profileErrorLastName,
+		errSecondaryEmail: t.profileErrorSecondaryEmail,
+		errSecondaryContact: t.profileErrorSecondaryContact,
+		errPhone: t.profileErrorPhone,
+		errLakeAddress: t.profileErrorLakeAddress,
+		errPrimaryEmail: t.profileErrorPrimaryEmail,
 		errAlreadyMember: t.profileErrorAlreadyMember,
 		errSave: t.profileErrorSave,
 		accountPath: paths.account,
@@ -206,6 +211,64 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 	showSecondaryContact?.addEventListener('change', syncSecondaryFields);
 	syncSecondaryFields();
 
+	function trimOrNull(value) {
+		if (typeof value !== 'string') return null;
+		const trimmed = value.trim();
+		return trimmed === '' ? null : trimmed;
+	}
+
+	function isValidEmail(value) {
+		return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+	}
+
+	function isPlausiblePhone(value) {
+		const digits = value.replace(/[^\d]/g, '');
+		return digits.length >= 10 && digits.length <= 15;
+	}
+
+	function validateBody(body) {
+		if (!body.last_name) return errLastName;
+		if (body.secondary_email && !isValidEmail(body.secondary_email)) return errSecondaryEmail;
+
+		const phoneFields = [body.primary_phone, body.secondary_phone, body.lake_phone];
+		if (phoneFields.some((value) => value && !isPlausiblePhone(value))) return errPhone;
+
+		const hasLakeCivic = Boolean(trimOrNull(body.lake_civic_number));
+		const hasLakeStreet = Boolean(trimOrNull(body.lake_street_name));
+		if (hasLakeCivic !== hasLakeStreet) return errLakeAddress;
+
+		if (showSecondaryContact?.checked) {
+			const hasSecondaryValue = [
+				body.secondary_first_name,
+				body.secondary_last_name,
+				body.secondary_email,
+				body.secondary_phone,
+			].some((value) => Boolean(trimOrNull(value)));
+			if (!hasSecondaryValue) return errSecondaryContact;
+		}
+
+		return '';
+	}
+
+	function messageForApiError(error) {
+		switch (error) {
+			case 'last_name_required':
+				return errLastName;
+			case 'invalid_secondary_email':
+				return errSecondaryEmail;
+			case 'invalid_primary_email':
+				return errPrimaryEmail;
+			case 'invalid_primary_phone':
+			case 'invalid_secondary_phone':
+			case 'invalid_lake_phone':
+				return errPhone;
+			case 'invalid_lake_address':
+				return errLakeAddress;
+			default:
+				return errSave;
+		}
+	}
+
 	function payloadFromForm(fd) {
 		return {
 			first_name: fd.get('first_name') || null,
@@ -234,8 +297,9 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 		submitBtn.setAttribute('disabled', 'true');
 		const fd = new FormData(form);
 		const body = payloadFromForm(fd);
-		if (!body.last_name) {
-			msg.textContent = errLastName;
+		const validationError = validateBody(body);
+		if (validationError) {
+			msg.textContent = validationError;
 			submitBtn.removeAttribute('disabled');
 			return;
 		}
@@ -254,8 +318,7 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 				return;
 			}
 			if (!res.ok) {
-				if (data.error === 'last_name_required') msg.textContent = errLastName;
-				else msg.textContent = errSave;
+				msg.textContent = messageForApiError(data.error);
 				return;
 			}
 			window.location.href = nextUrl || accountPath;
