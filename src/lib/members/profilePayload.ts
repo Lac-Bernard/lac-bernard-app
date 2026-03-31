@@ -4,6 +4,7 @@ export type MemberProfilePayload = {
 	secondary_first_name: string | null;
 	last_name: string;
 	secondary_last_name: string | null;
+	secondary_email: string | null;
 	primary_phone: string | null;
 	secondary_phone: string | null;
 	lake_phone: string | null;
@@ -31,6 +32,13 @@ function bool(v: unknown, defaultFalse: boolean): boolean {
 	return defaultFalse;
 }
 
+function parseEmail(v: unknown): string | null {
+	const t = trimOrNull(v);
+	if (!t) return null;
+	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)) return null;
+	return t.toLowerCase();
+}
+
 export function parseMemberProfilePayload(body: unknown): { ok: true; value: MemberProfilePayload } | { ok: false; error: string } {
 	if (body === null || typeof body !== 'object') {
 		return { ok: false, error: 'invalid_json' };
@@ -40,6 +48,12 @@ export function parseMemberProfilePayload(body: unknown): { ok: true; value: Mem
 	if (!last) {
 		return { ok: false, error: 'last_name_required' };
 	}
+	if (Object.prototype.hasOwnProperty.call(o, 'secondary_email')) {
+		const secondary = parseEmail(o.secondary_email);
+		if (o.secondary_email !== null && o.secondary_email !== '' && !secondary) {
+			return { ok: false, error: 'invalid_secondary_email' };
+		}
+	}
 	return {
 		ok: true,
 		value: {
@@ -47,6 +61,7 @@ export function parseMemberProfilePayload(body: unknown): { ok: true; value: Mem
 			secondary_first_name: trimOrNull(o.secondary_first_name),
 			last_name: last,
 			secondary_last_name: trimOrNull(o.secondary_last_name),
+			secondary_email: parseEmail(o.secondary_email),
 			primary_phone: trimOrNull(o.primary_phone),
 			secondary_phone: trimOrNull(o.secondary_phone),
 			lake_phone: trimOrNull(o.lake_phone),
@@ -73,6 +88,7 @@ export function payloadToRow(
 		secondary_first_name: p.secondary_first_name,
 		last_name: p.last_name,
 		secondary_last_name: p.secondary_last_name,
+		secondary_email: p.secondary_email,
 		primary_phone: p.primary_phone,
 		secondary_phone: p.secondary_phone,
 		lake_phone: p.lake_phone,
@@ -97,6 +113,7 @@ export function payloadToUpdate(
 		secondary_first_name: p.secondary_first_name,
 		last_name: p.last_name,
 		secondary_last_name: p.secondary_last_name,
+		secondary_email: p.secondary_email,
 		primary_phone: p.primary_phone,
 		secondary_phone: p.secondary_phone,
 		lake_phone: p.lake_phone,

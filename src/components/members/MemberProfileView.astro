@@ -26,6 +26,7 @@ const firstName = isEdit ? v(member?.first_name) : '';
 const lastName = isEdit ? v(member?.last_name) : '';
 const secondaryFirstName = isEdit ? v(member?.secondary_first_name) : '';
 const secondaryLastName = isEdit ? v(member?.secondary_last_name) : '';
+const secondaryEmail = isEdit ? v(member?.secondary_email) : '';
 const primaryPhone = isEdit ? v(member?.primary_phone) : '';
 const secondaryPhone = isEdit ? v(member?.secondary_phone) : '';
 const lakePhone = isEdit ? v(member?.lake_phone) : '';
@@ -37,6 +38,7 @@ const province = isEdit ? v(member?.primary_province) : '';
 const country = isEdit ? v(member?.primary_country) : '';
 const postal = isEdit ? v(member?.primary_postal_code) : '';
 const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
+const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || secondaryEmail || secondaryPhone);
 ---
 
 <MemberAppLayout lang={locale} title={title} description={description} heroTitle={heroTitle}>
@@ -49,19 +51,19 @@ const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 
 				<fieldset class="profileFieldset">
 					<legend class="profileLegend">{t.profileSectionContact}</legend>
-					<label class="fieldLabel" for="profile-email-readonly">{t.profileSignInEmail}</label>
-					<input
-						class="fieldInput fieldInputReadonly"
-						id="profile-email-readonly"
-						type="email"
-						value={email}
-						readonly
-						tabindex={-1}
-						aria-readonly="true"
-					/>
-
 					<fieldset class="profileNamesGroup">
-						<legend class="profileLegend">{t.profileSectionNamesOnMembership}</legend>
+						<legend class="profileLegend">{t.profileSectionPrimaryMember}</legend>
+						<label class="fieldLabel" for="profile-email-readonly">{t.profileSignInEmail}</label>
+						<input
+							class="fieldInput fieldInputReadonly"
+							id="profile-email-readonly"
+							type="email"
+							value={email}
+							readonly
+							tabindex={-1}
+							aria-readonly="true"
+						/>
+
 						<label class="fieldLabel" for="first_name">{t.profileFirstName}</label>
 						<input class="fieldInput" id="first_name" name="first_name" type="text" autocomplete="given-name" value={firstName} />
 
@@ -76,36 +78,62 @@ const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 							value={lastName}
 						/>
 
-						<label class="fieldLabel" for="secondary_first_name">{t.profileSecondaryFirstName}</label>
-						<input
-							class="fieldInput"
-							id="secondary_first_name"
-							name="secondary_first_name"
-							type="text"
-							autocomplete="off"
-							value={secondaryFirstName}
-						/>
-
-						<label class="fieldLabel" for="secondary_last_name">{t.profileSecondaryLastName}</label>
-						<input
-							class="fieldInput"
-							id="secondary_last_name"
-							name="secondary_last_name"
-							type="text"
-							autocomplete="off"
-							value={secondaryLastName}
-						/>
+						<label class="fieldLabel" for="primary_phone">{t.profilePrimaryPhone}</label>
+						<input class="fieldInput" id="primary_phone" name="primary_phone" type="text" autocomplete="tel" value={primaryPhone} />
 					</fieldset>
 
-					<label class="fieldLabel" for="primary_phone">{t.profilePrimaryPhone}</label>
-					<input class="fieldInput" id="primary_phone" name="primary_phone" type="text" autocomplete="tel" value={primaryPhone} />
+					<div class="profileNamesGroup">
+						<label class="toggleLabel" for="show_secondary_contact">
+							<input
+								class="toggleInput"
+								id="show_secondary_contact"
+								name="show_secondary_contact"
+								type="checkbox"
+								checked={hasSecondaryContact ? true : undefined}
+							/>
+							<span>{t.profileShowSecondaryMember}</span>
+						</label>
+						<p class="fieldHelp">{t.profileSecondaryMemberHelp}</p>
+						<div id="secondary-contact-fields" class:list={['secondaryFields', { 'secondaryFields--hidden': !hasSecondaryContact }]}>
+							<label class="fieldLabel" for="secondary_first_name">{t.profileSecondaryFirstName}</label>
+							<input
+								class="fieldInput"
+								id="secondary_first_name"
+								name="secondary_first_name"
+								type="text"
+								autocomplete="off"
+								value={secondaryFirstName}
+							/>
 
-					<label class="fieldLabel" for="secondary_phone">{t.profileSecondaryPhone}</label>
-					<input class="fieldInput" id="secondary_phone" name="secondary_phone" type="text" autocomplete="tel" value={secondaryPhone} />
+							<label class="fieldLabel" for="secondary_last_name">{t.profileSecondaryLastName}</label>
+							<input
+								class="fieldInput"
+								id="secondary_last_name"
+								name="secondary_last_name"
+								type="text"
+								autocomplete="off"
+								value={secondaryLastName}
+							/>
+
+							<label class="fieldLabel" for="secondary_email">{t.profileSecondaryEmail}</label>
+							<input
+								class="fieldInput"
+								id="secondary_email"
+								name="secondary_email"
+								type="email"
+								autocomplete="email"
+								value={secondaryEmail}
+							/>
+
+							<label class="fieldLabel" for="secondary_phone">{t.profileSecondaryPhone}</label>
+							<input class="fieldInput" id="secondary_phone" name="secondary_phone" type="text" autocomplete="tel" value={secondaryPhone} />
+						</div>
+					</div>
 				</fieldset>
 
 				<fieldset class="profileFieldset">
 					<legend class="profileLegend">{t.profileSectionLake}</legend>
+					<p class="fieldHelp">{t.profileLakeHelp}</p>
 					<label class="fieldLabel" for="lake_phone">{t.profileLakePhone}</label>
 					<input class="fieldInput" id="lake_phone" name="lake_phone" type="text" value={lakePhone} />
 
@@ -114,29 +142,6 @@ const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 
 					<label class="fieldLabel" for="lake_street_name">{t.profileLakeStreet}</label>
 					<input class="fieldInput" id="lake_street_name" name="lake_street_name" type="text" value={lakeStreet} />
-				</fieldset>
-
-				<fieldset class="profileFieldset">
-					<legend class="profileLegend">{t.profileSectionMailing}</legend>
-					<label class="fieldLabel" for="primary_address">{t.profileStreetAddress}</label>
-					<input class="fieldInput" id="primary_address" name="primary_address" type="text" autocomplete="street-address" value={addr} />
-
-					<label class="fieldLabel" for="primary_city">{t.profileCity}</label>
-					<input class="fieldInput" id="primary_city" name="primary_city" type="text" autocomplete="address-level2" value={city} />
-
-					<div class="profileRow2">
-						<div>
-							<label class="fieldLabel" for="primary_province">{t.profileProvince}</label>
-							<input class="fieldInput" id="primary_province" name="primary_province" type="text" value={province} />
-						</div>
-						<div>
-							<label class="fieldLabel" for="primary_postal_code">{t.profilePostal}</label>
-							<input class="fieldInput" id="primary_postal_code" name="primary_postal_code" type="text" autocomplete="postal-code" value={postal} />
-						</div>
-					</div>
-
-					<label class="fieldLabel" for="primary_country">{t.profileCountry}</label>
-					<input class="fieldInput" id="primary_country" name="primary_country" type="text" autocomplete="country-name" value={country} />
 				</fieldset>
 
 				<label class="checkLabel">
@@ -171,6 +176,25 @@ const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 	const form = document.getElementById('member-profile-form');
 	const msg = document.getElementById('profile-form-message');
 	const submitBtn = document.getElementById('profile-submit');
+	const showSecondaryContact = document.getElementById('show_secondary_contact');
+	const secondaryFields = document.getElementById('secondary-contact-fields');
+
+	function syncSecondaryFields() {
+		if (!showSecondaryContact || !secondaryFields) return;
+		const enabled = showSecondaryContact.checked;
+		secondaryFields.classList.toggle('secondaryFields--hidden', !enabled);
+		secondaryFields.querySelectorAll('input').forEach((input) => {
+			input.disabled = !enabled;
+		});
+		if (!enabled) {
+			secondaryFields.querySelectorAll('input').forEach((input) => {
+				input.value = '';
+			});
+		}
+	}
+
+	showSecondaryContact?.addEventListener('change', syncSecondaryFields);
+	syncSecondaryFields();
 
 	function payloadFromForm(fd) {
 		return {
@@ -178,16 +202,17 @@ const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 			secondary_first_name: fd.get('secondary_first_name') || null,
 			last_name: String(fd.get('last_name') ?? '').trim(),
 			secondary_last_name: fd.get('secondary_last_name') || null,
+			secondary_email: fd.get('secondary_email') || null,
 			primary_phone: fd.get('primary_phone') || null,
 			secondary_phone: fd.get('secondary_phone') || null,
 			lake_phone: fd.get('lake_phone') || null,
 			lake_civic_number: fd.get('lake_civic_number') || null,
 			lake_street_name: fd.get('lake_street_name') || null,
-			primary_address: fd.get('primary_address') || null,
-			primary_city: fd.get('primary_city') || null,
-			primary_province: fd.get('primary_province') || null,
-			primary_country: fd.get('primary_country') || null,
-			primary_postal_code: fd.get('primary_postal_code') || null,
+			primary_address: addr || null,
+			primary_city: city || null,
+			primary_province: province || null,
+			primary_country: country || null,
+			primary_postal_code: postal || null,
 			email_opt_in: fd.get('email_opt_in') === 'on',
 		};
 	}
@@ -234,103 +259,154 @@ const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 
 <style>
 	.narrow {
-		max-width: 560px;
+		max-width: 720px;
 	}
 
 	.intro {
-		margin: 0 0 1.25rem;
-		line-height: 1.5;
-		color: var(--color-muted, #444);
+		margin: 0 0 1.5rem;
+		padding: 1rem 1.15rem;
+		border: 1px solid rgba(15, 23, 42, 0.08);
+		border-radius: 14px;
+		background: linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(255, 255, 255, 0.98));
+		line-height: 1.6;
+		color: var(--color-muted, #475569);
+		box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
 	}
 
 	.profileForm {
 		display: flex;
 		flex-direction: column;
-		gap: 1.25rem;
+		gap: 1.5rem;
 	}
 
 	.profileFieldset {
-		border: 1px solid rgba(0, 0, 0, 0.1);
-		border-radius: 12px;
-		padding: 1rem 1.1rem 1.15rem;
+		border: 1px solid rgba(15, 23, 42, 0.08);
+		border-radius: 18px;
+		padding: 1.35rem 1.35rem 1.4rem;
 		margin: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		gap: 0.9rem;
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 250, 252, 0.92));
+		box-shadow:
+			0 1px 2px rgba(15, 23, 42, 0.04),
+			0 12px 32px rgba(15, 23, 42, 0.05);
 	}
 
 	.profileNamesGroup {
 		border: none;
-		margin: 0.35rem 0 0.5rem;
+		margin: 0;
 		padding: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		gap: 0.7rem;
 	}
 
 	.profileNamesGroup .profileLegend {
-		padding: 0 6px;
+		padding: 0;
 	}
 
 	.profileLegend {
 		font-weight: 700;
-		font-size: 0.95rem;
-		padding: 0 6px;
+		font-size: 1rem;
+		letter-spacing: -0.01em;
+		padding: 0;
+		color: var(--text, #0f172a);
 	}
 
 	.fieldLabel {
 		font-weight: 600;
-		font-size: 0.9rem;
+		font-size: 0.82rem;
+		letter-spacing: 0.01em;
+		color: var(--text, #1e293b);
 	}
 
 	.fieldInput {
 		width: 100%;
-		padding: 10px 12px;
-		border-radius: 8px;
-		border: 1px solid rgba(0, 0, 0, 0.15);
-		font-size: 1rem;
+		padding: 0.78rem 0.9rem;
+		border-radius: 10px;
+		border: 1px solid rgba(148, 163, 184, 0.35);
+		background: rgba(255, 255, 255, 0.96);
+		font-size: 0.98rem;
+		line-height: 1.4;
+		color: var(--text, #0f172a);
 		box-sizing: border-box;
+		box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.03);
+		transition:
+			border-color 160ms ease,
+			box-shadow 160ms ease,
+			background-color 160ms ease;
 	}
 
 	.fieldInputReadonly {
-		background: rgba(0, 0, 0, 0.04);
-		color: var(--color-muted, #444);
+		background: linear-gradient(180deg, rgba(248, 250, 252, 0.96), rgba(241, 245, 249, 0.96));
+		color: var(--color-muted, #475569);
+		border-color: rgba(148, 163, 184, 0.25);
 	}
 
 	.fieldInput:focus {
-		outline: 2px solid var(--color-accent, #1a5f4a);
-		outline-offset: 2px;
+		outline: none;
+		border-color: rgba(37, 99, 235, 0.52);
+		box-shadow:
+			0 0 0 4px rgba(37, 99, 235, 0.12),
+			inset 0 1px 2px rgba(15, 23, 42, 0.03);
 	}
 
-	.profileRow2 {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 12px;
+	.fieldHelp {
+		margin: 0 0 0.15rem;
+		font-size: 0.92rem;
+		line-height: 1.55;
+		color: var(--color-muted, #475569);
+		max-width: 34rem;
 	}
 
-	@media (max-width: 520px) {
-		.profileRow2 {
-			grid-template-columns: 1fr;
-		}
+	.toggleLabel {
+		display: flex;
+		align-items: center;
+		gap: 0.7rem;
+		font-size: 0.94rem;
+		font-weight: 600;
+		color: var(--text, #1e293b);
+		cursor: pointer;
+	}
+
+	.toggleInput {
+		margin: 0;
+		flex-shrink: 0;
+	}
+
+	.secondaryFields {
+		display: flex;
+		flex-direction: column;
+		gap: 0.7rem;
+	}
+
+	.secondaryFields--hidden {
+		display: none;
 	}
 
 	.checkLabel {
 		display: flex;
 		align-items: flex-start;
-		gap: 10px;
-		font-size: 0.95rem;
-		line-height: 1.4;
+		gap: 0.75rem;
+		padding: 0.9rem 1rem;
+		border: 1px solid rgba(15, 23, 42, 0.08);
+		border-radius: 14px;
+		background: rgba(248, 250, 252, 0.72);
+		font-size: 0.94rem;
+		line-height: 1.5;
 		cursor: pointer;
 	}
 
 	.checkInput {
-		margin-top: 3px;
+		margin-top: 0.2rem;
 		flex-shrink: 0;
 	}
 
 	.formMessage {
 		min-height: 1.25em;
-		font-size: 0.95rem;
+		font-size: 0.94rem;
+		line-height: 1.45;
 		color: #b00020;
 	}
 
@@ -338,8 +414,9 @@ const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 		display: flex;
 		flex-wrap: wrap;
 		align-items: center;
-		gap: 12px;
-		margin-top: 4px;
+		gap: 0.85rem;
+		margin-top: 0.1rem;
+		padding-top: 0.25rem;
 	}
 
 	.profileBack {
@@ -347,7 +424,45 @@ const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 44px;
-		padding: 0 16px;
+		min-height: 48px;
+		padding: 0 1.15rem;
+	}
+
+	.profileActions :global(.btnPrimary),
+	.profileActions :global(.btnGhost) {
+		min-height: 48px;
+		padding-inline: 1.15rem;
+		font-size: 0.95rem;
+		border-radius: 10px;
+	}
+
+	.profileActions :global(.btnPrimary) {
+		box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18);
+	}
+
+	.profileActions :global(.btnGhost) {
+		background: rgba(255, 255, 255, 0.92);
+	}
+
+	@media (max-width: 640px) {
+		.narrow {
+			max-width: 100%;
+		}
+
+		.profileFieldset {
+			padding: 1.1rem 1rem 1.15rem;
+			border-radius: 16px;
+		}
+
+		.profileActions {
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.profileActions :global(.btnPrimary),
+		.profileActions :global(.btnGhost),
+		.profileBack {
+			width: 100%;
+		}
 	}
 </style>

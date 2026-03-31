@@ -193,6 +193,9 @@ export const memberCopy: Record<
 		adminFilterApply: string;
 		adminSelectMemberHint: string;
 		adminSecondaryEmailLabel: string;
+		adminSecondaryFirstNameLabel: string;
+		adminSecondaryLastNameLabel: string;
+		adminSecondaryPhoneLabel: string;
 		adminNotesFieldLabel: string;
 		adminStatusMemberLabel: string;
 		adminStatusMemberOptionNew: string;
@@ -202,6 +205,7 @@ export const memberCopy: Record<
 		adminPromoteAdminTitle: string;
 		adminUserIdLabel: string;
 		adminPrimaryEmailLabel: string;
+		adminSpousePartnerHelp: string;
 		adminBackToList: string;
 		adminMemberSaved: string;
 		adminPaymentSaved: string;
@@ -308,13 +312,19 @@ export const memberCopy: Record<
 		profileEditHero: string;
 		profileSectionContact: string;
 		profileSectionLake: string;
+		profileSectionPrimaryMember: string;
+		profileSectionSecondaryMember: string;
+		profileShowSecondaryMember: string;
 		profileSectionMailing: string;
 		profileSignInEmail: string;
 		profileSectionNamesOnMembership: string;
+		profileSecondaryMemberHelp: string;
+		profileLakeHelp: string;
 		profileFirstName: string;
 		profileLastName: string;
 		profileSecondaryFirstName: string;
 		profileSecondaryLastName: string;
+		profileSecondaryEmail: string;
 		profilePrimaryPhone: string;
 		profileSecondaryPhone: string;
 		profileLakePhone: string;
@@ -486,6 +496,9 @@ export const memberCopy: Record<
 		adminFilterApply: 'Apply',
 		adminSelectMemberHint: 'Choose a member row to load details.',
 		adminSecondaryEmailLabel: 'Secondary email',
+		adminSecondaryFirstNameLabel: 'Secondary first name',
+		adminSecondaryLastNameLabel: 'Secondary last name',
+		adminSecondaryPhoneLabel: 'Secondary phone',
 		adminNotesFieldLabel: 'Internal notes',
 		adminStatusMemberLabel: 'Member status',
 		adminStatusMemberOptionNew: 'New — not yet reviewed',
@@ -496,6 +509,8 @@ export const memberCopy: Record<
 		adminPromoteAdminTitle: 'Grant this member the admin role in app metadata (they may need to sign out and back in).',
 		adminUserIdLabel: 'Linked auth user id',
 		adminPrimaryEmailLabel: 'Primary email',
+		adminSpousePartnerHelp:
+			'Members can include a spouse or partner’s name and contact details for record-keeping purposes.',
 		adminBackToList: 'Clear selection',
 		adminMemberSaved: 'Member saved.',
 		adminPaymentSaved: 'Payment recorded.',
@@ -612,15 +627,23 @@ export const memberCopy: Record<
 		profileEditHero: 'Your profile',
 		profileSectionContact: 'Contact',
 		profileSectionLake: 'At the lake',
+		profileSectionPrimaryMember: 'Member info',
+		profileSectionSecondaryMember: 'Spouse/partner',
+		profileShowSecondaryMember: 'Add spouse/partner details',
 		profileSectionMailing: 'Mailing address',
 		profileSignInEmail: 'Sign-in email',
 		profileSectionNamesOnMembership: 'Names on membership',
+		profileSecondaryMemberHelp:
+			'You can include your spouse or partner’s name and contact details with your member information if you’d like, for record-keeping purposes.',
+		profileLakeHelp:
+			'Enter the Lac Bernard address tied to this household. A general membership requires this address.',
 		profileFirstName: 'First name',
 		profileLastName: 'Last name',
-		profileSecondaryFirstName: 'Secondary first name',
-		profileSecondaryLastName: 'Secondary last name',
+		profileSecondaryFirstName: 'First name',
+		profileSecondaryLastName: 'Last name',
+		profileSecondaryEmail: 'Email',
 		profilePrimaryPhone: 'Primary phone',
-		profileSecondaryPhone: 'Secondary phone',
+		profileSecondaryPhone: 'Phone',
 		profileLakePhone: 'Lake phone',
 		profileLakeCivic: 'Civic number',
 		profileLakeStreet: 'Street name',
@@ -789,6 +812,9 @@ export const memberCopy: Record<
 		adminFilterApply: 'Appliquer',
 		adminSelectMemberHint: 'Choisissez une ligne pour charger les détails.',
 		adminSecondaryEmailLabel: 'Courriel secondaire',
+		adminSecondaryFirstNameLabel: 'Prénom secondaire',
+		adminSecondaryLastNameLabel: 'Nom secondaire',
+		adminSecondaryPhoneLabel: 'Téléphone secondaire',
 		adminNotesFieldLabel: 'Notes internes',
 		adminStatusMemberLabel: 'Statut du membre',
 		adminStatusMemberOptionNew: 'Nouveau — pas encore révisé',
@@ -800,6 +826,8 @@ export const memberCopy: Record<
 			'Accorder le rôle admin dans les métadonnées de l’application (déconnexion / reconnexion peut être nécessaire).',
 		adminUserIdLabel: 'Identifiant de compte lié',
 		adminPrimaryEmailLabel: 'Courriel principal',
+		adminSpousePartnerHelp:
+			'Les membres peuvent ajouter le nom et les coordonnées de leur conjoint, conjointe ou partenaire à des fins de tenue de dossier.',
 		adminBackToList: 'Effacer la sélection',
 		adminMemberSaved: 'Membre enregistré.',
 		adminPaymentSaved: 'Paiement enregistré.',
@@ -918,15 +946,23 @@ export const memberCopy: Record<
 		profileEditHero: 'Votre profil',
 		profileSectionContact: 'Coordonnées',
 		profileSectionLake: 'Au lac',
+		profileSectionPrimaryMember: 'Info du membre',
+		profileSectionSecondaryMember: 'Conjoint(e) / partenaire',
+		profileShowSecondaryMember: 'Ajouter les coordonnées du conjoint ou de la conjointe',
 		profileSectionMailing: 'Adresse postale',
 		profileSignInEmail: 'Courriel de connexion',
 		profileSectionNamesOnMembership: 'Noms sur l’adhésion',
+		profileSecondaryMemberHelp:
+			'Vous pouvez ajouter le nom et les coordonnées de votre conjoint, conjointe ou partenaire à votre dossier membre, si vous le souhaitez, à des fins de tenue de dossier.',
+		profileLakeHelp:
+			'Indiquez l’adresse au lac Bernard liée à ce foyer. Une adhésion générale exige cette adresse.',
 		profileFirstName: 'Prénom',
 		profileLastName: 'Nom',
-		profileSecondaryFirstName: 'Prénom secondaire',
-		profileSecondaryLastName: 'Nom de famille secondaire',
+		profileSecondaryFirstName: 'Prénom',
+		profileSecondaryLastName: 'Nom',
+		profileSecondaryEmail: 'Courriel',
 		profilePrimaryPhone: 'Téléphone principal',
-		profileSecondaryPhone: 'Téléphone secondaire',
+		profileSecondaryPhone: 'Téléphone',
 		profileLakePhone: 'Téléphone au lac',
 		profileLakeCivic: 'Numéro civique',
 		profileLakeStreet: 'Rue',
