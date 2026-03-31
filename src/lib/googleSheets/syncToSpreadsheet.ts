@@ -283,22 +283,42 @@ async function replaceSheetValues(
 	});
 }
 
+type SheetInfo = {
+	sheetId: number;
+	title: string;
+};
+
+async function getSheetInfoMap(
+	sheets: Awaited<ReturnType<typeof createSheetsClient>>,
+	sheetId: string,
+): Promise<Map<string, SheetInfo>> {
+	const { data } = await sheets.spreadsheets.get({
+		spreadsheetId: sheetId,
+		fields: 'sheets.properties.sheetId,sheets.properties.title',
+	});
+	return new Map(
+		(data.sheets ?? [])
+			.map((sheet) => sheet.properties)
+			.filter(
+				(properties): properties is { sheetId: number; title: string } =>
+					typeof properties?.sheetId === 'number' && typeof properties?.title === 'string',
+			)
+			.map((properties) => [
+				properties.title,
+				{ sheetId: properties.sheetId, title: properties.title },
+			]),
+	);
+}
+
 async function ensureSheetsExist(
 	sheets: Awaited<ReturnType<typeof createSheetsClient>>,
 	sheetId: string,
 	sheetNames: string[],
-) {
-	const { data } = await sheets.spreadsheets.get({
-		spreadsheetId: sheetId,
-		fields: 'sheets.properties.title',
-	});
-	const existingNames = new Set(
-		(data.sheets ?? [])
-			.map((sheet) => sheet.properties?.title)
-			.filter((title): title is string => Boolean(title)),
-	);
+): Promise<Map<string, SheetInfo>> {
+	const existingSheets = await getSheetInfoMap(sheets, sheetId);
+	const existingNames = new Set(existingSheets.keys());
 	const missingNames = sheetNames.filter((name) => !existingNames.has(name));
-	if (missingNames.length === 0) return;
+	if (missingNames.length === 0) return existingSheets;
 	await sheets.spreadsheets.batchUpdate({
 		spreadsheetId: sheetId,
 		requestBody: {
@@ -307,6 +327,74 @@ async function ensureSheetsExist(
 					properties: { title },
 				},
 			})),
+		},
+	});
+	return getSheetInfoMap(sheets, sheetId);
+}
+
+async function applySheetPresentation(
+	sheets: Awaited<ReturnType<typeof createSheetsClient>>,
+	spreadsheetId: string,
+	sheet: SheetInfo,
+	rowCount: number,
+	columnCount: number,
+) {
+	await sheets.spreadsheets.batchUpdate({
+		spreadsheetId,
+		requestBody: {
+			requests: [
+				{
+					updateSheetProperties: {
+						properties: {
+							sheetId: sheet.sheetId,
+							gridProperties: {
+								frozenRowCount: 1,
+							},
+						},
+						fields: 'gridProperties.frozenRowCount',
+					},
+				},
+				{
+					repeatCell: {
+						range: {
+							sheetId: sheet.sheetId,
+							startRowIndex: 0,
+							endRowIndex: 1,
+						},
+						cell: {
+							userEnteredFormat: {
+								textFormat: {
+									bold: true,
+								},
+							},
+						},
+						fields: 'userEnteredFormat.textFormat.bold',
+					},
+				},
+				{
+					setBasicFilter: {
+						filter: {
+							range: {
+								sheetId: sheet.sheetId,
+								startRowIndex: 0,
+								endRowIndex: rowCount,
+								startColumnIndex: 0,
+								endColumnIndex: columnCount,
+							},
+						},
+					},
+				},
+				{
+					autoResizeDimensions: {
+						dimensions: {
+							sheetId: sheet.sheetId,
+							dimension: 'COLUMNS',
+							startIndex: 0,
+							endIndex: columnCount,
+						},
+					},
+				},
+			],
 		},
 	});
 }
@@ -323,24 +411,49 @@ export async function syncSupabaseToGoogleSheets(): Promise<SyncResult> {
 	const memberMap = new Map(members.map((row) => [row.id, row]));
 	const membershipMap = new Map(memberships.map((row) => [row.id, row]));
 
-	await ensureSheetsExist(sheets, sheetId, [
+	const sheetInfoMap = await ensureSheetsExist(sheets, sheetId, [
 		MEMBERS_SHEET_NAME,
 		MEMBERSHIPS_SHEET_NAME,
 		PAYMENTS_SHEET_NAME,
 	]);
 
-	await replaceSheetValues(sheets, sheetId, MEMBERS_SHEET_NAME, buildMembersValues(members));
+	const memberValues = buildMembersValues(members);
+	const membershipValues = buildMembershipsValues(memberships, memberMap);
+	const paymentValues = buildPaymentsValues(payments, membershipMap, memberMap);
+
+	await replaceSheetValues(sheets, sheetId, MEMBERS_SHEET_NAME, memberValues);
 	await replaceSheetValues(
 		sheets,
 		sheetId,
 		MEMBERSHIPS_SHEET_NAME,
-		buildMembershipsValues(memberships, memberMap),
+		membershipValues,
 	);
 	await replaceSheetValues(
 		sheets,
 		sheetId,
 		PAYMENTS_SHEET_NAME,
-		buildPaymentsValues(payments, membershipMap, memberMap),
+		paymentValues,
+	);
+	await applySheetPresentation(
+		sheets,
+		sheetId,
+		sheetInfoMap.get(MEMBERS_SHEET_NAME)!,
+		memberValues.length,
+		memberValues[0]?.length ?? 0,
+	);
+	await applySheetPresentation(
+		sheets,
+		sheetId,
+		sheetInfoMap.get(MEMBERSHIPS_SHEET_NAME)!,
+		membershipValues.length,
+		membershipValues[0]?.length ?? 0,
+	);
+	await applySheetPresentation(
+		sheets,
+		sheetId,
+		sheetInfoMap.get(PAYMENTS_SHEET_NAME)!,
+		paymentValues.length,
+		paymentValues[0]?.length ?? 0,
 	);
 
 	return {
