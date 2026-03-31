@@ -320,6 +320,7 @@ export const memberCopy: Record<
 		profileSectionNamesOnMembership: string;
 		profileSecondaryMemberHelp: string;
 		profileLakeHelp: string;
+		profileLakeDisplayHelp: string;
 		profileFirstName: string;
 		profileLastName: string;
 		profileSecondaryFirstName: string;
@@ -340,6 +341,11 @@ export const memberCopy: Record<
 		profileSaveSubmit: string;
 		profileBackToAccount: string;
 		profileErrorLastName: string;
+		profileErrorPrimaryEmail: string;
+		profileErrorSecondaryEmail: string;
+		profileErrorSecondaryContact: string;
+		profileErrorPhone: string;
+		profileErrorLakeAddress: string;
 		profileErrorAlreadyMember: string;
 		profileErrorSave: string;
 		/** Spaced conjunction between primary and co-listed names on the account card, e.g. " and " / " et ". */
@@ -620,15 +626,15 @@ export const memberCopy: Record<
 		profileJoinHeroAria: 'New member profile',
 		profileJoinHero: 'Create your profile',
 		profileJoinIntro:
-			'Enter your contact details as they should appear in our records. Your sign-in email is shown below and cannot be changed here.',
+			'Complete your profile to get your household details on file, then you can purchase a membership.',
 		profileEditTitle: 'Edit profile | Lac Bernard Association',
 		profileEditDescription: 'Update your contact information on file with the association.',
 		profileEditHeroAria: 'Edit profile',
 		profileEditHero: 'Your profile',
 		profileSectionContact: 'Contact',
-		profileSectionLake: 'At the lake',
+		profileSectionLake: 'Lake address',
 		profileSectionPrimaryMember: 'Member info',
-		profileSectionSecondaryMember: 'Spouse/partner',
+		profileSectionSecondaryMember: 'Additional contact',
 		profileShowSecondaryMember: 'Add spouse/partner details',
 		profileSectionMailing: 'Mailing address',
 		profileSignInEmail: 'Sign-in email',
@@ -637,6 +643,8 @@ export const memberCopy: Record<
 			'You can include your spouse or partner’s name and contact details with your member information if you’d like, for record-keeping purposes.',
 		profileLakeHelp:
 			'Enter the Lac Bernard address tied to this household. A general membership requires this address.',
+		profileLakeDisplayHelp:
+			'This is the Lac Bernard address on file for your household and the address tied to a general membership.',
 		profileFirstName: 'First name',
 		profileLastName: 'Last name',
 		profileSecondaryFirstName: 'First name',
@@ -657,6 +665,11 @@ export const memberCopy: Record<
 		profileSaveSubmit: 'Save changes',
 		profileBackToAccount: 'Back to member area',
 		profileErrorLastName: 'Last name is required.',
+		profileErrorPrimaryEmail: 'The email on this account is not valid. Please contact us if this continues.',
+		profileErrorSecondaryEmail: 'Enter a valid email for the additional contact.',
+		profileErrorSecondaryContact: 'Add at least one detail for the additional contact or uncheck the option.',
+		profileErrorPhone: 'Enter a valid phone number.',
+		profileErrorLakeAddress: 'Enter both the lake civic number and street name, or leave both blank.',
 		profileErrorAlreadyMember: 'A profile already exists for this account. Returning to the member area.',
 		profileErrorSave: 'Could not save your profile. Please try again.',
 		memberSummaryNameAnd: ' and ',
@@ -939,15 +952,15 @@ export const memberCopy: Record<
 		profileJoinHeroAria: 'Nouveau profil membre',
 		profileJoinHero: 'Créer votre profil',
 		profileJoinIntro:
-			'Indiquez vos coordonnées telles qu’elles doivent figurer dans nos dossiers. Votre courriel de connexion est affiché ci-dessous; il ne peut pas être modifié ici.',
+			'Complétez votre profil pour ajouter les renseignements de votre foyer à votre dossier, puis vous pourrez acheter une adhésion.',
 		profileEditTitle: 'Profil | Association du lac Bernard',
 		profileEditDescription: 'Mettez à jour les coordonnées associées à votre dossier.',
 		profileEditHeroAria: 'Modifier le profil',
 		profileEditHero: 'Votre profil',
 		profileSectionContact: 'Coordonnées',
-		profileSectionLake: 'Au lac',
+		profileSectionLake: 'Adresse au lac',
 		profileSectionPrimaryMember: 'Info du membre',
-		profileSectionSecondaryMember: 'Conjoint(e) / partenaire',
+		profileSectionSecondaryMember: 'Contact additionnel',
 		profileShowSecondaryMember: 'Ajouter les coordonnées du conjoint ou de la conjointe',
 		profileSectionMailing: 'Adresse postale',
 		profileSignInEmail: 'Courriel de connexion',
@@ -956,6 +969,8 @@ export const memberCopy: Record<
 			'Vous pouvez ajouter le nom et les coordonnées de votre conjoint, conjointe ou partenaire à votre dossier membre, si vous le souhaitez, à des fins de tenue de dossier.',
 		profileLakeHelp:
 			'Indiquez l’adresse au lac Bernard liée à ce foyer. Une adhésion générale exige cette adresse.',
+		profileLakeDisplayHelp:
+			"Voici l’adresse au lac Bernard associée à votre foyer et liée à une adhésion générale.",
 		profileFirstName: 'Prénom',
 		profileLastName: 'Nom',
 		profileSecondaryFirstName: 'Prénom',
@@ -976,6 +991,11 @@ export const memberCopy: Record<
 		profileSaveSubmit: 'Enregistrer',
 		profileBackToAccount: 'Retour à l’espace membre',
 		profileErrorLastName: 'Le nom est obligatoire.',
+		profileErrorPrimaryEmail: 'Le courriel de ce compte n’est pas valide. Veuillez nous contacter si le problème persiste.',
+		profileErrorSecondaryEmail: 'Entrez un courriel valide pour le contact additionnel.',
+		profileErrorSecondaryContact: 'Ajoutez au moins un renseignement pour le contact additionnel ou décochez l’option.',
+		profileErrorPhone: 'Entrez un numéro de téléphone valide.',
+		profileErrorLakeAddress: 'Entrez le numéro civique et le nom de rue du lac, ou laissez les deux champs vides.',
 		profileErrorAlreadyMember: 'Un profil existe déjà pour ce compte. Retour à l’espace membre.',
 		profileErrorSave: 'Enregistrement impossible. Veuillez réessayer.',
 		memberSummaryNameAnd: ' et ',

@@ -1,18 +1,11 @@
 import type { MemberProfilePayload } from '../members/profilePayload';
-import { parseMemberProfilePayload } from '../members/profilePayload';
+import { normalizeEmail, parseMemberProfilePayload } from '../members/profilePayload';
 
 function trimOrNullLocal(v: unknown): string | null {
 	if (v === null || v === undefined) return null;
 	if (typeof v !== 'string') return null;
 	const t = v.trim();
 	return t === '' ? null : t;
-}
-
-function parseEmail(v: unknown): string | null {
-	const t = trimOrNullLocal(v);
-	if (!t) return null;
-	if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(t)) return null;
-	return t.toLowerCase();
 }
 
 export type AdminMemberPatch = MemberProfilePayload & {
@@ -33,14 +26,14 @@ export function parseAdminMemberPatch(body: unknown): { ok: true; value: AdminMe
 	const has = (k: string) => Object.prototype.hasOwnProperty.call(o, k);
 
 	if (has('secondary_email')) {
-		const secondary = parseEmail(o.secondary_email);
+		const secondary = normalizeEmail(o.secondary_email);
 		if (o.secondary_email !== null && o.secondary_email !== '' && !secondary) {
 			return { ok: false, error: 'invalid_secondary_email' };
 		}
 	}
 
 	if (has('primary_email')) {
-		const primary = parseEmail(o.primary_email);
+		const primary = normalizeEmail(o.primary_email);
 		if (o.primary_email !== null && o.primary_email !== '' && !primary) {
 			return { ok: false, error: 'invalid_primary_email' };
 		}
@@ -74,11 +67,11 @@ export function parseAdminMemberPatch(body: unknown): { ok: true; value: AdminMe
 	const value: AdminMemberPatch = { ...base.value };
 
 	if (has('secondary_email')) {
-		const secondary = parseEmail(o.secondary_email);
+		const secondary = normalizeEmail(o.secondary_email);
 		value.secondary_email = secondary;
 	}
 	if (has('primary_email')) {
-		value.primary_email = parseEmail(o.primary_email);
+		value.primary_email = normalizeEmail(o.primary_email);
 	}
 	if (has('user_id')) {
 		if (o.user_id === null || o.user_id === '') value.user_id = null;

@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import { findMemberByAuthEmail } from '../../../lib/members/memberLookup';
 import {
+	normalizeEmail,
 	parseMemberProfilePayload,
 	payloadToRow,
 	payloadToUpdate,
@@ -47,9 +48,17 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		});
 	}
 
+	const primaryEmail = normalizeEmail(user.email);
+	if (!primaryEmail) {
+		return new Response(JSON.stringify({ error: 'invalid_primary_email' }), {
+			status: 400,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
+
 	const row = payloadToRow(parsed.value, {
 		user_id: user.id,
-		primary_email: user.email.trim(),
+		primary_email: primaryEmail,
 	});
 
 	const { data: inserted, error: insErr } = await supabase
@@ -111,7 +120,13 @@ export const PATCH: APIRoute = async ({ request, cookies }) => {
 		});
 	}
 
-	const email = user.email.trim();
+	const email = normalizeEmail(user.email);
+	if (!email) {
+		return new Response(JSON.stringify({ error: 'invalid_primary_email' }), {
+			status: 400,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
 	const update = payloadToUpdate(parsed.value, email);
 
 	const { error: upErr } = await supabase.from('members').update(update).eq('id', member.id);
