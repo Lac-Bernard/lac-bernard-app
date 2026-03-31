@@ -11,9 +11,9 @@ type MemberRow = {
 	id: string;
 	created_at: string;
 	first_name: string | null;
-	other_first_name: string | null;
+	secondary_first_name: string | null;
 	last_name: string;
-	other_last_name: string | null;
+	secondary_last_name: string | null;
 	primary_email: string | null;
 	secondary_email: string | null;
 	primary_phone: string | null;
@@ -207,8 +207,8 @@ export function initAdminMemberDetail(
 	function fillForm(m: MemberRow) {
 		el<HTMLInputElement>('#admin-field-first_name')!.value = m.first_name ?? '';
 		el<HTMLInputElement>('#admin-field-last_name')!.value = m.last_name ?? '';
-		el<HTMLInputElement>('#admin-field-other_first_name')!.value = m.other_first_name ?? '';
-		el<HTMLInputElement>('#admin-field-other_last_name')!.value = m.other_last_name ?? '';
+		el<HTMLInputElement>('#admin-field-secondary_first_name')!.value = m.secondary_first_name ?? '';
+		el<HTMLInputElement>('#admin-field-secondary_last_name')!.value = m.secondary_last_name ?? '';
 		el<HTMLInputElement>('#admin-field-primary_email')!.value = m.primary_email ?? '';
 		el<HTMLInputElement>('#admin-field-secondary_email')!.value = m.secondary_email ?? '';
 		el<HTMLInputElement>('#admin-field-primary_phone')!.value = m.primary_phone ?? '';
@@ -534,9 +534,9 @@ export function initAdminMemberDetail(
 		const fd = new FormData(memberForm);
 		const body: Record<string, unknown> = {
 			first_name: fd.get('first_name') || null,
-			other_first_name: fd.get('other_first_name') || null,
+			secondary_first_name: fd.get('secondary_first_name') || null,
 			last_name: String(fd.get('last_name') ?? '').trim(),
-			other_last_name: fd.get('other_last_name') || null,
+			secondary_last_name: fd.get('secondary_last_name') || null,
 			primary_phone: fd.get('primary_phone') || null,
 			secondary_phone: fd.get('secondary_phone') || null,
 			lake_phone: fd.get('lake_phone') || null,

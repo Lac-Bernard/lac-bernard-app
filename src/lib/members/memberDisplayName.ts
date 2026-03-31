@@ -1,10 +1,10 @@
-/** Display helpers for member names (primary vs co-listed on the same membership row). */
+/** Display helpers for member names (primary vs secondary on the same membership row). */
 
 export type MemberNameFields = {
 	first_name: string | null;
 	last_name: string;
-	other_first_name?: string | null;
-	other_last_name?: string | null;
+	secondary_first_name?: string | null;
+	secondary_last_name?: string | null;
 };
 
 /** Dense lists: lead person only (first + last). */
@@ -14,32 +14,32 @@ export function formatMemberPrimaryName(m: MemberNameFields): string {
 	return `${f} ${l}`.trim();
 }
 
-/** Profile / detail: full co-listing when other_* are set (plain text, slash separator). */
-export function formatMemberWithOtherNames(m: MemberNameFields): string {
+/** Profile / detail: full co-listing when secondary_* are set (plain text, slash separator). */
+export function formatMemberWithSecondaryNames(m: MemberNameFields): string {
 	const primary = formatMemberPrimaryName(m);
-	const of = (m.other_first_name ?? '').trim();
-	const ol = (m.other_last_name ?? '').trim();
-	if (!of && !ol) return primary;
-	const other = [of, ol].filter(Boolean).join(' ').trim();
-	if (!other) return primary;
-	return `${primary} / ${other}`;
+	const secondaryFirst = (m.secondary_first_name ?? '').trim();
+	const secondaryLast = (m.secondary_last_name ?? '').trim();
+	if (!secondaryFirst && !secondaryLast) return primary;
+	const secondary = [secondaryFirst, secondaryLast].filter(Boolean).join(' ').trim();
+	if (!secondary) return primary;
+	return `${primary} / ${secondary}`;
 }
 
-/** When co-listed names exist, split for UI: `primary` & `other` (other = other first + other last). */
-export function memberSummaryNameParts(m: MemberNameFields): { primary: string; other: string } | null {
+/** When co-listed names exist, split for UI: `primary` & `secondary`. */
+export function memberSummaryNameParts(m: MemberNameFields): { primary: string; secondary: string } | null {
 	const primary = formatMemberPrimaryName(m);
-	const of = (m.other_first_name ?? '').trim();
-	const ol = (m.other_last_name ?? '').trim();
-	const other = [of, ol].filter(Boolean).join(' ').trim();
-	if (!other) return null;
-	return { primary, other };
+	const secondaryFirst = (m.secondary_first_name ?? '').trim();
+	const secondaryLast = (m.secondary_last_name ?? '').trim();
+	const secondary = [secondaryFirst, secondaryLast].filter(Boolean).join(' ').trim();
+	if (!secondary) return null;
+	return { primary, secondary };
 }
 
-/** Plain text for admin labels and ARIA: `Primary & Other` when co-listed names exist. */
+/** Plain text for admin labels and ARIA: `Primary & Secondary` when co-listed names exist. */
 export function formatMemberJoinedNames(m: MemberNameFields): string {
 	const parts = memberSummaryNameParts(m);
 	if (!parts) return formatMemberPrimaryName(m);
-	return `${parts.primary} & ${parts.other}`;
+	return `${parts.primary} & ${parts.secondary}`;
 }
 
 /**
@@ -50,8 +50,8 @@ export function formatAdminMemberNameHtml(m: MemberNameFields, escapeHtml: (s: s
 	const parts = memberSummaryNameParts(m);
 	const primaryHtml = escapeHtml(parts ? parts.primary : formatMemberPrimaryName(m));
 	if (!parts) return primaryHtml;
-	const otherHtml = escapeHtml(parts.other);
-	return `<span class="adminMemberNamePrimary">${primaryHtml}</span><span class="adminMemberNameJoiner"> & </span><span class="adminMemberNameOther">${otherHtml}</span>`;
+	const secondaryHtml = escapeHtml(parts.secondary);
+	return `<span class="adminMemberNamePrimary">${primaryHtml}</span><span class="adminMemberNameJoiner"> & </span><span class="adminMemberNameSecondary">${secondaryHtml}</span>`;
 }
 
 export function formatAdminMemberNameTd(m: MemberNameFields, escapeHtml: (s: string) => string): string {

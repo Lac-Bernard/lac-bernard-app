@@ -13,8 +13,8 @@ type MemberRow = {
 	membership_tier_for_year: string | null;
 	first_name: string | null;
 	last_name: string;
-	other_first_name?: string | null;
-	other_last_name?: string | null;
+	secondary_first_name?: string | null;
+	secondary_last_name?: string | null;
 	primary_email: string | null;
 	secondary_email: string | null;
 	primary_phone: string | null;
@@ -48,8 +48,8 @@ type MembershipEmbed = {
 		id: string;
 		first_name: string | null;
 		last_name: string;
-		other_first_name: string | null;
-		other_last_name: string | null;
+		secondary_first_name: string | null;
+		secondary_last_name: string | null;
 		primary_email: string | null;
 		secondary_email: string | null;
 	};
@@ -677,8 +677,8 @@ export function initAdminConsole(
 		id: string;
 		first_name: string | null;
 		last_name: string;
-		other_first_name?: string | null;
-		other_last_name?: string | null;
+		secondary_first_name?: string | null;
+		secondary_last_name?: string | null;
 	}): string {
 		const href = `${adminMembersBase}/${encodeURIComponent(mem.id)}`;
 		const name = formatMemberJoinedNames(mem);
@@ -696,8 +696,8 @@ export function initAdminConsole(
 					created_at: string;
 					first_name: string | null;
 					last_name: string;
-					other_first_name?: string | null;
-					other_last_name?: string | null;
+					secondary_first_name?: string | null;
+					secondary_last_name?: string | null;
 				};
 				tier: string | null;
 				eventAt: string;
@@ -713,8 +713,8 @@ export function initAdminConsole(
 					id: string;
 					first_name: string | null;
 					last_name: string;
-					other_first_name?: string | null;
-					other_last_name?: string | null;
+					secondary_first_name?: string | null;
+					secondary_last_name?: string | null;
 				} | null;
 			}>;
 			counts?: {
@@ -818,8 +818,8 @@ export function initAdminConsole(
 							{
 								first_name: mem.first_name,
 								last_name: mem.last_name,
-								other_first_name: mem.other_first_name,
-								other_last_name: mem.other_last_name,
+								secondary_first_name: mem.secondary_first_name,
+								secondary_last_name: mem.secondary_last_name,
 							},
 							escapeHtml,
 						)

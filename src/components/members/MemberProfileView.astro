@@ -24,8 +24,8 @@ const v = (s: string | null | undefined) => (s ?? '').trim();
 
 const firstName = isEdit ? v(member?.first_name) : '';
 const lastName = isEdit ? v(member?.last_name) : '';
-const otherFirstName = isEdit ? v(member?.other_first_name) : '';
-const otherLastName = isEdit ? v(member?.other_last_name) : '';
+const secondaryFirstName = isEdit ? v(member?.secondary_first_name) : '';
+const secondaryLastName = isEdit ? v(member?.secondary_last_name) : '';
 const primaryPhone = isEdit ? v(member?.primary_phone) : '';
 const secondaryPhone = isEdit ? v(member?.secondary_phone) : '';
 const lakePhone = isEdit ? v(member?.lake_phone) : '';
@@ -76,24 +76,24 @@ const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 							value={lastName}
 						/>
 
-						<label class="fieldLabel" for="other_first_name">{t.profileOtherFirstName}</label>
+						<label class="fieldLabel" for="secondary_first_name">{t.profileSecondaryFirstName}</label>
 						<input
 							class="fieldInput"
-							id="other_first_name"
-							name="other_first_name"
+							id="secondary_first_name"
+							name="secondary_first_name"
 							type="text"
 							autocomplete="off"
-							value={otherFirstName}
+							value={secondaryFirstName}
 						/>
 
-						<label class="fieldLabel" for="other_last_name">{t.profileOtherLastName}</label>
+						<label class="fieldLabel" for="secondary_last_name">{t.profileSecondaryLastName}</label>
 						<input
 							class="fieldInput"
-							id="other_last_name"
-							name="other_last_name"
+							id="secondary_last_name"
+							name="secondary_last_name"
 							type="text"
 							autocomplete="off"
-							value={otherLastName}
+							value={secondaryLastName}
 						/>
 					</fieldset>
 
@@ -175,9 +175,9 @@ const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 	function payloadFromForm(fd) {
 		return {
 			first_name: fd.get('first_name') || null,
-			other_first_name: fd.get('other_first_name') || null,
+			secondary_first_name: fd.get('secondary_first_name') || null,
 			last_name: String(fd.get('last_name') ?? '').trim(),
-			other_last_name: fd.get('other_last_name') || null,
+			secondary_last_name: fd.get('secondary_last_name') || null,
 			primary_phone: fd.get('primary_phone') || null,
 			secondary_phone: fd.get('secondary_phone') || null,
 			lake_phone: fd.get('lake_phone') || null,

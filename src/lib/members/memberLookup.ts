@@ -4,10 +4,10 @@ export type MemberProfile = {
 	id: string;
 	first_name: string | null;
 	/** Co-listed given name when the sheet listed two people in First Name. */
-	other_first_name: string | null;
+	secondary_first_name: string | null;
 	last_name: string;
 	/** From legacy Other LName; co-listed surname. */
-	other_last_name: string | null;
+	secondary_last_name: string | null;
 	primary_email: string | null;
 	secondary_email: string | null;
 	user_id: string | null;
@@ -32,9 +32,9 @@ function escapeIlikeExact(value: string): string {
 function normalizeMember(row: {
 	id: string;
 	first_name: string | null;
-	other_first_name: string | null;
+	secondary_first_name: string | null;
 	last_name: string;
-	other_last_name: string | null;
+	secondary_last_name: string | null;
 	primary_email: string | null;
 	secondary_email: string | null;
 	user_id: string | null;
@@ -52,8 +52,8 @@ function normalizeMember(row: {
 }): MemberProfile {
 	return {
 		...row,
-		other_first_name: row.other_first_name ?? null,
-		other_last_name: row.other_last_name ?? null,
+		secondary_first_name: row.secondary_first_name ?? null,
+		secondary_last_name: row.secondary_last_name ?? null,
 		email_opt_in: Boolean(row.email_opt_in),
 	};
 }
@@ -67,7 +67,7 @@ export async function findMemberByAuthEmail(
 	if (!raw) return null;
 
 	const selectCols =
-		'id, first_name, other_first_name, last_name, other_last_name, primary_email, secondary_email, user_id, ' +
+		'id, first_name, secondary_first_name, last_name, secondary_last_name, primary_email, secondary_email, user_id, ' +
 		'primary_phone, secondary_phone, lake_phone, lake_civic_number, lake_street_name, ' +
 		'primary_address, primary_city, primary_province, primary_country, primary_postal_code, email_opt_in';
 

@@ -313,8 +313,8 @@ export const memberCopy: Record<
 		profileSectionNamesOnMembership: string;
 		profileFirstName: string;
 		profileLastName: string;
-		profileOtherFirstName: string;
-		profileOtherLastName: string;
+		profileSecondaryFirstName: string;
+		profileSecondaryLastName: string;
 		profilePrimaryPhone: string;
 		profileSecondaryPhone: string;
 		profileLakePhone: string;
@@ -617,8 +617,8 @@ export const memberCopy: Record<
 		profileSectionNamesOnMembership: 'Names on membership',
 		profileFirstName: 'First name',
 		profileLastName: 'Last name',
-		profileOtherFirstName: 'Other first name',
-		profileOtherLastName: 'Other last name',
+		profileSecondaryFirstName: 'Secondary first name',
+		profileSecondaryLastName: 'Secondary last name',
 		profilePrimaryPhone: 'Primary phone',
 		profileSecondaryPhone: 'Secondary phone',
 		profileLakePhone: 'Lake phone',
@@ -923,8 +923,8 @@ export const memberCopy: Record<
 		profileSectionNamesOnMembership: 'Noms sur l’adhésion',
 		profileFirstName: 'Prénom',
 		profileLastName: 'Nom',
-		profileOtherFirstName: 'Autre prénom',
-		profileOtherLastName: 'Autre nom de famille',
+		profileSecondaryFirstName: 'Prénom secondaire',
+		profileSecondaryLastName: 'Nom de famille secondaire',
 		profilePrimaryPhone: 'Téléphone principal',
 		profileSecondaryPhone: 'Téléphone secondaire',
 		profileLakePhone: 'Téléphone au lac',

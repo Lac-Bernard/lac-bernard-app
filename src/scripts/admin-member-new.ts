@@ -98,9 +98,9 @@ export function initAdminMemberNew(
 		const fd = new FormData(form);
 		const body: Record<string, unknown> = {
 			first_name: fd.get('first_name') || null,
-			other_first_name: fd.get('other_first_name') || null,
+			secondary_first_name: fd.get('secondary_first_name') || null,
 			last_name: String(fd.get('last_name') ?? '').trim(),
-			other_last_name: fd.get('other_last_name') || null,
+			secondary_last_name: fd.get('secondary_last_name') || null,
 			primary_phone: fd.get('primary_phone') || null,
 			secondary_phone: fd.get('secondary_phone') || null,
 			lake_phone: fd.get('lake_phone') || null,
