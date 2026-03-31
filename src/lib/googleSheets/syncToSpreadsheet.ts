@@ -237,13 +237,21 @@ function buildMembershipsValues(
 	memberMap: Map<string, MemberRow>,
 ): (string | number | boolean)[][] {
 	return [
-		[...MEMBERSHIP_COLUMNS, 'member_name', 'member_primary_email'],
+		[
+			...MEMBERSHIP_COLUMNS,
+			'member_name',
+			'member_primary_email',
+			'member_lake_civic_number',
+			'member_lake_street_name',
+		],
 		...rows.map((row) => {
 			const member = memberMap.get(row.member_id) ?? null;
 			return [
 				...MEMBERSHIP_COLUMNS.map((column) => normalizeSheetValue(row[column])),
 				memberName(member),
 				normalizeSheetValue(member?.primary_email ?? ''),
+				normalizeSheetValue(member?.lake_civic_number ?? ''),
+				normalizeSheetValue(member?.lake_street_name ?? ''),
 			];
 		}),
 	];
