@@ -7,22 +7,22 @@ truncate table public.payments, public.memberships, public.members, public.admin
 
 insert into public.members (
   id, first_name, last_name, primary_email, secondary_email,
-  primary_phone, secondary_phone, lake_phone, lake_civic_number, lake_street_name,
+  primary_phone, secondary_phone, lake_civic_number, lake_street_name,
   primary_address, primary_city, primary_province, primary_country, primary_postal_code,
   email_opt_in, notes, status
 ) values
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000001'::uuid, 'Alex', 'Profeit', 'alex.devseed@example.invalid', NULL, '514-555-0101', NULL, NULL, NULL, NULL, NULL, 'Montréal', 'QC', 'CA', NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000002'::uuid, 'Marie', 'Dubois', 'marie.devseed@example.invalid', 'marie.alt@example.invalid', '514-555-0102', NULL, NULL, NULL, NULL, NULL, 'Gatineau', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000003'::uuid, 'Jean', 'Tremblay', 'jean.devseed@example.invalid', NULL, '418-555-0103', NULL, NULL, NULL, NULL, NULL, 'Québec', 'QC', NULL, NULL, false, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000004'::uuid, 'Sophie', 'Lavoie', 'sophie.devseed@example.invalid', NULL, '450-555-0104', NULL, NULL, NULL, NULL, NULL, 'Laval', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000005'::uuid, 'Lucas', 'Martin', 'lucas.devseed@example.invalid', NULL, '819-555-0105', NULL, NULL, NULL, NULL, NULL, 'Sherbrooke', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000006'::uuid, 'Emma', 'Fortin', 'emma.devseed@example.invalid', NULL, '438-555-0106', NULL, NULL, NULL, NULL, NULL, 'Montréal', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000007'::uuid, 'Noah', 'Bergeron', 'noah.devseed@example.invalid', NULL, '514-555-0107', NULL, NULL, NULL, NULL, NULL, 'Montréal', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000008'::uuid, 'Chloé', 'Gagnon', 'chloe.devseed@example.invalid', NULL, '514-555-0108', NULL, NULL, NULL, NULL, NULL, 'Longueuil', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000009'::uuid, 'Marc', 'Pelletier', 'marc.devseed@example.invalid', NULL, '418-555-0109', NULL, NULL, NULL, NULL, NULL, 'Rimouski', 'QC', NULL, NULL, false, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000000a'::uuid, 'Julie', 'Roy', 'julie.devseed@example.invalid', NULL, '450-555-0110', NULL, NULL, NULL, NULL, NULL, 'Terrebonne', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000000b'::uuid, 'Nova', 'Review', 'nova.newsignup.devseed@example.invalid', NULL, '514-555-0199', NULL, NULL, NULL, NULL, NULL, 'Montréal', 'QC', 'CA', NULL, true, 'Dashboard dummy seed · __dummy_seed__ · members.status=new (self-serve; use New members tab + Verify)', 'new'),
-  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000000c'::uuid, 'Riley', 'Former', 'inactive.sheet.devseed@example.invalid', NULL, '450-555-0198', NULL, NULL, NULL, NULL, NULL, 'Blainville', 'QC', 'CA', NULL, false, 'Dashboard dummy seed · __dummy_seed__ · members.status=disabled (import “inactive” / soft-off)', 'disabled');
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000001'::uuid, 'Alex', 'Profeit', 'alex.devseed@example.invalid', NULL, '514-555-0101', NULL, NULL, NULL, NULL, 'Montréal', 'QC', 'CA', NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000002'::uuid, 'Marie', 'Dubois', 'marie.devseed@example.invalid', 'marie.alt@example.invalid', '514-555-0102', NULL, NULL, NULL, NULL, 'Gatineau', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000003'::uuid, 'Jean', 'Tremblay', 'jean.devseed@example.invalid', NULL, '418-555-0103', NULL, NULL, NULL, NULL, 'Québec', 'QC', NULL, NULL, false, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000004'::uuid, 'Sophie', 'Lavoie', 'sophie.devseed@example.invalid', NULL, '450-555-0104', NULL, NULL, NULL, NULL, 'Laval', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000005'::uuid, 'Lucas', 'Martin', 'lucas.devseed@example.invalid', NULL, '819-555-0105', NULL, NULL, NULL, NULL, 'Sherbrooke', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000006'::uuid, 'Emma', 'Fortin', 'emma.devseed@example.invalid', NULL, '438-555-0106', NULL, NULL, NULL, NULL, 'Montréal', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000007'::uuid, 'Noah', 'Bergeron', 'noah.devseed@example.invalid', NULL, '514-555-0107', NULL, NULL, NULL, NULL, 'Montréal', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000008'::uuid, 'Chloé', 'Gagnon', 'chloe.devseed@example.invalid', NULL, '514-555-0108', NULL, NULL, NULL, NULL, 'Longueuil', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-000000000009'::uuid, 'Marc', 'Pelletier', 'marc.devseed@example.invalid', NULL, '418-555-0109', NULL, NULL, NULL, NULL, 'Rimouski', 'QC', NULL, NULL, false, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000000a'::uuid, 'Julie', 'Roy', 'julie.devseed@example.invalid', NULL, '450-555-0110', NULL, NULL, NULL, NULL, 'Terrebonne', 'QC', NULL, NULL, true, 'Dashboard dummy seed · __dummy_seed__', 'verified'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000000b'::uuid, 'Nova', 'Review', 'nova.newsignup.devseed@example.invalid', NULL, '514-555-0199', NULL, NULL, NULL, NULL, 'Montréal', 'QC', 'CA', NULL, true, 'Dashboard dummy seed · __dummy_seed__ · members.status=new (self-serve; use New members tab + Verify)', 'new'),
+  ('aaaaaaaa-aaaa-4aaa-8aaa-00000000000c'::uuid, 'Riley', 'Former', 'inactive.sheet.devseed@example.invalid', NULL, '450-555-0198', NULL, NULL, NULL, NULL, 'Blainville', 'QC', 'CA', NULL, false, 'Dashboard dummy seed · __dummy_seed__ · members.status=disabled (import “inactive” / soft-off)', 'disabled');
 
 insert into public.memberships (id, member_id, year, tier, status, created_at, activated_at) values
   ('aaaaaaaa-aaaa-4aaa-8aaa-000000000014'::uuid, 'aaaaaaaa-aaaa-4aaa-8aaa-000000000001'::uuid, 2024, 'general', 'active', '2024-05-10T14:00:00Z'::timestamptz, '2024-05-10T14:00:00Z'::timestamptz),

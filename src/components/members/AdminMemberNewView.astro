@@ -53,7 +53,6 @@ const adminKeys = [
 	'profileSecondaryEmail',
 	'profilePrimaryPhone',
 	'profileSecondaryPhone',
-	'profileLakePhone',
 	'profileLakeCivic',
 	'profileLakeStreet',
 	'profileEmailOptIn',
@@ -111,7 +110,6 @@ const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof ty
                 <legend class="adminProfileLegend">{t.profileSectionLake}</legend>
                 <p class="adminSectionHelp">{t.profileLakeHelp}</p>
                 <div class="adminFormGrid">
-                  <label>{t.profileLakePhone} <input type="text" name="lake_phone" class="adminInput" /></label>
                   <label>{t.profileLakeCivic} <input type="text" name="lake_civic_number" class="adminInput" /></label>
                   <label>{t.profileLakeStreet} <input type="text" name="lake_street_name" class="adminInput" /></label>
                 </div>

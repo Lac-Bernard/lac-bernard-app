@@ -13,7 +13,6 @@ export type MemberProfile = {
 	user_id: string | null;
 	primary_phone: string | null;
 	secondary_phone: string | null;
-	lake_phone: string | null;
 	lake_civic_number: string | null;
 	lake_street_name: string | null;
 	primary_address: string | null;
@@ -40,7 +39,6 @@ function normalizeMember(row: {
 	user_id: string | null;
 	primary_phone: string | null;
 	secondary_phone: string | null;
-	lake_phone: string | null;
 	lake_civic_number: string | null;
 	lake_street_name: string | null;
 	primary_address: string | null;
@@ -68,7 +66,7 @@ export async function findMemberByAuthEmail(
 
 	const selectCols =
 		'id, first_name, secondary_first_name, last_name, secondary_last_name, primary_email, secondary_email, user_id, ' +
-		'primary_phone, secondary_phone, lake_phone, lake_civic_number, lake_street_name, ' +
+		'primary_phone, secondary_phone, lake_civic_number, lake_street_name, ' +
 		'primary_address, primary_city, primary_province, primary_country, primary_postal_code, email_opt_in';
 
 	const { data: userData } = await supabase.auth.getUser();

@@ -29,7 +29,6 @@ const secondaryLastName = isEdit ? v(member?.secondary_last_name) : '';
 const secondaryEmail = isEdit ? v(member?.secondary_email) : '';
 const primaryPhone = isEdit ? v(member?.primary_phone) : '';
 const secondaryPhone = isEdit ? v(member?.secondary_phone) : '';
-const lakePhone = isEdit ? v(member?.lake_phone) : '';
 const lakeCivic = isEdit ? v(member?.lake_civic_number) : '';
 const lakeStreet = isEdit ? v(member?.lake_street_name) : '';
 const addr = isEdit ? v(member?.primary_address) : '';
@@ -86,9 +85,6 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 
 						<label class="fieldLabel" for="primary_phone">{t.profilePrimaryPhone}</label>
 						<input class="fieldInput" id="primary_phone" name="primary_phone" type="text" autocomplete="tel" value={primaryPhone} />
-
-						<label class="fieldLabel" for="lake_phone">{t.profileLakePhone}</label>
-						<input class="fieldInput" id="lake_phone" name="lake_phone" type="text" autocomplete="tel" value={lakePhone} />
 					</div>
 
 					<div
@@ -250,7 +246,7 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 		if (!body.last_name) return errLastName;
 		if (body.secondary_email && !isValidEmail(body.secondary_email)) return errSecondaryEmail;
 
-		const phoneFields = [body.primary_phone, body.secondary_phone, body.lake_phone];
+		const phoneFields = [body.primary_phone, body.secondary_phone];
 		if (phoneFields.some((value) => value && !isPlausiblePhone(value))) return errPhone;
 
 		const hasLakeCivic = Boolean(trimOrNull(body.lake_civic_number));
@@ -280,7 +276,6 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 				return errPrimaryEmail;
 			case 'invalid_primary_phone':
 			case 'invalid_secondary_phone':
-			case 'invalid_lake_phone':
 				return errPhone;
 			case 'invalid_lake_address':
 				return errLakeAddress;
@@ -298,7 +293,6 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 			secondary_email: fd.get('secondary_email') || null,
 			primary_phone: fd.get('primary_phone') || null,
 			secondary_phone: fd.get('secondary_phone') || null,
-			lake_phone: fd.get('lake_phone') || null,
 			lake_civic_number: fd.get('lake_civic_number') || null,
 			lake_street_name: fd.get('lake_street_name') || null,
 			primary_address: preservedPrimaryAddress || null,

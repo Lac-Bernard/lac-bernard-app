@@ -328,7 +328,6 @@ export const memberCopy: Record<
 		profileSecondaryEmail: string;
 		profilePrimaryPhone: string;
 		profileSecondaryPhone: string;
-		profileLakePhone: string;
 		profileLakeCivic: string;
 		profileLakeStreet: string;
 		profileStreetAddress: string;
@@ -652,7 +651,6 @@ export const memberCopy: Record<
 		profileSecondaryEmail: 'Email',
 		profilePrimaryPhone: 'Primary phone',
 		profileSecondaryPhone: 'Phone',
-		profileLakePhone: 'Lake phone',
 		profileLakeCivic: 'Civic number',
 		profileLakeStreet: 'Street name',
 		profileStreetAddress: 'Street address',
@@ -978,7 +976,6 @@ export const memberCopy: Record<
 		profileSecondaryEmail: 'Courriel',
 		profilePrimaryPhone: 'Téléphone principal',
 		profileSecondaryPhone: 'Téléphone',
-		profileLakePhone: 'Téléphone au lac',
 		profileLakeCivic: 'Numéro civique',
 		profileLakeStreet: 'Rue',
 		profileStreetAddress: 'Adresse',

@@ -103,7 +103,6 @@ export function initAdminMemberNew(
 			secondary_last_name: fd.get('secondary_last_name') || null,
 			primary_phone: fd.get('primary_phone') || null,
 			secondary_phone: fd.get('secondary_phone') || null,
-			lake_phone: fd.get('lake_phone') || null,
 			lake_civic_number: fd.get('lake_civic_number') || null,
 			lake_street_name: fd.get('lake_street_name') || null,
 			email_opt_in: fd.get('email_opt_in') === 'on',

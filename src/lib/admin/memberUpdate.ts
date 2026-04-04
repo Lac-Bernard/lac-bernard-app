@@ -99,7 +99,6 @@ export function adminPatchToRow(p: AdminMemberPatch): Record<string, unknown> {
 		secondary_last_name: p.secondary_last_name,
 		primary_phone: p.primary_phone,
 		secondary_phone: p.secondary_phone,
-		lake_phone: p.lake_phone,
 		lake_civic_number: p.lake_civic_number,
 		lake_street_name: p.lake_street_name,
 		primary_address: p.primary_address,

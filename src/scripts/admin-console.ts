@@ -19,7 +19,6 @@ type MemberRow = {
 	secondary_email: string | null;
 	primary_phone: string | null;
 	secondary_phone: string | null;
-	lake_phone: string | null;
 	lake_civic_number: string | null;
 	lake_street_name: string | null;
 	primary_address: string | null;

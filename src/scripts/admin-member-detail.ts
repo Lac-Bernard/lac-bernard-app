@@ -18,7 +18,6 @@ type MemberRow = {
 	secondary_email: string | null;
 	primary_phone: string | null;
 	secondary_phone: string | null;
-	lake_phone: string | null;
 	lake_civic_number: string | null;
 	lake_street_name: string | null;
 	primary_address: string | null;
@@ -215,7 +214,6 @@ export function initAdminMemberDetail(
 		el<HTMLInputElement>('#admin-field-secondary_email')!.value = m.secondary_email ?? '';
 		el<HTMLInputElement>('#admin-field-primary_phone')!.value = m.primary_phone ?? '';
 		el<HTMLInputElement>('#admin-field-secondary_phone')!.value = m.secondary_phone ?? '';
-		el<HTMLInputElement>('#admin-field-lake_phone')!.value = m.lake_phone ?? '';
 		el<HTMLInputElement>('#admin-field-lake_civic_number')!.value = m.lake_civic_number ?? '';
 		el<HTMLInputElement>('#admin-field-lake_street_name')!.value = m.lake_street_name ?? '';
 		el<HTMLInputElement>('#admin-field-email_opt_in')!.checked = m.email_opt_in;
@@ -537,7 +535,6 @@ export function initAdminMemberDetail(
 			secondary_last_name: fd.get('secondary_last_name') || null,
 			primary_phone: fd.get('primary_phone') || null,
 			secondary_phone: fd.get('secondary_phone') || null,
-			lake_phone: fd.get('lake_phone') || null,
 			lake_civic_number: fd.get('lake_civic_number') || null,
 			lake_street_name: fd.get('lake_street_name') || null,
 			primary_address: currentMember?.primary_address ?? null,
