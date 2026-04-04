@@ -27,7 +27,7 @@ const adminKeys = [
 	'adminSecondaryFirstNameLabel',
 	'adminSecondaryLastNameLabel',
 	'adminSecondaryPhoneLabel',
-	'adminSpousePartnerHelp',
+	'adminSecondaryContactHelp',
 	'adminNotesFieldLabel',
 	'adminMembershipYearLabel',
 	'adminLoading',
@@ -97,7 +97,7 @@ const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof ty
               </fieldset>
 
               <div class="adminProfileSection">
-                <p class="adminSectionHelp">{t.adminSpousePartnerHelp}</p>
+                <p class="adminSectionHelp">{t.adminSecondaryContactHelp}</p>
                 <div id="admin-new-secondary-contact-fields" class="adminFormGrid">
                   <label>{t.adminSecondaryFirstNameLabel} <input type="text" name="secondary_first_name" class="adminInput" /></label>
                   <label>{t.adminSecondaryLastNameLabel} <input type="text" name="secondary_last_name" class="adminInput" /></label>

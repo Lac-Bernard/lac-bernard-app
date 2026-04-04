@@ -87,11 +87,13 @@ const associateFeeCad =
 const displayEmail = member ? (member.primary_email?.trim() || email) : '';
 const memberSummaryName = member ? memberSummaryNameParts(member) : null;
 const memberPrimaryNameOnly = member ? formatMemberPrimaryName(member) : '';
-const spouseFirstName = member?.secondary_first_name?.trim() ?? '';
-const spouseLastName = member?.secondary_last_name?.trim() ?? '';
-const spouseEmail = member?.secondary_email?.trim() ?? '';
-const spousePhone = member?.secondary_phone?.trim() ?? '';
-const hasSpouseInfo = Boolean(spouseFirstName || spouseLastName || spouseEmail || spousePhone);
+const secondaryContactFirstName = member?.secondary_first_name?.trim() ?? '';
+const secondaryContactLastName = member?.secondary_last_name?.trim() ?? '';
+const secondaryContactEmail = member?.secondary_email?.trim() ?? '';
+const secondaryContactPhone = member?.secondary_phone?.trim() ?? '';
+const hasSecondaryContactInfo = Boolean(
+	secondaryContactFirstName || secondaryContactLastName || secondaryContactEmail || secondaryContactPhone,
+);
 ---
 
 <MemberAppLayout
@@ -155,25 +157,25 @@ const hasSpouseInfo = Boolean(spouseFirstName || spouseLastName || spouseEmail |
                   </dl>
                 </section>
 
-                {hasSpouseInfo && (
-                  <section class="memberSummarySection" aria-labelledby="member-summary-spouse">
-                    <h2 id="member-summary-spouse" class="memberSummarySectionTitle">{t.profileSectionSecondaryMember}</h2>
+                {hasSecondaryContactInfo && (
+                  <section class="memberSummarySection" aria-labelledby="member-summary-secondary-contact">
+                    <h2 id="member-summary-secondary-contact" class="memberSummarySectionTitle">{t.profileSectionSecondaryMember}</h2>
                     <dl class="memberSummaryDl">
                       <div class="memberSummaryDlRow">
                         <dt>{t.profileSecondaryFirstName}</dt>
-                        <dd>{spouseFirstName || t.homeAddressNotOnFile}</dd>
+                        <dd>{secondaryContactFirstName || t.homeAddressNotOnFile}</dd>
                       </div>
                       <div class="memberSummaryDlRow">
                         <dt>{t.profileSecondaryLastName}</dt>
-                        <dd>{spouseLastName || t.homeAddressNotOnFile}</dd>
+                        <dd>{secondaryContactLastName || t.homeAddressNotOnFile}</dd>
                       </div>
                       <div class="memberSummaryDlRow">
                         <dt>{t.profileSecondaryEmail}</dt>
-                        <dd>{spouseEmail || t.homeAddressNotOnFile}</dd>
+                        <dd>{secondaryContactEmail || t.homeAddressNotOnFile}</dd>
                       </div>
                       <div class="memberSummaryDlRow">
                         <dt>{t.profileSecondaryPhone}</dt>
-                        <dd>{spousePhone || t.homeAddressNotOnFile}</dd>
+                        <dd>{secondaryContactPhone || t.homeAddressNotOnFile}</dd>
                       </div>
                     </dl>
                   </section>
