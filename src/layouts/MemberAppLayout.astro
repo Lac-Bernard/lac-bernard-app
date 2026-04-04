@@ -5,6 +5,7 @@ import SiteHeader from '../components/SiteHeader.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import type { MemberLocale } from '../lib/members/i18n';
 import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 
 interface Props {
   lang: MemberLocale;
@@ -39,6 +40,7 @@ const {
     <title>{title}</title>
     <meta name="description" content={description} />
     <Analytics />
+    <SpeedInsights />
   </head>
 
   <body>
