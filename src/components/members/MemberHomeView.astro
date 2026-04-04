@@ -264,45 +264,47 @@ const hasSecondaryContactInfo = Boolean(
 
                   <dialog id="checkout-modal" class="checkoutModal" aria-labelledby="checkout-modal-title">
                     <div class="checkoutModalInner">
-                      <h2 id="checkout-modal-title" class="checkoutModalHeading">{t.checkoutModalTitle}</h2>
-                      <dl class="checkoutModalSummary">
-                        <div class="checkoutModalSummaryRow">
-                          <dt>{t.checkoutModalMembershipLabel}</dt>
-                          <dd>{thisYearTierLabel}</dd>
-                        </div>
-                        <div class="checkoutModalSummaryRow">
-                          <dt>{t.checkoutModalFeeLabel}</dt>
-                          <dd>{pendingMembershipFeeCad} CAD</dd>
-                        </div>
-                      </dl>
                       <form id="checkout-modal-form" class="checkoutModalForm" data-membership-id={pendingThisYear.id}>
-                        <div class="checkoutModalField donationRow">
-                          <label class="donationLabel" for="modal-donation">{t.donationLabel}</label>
-                          <input
-                            type="number"
-                            class="donationInput checkoutModalInput"
-                            id="modal-donation"
-                            name="donation"
-                            min="0"
-                            max="50000"
-                            step="0.01"
-                            placeholder="0"
-                            inputmode="decimal"
-                            aria-describedby="modal-donation-hint"
-                          />
-                          <p id="modal-donation-hint" class="stripeNote checkoutModalHint">{t.donationHint}</p>
-                        </div>
-                        <div class="checkoutModalField donationNoteRow">
-                          <label class="donationLabel" for="modal-donation-note">{t.donationNoteLabel}</label>
-                          <textarea
-                            class="donationNoteInput"
-                            id="modal-donation-note"
-                            name="donationNote"
-                            rows="3"
-                            maxlength="500"
-                            aria-describedby="modal-donation-note-hint"
-                          ></textarea>
-                          <p id="modal-donation-note-hint" class="stripeNote checkoutModalHint">{t.donationNoteHint}</p>
+                        <div class="checkoutModalScroll">
+                          <h2 id="checkout-modal-title" class="checkoutModalHeading">{t.checkoutModalTitle}</h2>
+                          <dl class="checkoutModalSummary">
+                            <div class="checkoutModalSummaryRow">
+                              <dt>{t.checkoutModalMembershipLabel}</dt>
+                              <dd>{thisYearTierLabel}</dd>
+                            </div>
+                            <div class="checkoutModalSummaryRow">
+                              <dt>{t.checkoutModalFeeLabel}</dt>
+                              <dd>{pendingMembershipFeeCad} CAD</dd>
+                            </div>
+                          </dl>
+                          <div class="checkoutModalField donationRow">
+                            <label class="donationLabel" for="modal-donation">{t.donationLabel}</label>
+                            <input
+                              type="number"
+                              class="donationInput checkoutModalInput"
+                              id="modal-donation"
+                              name="donation"
+                              min="0"
+                              max="50000"
+                              step="0.01"
+                              placeholder="0"
+                              inputmode="decimal"
+                              aria-describedby="modal-donation-hint"
+                            />
+                            <p id="modal-donation-hint" class="stripeNote checkoutModalHint">{t.donationHint}</p>
+                          </div>
+                          <div class="checkoutModalField donationNoteRow">
+                            <label class="donationLabel" for="modal-donation-note">{t.donationNoteLabel}</label>
+                            <textarea
+                              class="donationNoteInput"
+                              id="modal-donation-note"
+                              name="donationNote"
+                              rows="3"
+                              maxlength="500"
+                              aria-describedby="modal-donation-note-hint"
+                            ></textarea>
+                            <p id="modal-donation-note-hint" class="stripeNote checkoutModalHint">{t.donationNoteHint}</p>
+                          </div>
                         </div>
                         <p id="pay-checkout-message" class="actionMessage checkoutModalError" role="status" aria-live="polite"></p>
                         <div class="checkoutModalActions">
@@ -1436,7 +1438,10 @@ const hasSecondaryContactInfo = Boolean(
   }
 
   .checkoutModal {
+    --checkout-modal-max-h: min(92dvh, calc(100svh - 1.5rem));
     max-width: min(24rem, calc(100vw - 2rem));
+    /* Cap height so zoom / small viewports can always reach actions; dvh/svh handle mobile browser chrome */
+    max-height: var(--checkout-modal-max-h);
     padding: 0;
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 14px;
@@ -1445,6 +1450,7 @@ const hasSecondaryContactInfo = Boolean(
       0 0 0 1px rgba(0, 0, 0, 0.04);
     background: var(--bg, #fafafa);
     overflow: hidden;
+    overscroll-behavior: contain;
   }
 
   .checkoutModal::backdrop {
@@ -1453,7 +1459,28 @@ const hasSecondaryContactInfo = Boolean(
   }
 
   .checkoutModalInner {
-    padding: 1.35rem 1.35rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    max-height: var(--checkout-modal-max-h);
+  }
+
+  .checkoutModalForm {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    flex: 1 1 auto;
+    margin: 0;
+  }
+
+  .checkoutModalScroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    padding: 1.35rem 1.35rem 0.75rem;
   }
 
   .checkoutModalHeading {
@@ -1503,10 +1530,6 @@ const hasSecondaryContactInfo = Boolean(
     font-weight: 700;
     font-size: 1rem;
     color: rgba(30, 64, 175, 0.98);
-  }
-
-  .checkoutModalForm {
-    margin: 0;
   }
 
   .checkoutModalField {
@@ -1583,17 +1606,21 @@ const hasSecondaryContactInfo = Boolean(
   }
 
   .checkoutModalError {
-    margin: 0.65rem 0 0;
+    flex-shrink: 0;
+    margin: 0;
+    padding: 0.5rem 1.35rem 0;
     min-height: 0;
   }
 
   .checkoutModalActions {
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    margin-top: 1.2rem;
-    padding-top: 1.1rem;
+    margin-top: 0;
+    padding: 1rem 1.35rem 1.3rem;
     border-top: 1px solid rgba(0, 0, 0, 0.08);
+    background: var(--bg, #fafafa);
   }
 
   .checkoutModalBtnSecondary,
