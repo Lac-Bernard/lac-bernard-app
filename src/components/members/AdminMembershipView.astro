@@ -1,5 +1,6 @@
 ---
 import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
+import MemberSessionHeroMeta from './MemberSessionHeroMeta.astro';
 import { memberCopy, memberPaths, type MemberLocale } from '../../lib/members/i18n';
 import { getMembershipCalendarYear } from '../../lib/members/membershipYear';
 import { parseAdminTabQueryParam } from '../../scripts/admin-console';
@@ -13,7 +14,6 @@ const { locale, email } = Astro.props;
 const t = memberCopy[locale];
 const paths = memberPaths[locale];
 const initialAdminTab = parseAdminTabQueryParam(Astro.url.searchParams.get('tab'));
-const heroSubtitle = email;
 const defaultMembershipYear = getMembershipCalendarYear();
 
 const y = String(defaultMembershipYear);
@@ -128,9 +128,15 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
   title={t.adminTitle}
   description={t.adminDescription}
   heroTitle={t.adminHero}
-  heroSubtitle={heroSubtitle}
   alignHeroWithAdmin
 >
+  <MemberSessionHeroMeta
+    slot="hero-meta"
+    locale={locale}
+    email={email}
+    signInRedirect={paths.signIn}
+    variant="adminWorkspace"
+  />
   <section class="section alt adminPage">
     <div class="container adminConsole">
       <div class="adminShell">
@@ -313,13 +319,6 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
             <span id="admin-audit-pageinfo"></span>
             <button type="button" class="adminBtn adminBtn--ghost" id="admin-audit-next">{t.adminNextPage}</button>
           </div>
-        </div>
-
-        <div class="adminShellFooter">
-          <form method="POST" action="/api/auth/sign-out" class="adminSignOutForm">
-            <input type="hidden" name="redirect_to" value={paths.signIn} />
-            <button type="submit" class="adminBtn adminBtn--link">{t.signOut}</button>
-          </form>
         </div>
       </div>
     </div>
@@ -822,20 +821,6 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
 
   .adminPage :global(.adminTable tbody tr[data-admin-member-href]:hover) {
     background: rgba(72, 196, 255, 0.1);
-  }
-
-  .adminShellFooter {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.65rem 1.25rem;
-    border-top: 1px solid var(--admin-border);
-    background: var(--admin-surface-muted);
-  }
-
-  .adminSignOutForm {
-    margin: 0;
   }
 
   .adminPager {

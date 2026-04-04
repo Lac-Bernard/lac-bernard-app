@@ -1,0 +1,109 @@
+---
+import { memberCopy, type MemberLocale } from '../../lib/members/i18n';
+
+interface Props {
+	locale: MemberLocale;
+	email: string;
+	/** Post-sign-out redirect, usually `paths.signIn` for the locale */
+	signInRedirect: string;
+	/**
+	 * `member` — viewing your own member area (default).
+	 * `adminWorkspace` — admin console: clarify line is the signed-in operator, not the record title.
+	 */
+	variant?: 'member' | 'adminWorkspace';
+}
+
+const { locale, email, signInRedirect, variant = 'member' } = Astro.props;
+const t = memberCopy[locale];
+const intro = variant === 'adminWorkspace' ? t.workspaceYourAccount : t.signedInAs;
+---
+
+<div
+	class:list={['memberSessionHeroMeta', { 'memberSessionHeroMeta--trailing': variant === 'adminWorkspace' }]}
+	role="status"
+>
+	<span class="memberSessionHeroMetaLine">
+		<span class="memberSessionHeroMetaIntro">
+			{intro}
+			<strong class="memberSessionHeroMetaEmail">{email}</strong>
+		</span>
+		<span class="memberSessionHeroMetaSep" aria-hidden="true">·</span>
+		<form method="POST" action="/api/auth/sign-out" class="memberSessionHeroMetaSignOutForm">
+			<input type="hidden" name="redirect_to" value={signInRedirect} />
+			<button type="submit" class="memberSessionHeroMetaSignOut">{t.signOut}</button>
+		</form>
+	</span>
+</div>
+
+<style>
+	.memberSessionHeroMeta {
+		margin: 0.35rem 0 0;
+	}
+
+	.memberSessionHeroMeta--trailing {
+		margin-top: 0;
+	}
+
+	.memberSessionHeroMetaLine {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		column-gap: 0.45rem;
+		row-gap: 0.2rem;
+		font-size: 0.8125rem;
+		line-height: 1.45;
+		color: var(--muted);
+	}
+
+	.memberSessionHeroMeta--trailing .memberSessionHeroMetaLine {
+		justify-content: flex-end;
+	}
+
+	.memberSessionHeroMetaIntro {
+		display: inline;
+	}
+
+	.memberSessionHeroMetaEmail {
+		font-weight: 600;
+		color: var(--text);
+		margin-left: 0.25rem;
+	}
+
+	.memberSessionHeroMetaSep {
+		color: var(--muted);
+		opacity: 0.55;
+		user-select: none;
+	}
+
+	.memberSessionHeroMetaSignOutForm {
+		display: inline;
+		margin: 0;
+		padding: 0;
+	}
+
+	.memberSessionHeroMetaSignOut {
+		border: 0;
+		background: none;
+		padding: 0;
+		margin: 0;
+		font: inherit;
+		font-size: inherit;
+		line-height: inherit;
+		color: var(--muted);
+		cursor: pointer;
+		text-decoration: underline;
+		text-underline-offset: 0.15em;
+		text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+	}
+
+	.memberSessionHeroMetaSignOut:hover {
+		color: var(--text);
+		text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
+	}
+
+	.memberSessionHeroMetaSignOut:focus-visible {
+		outline: 2px solid var(--focus-ring, rgba(28, 95, 118, 0.45));
+		outline-offset: 2px;
+		border-radius: 2px;
+	}
+</style>

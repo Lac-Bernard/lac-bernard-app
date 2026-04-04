@@ -663,3 +663,98 @@
     max-width: 200px;
   }
 }
+
+/*
+ * Member workspace header — global so slotted breadcrumb/session from child
+ * Astro components still match (scoped styles do not apply across slots).
+ */
+.memberWorkspaceHeadRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem 1.75rem;
+}
+
+.memberWorkspaceHeadPrimary {
+  flex: 1 1 0;
+  min-width: min(100%, 14rem);
+}
+
+.memberWorkspaceHeadAccount {
+  flex: 0 1 auto;
+  max-width: 100%;
+  text-align: right;
+}
+
+.memberWorkspaceHeadAccount:empty {
+  display: none;
+}
+
+.memberWorkspaceHeadAccount .memberSessionHeroMeta {
+  margin-top: 0;
+}
+
+@media (max-width: 720px) {
+  .memberWorkspaceHeadAccount {
+    flex: 1 1 100%;
+    text-align: left;
+  }
+
+  .memberWorkspaceHeadAccount .memberSessionHeroMeta--trailing .memberSessionHeroMetaLine {
+    justify-content: flex-start;
+  }
+}
+
+nav.memberWorkspaceBreadcrumb {
+  margin: 0 0 0.45rem;
+}
+
+.memberWorkspaceBreadcrumbList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.memberWorkspaceBreadcrumbItem {
+  display: inline-flex;
+  align-items: center;
+}
+
+.memberWorkspaceBreadcrumbItem:not(:last-child)::after {
+  content: '/';
+  margin: 0 0.4rem;
+  color: var(--muted);
+  font-weight: 400;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.memberWorkspaceBreadcrumbLink {
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: 2px;
+}
+
+.memberWorkspaceBreadcrumbLink:hover {
+  color: var(--text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.memberWorkspaceBreadcrumbLink:focus-visible {
+  outline: 2px solid var(--focus-ring, rgba(28, 95, 118, 0.45));
+  outline-offset: 2px;
+}
+
+.memberWorkspaceHead--compact .memberWorkspaceBreadcrumbList {
+  font-size: 0.78rem;
+}

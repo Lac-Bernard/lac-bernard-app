@@ -1,5 +1,6 @@
 ---
 import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
+import MemberSessionHeroMeta from './MemberSessionHeroMeta.astro';
 import { memberCopy, memberPaths, type MemberLocale } from '../../lib/members/i18n';
 import type { MemberProfile } from '../../lib/members/memberLookup';
 
@@ -41,13 +42,7 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 ---
 
 <MemberAppLayout lang={locale} title={title} description={description} heroTitle={heroTitle}>
-	<div slot="hero-meta" class="profileSessionBar">
-		<p class="profileSessionText">{t.signedInAs} <strong>{email}</strong></p>
-		<form method="POST" action="/api/auth/sign-out">
-			<input type="hidden" name="redirect_to" value={paths.signIn} />
-			<button type="submit" class="profileSessionSignOut">{t.signOut}</button>
-		</form>
-	</div>
+	<MemberSessionHeroMeta slot="hero-meta" locale={locale} email={email} signInRedirect={paths.signIn} />
 	<section class="section">
 		<div class="container narrow">
 			{!isEdit && <p class="intro">{t.profileJoinIntro}</p>}
@@ -367,36 +362,6 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 		display: flex;
 		flex-direction: column;
 		gap: 1.5rem;
-	}
-
-	.profileSessionBar {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 0.15rem;
-		margin: 0.5rem 0 0;
-		font-size: 0.92rem;
-		color: var(--color-muted, #475569);
-	}
-
-	.profileSessionText {
-		margin: 0;
-		line-height: 1.4;
-	}
-
-	.profileSessionSignOut {
-		border: 0;
-		background: none;
-		padding: 0;
-		font: inherit;
-		font-weight: 500;
-		color: var(--color-muted, #64748b);
-		cursor: pointer;
-		text-decoration: none;
-	}
-
-	.profileSessionSignOut:hover {
-		color: var(--text, #334155);
 	}
 
 	.profileFieldset {

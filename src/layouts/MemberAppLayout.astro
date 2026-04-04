@@ -16,10 +16,20 @@ interface Props {
   compactHero?: boolean;
   /** Match hero title column width to `.adminConsole` (1100px), not the default member reading column (40rem). */
   alignHeroWithAdmin?: boolean;
+  /** When set, the workspace title is a link (e.g. “Administration” → admin overview). */
+  heroTitleHref?: string;
 }
 
-const { lang, title, description, heroTitle, heroSubtitle, compactHero = false, alignHeroWithAdmin = false } =
-  Astro.props;
+const {
+  lang,
+  title,
+  description,
+  heroTitle,
+  heroSubtitle,
+  compactHero = false,
+  alignHeroWithAdmin = false,
+  heroTitleHref,
+} = Astro.props;
 ---
 
 <html lang={lang}>
@@ -43,11 +53,28 @@ const { lang, title, description, heroTitle, heroSubtitle, compactHero = false, 
             { 'memberWorkspaceHeadInner--alignAdmin': alignHeroWithAdmin },
           ]}
         >
-          <h1 class="memberWorkspaceTitle" id="member-workspace-title">{heroTitle}</h1>
-          <slot name="hero-meta" />
-          {heroSubtitle !== undefined && heroSubtitle !== '' && (
-            <p class="memberWorkspaceLead">{heroSubtitle}</p>
-          )}
+          <div class="memberWorkspaceHeadRow">
+            <div class="memberWorkspaceHeadPrimary">
+              <slot name="hero-breadcrumb" />
+              <h1 class="memberWorkspaceTitle" id="member-workspace-title">
+                {
+                  heroTitleHref ? (
+                    <a href={heroTitleHref} class="memberWorkspaceTitleLink">
+                      {heroTitle}
+                    </a>
+                  ) : (
+                    heroTitle
+                  )
+                }
+              </h1>
+              {heroSubtitle !== undefined && heroSubtitle !== '' && (
+                <p class="memberWorkspaceLead">{heroSubtitle}</p>
+              )}
+            </div>
+            <div class="memberWorkspaceHeadAccount">
+              <slot name="hero-meta" />
+            </div>
+          </div>
         </div>
       </header>
       <div class="memberWorkspaceBody">
@@ -84,6 +111,24 @@ const { lang, title, description, heroTitle, heroSubtitle, compactHero = false, 
     letter-spacing: -0.02em;
     line-height: 1.2;
     color: var(--text);
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .memberWorkspaceTitleLink {
+    color: inherit;
+    text-decoration: none;
+    border-radius: 2px;
+  }
+
+  .memberWorkspaceTitleLink:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.12em;
+  }
+
+  .memberWorkspaceTitleLink:focus-visible {
+    outline: 2px solid var(--focus-ring, rgba(28, 95, 118, 0.45));
+    outline-offset: 3px;
   }
 
   .memberWorkspaceLead {
@@ -109,6 +154,11 @@ const { lang, title, description, heroTitle, heroSubtitle, compactHero = false, 
   /* Tighter top gap than default `.section` now that there is no hero band */
   .memberWorkspaceBody :global(.section:first-child) {
     padding-top: 1.75rem;
+  }
+
+  .memberWorkspaceBody :global(.section.adminPageMemberDetail),
+  .memberWorkspaceBody :global(.section.adminPageMemberNew) {
+    padding-top: 1rem;
   }
 
   /* Let member content shrink so nested tables can’t force horizontal page overflow */
