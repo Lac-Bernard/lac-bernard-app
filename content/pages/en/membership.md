@@ -5,25 +5,23 @@ description: Join or renew your membership with the Lac Bernard Association.
 
 ## Membership Fees
 
-Membership is $75 per year. You can renew for up to 3 years.
-
-- **$75** – 1 year
-- **$150** – 2 years
-- **$225** – 3 years
+Membership is $75 per year for voting members and $25 a year for associate members.
 
 Membership is on a calendar basis – from January to December.
 
 ## Membership Types
 
-Anyone can be a Member of the Association, but our bylaws restrict voting to only one Primary Member per property. There can be an unlimited number of non-voting Associate Members per property.
+Anyone can be a Member of the Association, but our bylaws allow only one voting member per property. There can be an unlimited number of non-voting Associate Members per property.
 
 ## Payment Methods
 
-The simplest and fastest payment method is through INTERAC. You may also pay by cheque, if you prefer. We no longer use PayPal, and are not using credit cards at this time.
+The simplest and fastest method is online with a credit card. We also accept Interac e-Transfer or cheque.
 
-### Enrolling and Renewing
+## Enrolling and Renewing
 
-Enrolling and renewing is easy. Please click on either the **Enroll** or **Renewal** button below and make sure you fill in the form so we can communicate with you. Also, separately through your bank, please be sure to send your e-transfer payment to [interac@lacbernard.ca](mailto:interac@lacbernard.ca). The Association does not collect bank information.
+Enrolling and renewing online is easy.
+
+Please click on either the **Enroll** or **Renew** button below and make sure you fill in the form so we can communicate with you. Also, should you decide to pay by Interac e-Transfer, the payment address through your bank is [interac@lacbernard.ca](mailto:interac@lacbernard.ca). The Association does not collect bank information.
 
 If you prefer to pay by cheque, please send it to:
 
@@ -40,17 +38,17 @@ You can also contact us directly by email at: [membership@lacbernard.ca](mailto:
 
 ## Why Join?
 
-When you join the Owners' and Residents' Association of Lac Bernard you become a member of one of the strongest and most active lake associations in the region. Our aim is to ensure every cottage on the lake becomes a member and actively participates in our three key objectives:
+When you join the Owners' and Residents' Association of Lac Bernard you become a member of one of the strongest and most active lake associations in the region. Our aim is to ensure every cottage on the lake becomes a member and actively participates in our key goals:
 
 - Community Building
 - Environmental Stewardship
 - Safety and Security of our Community
 
-The Association members work together to ensure the long term sustainability of our lake, as well as organizing a fantastic social calendar, anchored by the fun-family annual Regatta held in Regatta Bay!
+The Association members work together to ensure the long term sustainability of our lake, as well as organizing a social calendar, anchored by the annual Regatta held in Regatta Bay!
 
-## Corporate Objectives
+## Key Objectives
 
-By enrolling or renewing, you are agreeing to support our Corporate Objectives outlined below. These are core to our Letters Patent and bylaws. If you have questions regarding any of these, please reach out to [president@lacbernard.ca](mailto:president@lacbernard.ca).
+By enrolling or renewing, you are agreeing to support our objectives outlined below. These are core to our Letters Patent and bylaws. If you have questions regarding any of these, please reach out to [president@lacbernard.ca](mailto:president@lacbernard.ca).
 
 - Manage the Corporation in a transparent and respectful manner in both official languages wherever possible
 - Promote the preservation and enhancement of the environmental and ecological well-being of the lake

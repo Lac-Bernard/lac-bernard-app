@@ -5,25 +5,23 @@ description: Adhérez ou renouvelez votre adhésion à l'Association du lac Bern
 
 ## Frais d'adhésion
 
-L'adhésion est de 75 $ par année. Vous pouvez renouveler jusqu'à 3 ans.
-
-- **75 $** – 1 an
-- **150 $** – 2 ans
-- **225 $** – 3 ans
+L'adhésion est de 75 $ par année pour les membres votants et de 25 $ par année pour les membres associés.
 
 L'adhésion est sur une base calendaire – de janvier à décembre.
 
 ## Types d'adhésion
 
-N'importe qui peut être membre de l'Association, mais nos règlements restreignent le vote à un seul membre principal par propriété. Il peut y avoir un nombre illimité de membres associés non votants par propriété.
+N'importe qui peut être membre de l'Association, mais nos règlements n'autorisent qu'un seul membre votant par propriété. Il peut y avoir un nombre illimité de membres associés non votants par propriété.
 
 ## Méthodes de paiement
 
-La méthode de paiement la plus simple et la plus rapide est par virement Interac. Vous pouvez également payer par chèque, si vous préférez. Nous n'utilisons plus PayPal et n'utilisons pas de cartes de crédit pour le moment.
+La méthode la plus simple et la plus rapide est en ligne par carte de crédit. Nous acceptons aussi le virement de fonds Interac (e-Transfer) ou le chèque.
 
-### Inscription et renouvellement
+## Inscription et renouvellement
 
-L'inscription et le renouvellement sont faciles. Veuillez cliquer sur le bouton **Inscription** ou **Renouvellement** ci-dessous et assurez-vous de remplir le formulaire afin que nous puissions communiquer avec vous. Aussi, séparément par votre banque, veuillez vous assurer d'envoyer votre paiement par virement Interac à [interac@lacbernard.ca](mailto:interac@lacbernard.ca). L'Association ne collecte pas d'informations bancaires.
+L'inscription et le renouvellement en ligne sont faciles.
+
+Veuillez cliquer sur le bouton **Inscrivez-vous comme nouveau membre** ou **Renouvelez votre adhésion** ci-dessous et assurez-vous de remplir le formulaire afin que nous puissions communiquer avec vous. Si vous choisissez de payer par virement de fonds Interac (e-Transfer), l'adresse de paiement auprès de votre banque est [interac@lacbernard.ca](mailto:interac@lacbernard.ca). L'Association ne collecte pas d'informations bancaires.
 
 Si vous préférez payer par chèque, veuillez l'envoyer à:
 
@@ -40,17 +38,17 @@ Vous pouvez également nous contacter directement par courriel à: [membership@l
 
 ## Pourquoi adhérer?
 
-Lorsque vous rejoignez l'Association des propriétaires et résidents du lac Bernard, vous devenez membre de l'une des associations de lacs les plus fortes et les plus actives de la région. Notre objectif est de nous assurer que chaque chalet sur le lac devient membre et participe activement à nos trois objectifs clés:
+Lorsque vous rejoignez l'Association des propriétaires et résidents du lac Bernard, vous devenez membre de l'une des associations de lacs les plus fortes et les plus actives de la région. Notre objectif est de nous assurer que chaque chalet sur le lac devient membre et participe activement à nos objectifs clés:
 
 - Construction communautaire
 - Gestion environnementale
 - Sécurité et sûreté de notre communauté
 
-Les membres de l'Association travaillent ensemble pour assurer la durabilité à long terme de notre lac, ainsi que d'organiser un calendrier social fantastique, ancré par la Régate annuelle amusante et familiale tenue à Regatta Bay!
+Les membres de l'Association travaillent ensemble pour assurer la durabilité à long terme de notre lac, ainsi que d'organiser un calendrier d'activités sociales, ancré par la régate annuelle tenue à la baie Regatta!
 
-## Objectifs corporatifs
+## Objectifs clés
 
-En vous inscrivant ou en renouvelant, vous acceptez de soutenir nos objectifs corporatifs décrits ci-dessous. Ceux-ci sont au cœur de nos lettres patentes et règlements. Si vous avez des questions concernant l'un de ceux-ci, veuillez contacter [president@lacbernard.ca](mailto:president@lacbernard.ca).
+En vous inscrivant ou en renouvelant, vous acceptez de soutenir nos objectifs décrits ci-dessous. Ceux-ci sont au cœur de nos lettres patentes et règlements. Si vous avez des questions concernant l'un de ceux-ci, veuillez contacter [president@lacbernard.ca](mailto:president@lacbernard.ca).
 
 - Gérer la Corporation de manière transparente et respectueuse dans les deux langues officielles dans la mesure du possible
 - Promouvoir la préservation et l'amélioration du bien-être environnemental et écologique du lac

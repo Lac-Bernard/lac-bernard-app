@@ -3,9 +3,9 @@ title: Membership Renewal
 description: Renew your membership with the Lac Bernard Association.
 ---
 
-## Payment Instructions
+## Renew your membership
 
-Please send your INTERAC payment of $75, $150 or $225 to: [interac@lacbernard.ca](mailto:interac@lacbernard.ca)
+Membership is $75 per year for voting members and $25 a year for associate members, on a calendar basis (January through December). You can pay online with a credit card in the flow below, or use Interac e-Transfer ([interac@lacbernard.ca](mailto:interac@lacbernard.ca)) or cheque as described on the [Membership](/en/membership) page.
 
 Filling in the form below helps us keep our records current and validate your payment.
 
