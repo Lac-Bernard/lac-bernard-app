@@ -23,6 +23,10 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 - ✅ **Server-Side Rendering** - Dynamic content with Astro's SSR capabilities
 - ✅ **Member area** - Magic-link sign-in; account and admin routes under `/en/membership/...` and `/fr/membership/...` (backed by Supabase)
 
+## 📖 Member area guides
+
+Plain-language member and admin documentation (English and French) lives in [`docs/guides/`](docs/guides/).
+
 ## 📋 Prerequisites
 
 - Node.js 18+ and npm
