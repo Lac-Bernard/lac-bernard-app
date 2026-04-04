@@ -68,3 +68,42 @@ export function getCronSecret(): string {
 	}
 	return secret.trim();
 }
+
+function parseSummaryRecipients(raw: string | undefined, fallback: string): string[] {
+	const s = (raw ?? fallback).trim();
+	const parts = s
+		.split(',')
+		.map((a) => a.trim())
+		.filter(Boolean);
+	return parts.length > 0 ? parts : [fallback.trim()].filter(Boolean);
+}
+
+/** Server-only: SMTP for `/api/cron/membership-admin-daily-summary` (Vercel cron). */
+export function getMembershipAdminDailySummaryMailEnv(): {
+	host: string;
+	port: number;
+	secure: boolean;
+	user: string;
+	pass: string;
+	from: string;
+	/** One or more To addresses (comma-separated in env is split here). */
+	to: string[];
+} {
+	const host = getServerEnv('SMTP_HOST')?.trim();
+	const user = getServerEnv('SMTP_USER')?.trim();
+	const pass = getServerEnv('SMTP_PASS')?.trim();
+	const from = (getServerEnv('MEMBERSHIP_ADMIN_SUMMARY_FROM') ?? 'bot@lacbernard.ca').trim();
+	const to = parseSummaryRecipients(getServerEnv('MEMBERSHIP_ADMIN_SUMMARY_TO'), 'membership@lacbernard.ca');
+	const portRaw = getServerEnv('SMTP_PORT');
+	const port =
+		typeof portRaw === 'string' && /^\d+$/.test(portRaw.trim()) ? parseInt(portRaw.trim(), 10) : 587;
+	if (!host) {
+		throw new Error('Set SMTP_HOST (and SMTP_USER, SMTP_PASS) for the membership admin daily summary email.');
+	}
+	if (!user || !pass) {
+		throw new Error('Set SMTP_USER and SMTP_PASS for the membership admin daily summary email.');
+	}
+	const secure =
+		(getServerEnv('SMTP_SECURE') ?? '').trim().toLowerCase() === 'true' || port === 465;
+	return { host, port, secure, user, pass, from, to };
+}
