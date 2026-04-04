@@ -1,4 +1,6 @@
 ---
+export const prerender = false;
+
 import MemberProfileView from '../../../../components/members/MemberProfileView.astro';
 import { createSupabasePageClient } from '../../../../lib/supabase/server';
 import { loadMemberAccountData } from '../../../../lib/members/accountData';

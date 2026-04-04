@@ -1,3 +1,4 @@
+export const prerender = false;
 /**
  * Vercel Cron (see vercel.json): sends one plain-text email to membership@lacbernard.ca.
  * Auth: Authorization: Bearer CRON_SECRET (same as other cron routes).

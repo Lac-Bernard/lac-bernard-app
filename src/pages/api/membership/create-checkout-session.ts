@@ -1,3 +1,4 @@
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import Stripe from 'stripe';
 import { getPublicRequestOrigin } from '../../../lib/http/public-origin';

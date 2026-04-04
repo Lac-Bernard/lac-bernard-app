@@ -1,3 +1,4 @@
+export const prerender = false;
 import type { APIContext, APIRoute } from 'astro';
 import { syncSupabaseToGoogleSheets } from '../../../lib/googleSheets/syncToSpreadsheet';
 import { getCronSecret } from '../../../lib/supabase/env';

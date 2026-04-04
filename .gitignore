@@ -9,6 +9,9 @@ dist/
 node_modules/
 .venv/
 
+# transient shell/editor scratch
+*.tmp
+
 # logs
 npm-debug.log*
 yarn-debug.log*

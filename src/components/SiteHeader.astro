@@ -5,8 +5,11 @@ import {
 	getLocalizedHref,
 	getLocalizedPath,
 	languageFromAstro,
+	LOCALE_PREFERENCE_COOKIE,
 	type Language,
 } from '../utils/i18n';
+
+const localeCookieSecure = import.meta.env.PROD;
 
 const currentPath = Astro.url.pathname;
 const currentLang = languageFromAstro(Astro);
@@ -103,7 +106,17 @@ const activeSection = getActiveSection(currentPath);
   </div>
 </header>
 
-<script>
+<script define:vars={{ localeCookieName: LOCALE_PREFERENCE_COOKIE, localeCookieSecure }}>
+  // Static prerendered HTML may not run Astro middleware on each request; keep lb_locale in sync
+  // with the URL so `/` (SSR) still redirects to the last browsed locale.
+  const localeMatch = window.location.pathname.match(/^\/(en|fr)(\/|$)/);
+  if (localeMatch) {
+    const maxAge = 60 * 60 * 24 * 365;
+    let c = `${localeCookieName}=${localeMatch[1]}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
+    if (localeCookieSecure) c += '; Secure';
+    document.cookie = c;
+  }
+
   const navToggle = document.querySelector('.navToggle');
   const nav = document.getElementById('mainNav');
   

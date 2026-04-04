@@ -1,3 +1,4 @@
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { requireAdminSession } from '../../../lib/admin/session';
 import { membershipCentsForTier } from '../../../lib/membership/stripeCheckout';
