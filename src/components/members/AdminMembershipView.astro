@@ -2,6 +2,7 @@
 import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
 import { memberCopy, memberPaths, type MemberLocale } from '../../lib/members/i18n';
 import { getMembershipCalendarYear } from '../../lib/members/membershipYear';
+import { parseAdminTabQueryParam } from '../../scripts/admin-console';
 
 interface Props {
 	locale: MemberLocale;
@@ -11,6 +12,7 @@ interface Props {
 const { locale, email } = Astro.props;
 const t = memberCopy[locale];
 const paths = memberPaths[locale];
+const initialAdminTab = parseAdminTabQueryParam(Astro.url.searchParams.get('tab'));
 const heroSubtitle = email;
 const defaultMembershipYear = getMembershipCalendarYear();
 
@@ -141,27 +143,27 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
 
         <div class="adminTabBar">
           <div class="adminTabs" role="tablist" aria-label="Admin">
-            <button type="button" class="adminTab" role="tab" data-admin-tab="overview" aria-selected="true">{t.adminNavOverview}</button>
-            <button type="button" class="adminTab" role="tab" data-admin-tab="pending" aria-selected="false">
+            <button type="button" class="adminTab" role="tab" data-admin-tab="overview" aria-selected={initialAdminTab === 'overview' ? 'true' : 'false'}>{t.adminNavOverview}</button>
+            <button type="button" class="adminTab" role="tab" data-admin-tab="pending" aria-selected={initialAdminTab === 'pending' ? 'true' : 'false'}>
               {t.adminNavPending}
               <span id="admin-pending-badge" class="adminTabBadge" hidden></span>
             </button>
-            <button type="button" class="adminTab" role="tab" data-admin-tab="newMembers" aria-selected="false">
+            <button type="button" class="adminTab" role="tab" data-admin-tab="newMembers" aria-selected={initialAdminTab === 'newMembers' ? 'true' : 'false'}>
               {t.adminNavNewMembers}
               <span id="admin-new-members-badge" class="adminTabBadge" hidden></span>
             </button>
-            <button type="button" class="adminTab" role="tab" data-admin-tab="members" aria-selected="false">{t.adminNavMembers}</button>
-            <button type="button" class="adminTab" role="tab" data-admin-tab="auditLog" aria-selected="false">{t.adminNavAuditLog}</button>
+            <button type="button" class="adminTab" role="tab" data-admin-tab="members" aria-selected={initialAdminTab === 'members' ? 'true' : 'false'}>{t.adminNavMembers}</button>
+            <button type="button" class="adminTab" role="tab" data-admin-tab="auditLog" aria-selected={initialAdminTab === 'auditLog' ? 'true' : 'false'}>{t.adminNavAuditLog}</button>
           </div>
         </div>
 
         <p id="admin-status" class="adminStatus" aria-live="polite"></p>
 
-        <div data-admin-panel="overview" class="adminPanel adminCard">
+        <div data-admin-panel="overview" class="adminPanel adminCard" hidden={initialAdminTab !== 'overview'}>
           <div id="admin-overview-mount" class="adminOverviewMount"></div>
         </div>
 
-        <div data-admin-panel="pending" class="adminPanel adminCard" hidden>
+        <div data-admin-panel="pending" class="adminPanel adminCard" hidden={initialAdminTab !== 'pending'}>
           <div class="tableWrap">
             <table class="adminTable">
               <thead>
@@ -180,7 +182,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
           </div>
         </div>
 
-        <div data-admin-panel="newMembers" class="adminPanel adminCard" hidden>
+        <div data-admin-panel="newMembers" class="adminPanel adminCard" hidden={initialAdminTab !== 'newMembers'}>
           <div class="tableWrap">
             <table class="adminTable adminTable--members">
               <thead>
@@ -201,7 +203,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
           </div>
         </div>
 
-        <div data-admin-panel="members" class="adminPanel adminCard" hidden>
+        <div data-admin-panel="members" class="adminPanel adminCard" hidden={initialAdminTab !== 'members'}>
           <form id="admin-members-search" class="adminMembersFilter">
             <div class="adminMembersFilter__fields">
               <label class="adminField adminField--search">
@@ -291,7 +293,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
           </div>
         </div>
 
-        <div data-admin-panel="auditLog" class="adminPanel adminCard" hidden>
+        <div data-admin-panel="auditLog" class="adminPanel adminCard" hidden={initialAdminTab !== 'auditLog'}>
           <div class="tableWrap adminAuditTableWrap">
             <table class="adminTable adminTable--audit">
               <thead>

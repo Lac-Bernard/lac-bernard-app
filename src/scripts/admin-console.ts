@@ -6,6 +6,20 @@ import { formatAdminMemberNameTd, formatMemberJoinedNames } from '../lib/members
 
 export type AdminConsoleStrings = Record<string, string>;
 
+const ADMIN_TAB_IDS = ['overview', 'pending', 'newMembers', 'members', 'auditLog'] as const;
+export type AdminTabId = (typeof ADMIN_TAB_IDS)[number];
+
+function isAdminTabId(s: string): s is AdminTabId {
+	return (ADMIN_TAB_IDS as readonly string[]).includes(s);
+}
+
+/** Valid tab id from `?tab=` on the membership admin page; invalid or missing → overview. */
+export function parseAdminTabQueryParam(tabParam: string | null | undefined): AdminTabId {
+	const v = tabParam?.trim() ?? '';
+	if (v && isAdminTabId(v)) return v;
+	return 'overview';
+}
+
 type MemberRow = {
 	id: string;
 	created_at: string;
@@ -419,31 +433,54 @@ export function initAdminConsole(
 		return p;
 	}
 
-	function showTab(name: string) {
+	function adminTabHistoryUrl(tab: AdminTabId): string {
+		const u = new URL(window.location.href);
+		if (tab === 'overview') u.searchParams.delete('tab');
+		else u.searchParams.set('tab', tab);
+		return `${u.pathname}${u.search}${u.hash}`;
+	}
+
+	function currentHistoryUrl(): string {
+		return `${window.location.pathname}${window.location.search}${window.location.hash}`;
+	}
+
+	function showTab(name: string, historyMode: 'none' | 'push' = 'push') {
+		const tab: AdminTabId = isAdminTabId(name) ? name : 'overview';
 		setStatus('');
 		tabs.forEach((btn) => {
-			const active = btn.dataset.adminTab === name;
+			const active = btn.dataset.adminTab === tab;
 			btn.setAttribute('aria-selected', active ? 'true' : 'false');
 		});
 		panels.forEach((p) => {
-			p.hidden = p.dataset.adminPanel !== name;
+			p.hidden = p.dataset.adminPanel !== tab;
 		});
 
-		if (name === 'members') {
+		if (historyMode === 'push') {
+			const next = adminTabHistoryUrl(tab);
+			if (next !== currentHistoryUrl()) {
+				history.pushState({ adminTab: tab }, '', next);
+			}
+		}
+
+		if (tab === 'members') {
 			void loadMembers();
-		} else if (name === 'pending') {
+		} else if (tab === 'pending') {
 			void loadPending();
-		} else if (name === 'newMembers') {
+		} else if (tab === 'newMembers') {
 			void loadNewMembers();
-		} else if (name === 'overview') {
+		} else if (tab === 'overview') {
 			void loadOverview();
-		} else if (name === 'auditLog') {
+		} else if (tab === 'auditLog') {
 			void loadAuditLog();
 		}
 	}
 
 	tabs.forEach((btn) => {
-		btn.addEventListener('click', () => showTab(btn.dataset.adminTab ?? 'overview'));
+		btn.addEventListener('click', () => showTab(btn.dataset.adminTab ?? 'overview', 'push'));
+	});
+
+	window.addEventListener('popstate', () => {
+		showTab(parseAdminTabQueryParam(new URLSearchParams(window.location.search).get('tab')), 'none');
 	});
 
 	overviewMount?.addEventListener('click', (e) => {
@@ -452,7 +489,7 @@ export function initAdminConsole(
 		const dest = nav.getAttribute('data-admin-kpi-nav');
 		if (dest === 'members' || dest === 'pending' || dest === 'newMembers') {
 			e.preventDefault();
-			showTab(dest);
+			showTab(dest, 'push');
 		}
 	});
 
@@ -708,6 +745,22 @@ export function initAdminConsole(
 		const name = formatMemberJoinedNames(mem);
 		const rowLabel = `${t(strings, 'adminMemberOpen')}: ${name}`;
 		return ` data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}"`;
+	}
+
+	/** Tab badges (pending / new members) normally come from `loadOverview`; call this when opening a non-overview tab first (e.g. deep link). */
+	async function loadActivityTabBadges() {
+		const { ok, data } = await fetchJson<{
+			counts?: {
+				pendingMemberships: number;
+				newMembersPending?: number;
+			};
+			error?: string;
+		}>('/api/admin/activity');
+		if (!ok) return;
+		const c = data.counts;
+		if (!c) return;
+		setPendingBadge(c.pendingMemberships);
+		setNewMembersBadge(typeof c.newMembersPending === 'number' ? c.newMembersPending : 0);
 	}
 
 	async function loadOverview() {
@@ -1030,8 +1083,18 @@ export function initAdminConsole(
 		wireMembersTableRows(body);
 	}
 
+	const spInit = new URLSearchParams(window.location.search);
+	const rawTabParam = spInit.get('tab');
+	if (rawTabParam !== null && rawTabParam !== '' && !isAdminTabId(rawTabParam)) {
+		history.replaceState(null, '', adminTabHistoryUrl('overview'));
+	}
+
 	syncMembersScopeLabels();
-	showTab('overview');
+	const initialTab = parseAdminTabQueryParam(new URLSearchParams(window.location.search).get('tab'));
+	showTab(initialTab, 'none');
+	if (initialTab !== 'overview') {
+		void loadActivityTabBadges();
+	}
 }
 
 function escapeHtml(s: string): string {
