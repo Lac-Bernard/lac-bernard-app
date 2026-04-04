@@ -25,12 +25,17 @@ export function formatMemberWithSecondaryNames(m: MemberNameFields): string {
 	return `${primary} / ${secondary}`;
 }
 
+/** Secondary line only (first + last), for exports and CSV. */
+export function formatSecondaryPersonName(m: MemberNameFields): string {
+	const secondaryFirst = (m.secondary_first_name ?? '').trim();
+	const secondaryLast = (m.secondary_last_name ?? '').trim();
+	return [secondaryFirst, secondaryLast].filter(Boolean).join(' ').trim();
+}
+
 /** When co-listed names exist, split for UI: `primary` & `secondary`. */
 export function memberSummaryNameParts(m: MemberNameFields): { primary: string; secondary: string } | null {
 	const primary = formatMemberPrimaryName(m);
-	const secondaryFirst = (m.secondary_first_name ?? '').trim();
-	const secondaryLast = (m.secondary_last_name ?? '').trim();
-	const secondary = [secondaryFirst, secondaryLast].filter(Boolean).join(' ').trim();
+	const secondary = formatSecondaryPersonName(m);
 	if (!secondary) return null;
 	return { primary, secondary };
 }

@@ -205,7 +205,7 @@ export const memberCopy: Record<
 		adminPromoteAdminTitle: string;
 		adminUserIdLabel: string;
 		adminPrimaryEmailLabel: string;
-		adminSpousePartnerHelp: string;
+		adminSecondaryContactHelp: string;
 		adminBackToList: string;
 		adminMemberSaved: string;
 		adminPaymentSaved: string;
@@ -228,6 +228,16 @@ export const memberCopy: Record<
 		adminCopyEmailsDialogClose: string;
 		adminExportEmailsHint: string;
 		adminExportEmailsEmpty: string;
+		adminExportMembersCsv: string;
+		adminExportMembersCsvHint: string;
+		adminExportMembersCsvSuccess: string;
+		adminCsvColMemberName: string;
+		adminCsvColMemberEmail: string;
+		adminCsvColSecondaryName: string;
+		adminCsvColSecondaryEmail: string;
+		adminCsvColLakeAddress: string;
+		adminCsvColMembershipType: string;
+		adminCsvColMembershipYear: string;
 		membershipHistorySection: string;
 		membershipHistoryLead: string;
 		membershipTableYear: string;
@@ -328,7 +338,6 @@ export const memberCopy: Record<
 		profileSecondaryEmail: string;
 		profilePrimaryPhone: string;
 		profileSecondaryPhone: string;
-		profileLakePhone: string;
 		profileLakeCivic: string;
 		profileLakeStreet: string;
 		profileStreetAddress: string;
@@ -515,8 +524,8 @@ export const memberCopy: Record<
 		adminPromoteAdminTitle: 'Grant this member the admin role in app metadata (they may need to sign out and back in).',
 		adminUserIdLabel: 'Linked auth user id',
 		adminPrimaryEmailLabel: 'Primary email',
-		adminSpousePartnerHelp:
-			'Members can include a spouse or partner’s name and contact details for record-keeping purposes.',
+		adminSecondaryContactHelp:
+			'Members can add a secondary contact’s name and details for record-keeping purposes.',
 		adminBackToList: 'Clear selection',
 		adminMemberSaved: 'Member saved.',
 		adminPaymentSaved: 'Payment recorded.',
@@ -539,8 +548,18 @@ export const memberCopy: Record<
 		adminCopyEmailsDialogCopy: 'Copy to clipboard',
 		adminCopyEmailsDialogClose: 'Close',
 		adminExportEmailsHint:
-			'Same filters as this table (non-empty primary email only). Get consent before bulk mail.',
+			'Same filters as this table (non-empty primary email only). If a secondary email is on file, it is included too, with each person’s name on their address. Get consent before bulk mail.',
 		adminExportEmailsEmpty: 'No primary emails to copy for this view.',
+		adminExportMembersCsv: 'Export CSV',
+		adminExportMembersCsvHint: 'Download a CSV for the same filters as this table (UTF-8).',
+		adminExportMembersCsvSuccess: 'Member list downloaded.',
+		adminCsvColMemberName: 'Member name',
+		adminCsvColMemberEmail: 'Member email',
+		adminCsvColSecondaryName: 'Secondary name',
+		adminCsvColSecondaryEmail: 'Secondary email',
+		adminCsvColLakeAddress: 'Lake address',
+		adminCsvColMembershipType: 'Membership type',
+		adminCsvColMembershipYear: 'Membership year',
 		membershipHistorySection: 'Membership history',
 		membershipHistoryLead: 'Earlier years on file (for your reference).',
 		membershipTableYear: 'Year',
@@ -634,13 +653,13 @@ export const memberCopy: Record<
 		profileSectionContact: 'Contact',
 		profileSectionLake: 'Lake address',
 		profileSectionPrimaryMember: 'Member info',
-		profileSectionSecondaryMember: 'Additional contact',
-		profileShowSecondaryMember: 'Add spouse/partner details',
+		profileSectionSecondaryMember: 'Secondary contact',
+		profileShowSecondaryMember: 'Add secondary contact details',
 		profileSectionMailing: 'Mailing address',
 		profileSignInEmail: 'Sign-in email',
 		profileSectionNamesOnMembership: 'Names on membership',
 		profileSecondaryMemberHelp:
-			'You can include your spouse or partner’s name and contact details with your member information if you’d like, for record-keeping purposes.',
+			'You can add a secondary contact’s name and details to your member record if you wish, for record-keeping purposes.',
 		profileLakeHelp:
 			'Enter the Lac Bernard address tied to this household. A general membership requires this address.',
 		profileLakeDisplayHelp:
@@ -652,7 +671,6 @@ export const memberCopy: Record<
 		profileSecondaryEmail: 'Email',
 		profilePrimaryPhone: 'Primary phone',
 		profileSecondaryPhone: 'Phone',
-		profileLakePhone: 'Lake phone',
 		profileLakeCivic: 'Civic number',
 		profileLakeStreet: 'Street name',
 		profileStreetAddress: 'Street address',
@@ -666,8 +684,8 @@ export const memberCopy: Record<
 		profileBackToAccount: 'Back to member area',
 		profileErrorLastName: 'Last name is required.',
 		profileErrorPrimaryEmail: 'The email on this account is not valid. Please contact us if this continues.',
-		profileErrorSecondaryEmail: 'Enter a valid email for the additional contact.',
-		profileErrorSecondaryContact: 'Add at least one detail for the additional contact or uncheck the option.',
+		profileErrorSecondaryEmail: 'Enter a valid email for the secondary contact.',
+		profileErrorSecondaryContact: 'Add at least one detail for the secondary contact or uncheck the option.',
 		profileErrorPhone: 'Enter a valid phone number.',
 		profileErrorLakeAddress: 'Enter both the lake civic number and street name, or leave both blank.',
 		profileErrorAlreadyMember: 'A profile already exists for this account. Returning to the member area.',
@@ -839,8 +857,8 @@ export const memberCopy: Record<
 			'Accorder le rôle admin dans les métadonnées de l’application (déconnexion / reconnexion peut être nécessaire).',
 		adminUserIdLabel: 'Identifiant de compte lié',
 		adminPrimaryEmailLabel: 'Courriel principal',
-		adminSpousePartnerHelp:
-			'Les membres peuvent ajouter le nom et les coordonnées de leur conjoint, conjointe ou partenaire à des fins de tenue de dossier.',
+		adminSecondaryContactHelp:
+			'Les membres peuvent ajouter le nom et les coordonnées d’un contact secondaire à des fins de tenue de dossier.',
 		adminBackToList: 'Effacer la sélection',
 		adminMemberSaved: 'Membre enregistré.',
 		adminPaymentSaved: 'Paiement enregistré.',
@@ -863,8 +881,18 @@ export const memberCopy: Record<
 		adminCopyEmailsDialogCopy: 'Copier dans le presse-papiers',
 		adminCopyEmailsDialogClose: 'Fermer',
 		adminExportEmailsHint:
-			'Mêmes filtres que ce tableau (courriel principal non vide seulement). Obtenez le consentement avant un envoi de masse.',
+			'Mêmes filtres que ce tableau (courriel principal non vide seulement). Si un courriel secondaire est indiqué, il est inclus aussi, avec le nom de chaque personne sur son adresse. Obtenez le consentement avant un envoi de masse.',
 		adminExportEmailsEmpty: 'Aucun courriel principal à copier pour cette vue.',
+		adminExportMembersCsv: 'Exporter CSV',
+		adminExportMembersCsvHint: 'Télécharger un CSV selon les mêmes filtres que ce tableau (UTF-8).',
+		adminExportMembersCsvSuccess: 'Liste des membres téléchargée.',
+		adminCsvColMemberName: 'Nom du membre',
+		adminCsvColMemberEmail: 'Courriel du membre',
+		adminCsvColSecondaryName: 'Nom secondaire',
+		adminCsvColSecondaryEmail: 'Courriel secondaire',
+		adminCsvColLakeAddress: 'Adresse au lac',
+		adminCsvColMembershipType: 'Type d’adhésion',
+		adminCsvColMembershipYear: 'Année d’adhésion',
 		membershipHistorySection: 'Historique des adhésions',
 		membershipHistoryLead: 'Années antérieures dans votre dossier (à titre indicatif).',
 		membershipTableYear: 'Année',
@@ -960,13 +988,13 @@ export const memberCopy: Record<
 		profileSectionContact: 'Coordonnées',
 		profileSectionLake: 'Adresse au lac',
 		profileSectionPrimaryMember: 'Info du membre',
-		profileSectionSecondaryMember: 'Contact additionnel',
-		profileShowSecondaryMember: 'Ajouter les coordonnées du conjoint ou de la conjointe',
+		profileSectionSecondaryMember: 'Contact secondaire',
+		profileShowSecondaryMember: 'Ajouter les coordonnées du contact secondaire',
 		profileSectionMailing: 'Adresse postale',
 		profileSignInEmail: 'Courriel de connexion',
 		profileSectionNamesOnMembership: 'Noms sur l’adhésion',
 		profileSecondaryMemberHelp:
-			'Vous pouvez ajouter le nom et les coordonnées de votre conjoint, conjointe ou partenaire à votre dossier membre, si vous le souhaitez, à des fins de tenue de dossier.',
+			'Vous pouvez ajouter le nom et les coordonnées d’un contact secondaire à votre dossier membre, si vous le souhaitez, à des fins de tenue de dossier.',
 		profileLakeHelp:
 			'Indiquez l’adresse au lac Bernard liée à ce foyer. Une adhésion générale exige cette adresse.',
 		profileLakeDisplayHelp:
@@ -978,7 +1006,6 @@ export const memberCopy: Record<
 		profileSecondaryEmail: 'Courriel',
 		profilePrimaryPhone: 'Téléphone principal',
 		profileSecondaryPhone: 'Téléphone',
-		profileLakePhone: 'Téléphone au lac',
 		profileLakeCivic: 'Numéro civique',
 		profileLakeStreet: 'Rue',
 		profileStreetAddress: 'Adresse',
@@ -992,8 +1019,8 @@ export const memberCopy: Record<
 		profileBackToAccount: 'Retour à l’espace membre',
 		profileErrorLastName: 'Le nom est obligatoire.',
 		profileErrorPrimaryEmail: 'Le courriel de ce compte n’est pas valide. Veuillez nous contacter si le problème persiste.',
-		profileErrorSecondaryEmail: 'Entrez un courriel valide pour le contact additionnel.',
-		profileErrorSecondaryContact: 'Ajoutez au moins un renseignement pour le contact additionnel ou décochez l’option.',
+		profileErrorSecondaryEmail: 'Entrez un courriel valide pour le contact secondaire.',
+		profileErrorSecondaryContact: 'Ajoutez au moins un renseignement pour le contact secondaire ou décochez l’option.',
 		profileErrorPhone: 'Entrez un numéro de téléphone valide.',
 		profileErrorLakeAddress: 'Entrez le numéro civique et le nom de rue du lac, ou laissez les deux champs vides.',
 		profileErrorAlreadyMember: 'Un profil existe déjà pour ce compte. Retour à l’espace membre.',

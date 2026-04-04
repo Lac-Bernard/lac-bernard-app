@@ -18,7 +18,6 @@ type MemberRow = {
 	secondary_email: string | null;
 	primary_phone: string | null;
 	secondary_phone: string | null;
-	lake_phone: string | null;
 	lake_civic_number: string | null;
 	lake_street_name: string | null;
 	primary_address: string | null;
@@ -68,7 +67,6 @@ const MEMBER_COLUMNS: (keyof MemberRow)[] = [
 	'secondary_email',
 	'primary_phone',
 	'secondary_phone',
-	'lake_phone',
 	'lake_civic_number',
 	'lake_street_name',
 	'primary_address',

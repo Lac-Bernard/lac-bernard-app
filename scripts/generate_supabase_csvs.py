@@ -465,7 +465,6 @@ def main() -> None:
             "secondary_email": str(row["Email 2 Address"]).strip() if pd.notna(row["Email 2 Address"]) else None,
             "primary_phone": str(row["Phone1"]).strip() if pd.notna(row["Phone1"]) else None,
             "secondary_phone": str(row["Phone2"]).strip() if pd.notna(row["Phone2"]) else None,
-            "lake_phone": str(row["CottageTel"]).strip() if pd.notna(row["CottageTel"]) else None,
             "lake_civic_number": str(row["Civic"]).strip() if pd.notna(row["Civic"]) else None,
             "lake_street_name": str(row["Road"]).strip() if pd.notna(row["Road"]) else None,
             "primary_address": str(row["Main Address"]).strip() if pd.notna(row["Main Address"]) else None,

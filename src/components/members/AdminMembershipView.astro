@@ -86,11 +86,14 @@ const adminKeys = [
 	'adminScopeActive',
 	'adminScopeNotRenewed',
 	'adminExportEmails',
+	'adminExportMembersCsv',
+	'adminExportMembersCsvSuccess',
 	'adminExportEmailsCopied',
 	'adminCopyEmailsFallbackPrompt',
 	'adminCopyEmailsDialogCopy',
 	'adminCopyEmailsDialogClose',
 	'adminExportEmailsHint',
+	'adminExportMembersCsvHint',
 	'adminExportEmailsEmpty',
 	'adminOverviewRecentTitle',
 	'adminOverviewRecentVerifiedSubtitle',
@@ -199,61 +202,75 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
         </div>
 
         <div data-admin-panel="members" class="adminPanel adminCard" hidden>
-          <form id="admin-members-search" class="adminToolbar">
-            <label>
-              {t.adminSearchLabel}
-              <input type="search" id="admin-members-q" name="q" class="adminInput" />
-            </label>
-            <label>
-              {t.adminSortLabel}
-              <select id="admin-members-sort" class="adminInput">
-                <option value="created_at_desc">{t.adminSortCreatedDesc}</option>
-                <option value="last_name_asc">{t.adminSortNameAsc}</option>
-              </select>
-            </label>
-            <label>
-              {t.adminScopeLabel}
-              <select id="admin-members-scope" name="membership" class="adminInput">
-                <option value="all">{t.adminScopeEveryone}</option>
-                <option value="has_membership_history">{t.adminScopeHasHistory}</option>
-                <option value="active" selected>{scopeActiveLabel}</option>
-                <option value="not_active">{scopeNotRenewedLabel}</option>
-              </select>
-            </label>
-            <label>
-              {t.adminMembershipYearLabel}
-              <input
-                type="number"
-                id="admin-members-year"
-                name="year"
-                class="adminInput adminInput--year"
-                min="2000"
-                max="2100"
-                step="1"
-                value={defaultMembershipYear}
-              />
-            </label>
-            <label>
-              {t.adminFilterTierLabel}
-              <select id="admin-members-tier" name="tier" class="adminInput">
-                <option value="all">{t.adminFilterTierAll}</option>
-                <option value="general">{t.adminFilterTierGeneral}</option>
-                <option value="associate">{t.adminFilterTierAssociate}</option>
-              </select>
-            </label>
-            <label>
-              {t.adminMemberStatusFilterLabel}
-              <select id="admin-members-member-status" name="memberStatus" class="adminInput">
-                <option value="verified">{t.adminMemberStatusFilterVerified}</option>
-                <option value="new">{t.adminMemberStatusFilterNew}</option>
-                <option value="disabled">{t.adminMemberStatusFilterDisabled}</option>
-                <option value="all">{t.adminMemberStatusFilterAll}</option>
-              </select>
-            </label>
-            <button type="submit" class="adminBtn adminBtn--outline">{t.adminFilterApply}</button>
-            <button type="button" class="adminBtn adminBtn--outline" id="admin-export-emails-members">{t.adminExportEmails}</button>
+          <form id="admin-members-search" class="adminMembersFilter">
+            <div class="adminMembersFilter__fields">
+              <label class="adminField adminField--search">
+                <span class="adminField__label">{t.adminSearchLabel}</span>
+                <input type="search" id="admin-members-q" name="q" class="adminInput" autocomplete="off" />
+              </label>
+              <label class="adminField">
+                <span class="adminField__label">{t.adminSortLabel}</span>
+                <select id="admin-members-sort" class="adminInput">
+                  <option value="created_at_desc">{t.adminSortCreatedDesc}</option>
+                  <option value="last_name_asc">{t.adminSortNameAsc}</option>
+                </select>
+              </label>
+              <label class="adminField">
+                <span class="adminField__label">{t.adminScopeLabel}</span>
+                <select id="admin-members-scope" name="membership" class="adminInput">
+                  <option value="all">{t.adminScopeEveryone}</option>
+                  <option value="has_membership_history">{t.adminScopeHasHistory}</option>
+                  <option value="active" selected>{scopeActiveLabel}</option>
+                  <option value="not_active">{scopeNotRenewedLabel}</option>
+                </select>
+              </label>
+              <label class="adminField">
+                <span class="adminField__label">{t.adminMembershipYearLabel}</span>
+                <input
+                  type="number"
+                  id="admin-members-year"
+                  name="year"
+                  class="adminInput adminInput--year"
+                  min="2000"
+                  max="2100"
+                  step="1"
+                  value={defaultMembershipYear}
+                />
+              </label>
+              <label class="adminField">
+                <span class="adminField__label">{t.adminFilterTierLabel}</span>
+                <select id="admin-members-tier" name="tier" class="adminInput">
+                  <option value="all">{t.adminFilterTierAll}</option>
+                  <option value="general">{t.adminFilterTierGeneral}</option>
+                  <option value="associate">{t.adminFilterTierAssociate}</option>
+                </select>
+              </label>
+              <label class="adminField">
+                <span class="adminField__label">{t.adminMemberStatusFilterLabel}</span>
+                <select id="admin-members-member-status" name="memberStatus" class="adminInput">
+                  <option value="verified">{t.adminMemberStatusFilterVerified}</option>
+                  <option value="new">{t.adminMemberStatusFilterNew}</option>
+                  <option value="disabled">{t.adminMemberStatusFilterDisabled}</option>
+                  <option value="all">{t.adminMemberStatusFilterAll}</option>
+                </select>
+              </label>
+            </div>
+            <div class="adminMembersFilter__actions">
+              <button type="submit" class="adminBtn adminBtn--solid">{t.adminFilterApply}</button>
+              <div class="adminMembersFilter__exports">
+                <button type="button" class="adminBtn adminBtn--outline" id="admin-export-emails-members">
+                  {t.adminExportEmails}
+                </button>
+                <button type="button" class="adminBtn adminBtn--outline" id="admin-export-members-csv">
+                  {t.adminExportMembersCsv}
+                </button>
+              </div>
+            </div>
+            <div class="adminMembersFilter__hints">
+              <p class="adminHint">{t.adminExportEmailsHint}</p>
+              <p class="adminHint">{t.adminExportMembersCsvHint}</p>
+            </div>
           </form>
-          <p class="adminHint">{t.adminExportEmailsHint}</p>
           <div class="tableWrap">
             <table class="adminTable adminTable--members">
               <thead>
@@ -347,20 +364,21 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
   </section>
 </MemberAppLayout>
 
-<script type="application/json" id="admin-console-data" set:html={JSON.stringify({ adminStrings, tierLabels, defaultMembershipYear, adminMembersBase: paths.adminMembers, numberLocale })}></script>
+<script type="application/json" id="admin-console-data" set:html={JSON.stringify({ adminStrings, tierLabels, defaultMembershipYear, adminMembersBase: paths.adminMembers, numberLocale, locale })}></script>
 <script>
   import { initAdminConsole } from '../../scripts/admin-console';
   const el = document.getElementById('admin-console-data');
   const raw = el?.textContent;
   if (raw) {
-    const { adminStrings, tierLabels, defaultMembershipYear, adminMembersBase, numberLocale } = JSON.parse(raw) as {
+    const { adminStrings, tierLabels, defaultMembershipYear, adminMembersBase, numberLocale, locale } = JSON.parse(raw) as {
       adminStrings: Record<string, string>;
       tierLabels: { general: string; associate: string };
       defaultMembershipYear: number;
       adminMembersBase: string;
       numberLocale: string;
+      locale: 'en' | 'fr';
     };
-    initAdminConsole(adminStrings, tierLabels, defaultMembershipYear, adminMembersBase, numberLocale);
+    initAdminConsole(adminStrings, tierLabels, defaultMembershipYear, adminMembersBase, numberLocale, locale);
   }
 </script>
 
@@ -506,38 +524,100 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     border-top: 1px solid var(--admin-border);
   }
 
-  .adminToolbar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem 1.25rem;
-    align-items: flex-end;
-    margin-bottom: 1rem;
-    padding: 0.85rem 1rem;
-    background: var(--admin-surface-muted);
+  /** Members tab: filter + export */
+  .adminMembersFilter {
+    margin-bottom: 1.25rem;
+    padding: 1.35rem 1.4rem 1.25rem;
+    background: var(--admin-surface);
     border: 1px solid var(--admin-border);
     border-radius: var(--admin-radius-sm);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
   }
 
-  .adminToolbar--lead {
-    align-items: center;
+  .adminMembersFilter__fields {
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 1rem 1.25rem;
   }
 
-  .adminHint--toolbar {
-    margin: 0;
-    flex: 1 1 12rem;
+  @media (min-width: 36rem) {
+    .adminMembersFilter__fields {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .adminField--search {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (min-width: 62rem) {
+    .adminMembersFilter__fields {
+      grid-template-columns: minmax(200px, 1.6fr) repeat(5, minmax(0, 1fr));
+      align-items: end;
+    }
+  }
+
+  .adminField {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
     min-width: 0;
   }
 
-  .adminToolbar label {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+  .adminField__label {
+    font-size: 0.8125rem;
+    font-weight: 500;
     color: var(--muted);
+    letter-spacing: 0.01em;
+    line-height: 1.3;
+  }
+
+  .adminMembersFilter__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    margin-top: 1.35rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.07);
+  }
+
+  .adminMembersFilter__exports {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  @media (max-width: 36rem) {
+    .adminMembersFilter__exports {
+      margin-left: 0;
+      width: 100%;
+    }
+
+    .adminMembersFilter__exports .adminBtn {
+      flex: 1 1 calc(50% - 0.25rem);
+      min-width: 0;
+      justify-content: center;
+    }
+  }
+
+  .adminMembersFilter__hints {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    background: rgba(0, 0, 0, 0.025);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .adminMembersFilter__hints .adminHint {
+    margin: 0;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  .adminMembersFilter__hints .adminHint + .adminHint {
+    margin-top: 0.55rem;
   }
 
   .adminHint {
@@ -548,20 +628,37 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
   }
 
   .adminInput--year {
-    max-width: 7rem;
+    max-width: 100%;
+    -moz-appearance: textfield;
+    appearance: textfield;
+  }
+
+  .adminInput--year::-webkit-outer-spin-button,
+  .adminInput--year::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  @media (min-width: 62rem) {
+    .adminInput--year {
+      max-width: 7rem;
+    }
   }
 
   .adminInput,
-  .adminToolbar .adminInput {
+  .adminMembersFilter .adminInput {
+    box-sizing: border-box;
     display: block;
     width: 100%;
     min-width: 0;
     max-width: 320px;
+    min-height: 2.625rem;
     margin: 0;
-    padding: 0.5rem 0.65rem;
+    padding: 0.45rem 0.65rem;
     font: inherit;
     font-size: 0.95rem;
     font-weight: 400;
+    line-height: 1.35;
     text-transform: none;
     letter-spacing: normal;
     color: var(--admin-text);
@@ -571,6 +668,16 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     transition:
       border-color 0.15s ease,
       box-shadow 0.15s ease;
+  }
+
+  select.adminInput {
+    padding-right: 2rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.65rem center;
+    background-size: 0.65rem;
+    -webkit-appearance: none;
+    appearance: none;
   }
 
   .adminInput:hover {

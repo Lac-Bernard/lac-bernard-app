@@ -600,7 +600,6 @@ function buildSeedSql(dataset) {
 					'NULL',
 					'NULL',
 					'NULL',
-					'NULL',
 					sqlText(m.primary_city),
 					sqlText(m.primary_province),
 					sqlText(m.primary_country),
@@ -661,7 +660,7 @@ truncate table public.payments, public.memberships, public.members, public.admin
 
 insert into public.members (
   id, first_name, last_name, primary_email, secondary_email,
-  primary_phone, secondary_phone, lake_phone, lake_civic_number, lake_street_name,
+  primary_phone, secondary_phone, lake_civic_number, lake_street_name,
   primary_address, primary_city, primary_province, primary_country, primary_postal_code,
   email_opt_in, notes, status
 ) values
