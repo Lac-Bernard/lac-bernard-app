@@ -538,7 +538,7 @@ export const memberCopy: Record<
 		adminCopyEmailsDialogCopy: 'Copy to clipboard',
 		adminCopyEmailsDialogClose: 'Close',
 		adminExportEmailsHint:
-			'Same filters as this table (non-empty primary email only). Get consent before bulk mail.',
+			'Same filters as this table (non-empty primary email only). If a secondary email is on file, it is included too, with each person’s name on their address. Get consent before bulk mail.',
 		adminExportEmailsEmpty: 'No primary emails to copy for this view.',
 		membershipHistorySection: 'Membership history',
 		membershipHistoryLead: 'Earlier years on file (for your reference).',
@@ -861,7 +861,7 @@ export const memberCopy: Record<
 		adminCopyEmailsDialogCopy: 'Copier dans le presse-papiers',
 		adminCopyEmailsDialogClose: 'Fermer',
 		adminExportEmailsHint:
-			'Mêmes filtres que ce tableau (courriel principal non vide seulement). Obtenez le consentement avant un envoi de masse.',
+			'Mêmes filtres que ce tableau (courriel principal non vide seulement). Si un courriel secondaire est indiqué, il est inclus aussi, avec le nom de chaque personne sur son adresse. Obtenez le consentement avant un envoi de masse.',
 		adminExportEmailsEmpty: 'Aucun courriel principal à copier pour cette vue.',
 		membershipHistorySection: 'Historique des adhésions',
 		membershipHistoryLead: 'Années antérieures dans votre dossier (à titre indicatif).',

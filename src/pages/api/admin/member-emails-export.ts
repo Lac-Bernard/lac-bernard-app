@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { parseAdminMemberListFilters } from '../../../lib/admin/memberListFilters';
 import { requireAdminSession } from '../../../lib/admin/session';
-import { formatMemberJoinedNames } from '../../../lib/members/memberDisplayName';
+import { formatMemberPrimaryName } from '../../../lib/members/memberDisplayName';
 import { createSupabaseServiceRoleClient } from '../../../lib/supabase/service';
 
 const jsonHeaders = {
@@ -19,6 +19,7 @@ type ExportMemberRow = {
 	secondary_first_name?: string | null;
 	secondary_last_name?: string | null;
 	primary_email: string | null;
+	secondary_email?: string | null;
 };
 
 type MembersPagePayload = {
@@ -27,17 +28,24 @@ type MembersPagePayload = {
 	error?: string;
 };
 
-function formatAddressDisplayName(member: ExportMemberRow): string {
-	const name = formatMemberJoinedNames(member).replace(/\s+/g, ' ').trim();
-	if (!name) return '';
-	return /[",<>@]/.test(name) ? `"${name.replace(/(["\\])/g, '\\$1')}"` : name;
+function quoteDisplayNameForAddress(name: string): string {
+	const n = name.replace(/\s+/g, ' ').trim();
+	if (!n) return '';
+	return /[",<>@]/.test(n) ? `"${n.replace(/(["\\])/g, '\\$1')}"` : n;
 }
 
-function formatMailbox(member: ExportMemberRow): string {
-	const email = (member.primary_email ?? '').trim();
-	if (!email) return '';
-	const name = formatAddressDisplayName(member);
-	return name ? `${name} <${email}>` : email;
+function formatSecondaryPersonName(member: ExportMemberRow): string {
+	const secondaryFirst = (member.secondary_first_name ?? '').trim();
+	const secondaryLast = (member.secondary_last_name ?? '').trim();
+	return [secondaryFirst, secondaryLast].filter(Boolean).join(' ').trim();
+}
+
+/** `Display Name <email@>` or bare email if no display name. */
+function formatNamedMailbox(displayName: string, email: string): string {
+	const e = email.trim();
+	if (!e) return '';
+	const q = quoteDisplayNameForAddress(displayName);
+	return q ? `${q} <${e}>` : e;
 }
 
 /** Mail-client-friendly address list for the current members filters. Success: { emails: string } */
@@ -76,12 +84,26 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 
 			const members = Array.isArray(payload?.members) ? payload.members : [];
 			for (const member of members) {
-				const email = (member.primary_email ?? '').trim();
-				const emailKey = email.toLowerCase();
-				if (!email || seen.has(emailKey)) continue;
-				seen.add(emailKey);
-				const mailbox = formatMailbox(member);
-				if (mailbox) mailboxes.push(mailbox);
+				const primaryEmail = (member.primary_email ?? '').trim();
+				if (!primaryEmail) continue;
+
+				const primaryKey = primaryEmail.toLowerCase();
+				if (!seen.has(primaryKey)) {
+					seen.add(primaryKey);
+					const primaryName = formatMemberPrimaryName(member);
+					const mailbox = formatNamedMailbox(primaryName, primaryEmail);
+					if (mailbox) mailboxes.push(mailbox);
+				}
+
+				const secondaryEmail = (member.secondary_email ?? '').trim();
+				if (!secondaryEmail) continue;
+
+				const secondaryKey = secondaryEmail.toLowerCase();
+				if (seen.has(secondaryKey)) continue;
+				seen.add(secondaryKey);
+				const secondaryName = formatSecondaryPersonName(member);
+				const secondaryMailbox = formatNamedMailbox(secondaryName, secondaryEmail);
+				if (secondaryMailbox) mailboxes.push(secondaryMailbox);
 			}
 
 			if (members.length < pageSize) break;
