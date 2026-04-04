@@ -10,8 +10,8 @@ L'Association privilégie la construction communautaire et la gestion environnem
 
 ## Devenez membre aujourd'hui
 
-Les membres de l'Association ont voix au chapitre dans les affaires et les priorités de l'Association, accès aux dossiers d'affaires de l'Association, à l'histoire du lac et à diverses archives, et sont admissibles à siéger au comité exécutif. Les membres votent également sur les questions critiques de l'Association, y compris l'élection de la direction de l'Association.
+Les membres de l'Association ont voix au chapitre dans les affaires et les priorités de l'Association, accès aux dossiers d'affaires de l'Association, à l'histoire du lac et aux archives, et sont admissibles à siéger au comité exécutif de l'Association. Les membres votent sur les questions critiques de l'Association, y compris l'élection de la direction de l'Association.
 
-Veuillez vous joindre à nous pour soutenir cette fantastique communauté résidentielle et de chalets du lac Bernard. L'adhésion est de 75 $ par année.
+Veuillez vous joindre à nous pour soutenir notre communauté résidentielle et de chalets dynamique du lac Bernard. L'adhésion est de 75 $ par année pour les membres votants et de 25 $ par année pour les membres associés.
 
 <a href="/fr/membership" class="btnPrimary">Devenez membre</a>

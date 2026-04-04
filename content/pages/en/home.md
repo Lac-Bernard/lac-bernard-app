@@ -10,8 +10,8 @@ The Association prioritizes community building and environmental stewardship. We
 
 ## Become a Member Today
 
-Association Members have a voice in the affairs and priorities of the Association, and access to the Association's business records, lake history and various archives and are eligible to serve on the Association's Executive. Members also vote on critical Association issues, including electing the Association Leadership.
+Association Members have a voice in the affairs and priorities of the Association, and access to the Association's business records, lake history and archives and are eligible to serve on the Association's Executive. Members vote on critical Association issues, including electing the Association Leadership.
 
-Please join us in supporting this fantastic Lac Bernard residential and cottage community. Membership is $75 per year.
+Please join us in supporting our vibrant Lac Bernard residential and cottage community. Membership is $75 per year for voting members and $25 a year for associate members.
 
 <a href="/en/membership" class="btnPrimary">Become a Member</a>
