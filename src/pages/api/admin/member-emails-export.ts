@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { parseAdminMemberListFilters } from '../../../lib/admin/memberListFilters';
 import { requireAdminSession } from '../../../lib/admin/session';
-import { formatMemberPrimaryName } from '../../../lib/members/memberDisplayName';
+import { formatMemberPrimaryName, formatSecondaryPersonName } from '../../../lib/members/memberDisplayName';
 import { createSupabaseServiceRoleClient } from '../../../lib/supabase/service';
 
 const jsonHeaders = {
@@ -32,12 +32,6 @@ function quoteDisplayNameForAddress(name: string): string {
 	const n = name.replace(/\s+/g, ' ').trim();
 	if (!n) return '';
 	return /[",<>@]/.test(n) ? `"${n.replace(/(["\\])/g, '\\$1')}"` : n;
-}
-
-function formatSecondaryPersonName(member: ExportMemberRow): string {
-	const secondaryFirst = (member.secondary_first_name ?? '').trim();
-	const secondaryLast = (member.secondary_last_name ?? '').trim();
-	return [secondaryFirst, secondaryLast].filter(Boolean).join(' ').trim();
 }
 
 /** `Display Name <email@>` or bare email if no display name. */

@@ -228,6 +228,16 @@ export const memberCopy: Record<
 		adminCopyEmailsDialogClose: string;
 		adminExportEmailsHint: string;
 		adminExportEmailsEmpty: string;
+		adminExportMembersCsv: string;
+		adminExportMembersCsvHint: string;
+		adminExportMembersCsvSuccess: string;
+		adminCsvColMemberName: string;
+		adminCsvColMemberEmail: string;
+		adminCsvColSecondaryName: string;
+		adminCsvColSecondaryEmail: string;
+		adminCsvColLakeAddress: string;
+		adminCsvColMembershipType: string;
+		adminCsvColMembershipYear: string;
 		membershipHistorySection: string;
 		membershipHistoryLead: string;
 		membershipTableYear: string;
@@ -540,6 +550,16 @@ export const memberCopy: Record<
 		adminExportEmailsHint:
 			'Same filters as this table (non-empty primary email only). If a secondary email is on file, it is included too, with each person’s name on their address. Get consent before bulk mail.',
 		adminExportEmailsEmpty: 'No primary emails to copy for this view.',
+		adminExportMembersCsv: 'Export CSV',
+		adminExportMembersCsvHint: 'Download a CSV for the same filters as this table (UTF-8).',
+		adminExportMembersCsvSuccess: 'Member list downloaded.',
+		adminCsvColMemberName: 'Member name',
+		adminCsvColMemberEmail: 'Member email',
+		adminCsvColSecondaryName: 'Secondary name',
+		adminCsvColSecondaryEmail: 'Secondary email',
+		adminCsvColLakeAddress: 'Lake address',
+		adminCsvColMembershipType: 'Membership type',
+		adminCsvColMembershipYear: 'Membership year',
 		membershipHistorySection: 'Membership history',
 		membershipHistoryLead: 'Earlier years on file (for your reference).',
 		membershipTableYear: 'Year',
@@ -863,6 +883,16 @@ export const memberCopy: Record<
 		adminExportEmailsHint:
 			'Mêmes filtres que ce tableau (courriel principal non vide seulement). Si un courriel secondaire est indiqué, il est inclus aussi, avec le nom de chaque personne sur son adresse. Obtenez le consentement avant un envoi de masse.',
 		adminExportEmailsEmpty: 'Aucun courriel principal à copier pour cette vue.',
+		adminExportMembersCsv: 'Exporter CSV',
+		adminExportMembersCsvHint: 'Télécharger un CSV selon les mêmes filtres que ce tableau (UTF-8).',
+		adminExportMembersCsvSuccess: 'Liste des membres téléchargée.',
+		adminCsvColMemberName: 'Nom du membre',
+		adminCsvColMemberEmail: 'Courriel du membre',
+		adminCsvColSecondaryName: 'Nom secondaire',
+		adminCsvColSecondaryEmail: 'Courriel secondaire',
+		adminCsvColLakeAddress: 'Adresse au lac',
+		adminCsvColMembershipType: 'Type d’adhésion',
+		adminCsvColMembershipYear: 'Année d’adhésion',
 		membershipHistorySection: 'Historique des adhésions',
 		membershipHistoryLead: 'Années antérieures dans votre dossier (à titre indicatif).',
 		membershipTableYear: 'Année',

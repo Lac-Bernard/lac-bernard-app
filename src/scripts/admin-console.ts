@@ -290,6 +290,7 @@ export function initAdminConsole(
 	defaultMembershipYear: number,
 	adminMembersBase: string,
 	numberLocale: string = 'en-CA',
+	locale: 'en' | 'fr' = 'en',
 ) {
 	const pendingBody = el<HTMLTableSectionElement>('#admin-pending-body');
 	const paymentDialog = el<HTMLDialogElement>('#admin-payment-dialog');
@@ -414,6 +415,7 @@ export function initAdminConsole(
 		p.delete('page');
 		p.delete('limit');
 		p.delete('sort');
+		p.set('locale', locale);
 		return p;
 	}
 
@@ -546,6 +548,33 @@ export function initAdminConsole(
 
 	el<HTMLButtonElement>('#admin-export-emails-members')?.addEventListener('click', () => {
 		void copyEmailsFromApi(strings, `/api/admin/member-emails-export?${buildMembersExportQueryParams()}`);
+	});
+
+	el<HTMLButtonElement>('#admin-export-members-csv')?.addEventListener('click', () => {
+		void (async () => {
+			setStatusGlobal(strings, t(strings, 'adminLoading'));
+			try {
+				const res = await fetch(`/api/admin/members-csv?${buildMembersExportQueryParams()}`, {
+					credentials: 'include',
+				});
+				if (!res.ok) {
+					setStatusGlobal(strings, t(strings, 'adminErrorGeneric'), 'error');
+					return;
+				}
+				const blob = await res.blob();
+				const y = String(getMemberFilterYear());
+				const safeY = y.replace(/[^\d]/g, '') || 'export';
+				const a = document.createElement('a');
+				a.href = URL.createObjectURL(blob);
+				a.download = `lac-bernard-members-${safeY}.csv`;
+				a.rel = 'noopener';
+				a.click();
+				queueMicrotask(() => URL.revokeObjectURL(a.href));
+				setStatusGlobal(strings, t(strings, 'adminExportMembersCsvSuccess'), 'success');
+			} catch {
+				setStatusGlobal(strings, t(strings, 'adminErrorGeneric'), 'error');
+			}
+		})();
 	});
 
 	el<HTMLButtonElement>('#admin-members-prev')?.addEventListener('click', () => {
