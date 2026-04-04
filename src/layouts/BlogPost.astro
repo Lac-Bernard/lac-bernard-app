@@ -11,6 +11,7 @@ import { siteUi } from '../i18n/site';
 import { getLocalizedPath, languageFromAstro } from '../utils/i18n';
 import { blogPostSlug, isBlogPostInLocale } from '../utils/blog';
 import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 
 type Props = CollectionEntry<'blog'>['data'] & {
 	currentPostId?: string;
@@ -53,6 +54,7 @@ const latestPosts = allPosts
 		<title>{title} – {site.siteNameSuffix}</title>
 		<meta name="description" content={description} />
 		<Analytics />
+		<SpeedInsights />
 	</head>
 
 	<body>

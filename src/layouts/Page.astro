@@ -6,6 +6,7 @@ import SiteFooter from '../components/SiteFooter.astro';
 import { siteUi } from '../i18n/site';
 import { getLocalizedHref, languageFromAstro, type Language } from '../utils/i18n';
 import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 
 interface NavItem {
   href: string;
@@ -143,6 +144,7 @@ const navItems = section === 'about' ? aboutNav[currentLang] : section === 'envi
       content={description || site.pageMetaDescriptionFallback(title)}
     />
     <Analytics />
+    <SpeedInsights />
     <script async src="https://tally.so/widgets/embed.js"></script>
   </head>
 
