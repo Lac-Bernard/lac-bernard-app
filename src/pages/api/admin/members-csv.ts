@@ -1,3 +1,4 @@
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { buildMembersCsv, type CsvMemberRow } from '../../../lib/admin/membersCsvExport';
 import { parseAdminMemberListFilters } from '../../../lib/admin/memberListFilters';

@@ -4,9 +4,8 @@ import { getCollection, render } from 'astro:content';
 import BlogPost from '@/layouts/BlogPost.astro';
 import { blogCollectionId, blogPostSlug } from '@/utils/blog';
 
-const locales: Language[] = ['en', 'fr'];
-
 export async function getStaticPaths() {
+	const locales: Language[] = ['en', 'fr'];
 	const posts = await getCollection('blog');
 	return locales.flatMap((lang) =>
 		posts

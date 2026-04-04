@@ -1,3 +1,4 @@
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { computeManualPaymentSplit, roundMoney } from '../../../../../lib/admin/manualPaymentSplit';
 import { insertAdminAudit } from '../../../../../lib/admin/audit';

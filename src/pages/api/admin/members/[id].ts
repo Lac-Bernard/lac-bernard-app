@@ -1,3 +1,4 @@
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { insertAdminAudit } from '../../../../lib/admin/audit';
 import { adminPatchToRow, parseAdminMemberPatch } from '../../../../lib/admin/memberUpdate';

@@ -1,3 +1,4 @@
+export const prerender = false;
 import type { APIRoute } from 'astro';
 import { getMembershipCalendarYear } from '../../../lib/members/membershipYear';
 import { requireAdminSession } from '../../../lib/admin/session';
