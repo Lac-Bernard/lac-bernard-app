@@ -51,6 +51,8 @@ export const memberCopy: Record<
 		homeDescription: string;
 		homeHero: string;
 		signedInAs: string;
+		/** Admin/staff workspace: session line (viewer account), not the record on screen */
+		workspaceYourAccount: string;
 		signOut: string;
 		signInTitle: string;
 		signInDescription: string;
@@ -92,10 +94,13 @@ export const memberCopy: Record<
 		adminScopeActive: string;
 		adminScopeNotRenewed: string;
 		adminDetailTitle: string;
-		adminDetailSectionProfile: string;
 		adminDetailSectionMemberships: string;
 		adminDetailPaymentsHeading: string;
 		adminBackToAdmin: string;
+		/** `aria-label` for workspace breadcrumb on admin subpages */
+		adminBreadcrumbAria: string;
+		/** `<h1>` placeholder on member detail until the member record loads */
+		adminMemberPageTitleLoading: string;
 		adminMethodStripe: string;
 		adminOverviewRecentTitle: string;
 		adminOverviewRecentVerifiedSubtitle: string;
@@ -357,8 +362,6 @@ export const memberCopy: Record<
 		profileErrorLakeAddress: string;
 		profileErrorAlreadyMember: string;
 		profileErrorSave: string;
-		/** Spaced conjunction between primary and co-listed names on the account card, e.g. " and " / " et ". */
-		memberSummaryNameAnd: string;
 	}
 > = {
 	en: {
@@ -366,6 +369,7 @@ export const memberCopy: Record<
 		homeDescription: 'See your membership status for this year and how to renew or pay.',
 		homeHero: 'Member area',
 		signedInAs: 'Signed in as',
+		workspaceYourAccount: 'Your account',
 		signOut: 'Sign out',
 		signInTitle: 'Member sign in | Lac Bernard Association',
 		signInDescription: 'Sign in to the Lac Bernard Association member area.',
@@ -409,10 +413,11 @@ export const memberCopy: Record<
 		adminScopeActive: 'Active for {{year}}',
 		adminScopeNotRenewed: 'Did not renew for {{year}}',
 		adminDetailTitle: 'Member | Admin',
-		adminDetailSectionProfile: 'Profile',
 		adminDetailSectionMemberships: 'Memberships & payments',
 		adminDetailPaymentsHeading: 'Payments',
-		adminBackToAdmin: 'Back to admin',
+		adminBackToAdmin: 'Back to admin/members',
+		adminBreadcrumbAria: 'Breadcrumb',
+		adminMemberPageTitleLoading: 'Member',
 		adminMethodStripe: 'Card (Stripe)',
 		adminOverviewRecentTitle: 'Recent members',
 		adminOverviewRecentVerifiedSubtitle: 'Recently added verified profiles',
@@ -690,13 +695,13 @@ export const memberCopy: Record<
 		profileErrorLakeAddress: 'Enter both the lake civic number and street name, or leave both blank.',
 		profileErrorAlreadyMember: 'A profile already exists for this account. Returning to the member area.',
 		profileErrorSave: 'Could not save your profile. Please try again.',
-		memberSummaryNameAnd: ' and ',
 	},
 	fr: {
 		homeTitle: 'Espace membre | Association du lac Bernard',
 		homeDescription: 'Consultez le statut de votre adhésion pour l’année en cours et les options de paiement.',
 		homeHero: 'Espace membre',
 		signedInAs: 'Connecté en tant que',
+		workspaceYourAccount: 'Votre compte',
 		signOut: 'Se déconnecter',
 		signInTitle: 'Connexion membre | Association du lac Bernard',
 		signInDescription: 'Connexion à l’espace membre de l’Association du lac Bernard.',
@@ -740,10 +745,11 @@ export const memberCopy: Record<
 		adminScopeActive: 'Actifs pour {{year}}',
 		adminScopeNotRenewed: 'Non renouvelés pour {{year}}',
 		adminDetailTitle: 'Membre | Admin',
-		adminDetailSectionProfile: 'Profil',
 		adminDetailSectionMemberships: 'Adhésions et paiements',
 		adminDetailPaymentsHeading: 'Paiements',
-		adminBackToAdmin: 'Retour à l’administration',
+		adminBackToAdmin: 'Retour à admin/membres',
+		adminBreadcrumbAria: 'Fil d’Ariane',
+		adminMemberPageTitleLoading: 'Membre',
 		adminMethodStripe: 'Carte (Stripe)',
 		adminOverviewRecentTitle: 'Membres récents',
 		adminOverviewRecentVerifiedSubtitle: 'Profils vérifiés ajoutés récemment',
@@ -1025,7 +1031,6 @@ export const memberCopy: Record<
 		profileErrorLakeAddress: 'Entrez le numéro civique et le nom de rue du lac, ou laissez les deux champs vides.',
 		profileErrorAlreadyMember: 'Un profil existe déjà pour ce compte. Retour à l’espace membre.',
 		profileErrorSave: 'Enregistrement impossible. Veuillez réessayer.',
-		memberSummaryNameAnd: ' et ',
 	},
 };
 

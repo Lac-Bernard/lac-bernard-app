@@ -1,7 +1,7 @@
 /** Client-side admin member detail page. */
 
 import { formatAdminLocaleDate } from '../lib/admin/formatLocaleDate';
-import { formatAdminMemberNameHtml } from '../lib/members/memberDisplayName';
+import { formatMemberPrimaryName } from '../lib/members/memberDisplayName';
 import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymentSplit';
 import { MANUAL_PAYMENT_METHODS, isValidManualPaymentAmount } from '../lib/admin/manualPaymentClient';
 import { parseDonationNoteSnippet, perPaymentMembershipDonation, sumYearPaymentBreakdown } from '../lib/admin/paymentBreakdown';
@@ -228,9 +228,9 @@ export function initAdminMemberDetail(
 			}
 		}
 		el<HTMLInputElement>('#admin-field-user_id')!.value = m.user_id ?? '';
-		const displayNameEl = el<HTMLParagraphElement>('#admin-member-display-name');
-		if (displayNameEl) {
-			displayNameEl.innerHTML = formatAdminMemberNameHtml(m, escapeHtml);
+		const pageTitleEl = el<HTMLElement>('#member-workspace-title');
+		if (pageTitleEl) {
+			pageTitleEl.textContent = formatMemberPrimaryName(m);
 		}
 	}
 
@@ -510,8 +510,8 @@ export function initAdminMemberDetail(
 		if (!ok || !data.member) {
 			setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
 			if (mount) mount.innerHTML = '';
-			const displayNameEl = el<HTMLParagraphElement>('#admin-member-display-name');
-			if (displayNameEl) displayNameEl.innerHTML = '';
+			const pageTitleEl = el<HTMLElement>('#member-workspace-title');
+			if (pageTitleEl) pageTitleEl.textContent = t(strings, 'adminMemberPageTitleLoading');
 			return;
 		}
 		fillForm(data.member);

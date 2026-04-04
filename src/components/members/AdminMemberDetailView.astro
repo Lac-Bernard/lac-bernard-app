@@ -1,5 +1,6 @@
 ---
 import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
+import MemberSessionHeroMeta from './MemberSessionHeroMeta.astro';
 import { memberCopy, memberPaths, type MemberLocale } from '../../lib/members/i18n';
 import { getMembershipCalendarYear } from '../../lib/members/membershipYear';
 
@@ -17,10 +18,10 @@ const numberLocale = locale === 'fr' ? 'fr-CA' : 'en-CA';
 
 const adminKeys = [
 	'adminDetailTitle',
-	'adminDetailSectionProfile',
 	'adminDetailSectionMemberships',
 	'adminDetailPaymentsHeading',
-	'adminBackToAdmin',
+	'adminBreadcrumbAria',
+	'adminMemberPageTitleLoading',
 	'adminRecordPaymentBtn',
 	'adminPaymentHeading',
 	'adminAmountLabel',
@@ -106,31 +107,39 @@ const adminKeys = [
 const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
 
 const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
+const adminMembersTabHref = `${paths.admin}?tab=members`;
 ---
 
 <MemberAppLayout
   lang={locale}
   title={t.adminDetailTitle}
   description={t.adminDescription}
-  heroTitle={t.adminHero}
-  heroSubtitle={email}
-  compactHero
+  heroTitle={t.adminMemberPageTitleLoading}
   alignHeroWithAdmin
 >
-  <section class="section alt adminPage">
+  <nav slot="hero-breadcrumb" class="memberWorkspaceBreadcrumb" aria-label={t.adminBreadcrumbAria}>
+    <div class="memberWorkspaceBreadcrumbList" role="list">
+      <div role="listitem" class="memberWorkspaceBreadcrumbItem">
+        <a href={paths.admin} class="memberWorkspaceBreadcrumbLink">{t.adminHero}</a>
+      </div>
+      <div role="listitem" class="memberWorkspaceBreadcrumbItem">
+        <a href={adminMembersTabHref} class="memberWorkspaceBreadcrumbLink">{t.adminNavMembers}</a>
+      </div>
+    </div>
+  </nav>
+  <MemberSessionHeroMeta
+    slot="hero-meta"
+    locale={locale}
+    email={email}
+    signInRedirect={paths.signIn}
+    variant="adminWorkspace"
+  />
+  <section class="section alt adminPage adminPageMemberDetail">
     <div class="container adminConsole">
       <div class="adminShell">
-        <div class="adminShellHeader">
-          <p class="adminLead">
-            <a href={paths.admin} class="adminBackLink">{t.adminBackToAdmin}</a>
-          </p>
-        </div>
-
         <p id="admin-detail-status" class="adminStatus" aria-live="polite"></p>
 
-        <div class="adminPanel adminCard">
-          <h2 class="adminSubheading">{t.adminDetailSectionProfile}</h2>
-          <p id="admin-member-display-name" class="adminDetailReadonlyMemberName" aria-live="polite"></p>
+        <div class="adminPanel adminCard adminPanel--profile">
           <form id="admin-member-detail-form" class="adminMemberForm">
             <div class="adminProfileSections">
               <fieldset class="adminProfileSection">
@@ -188,13 +197,6 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
         <div class="adminPanel adminCard">
           <h2 class="adminSubheading">{t.adminDetailSectionMemberships}</h2>
           <div id="admin-detail-memberships-mount" class="adminDetailMembershipList"></div>
-        </div>
-
-        <div class="adminShellFooter">
-          <form method="POST" action="/api/auth/sign-out" class="adminSignOutForm">
-            <input type="hidden" name="redirect_to" value={paths.signIn} />
-            <button type="submit" class="adminBtn adminBtn--link">{t.signOut}</button>
-          </form>
         </div>
       </div>
     </div>
@@ -320,6 +322,10 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
 </script>
 
 <style>
+  .adminPageMemberDetail.adminPage {
+    padding: 1.15rem 0 2.75rem;
+  }
+
   .adminPage {
     --admin-radius: 12px;
     --admin-radius-md: 10px;
@@ -334,7 +340,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     --admin-font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     font-family: var(--admin-font);
     font-size: 0.875rem;
-    line-height: 1.45;
+    line-height: 1.5;
     padding: 28px 0 40px;
   }
 
@@ -343,22 +349,6 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     width: 100%;
     min-width: 0;
     box-sizing: border-box;
-  }
-
-  .adminShellHeader {
-    padding: 1rem 1.35rem 1rem;
-    border-bottom: 1px solid var(--admin-border);
-  }
-
-  .adminBackLink {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--admin-accent);
-    text-decoration: none;
-  }
-
-  .adminBackLink:hover {
-    text-decoration: underline;
   }
 
   .adminShell {
@@ -373,9 +363,9 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
 
   .adminStatus {
     margin: 0;
-    padding: 0.5rem 1rem;
+    padding: 0.45rem 1.15rem;
     font-size: 0.8125rem;
-    line-height: 1.4;
+    line-height: 1.45;
     border-bottom: 1px solid var(--admin-border);
     background: rgba(72, 196, 255, 0.08);
     color: var(--admin-text);
@@ -398,8 +388,12 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
   }
 
   .adminPanel {
-    padding: 1rem 1.1rem 1.2rem;
+    padding: 1.2rem 1.35rem 1.35rem;
     min-width: 0;
+  }
+
+  .adminPanel--profile {
+    padding-top: 1.15rem;
   }
 
   .adminPanel + .adminPanel {
@@ -407,31 +401,13 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
   }
 
   .adminSubheading {
-    font-size: 0.95rem;
+    font-size: 0.9375rem;
     font-weight: 700;
-    margin: 0 0 0.75rem;
-    padding-bottom: 0.4rem;
+    letter-spacing: -0.02em;
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--admin-border);
     color: var(--admin-text);
-  }
-
-  .adminDetailReadonlyMemberName {
-    margin: -0.35rem 0 1rem;
-    font-size: 1.0625rem;
-    font-weight: 600;
-    line-height: 1.35;
-    color: var(--admin-text);
-  }
-
-  .adminDetailReadonlyMemberName:empty {
-    display: none;
-    margin: 0;
-  }
-
-  .adminPage :global(.adminMemberNameJoiner) {
-    color: var(--muted);
-    font-weight: 400;
-    font-size: 0.92em;
   }
 
   .adminDetailMembershipList {
@@ -812,24 +788,25 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
   }
 
   .adminMemberForm {
-    margin-top: 0.5rem;
+    margin-top: 0;
     font-size: 0.875rem;
   }
 
   .adminMemberForm label:not(.adminCheckbox) {
     display: flex;
     flex-direction: column;
-    gap: 0.3rem;
-    font-size: 0.75rem;
-    font-weight: 600;
+    gap: 0.35rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
     color: var(--muted);
+    letter-spacing: 0.01em;
   }
 
   .adminFormGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1rem 1.25rem;
-    padding: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+    gap: 0.9rem 1.2rem;
+    padding: 0.9rem 1.05rem;
     background: var(--admin-surface-muted);
     border: 1px solid var(--admin-border);
     border-radius: var(--admin-radius-sm);
@@ -838,7 +815,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
   .adminProfileSections {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.2rem;
   }
 
   .adminProfileSection {
@@ -849,16 +826,18 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
 
   .adminProfileLegend {
     padding: 0;
-    margin-bottom: 0.45rem;
-    font-size: 0.82rem;
+    margin: 0 0 0.5rem;
+    font-size: 0.6875rem;
     font-weight: 700;
-    color: var(--admin-text);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
   }
 
   .adminSectionHelp {
-    margin: 0 0 0.75rem;
-    font-size: 0.82rem;
-    line-height: 1.45;
+    margin: 0 0 0.65rem;
+    font-size: 0.8125rem;
+    line-height: 1.5;
     color: var(--muted);
   }
 
@@ -866,9 +845,10 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     grid-column: 1 / -1;
     display: flex;
     align-items: flex-start;
-    gap: 0.5rem;
+    gap: 0.55rem;
     font-size: 0.8125rem;
     font-weight: 500;
+    line-height: 1.4;
     color: var(--admin-text);
     cursor: pointer;
   }
@@ -881,9 +861,9 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.6rem;
-    margin-top: 1.15rem;
-    padding-top: 1rem;
+    gap: 0.65rem;
+    margin-top: 1.25rem;
+    padding-top: 1.1rem;
     border-top: 1px solid var(--admin-border);
   }
 
@@ -891,11 +871,11 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     display: block;
     width: 100%;
     min-width: 0;
-    max-width: 320px;
+    max-width: 340px;
     margin: 0;
-    padding: 0.4rem 0.55rem;
+    padding: 0.45rem 0.65rem;
     font: inherit;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: var(--admin-text);
     background: #fff;
     border: 1px solid var(--admin-border);
@@ -955,14 +935,6 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--muted);
-    background: var(--admin-surface-muted);
-  }
-
-  .adminShellFooter {
-    display: flex;
-    justify-content: flex-end;
-    padding: 0.65rem 1.25rem;
-    border-top: 1px solid var(--admin-border);
     background: var(--admin-surface-muted);
   }
 
