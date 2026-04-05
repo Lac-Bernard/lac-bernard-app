@@ -10,8 +10,6 @@ export const memberPaths: Record<
 		adminMembers: string;
 		/** Add member (walk-in) admin page */
 		adminMemberNew: string;
-		enrollment: string;
-		renewal: string;
 		join: string;
 		edit: string;
 	}
@@ -22,8 +20,6 @@ export const memberPaths: Record<
 		admin: '/en/membership/admin',
 		adminMembers: '/en/membership/admin/members',
 		adminMemberNew: '/en/membership/admin/members/new',
-		enrollment: '/en/membership/enrollment',
-		renewal: '/en/membership/renewal',
 		join: '/en/membership/account/new',
 		edit: '/en/membership/account/edit',
 	},
@@ -33,8 +29,6 @@ export const memberPaths: Record<
 		admin: '/fr/membership/admin',
 		adminMembers: '/fr/membership/admin/members',
 		adminMemberNew: '/fr/membership/admin/members/new',
-		enrollment: '/fr/membership/enrollment',
-		renewal: '/fr/membership/renewal',
 		join: '/fr/membership/account/new',
 		edit: '/fr/membership/account/edit',
 	},
