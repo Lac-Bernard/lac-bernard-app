@@ -12,11 +12,11 @@ For **volunteers and staff** who run the membership office (dashboard, daily ema
 
 When you sign in, the website tries to **connect your sign-in to your existing member record** using your **email address**.
 
-- The address that must match is the one the association lists as your **primary email** on your member profile (the main contact email in their records—not necessarily a secondary or alternate address).
+- The address that must match is the one the association lists as your **primary email** on your member profile (the main contact email in their records, not necessarily a secondary or alternate address).
 - **First time signing in:** enter or use the **same email the association already has for you** (for example the one on renewal notices or past correspondence). Then you can see your **current membership status** and **past years on file**, if any.
 - If you sign in with a **different** email than your primary one on file, the site may not find your record. Use **Use a different email** on the sign-in screen to try another address, or contact the association to confirm or update which email is your **primary** email.
 
-**Signing in with Google:** your **Google account’s email** is what must match the association’s **primary** email for the link to work—the same rule as the magic link.
+**Signing in with Google:** your **Google account’s email** is what must match the association’s **primary** email for the link to work, the same rule as the magic link.
 
 ---
 
@@ -25,7 +25,7 @@ When you sign in, the website tries to **connect your sign-in to your existing m
 The member area works in **English** or **French**; the steps are the same.
 
 - **Sign in (English):** [https://lacbernard.ca/en/membership/account/sign-in](https://lacbernard.ca/en/membership/account/sign-in)  
-- **Sign in (French):** same path with `/fr/` — [https://lacbernard.ca/fr/membership/account/sign-in](https://lacbernard.ca/fr/membership/account/sign-in)
+- **Sign in (French):** same path with `/fr/`: [https://lacbernard.ca/fr/membership/account/sign-in](https://lacbernard.ca/fr/membership/account/sign-in)
 
 Replace the domain if your association gives you a **staging** or test link.
 
@@ -40,9 +40,9 @@ After you sign in, your **account home** is:
 
 You have two options on the sign-in page:
 
-1. **Continue with Google** — uses your Google account. Remember: the Google email should match your **primary** email on file with the association (see above).
+1. **Continue with Google**: uses your Google account. Remember: the Google email should match your **primary** email on file with the association (see above).
 
-2. **Email magic link** — enter your email and choose **Send magic link**. You will receive an email with a **one-time link** (no password). Open the link in the same browser you normally use if you can. Check **spam or junk** if nothing arrives in a few minutes.
+2. **Email magic link**: enter your email and choose **Send magic link**. You will receive an email with a **one-time link** (no password). Open the link in the same browser you normally use if you can. Check **spam or junk** if nothing arrives in a few minutes.
 
 If you need to try another address, use **Use a different email** and submit again.
 
@@ -62,10 +62,10 @@ After your profile exists, you land on your **account** page where you can **pur
 
 On your account home you may see:
 
-- **Your profile summary** — name, sign-in email, phone, lake address, optional secondary contact, with a link to **Edit profile**.
-- **Status for the current membership year** — for example **active**, **pending payment**, or **no membership yet** for this year.
-- **Prepaid or upcoming years** — if future years are already on your record.
-- **Membership history** — earlier years the association has on file, for your reference.
+- **Your profile summary**: name, sign-in email, phone, lake address, optional secondary contact, with a link to **Edit profile**.
+- **Status for the current membership year**: for example **active**, **pending payment**, or **no membership yet** for this year.
+- **Prepaid or upcoming years**: if future years are already on your record.
+- **Membership history**: earlier years the association has on file, for your reference.
 
 Messages after online checkout may confirm **success** or that checkout was **cancelled**; you can try paying again when you are ready.
 
@@ -87,7 +87,7 @@ Save your changes before starting or changing a membership request.
 
 When you do **not** yet have an **active** membership for the **current calendar year**, the account page walks you through:
 
-1. **Choose a membership type** — **Voting** (tied to your lake property for the year) or **Associate** (non-voting).
+1. **Choose a membership type**: **Voting** (tied to your lake property for the year) or **Associate** (non-voting).
 2. Tap **Start membership request** (or the equivalent in French). That creates a **pending** membership for the year.
 
 Then:
@@ -108,6 +108,6 @@ If your membership is **pending** and you change your mind before paying, you ca
 
 ## Need help?
 
-- **Wrong email / can’t see my record** — confirm with the association which email is your **primary** email, or ask them to update it.  
-- **Payment or status doesn’t look right** — contact **membership@lacbernard.ca** (or the address your association publishes).  
-- **Website or sign-in errors** — contact whoever supports the association website.
+- **Wrong email / can’t see my record**: confirm with the association which email is your **primary** email, or ask them to update it.  
+- **Payment or status doesn’t look right**: contact **membership@lacbernard.ca** (or the address your association publishes).  
+- **Website or sign-in errors**: contact whoever supports the association website.

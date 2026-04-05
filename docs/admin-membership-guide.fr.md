@@ -22,7 +22,7 @@ Ce guide couvre **les membres et les paiements** seulement : la console **Adhés
    - Administration en anglais : [https://lacbernard.ca/en/membership/admin](https://lacbernard.ca/en/membership/admin) (remplacez le domaine si vous utilisez un site de mise à l’essai)
    - Administration en français : le même chemin avec `/fr/membership/admin`
 2. Connectez-vous comme les membres : **lien magique** (lien par courriel, sans mot de passe). *(La page peut aussi proposer Google selon la configuration.)*
-3. Si vous n’êtes pas administrateur, vous êtes renvoyé vers la page **compte** habituelle. **L’accès admin ne s’active pas tout seul** — la personne qui tient la base de données (par exemple votre contact TI ou site web) doit vous l’accorder sur votre compte dans **Supabase**. Ensuite, les pages d’administration fonctionnent pour vous.
+3. Si vous n’êtes pas administrateur, vous êtes renvoyé vers la page **compte** habituelle. **L’accès admin ne s’active pas tout seul**: la personne qui tient la base de données (par exemple votre contact TI ou site web) doit vous l’accorder sur votre compte dans **Supabase**. Ensuite, les pages d’administration fonctionnent pour vous.
 
 **Liens directs vers un onglet** (signet facultatif) :
 
@@ -47,11 +47,11 @@ En bref : **voir l’activité**, les **paiements en attente** et le **répertoi
 L’onglet **Aperçu** donne une vue d’ensemble :
 
 - **Compteurs** (vous pouvez cliquer pour aller au bon endroit) :
-  - **Adhésions en attente** — toutes les années, tout ce qui attend encore un paiement ou une finalisation.
-  - **Adhésions actives** — pour l’**année civile d’adhésion en cours** (l’année que l’association utilise pour les cotisations).
-  - **Nouveaux membres** — profils qui attendent encore votre révision (voir l’onglet **Nouveaux membres**).
-- **Membres récents** — profils **vérifiés** récemment.
-- **Adhésions actives récentes** — adhésions devenues **actives** récemment.
+  - **Adhésions en attente**: toutes les années, tout ce qui attend encore un paiement ou une finalisation.
+  - **Adhésions actives**: pour l’**année civile d’adhésion en cours** (l’année que l’association utilise pour les cotisations).
+  - **Nouveaux membres**: profils qui attendent encore votre révision (voir l’onglet **Nouveaux membres**).
+- **Membres récents**: profils **vérifiés** récemment.
+- **Adhésions actives récentes**: adhésions devenues **actives** récemment.
 
 Utilisez cet onglet pour un coup d’œil du matin avant de parcourir les listes.
 
@@ -69,7 +69,7 @@ Lorsqu’une personne paie **en dehors du paiement par carte en ligne** (par exe
 2. Saisissez le **montant**, le **mode**, la **date du paiement**, une **référence** facultative (détails du virement, numéro de chèque, etc.) et des **notes** facultatives.
 3. Enregistrez.
 
-Si le montant est **supérieur à la cotisation de base**, le formulaire peut indiquer ce qui compte pour l’**adhésion** par rapport à un **don** — suivez l’aperçu à l’écran.
+Si le montant est **supérieur à la cotisation de base**, le formulaire peut indiquer ce qui compte pour l’**adhésion** par rapport à un **don**: suivez l’aperçu à l’écran.
 
 Les paiements par **carte (Stripe)** en ligne sont en principe créés automatiquement lorsque le paiement est complété ; vous utilisez surtout cette fenêtre pour les paiements hors ligne.
 
@@ -93,12 +93,12 @@ C’est votre répertoire consultable.
 
 ### Filtres et recherche
 
-- **Recherche** — par nom ou courriel.
-- **Tri** — par exemple plus récents d’abord ou nom de famille A–Z.
-- **Afficher** — tout le monde, seulement les personnes avec des antécédents d’adhésion, **actifs pour [année]**, ou **non renouvelés pour [année]**.
-- **Année d’adhésion** — l’année à laquelle s’appliquent ces filtres.
-- **Type** — Votant, Associée ou tous.
-- **Statut du dossier** — Vérifiés, Nouveau, Désactivé ou tous.
+- **Recherche**: par nom ou courriel.
+- **Tri**: par exemple plus récents d’abord ou nom de famille A–Z.
+- **Afficher**: tout le monde, seulement les personnes avec des antécédents d’adhésion, **actifs pour [année]**, ou **non renouvelés pour [année]**.
+- **Année d’adhésion**: l’année à laquelle s’appliquent ces filtres.
+- **Type**: Votant, Associée ou tous.
+- **Statut du dossier**: Vérifiés, Nouveau, Désactivé ou tous.
 
 Cliquez sur **Appliquer** pour actualiser le tableau.
 
@@ -110,7 +110,7 @@ Si la copie automatique est bloquée, le site peut afficher du texte à copier m
 
 ### Exporter CSV
 
-**Exporter CSV** télécharge une feuille de calcul (**UTF-8**) selon les **mêmes filtres que le tableau** — utile pour les dossiers ou la publipostage hors site.
+**Exporter CSV** télécharge une feuille de calcul (**UTF-8**) selon les **mêmes filtres que le tableau**: utile pour les dossiers ou la publipostage hors site.
 
 ### Ouvrir un membre
 
@@ -129,8 +129,8 @@ Chemins :
 
 Vous pouvez saisir les renseignements du **profil**, l’**adresse au lac**, un **contact secondaire** facultatif, et éventuellement créer une **adhésion pour l’année civile en cours** soit comme :
 
-- **En attente de paiement** — la personne doit encore payer ; apparaît sous **Paiements en attente**, ou  
-- **Enregistrer le paiement maintenant (comptant, virement, etc.)** — si vous saisissez tout de suite un paiement hors ligne.
+- **En attente de paiement**: la personne doit encore payer ; apparaît sous **Paiements en attente**, ou  
+- **Enregistrer le paiement maintenant (comptant, virement, etc.)**: si vous saisissez tout de suite un paiement hors ligne.
 
 Soumettez pour créer le membre.
 
@@ -142,11 +142,11 @@ Depuis le répertoire, **Ouvrir** une ligne pour voir le dossier complet.
 
 ### Profil et statut
 
-- Modifiez **nom**, **courriels**, **téléphones**, **adresse au lac**, **abonnement aux courriels** et **notes internes** (réservées aux admins — les membres ne voient pas ces notes).
+- Modifiez **nom**, **courriels**, **téléphones**, **adresse au lac**, **abonnement aux courriels** et **notes internes** (réservées aux admins ; les membres ne voient pas ces notes).
 - **Statut du membre** :
-  - **Nouveau** — encore à vérifier (apparaît sous **Nouveaux membres**).
-  - **Vérifié** — profil normal et actif.
-  - **Désactivé** — exclure l’accès selon vos règles.
+  - **Nouveau**: encore à vérifier (apparaît sous **Nouveaux membres**).
+  - **Vérifié**: profil normal et actif.
+  - **Désactivé**: exclure l’accès selon vos règles.
 
 Enregistrez avec **Enregistrer**.
 
@@ -158,10 +158,10 @@ Enregistrez avec **Enregistrer**.
 
 - Choisissez l’**année d’adhésion** à consulter.
 - Vous voyez les **adhésions** de cette personne et les **paiements** pour l’année sélectionnée.
-- **Enregistrer le paiement** — même principe que sous **Paiements en attente** (paiements manuels / hors ligne).
+- **Enregistrer le paiement**: même principe que sous **Paiements en attente** (paiements manuels / hors ligne).
 - **Retirer** sur un paiement le supprime après confirmation ; le **statut d’adhésion est recalculé** selon ce qui reste. Action irréversible.
 - Les paiements par **carte (Stripe)** apparaissent à titre de référence ; les débits courants par carte sont créés par le site, pas saisis ici.
-- **Ajouter une adhésion** — pour une autre année ou une autre situation si nécessaire (par exemple une nouvelle saison).
+- **Ajouter une adhésion**: pour une autre année ou une autre situation si nécessaire (par exemple une nouvelle saison).
 
 ---
 
@@ -213,9 +213,9 @@ Certaines personnes admin reçoivent chaque jour un **courriel automatique** ave
 
 ### Signification des chiffres
 
-- **Adhésions en attente (toutes années)** — nombre d’adhésions encore **en attente** (paiement ou finalisation), toutes années confondues.
-- **Nouveaux membres en attente de vérification** — nombre de **profils** encore au statut **Nouveau**.
-- **Adhésions activées le jour civil précédent (Toronto)** — nombre d’adhésions passées **actives** **hier** selon la date à Toronto (selon l’horodatage d’activation).
+- **Adhésions en attente (toutes années)**: nombre d’adhésions encore **en attente** (paiement ou finalisation), toutes années confondues.
+- **Nouveaux membres en attente de vérification**: nombre de **profils** encore au statut **Nouveau**.
+- **Adhésions activées le jour civil précédent (Toronto)**: nombre d’adhésions passées **actives** **hier** selon la date à Toronto (selon l’horodatage d’activation).
 
 Le courriel contient aussi des **liens** pour ouvrir la console d’administration en **anglais** et en **français**.
 
@@ -235,5 +235,5 @@ Servez-vous-en comme **rappel** pour ouvrir le tableau de bord ; l’**Aperçu**
 
 ## Besoin d’aide ?
 
-- **Problème d’accès** (impossible d’ouvrir l’admin du tout) — contactez la personne qui gère **Supabase** / les comptes du site.  
-- **Feuille qui ne se met pas à jour** ou **courriel qui n’arrive pas** — contactez l’**hébergement web** ou votre contact technique (synchro et courriel utilisent des réglages serveur que vous n’avez pas à modifier vous-même).
+- **Problème d’accès** (impossible d’ouvrir l’admin du tout) : contactez la personne qui gère **Supabase** / les comptes du site.  
+- **Feuille qui ne se met pas à jour** ou **courriel qui n’arrive pas**: contactez l’**hébergement web** ou votre contact technique (synchro et courriel utilisent des réglages serveur que vous n’avez pas à modifier vous-même).

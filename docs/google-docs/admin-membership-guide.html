@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Membership admin guide (EN)</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #202124;
+      max-width: 40rem;
+      margin: 1.5rem auto;
+      padding: 0 1rem 3rem;
+    }
+    h1 { font-size: 18pt; margin: 1.25rem 0 0.5rem; font-weight: 700; }
+    h2 { font-size: 14pt; margin: 1.25rem 0 0.5rem; font-weight: 700; border-bottom: 1px solid #dadce0; padding-bottom: 0.2rem; }
+    h3 { font-size: 12pt; margin: 1rem 0 0.35rem; font-weight: 700; }
+    p { margin: 0.5rem 0; }
+    ul, ol { margin: 0.5rem 0; padding-left: 1.5rem; }
+    li { margin: 0.2rem 0; }
+    hr { border: none; border-top: 1px solid #dadce0; margin: 1.25rem 0; }
+    a { color: #1a73e8; }
+    code { font-family: "Consolas", "Menlo", monospace; font-size: 10pt; background: #f1f3f4; padding: 0.1em 0.35em; border-radius: 3px; }
+    strong { font-weight: 700; }
+    em { font-style: italic; }
+    blockquote { margin: 0.5rem 0; padding-left: 1rem; border-left: 3px solid #dadce0; color: #5f6368; }
+  </style>
+</head>
+<body>
+<h1>Membership admin guide</h1>
+<p><em><a href="admin-membership-guide.fr.md">Français : admin-membership-guide.fr.md</a></em></p>
+<p>This guide is for <strong>association volunteers and staff</strong> who help run membership: the <strong>admin dashboard</strong> on the website, the <strong>daily summary email</strong>, and the <strong>Google Sheet</strong> that lists members. You do not need a technical background to use these tools.</p>
+<p>For <strong>members</strong> managing their own sign-in, profile, and payments online, see the <strong><a href="member-membership-guide.md">member guide (English)</a></strong> or <strong><a href="member-membership-guide.fr.md">guide du compte membre (français)</a></strong>. This document is only about <strong>administration</strong>.</p>
+<hr>
+<h2>Not the same as editing the website</h2>
+<p><strong>Website pages and news</strong> are edited with <strong>TinaCMS</strong> at <code>/admin</code> when you are working on the public site. That is a different role from <strong>membership admin</strong>.</p>
+<p>This guide covers <strong>members and payments</strong> only: the console at <strong>Membership → Administration</strong> after you sign in.</p>
+<hr>
+<h2>Signing in and who can access admin</h2>
+<ol>
+<li>Open the membership area in <strong>English</strong> or <strong>French</strong> (same tools, different language):<ul>
+<li>English admin: <a href="https://lacbernard.ca/en/membership/admin">https://lacbernard.ca/en/membership/admin</a> (replace the domain if you use a staging site)</li>
+<li>French admin: same path with <code>/fr/membership/admin</code></li>
+</ul>
+</li>
+<li>Sign in the same way members do: <strong>magic link</strong> (email link, no password).</li>
+<li>If you are not an admin, you will be sent back to the regular <strong>account</strong> page. <strong>Admin access is not something you turn on yourself</strong>: whoever maintains the database (for example your web or IT contact) must grant it on your account in <strong>Supabase</strong>. After that, the admin pages work for you.</li>
+</ol>
+<p><strong>Direct links to a specific tab</strong> (optional bookmark):</p>
+<ul>
+<li>Overview: <code>?tab=overview</code></li>
+<li>Pending payments: <code>?tab=pending</code></li>
+<li>New members: <code>?tab=newMembers</code></li>
+<li>Members: <code>?tab=members</code></li>
+<li>Audit log: <code>?tab=auditLog</code></li>
+</ul>
+<p>Example: <code>/en/membership/admin?tab=pending</code></p>
+<hr>
+<h2>What the dashboard is for</h2>
+<p>In short: <strong>review activity</strong>, <strong>pending payments</strong>, and the <strong>member directory</strong>; <strong>open a member</strong> to see full history, <strong>record manual payments</strong>, and <strong>grant admin access</strong> to someone else who should help.</p>
+<hr>
+<h2>Overview tab</h2>
+<p>The <strong>Overview</strong> tab gives you a quick picture:</p>
+<ul>
+<li><strong>Counts</strong> (you can click them to jump to the right place):<ul>
+<li><strong>Pending memberships</strong>: all years, anything still waiting on payment or completion.</li>
+<li><strong>Active memberships</strong>: for the <strong>current membership calendar year</strong> (the year the association uses for dues).</li>
+<li><strong>New members</strong>: profiles that still need your review (see <strong>New members</strong> tab).</li>
+</ul>
+</li>
+<li><strong>Recent members</strong>: recently <strong>verified</strong> profiles.</li>
+<li><strong>Recent active memberships</strong>: memberships that recently became <strong>active</strong>.</li>
+</ul>
+<p>Use this tab when you want a morning snapshot before drilling into lists.</p>
+<hr>
+<h2>Pending payments tab</h2>
+<p>This list is everyone with a membership still in <strong>pending</strong> status for a given year (you see name, email, year, membership type, status, expected fee, and actions).</p>
+<h3>Record a manual payment</h3>
+<p>When someone pays <strong>outside the online card checkout</strong> (for example <strong>e-Transfer</strong>, <strong>cheque</strong>, or <strong>cash</strong>):</p>
+<ol>
+<li>Click <strong>Record payment</strong> for that row.</li>
+<li>Enter the <strong>amount</strong>, <strong>method</strong>, <strong>payment date</strong>, and optional <strong>reference</strong> (e-transfer details, cheque number, etc.) and <strong>notes</strong>.</li>
+<li>Save.</li>
+</ol>
+<p>If the amount is <strong>more than the standard dues</strong>, the form can show how much counts toward <strong>membership</strong> versus a <strong>donation</strong>: follow the on-screen preview.</p>
+<p>Online <strong>card (Stripe)</strong> payments are usually created automatically when checkout completes; you mainly use this dialog for offline payments.</p>
+<h3>Remove a pending membership</h3>
+<p><strong>Cancel pending</strong> clears that pending membership. The person may need to <strong>choose their membership type again</strong> the next time they sign in. Confirm only if you mean to remove that pending row.</p>
+<hr>
+<h2>New members tab</h2>
+<p>Here you see people whose profile is still <strong>New</strong> (awaiting verification). Use <strong>Previous page</strong> / <strong>Next page</strong> if the list is long.</p>
+<p><strong>Typical workflow:</strong> open the person (<strong>Open</strong>), check their details, and when everything is correct set their <strong>member status</strong> to <strong>Verified</strong> on the member page (see below). Until then, they stay in this list.</p>
+<hr>
+<h2>Members tab (directory)</h2>
+<p>This is your searchable directory.</p>
+<h3>Filters and search</h3>
+<ul>
+<li><strong>Search</strong>: find people by name or email.</li>
+<li><strong>Sort</strong>: for example newest first or last name A–Z.</li>
+<li><strong>Show</strong>: limit to everyone, only people with membership history, <strong>active for [year]</strong>, or <strong>did not renew for [year]</strong>.</li>
+<li><strong>Membership year</strong>: the year those filters apply to.</li>
+<li><strong>Type</strong>: Voting, Associate, or all.</li>
+<li><strong>Member status</strong>: Verified, New, Disabled, or all.</li>
+</ul>
+<p>Click <strong>Apply</strong> to refresh the table.</p>
+<h3>Copy email list</h3>
+<p><strong>Copy email list</strong> uses the <strong>same filters as the table</strong>. It includes <strong>non-empty primary emails</strong>; if a <strong>secondary email</strong> is on file, it is included too, with each person’s name on their address. <strong>Get consent before bulk mail.</strong></p>
+<p>If automatic copy is blocked, the site may show text you can copy by hand.</p>
+<h3>Export CSV</h3>
+<p><strong>Export CSV</strong> downloads a spreadsheet (<strong>UTF-8</strong>) using the <strong>same filters as the table</strong>: useful for records or mail merge outside the site.</p>
+<h3>Open a member</h3>
+<p><strong>Open</strong> goes to that person’s <strong>member detail</strong> page (see next section).</p>
+<hr>
+<h2>Add member</h2>
+<p>Use <strong>Add member</strong> (from the top of the admin page) when someone joins <strong>outside</strong> the normal online flow (for example walk-in or phone).</p>
+<p>Path:</p>
+<ul>
+<li>English: <code>/en/membership/admin/members/new</code></li>
+<li>French: <code>/fr/membership/admin/members/new</code></li>
+</ul>
+<p>You can enter <strong>profile</strong> information, <strong>lake address</strong>, optional <strong>secondary contact</strong>, and optionally create a <strong>membership for the current calendar year</strong> either as:</p>
+<ul>
+<li><strong>Pending payment</strong>: they still owe; appears on <strong>Pending payments</strong>, or  </li>
+<li><strong>Record payment now</strong>: if you are entering cash, e-Transfer, etc. immediately.</li>
+</ul>
+<p>Submit to create the member.</p>
+<hr>
+<h2>Member detail page</h2>
+<p>From the directory, <strong>Open</strong> a row to see one person’s full record.</p>
+<h3>Profile and status</h3>
+<ul>
+<li>Edit <strong>name</strong>, <strong>emails</strong>, <strong>phones</strong>, <strong>lake address</strong>, <strong>email opt-in</strong>, and <strong>internal notes</strong> (for admins only; members do not see these notes).</li>
+<li><strong>Member status</strong>:<ul>
+<li><strong>New</strong>: still being verified (shows on <strong>New members</strong>).</li>
+<li><strong>Verified</strong>: normal active profile.</li>
+<li><strong>Disabled</strong>: block access where your policies require it.</li>
+</ul>
+</li>
+</ul>
+<p>Save changes with <strong>Save member</strong>.</p>
+<h3>Grant admin role</h3>
+<p><strong>Grant admin role</strong> gives this person access to the same admin dashboard. It only works if they already have a <strong>linked sign-in account</strong> (they have signed up with magic link). If it succeeds, they may need to <strong>sign out and sign back in</strong> before admin pages appear.</p>
+<h3>Memberships and payments</h3>
+<ul>
+<li>Choose the <strong>membership year</strong> to inspect.</li>
+<li>You see <strong>memberships</strong> for that person and <strong>payments</strong> for the selected year.</li>
+<li><strong>Record payment</strong>: same idea as on <strong>Pending payments</strong> (manual / offline payments).</li>
+<li><strong>Remove</strong> on a payment deletes it after you confirm; <strong>membership status is recalculated</strong> from what remains. This cannot be undone.</li>
+<li>Payments made by <strong>card (Stripe)</strong> appear for reference; routine card charges are created by the website, not typed in here.</li>
+<li><strong>Add membership</strong>: add another year or situation when needed (for example a new season).</li>
+</ul>
+<hr>
+<h2>Audit log tab</h2>
+<p>The <strong>Audit log</strong> is a read-only history table: <strong>when</strong> something happened, <strong>which admin</strong> (by email), <strong>what action</strong>, <strong>what record</strong>, and extra <strong>details</strong>.</p>
+<p>Typical entries include:</p>
+<ul>
+<li>Creating a member  </li>
+<li>Updating a member profile  </li>
+<li>Adding a membership from admin  </li>
+<li>Recording a <strong>manual</strong> payment  </li>
+<li>Cancelling a <strong>pending</strong> membership  </li>
+<li>Deleting a payment  </li>
+<li>Granting <strong>admin</strong> role</li>
+</ul>
+<p>Use it to answer “who changed this?” without guessing.</p>
+<hr>
+<h2>Google Sheet sync</h2>
+<p>The association can keep a <strong>Google Spreadsheet</strong> that is <strong>filled automatically</strong> from the same data as the website.</p>
+<h3>What you get</h3>
+<ul>
+<li>Three tabs: <strong>Members</strong>, <strong>Memberships</strong>, and <strong>Payments</strong>.</li>
+<li>The sheet is <strong>refreshed on a schedule</strong> (once per day on the server). It is <strong>not</strong> a live second-by-second mirror.</li>
+<li>On the <strong>Memberships</strong> tab, the <strong>tier</strong> column stores the same values as the database: <strong><code>voting</code></strong> or <strong><code>associate</code></strong>. If you use formulas, filters, or pivot tables that assumed the old value <strong><code>general</code></strong>, update them to <strong><code>voting</code></strong>.</li>
+</ul>
+<h3>How to use it</h3>
+<ul>
+<li>Treat the <strong>website database as the source of truth</strong>. <strong>Changes you make only in the sheet do not flow back</strong> into membership records.</li>
+<li>Use the sheet for <strong>reports</strong>, <strong>board packets</strong>, <strong>mail merge</strong>, or sharing a familiar spreadsheet view.</li>
+<li>Someone with access to <strong>Google sharing</strong> must share the spreadsheet with the association’s <strong>service account</strong> email (listed in the project <strong>README</strong> under <em>Google service account</em>):<br><code>lac-bernard-website-access@lac-bernard-app.iam.gserviceaccount.com</code><br>so automated updates can run.</li>
+</ul>
+<p>If rows look out of date, wait for the next daily refresh or ask your technical contact whether sync is enabled.</p>
+<hr>
+<h2>Daily summary email</h2>
+<p>Some admins receive an automatic <strong>email each day</strong> with headline counts. The <strong>exact send time</strong> depends on the hosting schedule (usually <strong>morning in Eastern time</strong>); the <strong>dates inside the email</strong> use <strong>Toronto (Eastern)</strong> for the “day” boundaries.</p>
+<p><strong>Who receives it</strong> is configured on the server (your technical contact sets the distribution list).</p>
+<h3>What the numbers mean</h3>
+<ul>
+<li><strong>Pending memberships (all years)</strong>: how many memberships are still <strong>pending</strong> (waiting on payment or completion), counting every year.</li>
+<li><strong>New members awaiting verification</strong>: how many <strong>member profiles</strong> are still in <strong>New</strong> status.</li>
+<li><strong>Memberships activated previous calendar day (Toronto)</strong>: how many memberships <strong>became active</strong> on <strong>yesterday’s date in Toronto time</strong> (based on when activation happened).</li>
+</ul>
+<p>The email also includes <strong>links</strong> to open the admin console in <strong>English</strong> and <strong>French</strong>.</p>
+<p>Use the email as a <strong>nudge</strong> to open the dashboard; the <strong>Overview</strong> and tabs always have the live detail.</p>
+<hr>
+<h2>Quick flow: from email to recorded payment</h2>
+<ol>
+<li>Read the daily email (or open <strong>Overview</strong>).  </li>
+<li>If <strong>Pending memberships</strong> is not zero, go to <strong>Pending payments</strong>.  </li>
+<li><strong>Open</strong> a row or work from the list.  </li>
+<li><strong>Record payment</strong> when money is received, or <strong>Cancel pending</strong> only if you intend to clear that checkout.  </li>
+<li>For new people, use <strong>New members</strong>, open the profile, and set <strong>Verified</strong> when appropriate.</li>
+</ol>
+<hr>
+<h2>Need help?</h2>
+<ul>
+<li><strong>Access problems</strong> (cannot see admin at all): contact whoever manages <strong>Supabase</strong> / website accounts.  </li>
+<li><strong>Sheet not updating</strong> or <strong>email not arriving</strong>: contact your <strong>web hosting</strong> or technical contact (sync and mail use server settings you do not need to change yourself).</li>
+</ul>
+
+</body>
+</html>

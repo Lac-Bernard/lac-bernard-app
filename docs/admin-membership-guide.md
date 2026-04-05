@@ -22,7 +22,7 @@ This guide covers **members and payments** only: the console at **Membership →
    - English admin: [https://lacbernard.ca/en/membership/admin](https://lacbernard.ca/en/membership/admin) (replace the domain if you use a staging site)
    - French admin: same path with `/fr/membership/admin`
 2. Sign in the same way members do: **magic link** (email link, no password).
-3. If you are not an admin, you will be sent back to the regular **account** page. **Admin access is not something you turn on yourself** — whoever maintains the database (for example your web or IT contact) must grant it on your account in **Supabase**. After that, the admin pages work for you.
+3. If you are not an admin, you will be sent back to the regular **account** page. **Admin access is not something you turn on yourself**: whoever maintains the database (for example your web or IT contact) must grant it on your account in **Supabase**. After that, the admin pages work for you.
 
 **Direct links to a specific tab** (optional bookmark):
 
@@ -47,11 +47,11 @@ In short: **review activity**, **pending payments**, and the **member directory*
 The **Overview** tab gives you a quick picture:
 
 - **Counts** (you can click them to jump to the right place):
-  - **Pending memberships** — all years, anything still waiting on payment or completion.
-  - **Active memberships** — for the **current membership calendar year** (the year the association uses for dues).
-  - **New members** — profiles that still need your review (see **New members** tab).
-- **Recent members** — recently **verified** profiles.
-- **Recent active memberships** — memberships that recently became **active**.
+  - **Pending memberships**: all years, anything still waiting on payment or completion.
+  - **Active memberships**: for the **current membership calendar year** (the year the association uses for dues).
+  - **New members**: profiles that still need your review (see **New members** tab).
+- **Recent members**: recently **verified** profiles.
+- **Recent active memberships**: memberships that recently became **active**.
 
 Use this tab when you want a morning snapshot before drilling into lists.
 
@@ -69,7 +69,7 @@ When someone pays **outside the online card checkout** (for example **e-Transfer
 2. Enter the **amount**, **method**, **payment date**, and optional **reference** (e-transfer details, cheque number, etc.) and **notes**.
 3. Save.
 
-If the amount is **more than the standard dues**, the form can show how much counts toward **membership** versus a **donation** — follow the on-screen preview.
+If the amount is **more than the standard dues**, the form can show how much counts toward **membership** versus a **donation**: follow the on-screen preview.
 
 Online **card (Stripe)** payments are usually created automatically when checkout completes; you mainly use this dialog for offline payments.
 
@@ -93,12 +93,12 @@ This is your searchable directory.
 
 ### Filters and search
 
-- **Search** — find people by name or email.
-- **Sort** — for example newest first or last name A–Z.
-- **Show** — limit to everyone, only people with membership history, **active for [year]**, or **did not renew for [year]**.
-- **Membership year** — the year those filters apply to.
-- **Type** — Voting, Associate, or all.
-- **Member status** — Verified, New, Disabled, or all.
+- **Search**: find people by name or email.
+- **Sort**: for example newest first or last name A–Z.
+- **Show**: limit to everyone, only people with membership history, **active for [year]**, or **did not renew for [year]**.
+- **Membership year**: the year those filters apply to.
+- **Type**: Voting, Associate, or all.
+- **Member status**: Verified, New, Disabled, or all.
 
 Click **Apply** to refresh the table.
 
@@ -110,7 +110,7 @@ If automatic copy is blocked, the site may show text you can copy by hand.
 
 ### Export CSV
 
-**Export CSV** downloads a spreadsheet (**UTF-8**) using the **same filters as the table** — useful for records or mail merge outside the site.
+**Export CSV** downloads a spreadsheet (**UTF-8**) using the **same filters as the table**: useful for records or mail merge outside the site.
 
 ### Open a member
 
@@ -129,8 +129,8 @@ Path:
 
 You can enter **profile** information, **lake address**, optional **secondary contact**, and optionally create a **membership for the current calendar year** either as:
 
-- **Pending payment** — they still owe; appears on **Pending payments**, or  
-- **Record payment now** — if you are entering cash, e-Transfer, etc. immediately.
+- **Pending payment**: they still owe; appears on **Pending payments**, or  
+- **Record payment now**: if you are entering cash, e-Transfer, etc. immediately.
 
 Submit to create the member.
 
@@ -142,11 +142,11 @@ From the directory, **Open** a row to see one person’s full record.
 
 ### Profile and status
 
-- Edit **name**, **emails**, **phones**, **lake address**, **email opt-in**, and **internal notes** (for admins only — members do not see these notes).
+- Edit **name**, **emails**, **phones**, **lake address**, **email opt-in**, and **internal notes** (for admins only; members do not see these notes).
 - **Member status**:
-  - **New** — still being verified (shows on **New members**).
-  - **Verified** — normal active profile.
-  - **Disabled** — block access where your policies require it.
+  - **New**: still being verified (shows on **New members**).
+  - **Verified**: normal active profile.
+  - **Disabled**: block access where your policies require it.
 
 Save changes with **Save member**.
 
@@ -158,10 +158,10 @@ Save changes with **Save member**.
 
 - Choose the **membership year** to inspect.
 - You see **memberships** for that person and **payments** for the selected year.
-- **Record payment** — same idea as on **Pending payments** (manual / offline payments).
+- **Record payment**: same idea as on **Pending payments** (manual / offline payments).
 - **Remove** on a payment deletes it after you confirm; **membership status is recalculated** from what remains. This cannot be undone.
 - Payments made by **card (Stripe)** appear for reference; routine card charges are created by the website, not typed in here.
-- **Add membership** — add another year or situation when needed (for example a new season).
+- **Add membership**: add another year or situation when needed (for example a new season).
 
 ---
 
@@ -213,9 +213,9 @@ Some admins receive an automatic **email each day** with headline counts. The **
 
 ### What the numbers mean
 
-- **Pending memberships (all years)** — how many memberships are still **pending** (waiting on payment or completion), counting every year.
-- **New members awaiting verification** — how many **member profiles** are still in **New** status.
-- **Memberships activated previous calendar day (Toronto)** — how many memberships **became active** on **yesterday’s date in Toronto time** (based on when activation happened).
+- **Pending memberships (all years)**: how many memberships are still **pending** (waiting on payment or completion), counting every year.
+- **New members awaiting verification**: how many **member profiles** are still in **New** status.
+- **Memberships activated previous calendar day (Toronto)**: how many memberships **became active** on **yesterday’s date in Toronto time** (based on when activation happened).
 
 The email also includes **links** to open the admin console in **English** and **French**.
 
@@ -235,5 +235,5 @@ Use the email as a **nudge** to open the dashboard; the **Overview** and tabs al
 
 ## Need help?
 
-- **Access problems** (cannot see admin at all) — contact whoever manages **Supabase** / website accounts.  
-- **Sheet not updating** or **email not arriving** — contact your **web hosting** or technical contact (sync and mail use server settings you do not need to change yourself).
+- **Access problems** (cannot see admin at all): contact whoever manages **Supabase** / website accounts.  
+- **Sheet not updating** or **email not arriving**: contact your **web hosting** or technical contact (sync and mail use server settings you do not need to change yourself).

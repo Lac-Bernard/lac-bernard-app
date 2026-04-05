@@ -15,7 +15,8 @@
     "db:seed-membership-history": "ALLOW_SEED_MEMBERSHIP_HISTORY=1 node scripts/seed-membership-history.mjs",
     "dev:grant-admin": "ALLOW_GRANT_ADMIN_DEV=1 node scripts/grant-admin-dev.mjs",
     "db:import-members-csv": "bash scripts/run-membership-import.sh",
-    "db:import-members-csv:local": "bash scripts/run-membership-import.sh --local"
+    "db:import-members-csv:local": "bash scripts/run-membership-import.sh --local",
+    "docs:google-docs": "node scripts/docs-to-google-docs-html.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.12",
@@ -35,6 +36,7 @@
     "tinacms": "^2.9.5"
   },
   "devDependencies": {
+    "marked": "^15.0.7",
     "@tinacms/cli": "^1.12.4",
     "@types/node": "^24.10.1",
     "@types/nodemailer": "^7.0.11",
