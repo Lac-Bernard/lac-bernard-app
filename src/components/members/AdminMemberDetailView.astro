@@ -411,9 +411,11 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   }
 
   .adminDetailMembershipList {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    display: block;
+  }
+
+  .adminDetailMembershipList > *:not(:first-child) {
+    margin-top: 1rem;
   }
 
   .adminDetailMembershipList :global(.adminDetailYearToolbar) {
@@ -813,9 +815,11 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   }
 
   .adminProfileSections {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
+    display: block;
+  }
+
+  .adminProfileSections > *:not(:first-child) {
+    margin-top: 1.2rem;
   }
 
   .adminProfileSection {

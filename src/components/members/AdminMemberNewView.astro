@@ -343,9 +343,11 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   }
 
   .adminProfileSections {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
+    display: block;
+  }
+
+  .adminProfileSections > *:not(:first-child) {
+    margin-top: 1.2rem;
   }
 
   .adminProfileSection {

@@ -79,7 +79,7 @@ Vous pouvez mettre à jour les **coordonnées**, l’**adresse au lac** (numéro
 
 L’adhésion **avec droit de vote** exige une **adresse au lac complète** dans votre profil. L’adhésion **associée** ne fonctionne pas de la même façon à cet égard. Si l’adhésion avec droit de vote est bloquée tant que l’adresse manque, la page l’indique et renvoie vers **Modifier le profil**.
 
-Enregistrez vos changements avant de démarrer ou de modifier une demande d’adhésion.
+Enregistrez vos changements avant de démarrer ou de modifier un paiement d’adhésion.
 
 ---
 
@@ -87,18 +87,16 @@ Enregistrez vos changements avant de démarrer ou de modifier une demande d’ad
 
 Lorsque vous n’avez pas encore une adhésion **active** pour l’**année civile en cours**, la page compte vous guide ainsi :
 
-1. **Choisissez un type d’adhésion**: **Votant** (liée à votre propriété au lac pour l’année) ou **Associée** (sans droit de vote).
-2. Appuyez sur **Démarrer la demande d’adhésion**. Cela crée une adhésion **en attente** pour l’année.
+1. **Choisissez un type d’adhésion** : **Votant** (liée à votre propriété au lac pour l’année) ou **Associée** (sans droit de vote).
+2. Choisissez le mode de paiement (les deux options sont sur le même écran que le choix du type) :
+   - **Payer par carte de crédit** ouvre une courte fenêtre où vous pouvez ajouter un **don facultatif** et une **note**, puis **Continuer vers le paiement sécurisé** (Stripe). Votre adhésion **en attente** pour l’année est créée au moment de continuer ; une fois le paiement réussi, votre adhésion devrait s’afficher comme **active** sous peu sur votre compte.
+   - **Autre mode de paiement** crée tout de suite une adhésion **en attente** et actualise la page. Vous voyez alors les **autres modes de paiement** — **virement Interac**, **chèque** (adresse postale à l’écran) ou **comptant** (courriel de contact à l’écran) — et vous pouvez encore utiliser **Payer par carte de crédit** dans la section « en attente » si vous changez d’avis.
 
-Ensuite :
+### Lorsque vous êtes en attente
 
-### Payer en ligne par carte
+Votre adhésion devient **active** lorsque l’association **confirme ou enregistre** votre paiement (en ligne ou manuellement).
 
-Si **Payer par carte de crédit** est disponible, utilisez-le. Vous pouvez ajouter un **don facultatif** et une courte **note** avant **Continuer vers le paiement sécurisé** (traité par Stripe). Une fois le paiement réussi, votre adhésion devrait s’afficher comme **active** sous peu sur votre compte.
-
-### Payer autrement
-
-Le site indique les **autres modes de paiement**, par exemple **Virement Interac**, **chèque** (adresse postale à l’écran) ou **comptant** (courriel de contact à l’écran). Votre adhésion devient **active** lorsque l’association **confirme ou enregistre** votre paiement.
+Si vous utilisez les **autres modes de paiement**, les instructions pour le virement Interac, le chèque et le comptant s’affichent d’abord ; en dessous, une courte invitation demande **Vous souhaitez contribuer un peu plus ?** Vous pouvez ajouter un don supplémentaire à l’**ORALB** avec le même paiement ; pour orienter votre don vers un fonds ou un projet précis, indiquez-le dans le **message de virement Interac** ou le **champ mémo de votre chèque**.
 
 ### Recommencer à zéro
 

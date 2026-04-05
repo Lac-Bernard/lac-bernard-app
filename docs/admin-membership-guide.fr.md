@@ -61,6 +61,8 @@ Utilisez cet onglet pour un coup d’œil du matin avant de parcourir les listes
 
 Cette liste regroupe toutes les personnes dont l’adhésion est encore **en attente** pour une année donnée (nom, courriel, année, type d’adhésion, statut, cotisation prévue, actions).
 
+Les membres passent à **en attente** depuis leur page **compte** après avoir choisi un type d’adhésion et soit lancé **Payer par carte de crédit** (la ligne en attente est créée lorsqu’ils poursuivent vers le paiement), soit choisi **Autre mode de paiement** (l’adhésion en attente est créée tout de suite pour afficher les instructions hors ligne, y compris comment indiquer un don facultatif). Les tâches d’administration ci-dessous ne changent pas.
+
 ### Enregistrer un paiement manuel
 
 Lorsqu’une personne paie **en dehors du paiement par carte en ligne** (par exemple **virement**, **chèque** ou **comptant**) :
