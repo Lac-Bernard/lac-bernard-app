@@ -15,6 +15,10 @@ export type MemberProfilePayload = {
 	primary_country: string | null;
 	primary_postal_code: string | null;
 	email_opt_in: boolean;
+	/** How lake civic/street were captured: Google Places vs manual (null = legacy / unspecified). */
+	lake_address_source: 'places' | 'manual' | null;
+	lake_google_place_id: string | null;
+	lake_formatted_address: string | null;
 };
 
 export function trimOrNull(v: unknown): string | null {
@@ -45,6 +49,13 @@ export function normalizePhone(v: unknown): string | null {
 	const digits = t.replace(/[^\d]/g, '');
 	if (digits.length < 10 || digits.length > 15) return null;
 	return hasLeadingPlus ? `+${digits}` : digits;
+}
+
+function normalizeLakeSource(v: unknown): 'places' | 'manual' | null {
+	const t = trimOrNull(v);
+	if (!t) return null;
+	if (t === 'places' || t === 'manual') return t;
+	return null;
 }
 
 export function normalizePostalCode(v: unknown): string | null {
@@ -88,6 +99,29 @@ export function parseMemberProfilePayload(body: unknown): { ok: true; value: Mem
 	if (Boolean(lakeCivicNumber) !== Boolean(lakeStreetName)) {
 		return { ok: false, error: 'invalid_lake_address' };
 	}
+	if (Object.prototype.hasOwnProperty.call(o, 'lake_address_source')) {
+		const src = normalizeLakeSource(o.lake_address_source);
+		if (o.lake_address_source !== null && o.lake_address_source !== '' && src === null) {
+			return { ok: false, error: 'invalid_lake_source' };
+		}
+	}
+
+	let lakeSource = Object.prototype.hasOwnProperty.call(o, 'lake_address_source')
+		? normalizeLakeSource(o.lake_address_source)
+		: null;
+	let lakePlaceId = trimOrNull(o.lake_google_place_id);
+	let lakeFormatted = trimOrNull(o.lake_formatted_address);
+
+	if (!lakeCivicNumber && !lakeStreetName) {
+		lakeSource = null;
+		lakePlaceId = null;
+		lakeFormatted = null;
+	} else if (lakeSource === 'manual') {
+		lakePlaceId = null;
+	}
+	if (!lakeFormatted && lakeCivicNumber && lakeStreetName) {
+		lakeFormatted = `${lakeCivicNumber} ${lakeStreetName}`.trim();
+	}
 	return {
 		ok: true,
 		value: {
@@ -106,6 +140,9 @@ export function parseMemberProfilePayload(body: unknown): { ok: true; value: Mem
 			primary_country: trimOrNull(o.primary_country),
 			primary_postal_code: postalCode,
 			email_opt_in: bool(o.email_opt_in, false),
+			lake_address_source: lakeSource,
+			lake_google_place_id: lakePlaceId,
+			lake_formatted_address: lakeFormatted,
 		},
 	};
 }
@@ -132,6 +169,9 @@ export function payloadToRow(
 		primary_country: p.primary_country,
 		primary_postal_code: p.primary_postal_code,
 		email_opt_in: p.email_opt_in,
+		lake_address_source: p.lake_address_source,
+		lake_google_place_id: p.lake_google_place_id,
+		lake_formatted_address: p.lake_formatted_address,
 	};
 }
 
@@ -156,5 +196,8 @@ export function payloadToUpdate(
 		primary_country: p.primary_country,
 		primary_postal_code: p.primary_postal_code,
 		email_opt_in: p.email_opt_in,
+		lake_address_source: p.lake_address_source,
+		lake_google_place_id: p.lake_google_place_id,
+		lake_formatted_address: p.lake_formatted_address,
 	};
 }

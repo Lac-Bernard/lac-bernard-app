@@ -32,6 +32,10 @@ const primaryPhone = isEdit ? v(member?.primary_phone) : '';
 const secondaryPhone = isEdit ? v(member?.secondary_phone) : '';
 const lakeCivic = isEdit ? v(member?.lake_civic_number) : '';
 const lakeStreet = isEdit ? v(member?.lake_street_name) : '';
+const lakeSource = isEdit ? (member?.lake_address_source ?? null) : null;
+const lakePlaceId = isEdit ? v(member?.lake_google_place_id) : '';
+const lakeFormatted = isEdit ? v(member?.lake_formatted_address) : '';
+const lakeLocale = locale === 'fr' ? 'fr' : 'en';
 const addr = isEdit ? v(member?.primary_address) : '';
 const city = isEdit ? v(member?.primary_city) : '';
 const province = isEdit ? v(member?.primary_province) : '';
@@ -39,6 +43,13 @@ const country = isEdit ? v(member?.primary_country) : '';
 const postal = isEdit ? v(member?.primary_postal_code) : '';
 const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
 const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || secondaryEmail || secondaryPhone);
+
+const lakePlacesStrings = {
+	manualLink: t.profileLakeManualLink,
+	noSuggestions: t.profileLakeNoSuggestions,
+	backToSearch: t.profileLakeBackToSearch,
+	placesUnavailable: t.errorNetwork,
+};
 ---
 
 <MemberAppLayout lang={locale} title={title} description={description} heroTitle={heroTitle}>
@@ -142,11 +153,44 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 				<fieldset class="profileFieldset">
 					<legend class="profileLegend">{t.profileSectionLake}</legend>
 					<p class="fieldHelp">{t.profileLakeHelp}</p>
-					<label class="fieldLabel" for="lake_civic_number">{t.profileLakeCivic}</label>
-					<input class="fieldInput" id="lake_civic_number" name="lake_civic_number" type="text" value={lakeCivic} />
 
-					<label class="fieldLabel" for="lake_street_name">{t.profileLakeStreet}</label>
-					<input class="fieldInput" id="lake_street_name" name="lake_street_name" type="text" value={lakeStreet} />
+					<input type="hidden" name="lake_address_source" id="lake_address_source" value={lakeSource ?? ''} />
+					<input type="hidden" name="lake_google_place_id" id="lake_google_place_id" value={lakePlaceId} />
+					<input type="hidden" name="lake_formatted_address" id="lake_formatted_address" value={lakeFormatted} />
+					<input type="hidden" name="lake_civic_number" id="lake_civic_number" value={lakeCivic} />
+					<input type="hidden" name="lake_street_name" id="lake_street_name" value={lakeStreet} />
+
+					<div id="lake-search-section" class="lakeAddressSearchSection">
+						<label class="fieldLabel" for="lake-address-search">{t.profileLakeSearchLabel}</label>
+						<div class="lakeAddressSearchWrap">
+							<input
+								class="fieldInput"
+								id="lake-address-search"
+								type="text"
+								autocomplete="off"
+								placeholder={t.profileLakeSearchPlaceholder}
+								aria-autocomplete="list"
+								aria-controls="lake-address-suggestions"
+								aria-expanded="false"
+							/>
+							<ul id="lake-address-suggestions" class="lakeAddressSuggestList" hidden role="listbox"></ul>
+						</div>
+						<p id="lake-places-summary" class="lakeAddressSummary" hidden></p>
+						<button type="button" class="lakeAddressTextBtn" id="lake-manual-toggle">
+							{t.profileLakeManualLink}
+						</button>
+					</div>
+
+					<div id="lake-manual-section" class="lakeAddressManualSection" hidden>
+						<button type="button" class="lakeAddressTextBtn lakeAddressTextBtn--back" id="lake-back-search">
+							{t.profileLakeBackToSearch}
+						</button>
+						<label class="fieldLabel" for="lake_civic_visible">{t.profileLakeCivic}</label>
+						<input class="fieldInput" id="lake_civic_visible" type="text" autocomplete="off" value={lakeCivic} />
+
+						<label class="fieldLabel" for="lake_street_visible">{t.profileLakeStreet}</label>
+						<input class="fieldInput" id="lake_street_visible" type="text" autocomplete="off" value={lakeStreet} />
+					</div>
 				</fieldset>
 
 				<label class="checkLabel">
@@ -188,8 +232,17 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 		errAlreadyMember: t.profileErrorAlreadyMember,
 		errSave: t.profileErrorSave,
 		accountPath: paths.account,
+		lakeLocale,
+		lakePlacesStrings,
+		lakeInitialSource: lakeSource,
+		lakeInitialPlaceId: lakePlaceId,
+		lakeInitialFormatted: lakeFormatted,
+		lakeInitialCivic: lakeCivic,
+		lakeInitialStreet: lakeStreet,
 	}}
 >
+	import { initLakeAddressPlacesUi } from '../../scripts/lake-address-places-ui';
+
 	const form = document.getElementById('member-profile-form');
 	const msg = document.getElementById('profile-form-message');
 	const submitBtn = document.getElementById('profile-submit');
@@ -220,6 +273,61 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 
 	showSecondaryContact?.addEventListener('change', syncSecondaryFields);
 	syncSecondaryFields();
+
+	const lakeSearch = document.getElementById('lake-address-search');
+	const lakeSug = document.getElementById('lake-address-suggestions');
+	const lakeSearchSection = document.getElementById('lake-search-section');
+	const lakeManualSection = document.getElementById('lake-manual-section');
+	const lakeSummary = document.getElementById('lake-places-summary');
+	const lakeCivicH = document.getElementById('lake_civic_number');
+	const lakeStreetH = document.getElementById('lake_street_name');
+	const lakeSourceEl = document.getElementById('lake_address_source');
+	const lakePlaceIdEl = document.getElementById('lake_google_place_id');
+	const lakeFormattedEl = document.getElementById('lake_formatted_address');
+	const lakeManualBtn = document.getElementById('lake-manual-toggle');
+	const lakeBackBtn = document.getElementById('lake-back-search');
+	const lakeCivicVis = document.getElementById('lake_civic_visible');
+	const lakeStreetVis = document.getElementById('lake_street_visible');
+
+	if (
+		lakeSearch instanceof HTMLInputElement &&
+		lakeSug instanceof HTMLUListElement &&
+		lakeSearchSection instanceof HTMLElement &&
+		lakeManualSection instanceof HTMLElement &&
+		lakeCivicH instanceof HTMLInputElement &&
+		lakeStreetH instanceof HTMLInputElement &&
+		lakeSourceEl instanceof HTMLInputElement &&
+		lakePlaceIdEl instanceof HTMLInputElement &&
+		lakeFormattedEl instanceof HTMLInputElement &&
+		lakeManualBtn instanceof HTMLButtonElement &&
+		lakeBackBtn instanceof HTMLButtonElement &&
+		lakeCivicVis instanceof HTMLInputElement &&
+		lakeStreetVis instanceof HTMLInputElement
+	) {
+		initLakeAddressPlacesUi({
+			locale: lakeLocale,
+			strings: lakePlacesStrings,
+			searchInput: lakeSearch,
+			suggestionsEl: lakeSug,
+			searchSection: lakeSearchSection,
+			manualSection: lakeManualSection,
+			summaryEl: lakeSummary,
+			civicHidden: lakeCivicH,
+			streetHidden: lakeStreetH,
+			sourceInput: lakeSourceEl,
+			placeIdInput: lakePlaceIdEl,
+			formattedInput: lakeFormattedEl,
+			manualToggle: lakeManualBtn,
+			backToggle: lakeBackBtn,
+			civicVisible: lakeCivicVis,
+			streetVisible: lakeStreetVis,
+			initialSource: lakeInitialSource,
+			initialPlaceId: lakeInitialPlaceId,
+			initialFormatted: lakeInitialFormatted,
+			initialCivic: lakeInitialCivic,
+			initialStreet: lakeInitialStreet,
+		});
+	}
 
 	function trimOrNull(value) {
 		if (typeof value !== 'string') return null;
@@ -278,6 +386,18 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 		}
 	}
 
+	function syncLakeManualToHidden() {
+		const manualSec = document.getElementById('lake-manual-section');
+		const cv = document.getElementById('lake_civic_visible');
+		const sv = document.getElementById('lake_street_visible');
+		const ch = document.getElementById('lake_civic_number');
+		const sh = document.getElementById('lake_street_name');
+		if (manualSec && !manualSec.hidden && cv instanceof HTMLInputElement && sv instanceof HTMLInputElement && ch && sh) {
+			ch.value = cv.value.trim();
+			sh.value = sv.value.trim();
+		}
+	}
+
 	function payloadFromForm(fd) {
 		return {
 			first_name: fd.get('first_name') || null,
@@ -289,6 +409,9 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 			secondary_phone: fd.get('secondary_phone') || null,
 			lake_civic_number: fd.get('lake_civic_number') || null,
 			lake_street_name: fd.get('lake_street_name') || null,
+			lake_address_source: fd.get('lake_address_source') || null,
+			lake_google_place_id: fd.get('lake_google_place_id') || null,
+			lake_formatted_address: fd.get('lake_formatted_address') || null,
 			primary_address: preservedPrimaryAddress || null,
 			primary_city: preservedPrimaryCity || null,
 			primary_province: preservedPrimaryProvince || null,
@@ -303,6 +426,7 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 		if (!msg || !submitBtn) return;
 		msg.textContent = '';
 		submitBtn.setAttribute('disabled', 'true');
+		syncLakeManualToHidden();
 		const fd = new FormData(form);
 		const body = payloadFromForm(fd);
 		const validationError = validateBody(body);
@@ -524,6 +648,91 @@ const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || s
 
 	.profileActions > *:not(:first-child) {
 		margin-inline-start: 0.85rem;
+	}
+
+	.lakeAddressSearchSection {
+		display: block;
+	}
+
+	.lakeAddressSearchWrap {
+		position: relative;
+	}
+
+	.lakeAddressSuggestList {
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: calc(100% + 4px);
+		z-index: 20;
+		margin: 0;
+		padding: 0.25rem 0;
+		list-style: none;
+		border-radius: 10px;
+		border: 1px solid rgba(148, 163, 184, 0.45);
+		background: rgba(255, 255, 255, 0.98);
+		box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+		max-height: 14rem;
+		overflow: auto;
+	}
+
+	.lakeAddressSuggestList :global(.lakeAddressSuggestBtn) {
+		display: block;
+		width: 100%;
+		text-align: left;
+		padding: 0.55rem 0.85rem;
+		border: none;
+		background: transparent;
+		font: inherit;
+		color: var(--text, #0f172a);
+		cursor: pointer;
+		border-radius: 6px;
+	}
+
+	.lakeAddressSuggestList :global(.lakeAddressSuggestBtn:hover),
+	.lakeAddressSuggestList :global(.lakeAddressSuggestBtn:focus-visible) {
+		background: rgba(37, 99, 235, 0.08);
+		outline: none;
+	}
+
+	.lakeAddressSuggestList :global(.lakeAddressSuggestHint) {
+		padding: 0.5rem 0.85rem;
+		font-size: 0.88rem;
+		color: var(--color-muted, #64748b);
+	}
+
+	.lakeAddressSummary {
+		margin: 0.65rem 0 0;
+		padding: 0.65rem 0.85rem;
+		border-radius: 10px;
+		border: 1px solid rgba(37, 99, 235, 0.2);
+		background: rgba(239, 246, 255, 0.65);
+		font-size: 0.95rem;
+		line-height: 1.45;
+		color: var(--text, #0f172a);
+	}
+
+	.lakeAddressTextBtn {
+		display: inline-block;
+		margin-top: 0.65rem;
+		padding: 0;
+		border: none;
+		background: none;
+		font: inherit;
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: rgba(37, 99, 235, 0.95);
+		text-decoration: underline;
+		text-underline-offset: 0.15em;
+		cursor: pointer;
+	}
+
+	.lakeAddressTextBtn--back {
+		margin-top: 0;
+		margin-bottom: 0.75rem;
+	}
+
+	.lakeAddressManualSection {
+		display: block;
 	}
 
 	.profileBack {
