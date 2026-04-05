@@ -1,0 +1,129 @@
+---
+import '../styles/theme.css';
+import '../styles/components.css';
+import SiteHeader from '@/components/SiteHeader.astro';
+import SiteFooter from '@/components/SiteFooter.astro';
+import { notFoundCopy } from '@/i18n/notFound';
+import { siteUi } from '@/i18n/site';
+import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
+
+const siteFr = siteUi.fr;
+const title = `${notFoundCopy.documentTitle} | ${siteFr.siteNameSuffix}`;
+---
+
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={notFoundCopy.metaDescription} />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <Analytics />
+    <SpeedInsights />
+  </head>
+
+  <body>
+    <SiteHeader langToggleUsesHome />
+
+    <main id="main-content">
+      <section class="notFoundHero section" aria-labelledby="not-found-heading">
+        <div class="container notFoundInner">
+          <p class="notFoundCode" aria-hidden="true">{notFoundCopy.codeLabel}</p>
+          <h1 id="not-found-heading" class="notFoundHeadings">
+            <span class="notFoundLineFr">{notFoundCopy.headlineFr}</span>
+            <span class="notFoundSep" aria-hidden="true">·</span>
+            <span class="notFoundLineEn">{notFoundCopy.headlineEn}</span>
+          </h1>
+          <div class="notFoundBody muted">
+            <p>{notFoundCopy.bodyFr}</p>
+            <p>{notFoundCopy.bodyEn}</p>
+          </div>
+          <div class="notFoundActions">
+            <a href={notFoundCopy.ctaFrHref} class="btnPrimary">{notFoundCopy.ctaFr}</a>
+            <a href={notFoundCopy.ctaEnHref} class="btnGhost">{notFoundCopy.ctaEn}</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <SiteFooter />
+  </body>
+</html>
+
+<style>
+  .notFoundHero {
+    padding: clamp(48px, 12vw, 96px) 0 clamp(64px, 14vw, 120px);
+    background: linear-gradient(165deg, var(--panel2) 0%, var(--bg) 45%, rgba(72, 196, 255, 0.06) 100%);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .notFoundInner {
+    max-width: 36rem;
+  }
+
+  .notFoundCode {
+    margin: 0 0 12px;
+    font-size: clamp(3.5rem, 10vw, 5rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--text);
+    opacity: 0.12;
+  }
+
+  .notFoundHeadings {
+    margin: 0 0 24px;
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .notFoundSep {
+    margin: 0 0.35em;
+    opacity: 0.35;
+    font-weight: 400;
+  }
+
+  .notFoundLineEn {
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .notFoundBody {
+    margin: 0 0 32px;
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  .notFoundBody p {
+    margin: 0 0 0.65em;
+  }
+
+  .notFoundBody p:last-child {
+    margin-bottom: 0;
+  }
+
+  .notFoundActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+
+  @media (max-width: 520px) {
+    .notFoundActions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .notFoundActions .btnPrimary,
+    .notFoundActions .btnGhost {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
