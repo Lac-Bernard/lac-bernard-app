@@ -120,7 +120,7 @@ const adminKeys = [
 
 const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
 
-const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
+const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
 ---
 
 <MemberAppLayout
@@ -249,7 +249,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
                 <span class="adminField__label">{t.adminFilterTierLabel}</span>
                 <select id="admin-members-tier" name="tier" class="adminInput">
                   <option value="all">{t.adminFilterTierAll}</option>
-                  <option value="general">{t.adminFilterTierGeneral}</option>
+                  <option value="voting">{t.adminFilterTierGeneral}</option>
                   <option value="associate">{t.adminFilterTierAssociate}</option>
                 </select>
               </label>
@@ -373,7 +373,7 @@ const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
   if (raw) {
     const { adminStrings, tierLabels, defaultMembershipYear, adminMembersBase, numberLocale, locale } = JSON.parse(raw) as {
       adminStrings: Record<string, string>;
-      tierLabels: { general: string; associate: string };
+      tierLabels: { voting: string; associate: string };
       defaultMembershipYear: number;
       adminMembersBase: string;
       numberLocale: string;

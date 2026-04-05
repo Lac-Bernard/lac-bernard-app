@@ -136,8 +136,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		});
 	}
 
-	if (ms.tier === 'general') {
-		const { data: elig, error: eligErr } = await supabase.rpc('membership_general_eligibility', {
+	if (ms.tier === 'voting') {
+		const { data: elig, error: eligErr } = await supabase.rpc('membership_voting_eligibility', {
 			p_member_id: member.id,
 			p_year: currentYear,
 		});

@@ -289,7 +289,7 @@ function buildDataset(cy) {
 			id: mid(),
 			member_id: M.alex,
 			year: cy - 2,
-			tier: 'general',
+			tier: 'voting',
 			status: 'active',
 			created_at: `${cy - 2}-05-10T14:00:00Z`,
 		},
@@ -297,7 +297,7 @@ function buildDataset(cy) {
 			id: mid(),
 			member_id: M.alex,
 			year: cy - 1,
-			tier: 'general',
+			tier: 'voting',
 			status: 'active',
 			created_at: `${cy - 1}-04-02T11:20:00Z`,
 		},
@@ -305,7 +305,7 @@ function buildDataset(cy) {
 			id: mid(),
 			member_id: M.alex,
 			year: cy,
-			tier: 'general',
+			tier: 'voting',
 			status: 'pending',
 			created_at: `${cy}-03-01T09:00:00Z`,
 		},
@@ -316,7 +316,7 @@ function buildDataset(cy) {
 		id: marieCy,
 		member_id: M.marie,
 		year: cy,
-		tier: 'general',
+		tier: 'voting',
 		status: 'active',
 		created_at: `${cy}-03-18T16:45:00Z`,
 	});
@@ -345,7 +345,7 @@ function buildDataset(cy) {
 			id: sophieIds[1],
 			member_id: M.sophie,
 			year: cy - 1,
-			tier: 'general',
+			tier: 'voting',
 			status: 'active',
 			created_at: `${cy - 1}-05-20T12:00:00Z`,
 		},
@@ -353,15 +353,15 @@ function buildDataset(cy) {
 			id: sophieIds[2],
 			member_id: M.sophie,
 			year: cy,
-			tier: 'general',
+			tier: 'voting',
 			status: 'active',
 			created_at: `${cy}-03-05T13:30:00Z`,
 		},
 	);
 
 	for (const [midM, tier] of [
-		[M.lucas, 'general'],
-		[M.marc, 'general'],
+		[M.lucas, 'voting'],
+		[M.marc, 'voting'],
 		[M.julie, 'associate'],
 	]) {
 		memberships.push({
@@ -378,7 +378,7 @@ function buildDataset(cy) {
 		id: mid(),
 		member_id: M.emma,
 		year: cy + 2,
-		tier: 'general',
+		tier: 'voting',
 		status: 'pending',
 		created_at: `${cy}-03-22T15:00:00Z`,
 	});
@@ -388,7 +388,7 @@ function buildDataset(cy) {
 		id: noahPrev,
 		member_id: M.noah,
 		year: cy - 1,
-		tier: 'general',
+		tier: 'voting',
 		status: 'active',
 		created_at: `${cy - 1}-07-01T12:00:00Z`,
 	});
@@ -398,7 +398,7 @@ function buildDataset(cy) {
 		id: chloeCy,
 		member_id: M.chloe,
 		year: cy,
-		tier: 'general',
+		tier: 'voting',
 		status: 'active',
 		created_at: `${cy}-03-25T18:10:00Z`,
 	});
@@ -408,7 +408,7 @@ function buildDataset(cy) {
 		id: novaPendingCy,
 		member_id: M.nova,
 		year: cy,
-		tier: 'general',
+		tier: 'voting',
 		status: 'pending',
 		created_at: `${cy}-03-28T10:00:00Z`,
 	});
@@ -418,7 +418,7 @@ function buildDataset(cy) {
 		id: rileyPrevYear,
 		member_id: M.riley,
 		year: cy - 1,
-		tier: 'general',
+		tier: 'voting',
 		status: 'active',
 		created_at: `${cy - 1}-09-01T12:00:00Z`,
 	});

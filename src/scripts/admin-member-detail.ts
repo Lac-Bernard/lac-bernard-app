@@ -113,7 +113,7 @@ function longCell(s: string | null | undefined): string {
 
 export function initAdminMemberDetail(
 	strings: AdminConsoleStrings,
-	tierLabels: { general: string; associate: string },
+	tierLabels: { voting: string; associate: string },
 	memberId: string,
 	calendarYear: number,
 	numberLocale: string,
@@ -185,8 +185,8 @@ export function initAdminMemberDetail(
 	let selectedYear = calendarYear;
 
 	function tierLabelFor(ms: MembershipRow): string {
-		return ms.tier === 'general'
-			? tierLabels.general
+		return ms.tier === 'voting'
+			? tierLabels.voting
 			: ms.tier === 'associate'
 				? tierLabels.associate
 				: ms.tier;
@@ -279,7 +279,7 @@ export function initAdminMemberDetail(
 
 	function addMembershipErrorMessage(code: string | undefined): string {
 		if (code === 'no_lake_address') return t(strings, 'adminAddMemberErrorNoLake');
-		if (code === 'general_address_taken') return t(strings, 'adminAddMemberErrorAddressTaken');
+		if (code === 'voting_address_taken') return t(strings, 'adminAddMemberErrorAddressTaken');
 		if (code === 'already_exists') return t(strings, 'adminAddMemberErrorDuplicateYear');
 		return t(strings, 'adminErrorGeneric');
 	}

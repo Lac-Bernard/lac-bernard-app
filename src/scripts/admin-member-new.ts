@@ -86,7 +86,7 @@ export function initAdminMemberNew(
 
 	function createErrorMessage(code: string | undefined): string {
 		if (code === 'no_lake_address') return t(strings, 'adminAddMemberErrorNoLake');
-		if (code === 'general_address_taken') return t(strings, 'adminAddMemberErrorAddressTaken');
+		if (code === 'voting_address_taken') return t(strings, 'adminAddMemberErrorAddressTaken');
 		if (code === 'already_exists') return t(strings, 'adminAddMemberErrorDuplicateYear');
 		if (code === 'member_not_found' || code === 'not_found') return t(strings, 'adminAddMemberErrorMemberNotFound');
 		return t(strings, 'adminErrorGeneric');

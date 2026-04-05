@@ -73,14 +73,14 @@ const lakeAddressLine =
 	member?.lake_civic_number?.trim() && member?.lake_street_name?.trim()
 		? `${member.lake_civic_number.trim()} ${member.lake_street_name.trim()}`
 		: '';
-const tierGeneralExplainerWithAddressResolved = lakeAddressLine
+const tierVotingExplainerWithAddressResolved = lakeAddressLine
 	? t.tierGeneralExplainerWithAddress.replace('{{lakeAddress}}', lakeAddressLine)
 	: t.tierGeneralExplainer;
 
-const generalCents = membershipCentsForTier('general');
+const votingCents = membershipCentsForTier('voting');
 const associateCents = membershipCentsForTier('associate');
-const generalFeeCad =
-	generalCents != null ? (generalCents / 100).toFixed(2) : '0.00';
+const votingFeeCad =
+	votingCents != null ? (votingCents / 100).toFixed(2) : '0.00';
 const associateFeeCad =
 	associateCents != null ? (associateCents / 100).toFixed(2) : '0.00';
 
@@ -208,7 +208,7 @@ const hasSecondaryContactInfo = Boolean(
                         <span class="activeTierName">{thisYearTierLabel}</span>
                         <span class="activeTierFee">{activeMembershipFeeCad} CAD</span>
                       </div>
-                      {thisYearMembership?.tier === 'general' && (
+                      {thisYearMembership?.tier === 'voting' && (
                         <div class="activeTierVote">
                           <p class="activeTierVoteLabel">{t.statusActiveGeneralVoteLabel}</p>
                           <p class="activeTierVoteAddress">{lakeAddressLine || t.homeAddressNotOnFile}</p>
@@ -373,7 +373,7 @@ const hasSecondaryContactInfo = Boolean(
                           <input
                             type="radio"
                             name="tier"
-                            value="general"
+                            value="voting"
                             checked={hasLakeAddress}
                             disabled={!hasLakeAddress}
                             title={!hasLakeAddress ? t.tierGeneralBlockedLead : undefined}
@@ -381,10 +381,10 @@ const hasSecondaryContactInfo = Boolean(
                           <span class="tierOptionBody">
                             <span class="tierOptionTitleRow">
                               <span class="tierOptionTitle">{t.tierGeneral}</span>
-                              <span class="tierOptionPriceBadge">{generalFeeCad} CAD</span>
+                              <span class="tierOptionPriceBadge">{votingFeeCad} CAD</span>
                             </span>
                             <span class="tierOptionExplainer">
-                              {hasLakeAddress ? tierGeneralExplainerWithAddressResolved : t.tierGeneralExplainer}
+                              {hasLakeAddress ? tierVotingExplainerWithAddressResolved : t.tierGeneralExplainer}
                             </span>
                           </span>
                         </label>
@@ -503,7 +503,7 @@ const hasSecondaryContactInfo = Boolean(
       if (code === 'already_active') return errAlreadyActive;
       if (code === 'already_pending') return errAlreadyPending;
       if (code === 'no_lake_address') return errNoLake;
-      if (code === 'general_address_taken') return errGeneralTaken;
+      if (code === 'voting_address_taken') return errGeneralTaken;
       return errCreateGeneric;
     }
 
@@ -633,7 +633,7 @@ const hasSecondaryContactInfo = Boolean(
             checkoutMsg.textContent = errCheckoutInvalidDonationNote;
           } else if (data.error === 'no_lake_address') {
             checkoutMsg.textContent = errNoLake;
-          } else if (data.error === 'general_address_taken') {
+          } else if (data.error === 'voting_address_taken') {
             checkoutMsg.textContent = errGeneralTaken;
           } else if (data.error === 'stripe_misconfigured') {
             checkoutMsg.textContent = errCheckoutStripeMisconfigured;

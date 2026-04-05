@@ -106,7 +106,7 @@ const adminKeys = [
 
 const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
 
-const tierLabels = { general: t.tierGeneral, associate: t.tierAssociate };
+const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
 const adminMembersTabHref = `${paths.admin}?tab=members`;
 ---
 
@@ -258,7 +258,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
         <label>
           {t.membershipTableType}
           <select name="tier" required class="adminInput" id="admin-add-ms-tier">
-            <option value="general">{t.tierGeneral}</option>
+            <option value="voting">{t.tierGeneral}</option>
             <option value="associate">{t.tierAssociate}</option>
           </select>
         </label>
@@ -312,7 +312,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   if (raw) {
     const { adminStrings, tierLabels, memberId, calendarYear, numberLocale } = JSON.parse(raw) as {
       adminStrings: Record<string, string>;
-      tierLabels: { general: string; associate: string };
+      tierLabels: { voting: string; associate: string };
       memberId: string;
       calendarYear: number;
       numberLocale: string;

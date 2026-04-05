@@ -263,7 +263,7 @@ export const memberCopy: Record<
 		statusActiveYearScope: string;
 		/** When the member has prepaid future years; {{count}} is a number */
 		statusActivePrepaidTeaser: string;
-		/** Shown under general tier when active — line above the lake civic address */
+		/** Shown under voting tier when active — line above the lake civic address */
 		statusActiveGeneralVoteLabel: string;
 		statusInactiveTitle: string;
 		statusInactiveLead: string;
@@ -503,9 +503,9 @@ export const memberCopy: Record<
 		adminAddMembershipDialogTitle: 'Add membership',
 		adminAddMembershipSubmit: 'Add membership',
 		adminAddMemberErrorNoLake:
-			'General membership requires a lake civic number and street on this profile. Save the profile first, then try again.',
+			'Voting membership requires a lake civic number and street on this profile. Save the profile first, then try again.',
 		adminAddMemberErrorAddressTaken:
-			'Another member at this lake address already has a general membership for this year.',
+			'Another member at this lake address already has a voting membership for this year.',
 		adminAddMemberErrorDuplicateYear: 'This member already has a membership for that year.',
 		adminAddMemberErrorMemberNotFound: 'Member not found.',
 		adminLoading: 'Loading…',
@@ -537,7 +537,7 @@ export const memberCopy: Record<
 		adminMembershipYearLabel: 'Membership year',
 		adminFilterTierLabel: 'Membership type',
 		adminFilterTierAll: 'All types',
-		adminFilterTierGeneral: 'General only',
+		adminFilterTierGeneral: 'Voting only',
 		adminFilterTierAssociate: 'Associate only',
 		adminMemberStatusFilterLabel: 'Record status',
 		adminMemberStatusFilterVerified: 'Verified (default)',
@@ -572,19 +572,19 @@ export const memberCopy: Record<
 		membershipTableStatus: 'Status',
 		membershipStatusActive: 'Active',
 		membershipStatusPending: 'Pending payment',
-		tierGeneral: 'General',
+		tierGeneral: 'Voting',
 		tierAssociate: 'Associate',
 		tierGeneralExplainer:
 			'Voting membership. One per lake property per calendar year. Requires a lake civic number and street on your profile.',
 		tierGeneralExplainerWithAddress:
-			'You’re purchasing the general membership for {{lakeAddress}}. You’ll be the voting member for that address for this year. Only one general membership is allowed per property per calendar year.',
+			'You’re purchasing voting membership for {{lakeAddress}}. You’ll be the voting member for that address for this year. Only one voting membership is allowed per property per calendar year.',
 		tierAssociateExplainer: 'Non-voting. Lake address is optional.',
 		tierGeneralBlockedLead:
-			'To request general membership, add your lake civic number and street under your profile:',
+			'To request voting membership, add your lake civic number and street under your profile:',
 		pendingCreateErrorNoLakeAddress:
-			'General membership requires a lake civic number and street on your profile.',
+			'Voting membership requires a lake civic number and street on your profile.',
 		pendingCreateErrorGeneralAddressTaken:
-			'Another member at this lake address already has a general membership for this year.',
+			'Another member at this lake address already has a voting membership for this year.',
 		noMemberForEmail:
 			'We could not find a member profile linked to this sign-in email. If you use another address on file, sign in with that email or contact the association.',
 		statusActiveTitle: 'Your {{year}} membership is active',
@@ -594,8 +594,8 @@ export const memberCopy: Record<
 			'You also have {{count}} prepaid year(s) on file—see the section below.',
 		statusActiveGeneralVoteLabel: 'Voting membership for this lake address:',
 		statusInactiveTitle: 'No active membership for {{year}}',
-		statusInactiveLead: 'Choose a membership type below, then start your request. General membership needs a lake address on your profile.',
-		statusInactiveStep1: 'Pick general (voting) or associate (non-voting).',
+		statusInactiveLead: 'Choose a membership type below, then start your request. Voting membership needs a lake address on your profile.',
+		statusInactiveStep1: 'Pick voting or associate (non-voting).',
 		statusInactiveStep2: 'Submit the request — you’ll get payment instructions next.',
 		statusInactiveStep3: 'Your membership activates when payment is received or recorded by the association.',
 		tierChoiceLegend: 'Membership type',
@@ -666,9 +666,9 @@ export const memberCopy: Record<
 		profileSecondaryMemberHelp:
 			'You can add a secondary contact’s name and details to your member record if you wish, for record-keeping purposes.',
 		profileLakeHelp:
-			'Enter the Lac Bernard address tied to this household. A general membership requires this address.',
+			'Enter the Lac Bernard address tied to this household. Voting membership requires this address.',
 		profileLakeDisplayHelp:
-			'This is the Lac Bernard address on file for your household and the address tied to a general membership.',
+			'This is the Lac Bernard address on file for your household and the address tied to voting membership.',
 		profileFirstName: 'First name',
 		profileLastName: 'Last name',
 		profileSecondaryFirstName: 'First name',
@@ -836,9 +836,9 @@ export const memberCopy: Record<
 		adminAddMembershipDialogTitle: 'Ajouter une adhésion',
 		adminAddMembershipSubmit: 'Ajouter',
 		adminAddMemberErrorNoLake:
-			'L’adhésion générale exige un numéro civique et une rue au lac dans ce profil. Enregistrez le profil d’abord, puis réessayez.',
+			'L’adhésion avec droit de vote exige un numéro civique et une rue au lac dans ce profil. Enregistrez le profil d’abord, puis réessayez.',
 		adminAddMemberErrorAddressTaken:
-			'Un autre membre à cette adresse au lac a déjà une adhésion générale pour cette année.',
+			'Un autre membre à cette adresse au lac a déjà une adhésion avec droit de vote pour cette année.',
 		adminAddMemberErrorDuplicateYear: 'Ce membre a déjà une adhésion pour cette année.',
 		adminAddMemberErrorMemberNotFound: 'Membre introuvable.',
 		adminLoading: 'Chargement…',
@@ -871,7 +871,7 @@ export const memberCopy: Record<
 		adminMembershipYearLabel: 'Année d’adhésion',
 		adminFilterTierLabel: 'Type d’adhésion',
 		adminFilterTierAll: 'Tous les types',
-		adminFilterTierGeneral: 'Générale seulement',
+		adminFilterTierGeneral: 'Avec droit de vote seulement',
 		adminFilterTierAssociate: 'Associée seulement',
 		adminMemberStatusFilterLabel: 'Statut du dossier',
 		adminMemberStatusFilterVerified: 'Vérifiés (défaut)',
@@ -906,19 +906,19 @@ export const memberCopy: Record<
 		membershipTableStatus: 'Statut',
 		membershipStatusActive: 'Active',
 		membershipStatusPending: 'En attente de paiement',
-		tierGeneral: 'Générale',
+		tierGeneral: 'Votant',
 		tierAssociate: 'Associée',
 		tierGeneralExplainer:
 			'Adhésion avec droit de vote. Une par propriété au lac pour l’année civile. Exige le numéro civique et la rue au lac dans votre profil.',
 		tierGeneralExplainerWithAddress:
-			'Vous achetez l’adhésion générale pour {{lakeAddress}}. Vous serez le membre ayant le droit de vote pour cette adresse cette année. Une seule adhésion générale est permise par propriété par année civile.',
+			'Vous achetez l’adhésion avec droit de vote pour {{lakeAddress}}. Vous serez le membre ayant le droit de vote pour cette adresse cette année. Une seule adhésion avec droit de vote est permise par propriété par année civile.',
 		tierAssociateExplainer: 'Sans droit de vote. L’adresse au lac est facultative.',
 		tierGeneralBlockedLead:
-			'Pour l’adhésion générale, ajoutez le numéro civique et la rue au lac dans votre profil :',
+			'Pour l’adhésion avec droit de vote, ajoutez le numéro civique et la rue au lac dans votre profil :',
 		pendingCreateErrorNoLakeAddress:
-			'L’adhésion générale exige un numéro civique et une rue au lac dans votre profil.',
+			'L’adhésion avec droit de vote exige un numéro civique et une rue au lac dans votre profil.',
 		pendingCreateErrorGeneralAddressTaken:
-			'Un autre membre à cette adresse au lac a déjà une adhésion générale pour cette année.',
+			'Un autre membre à cette adresse au lac a déjà une adhésion avec droit de vote pour cette année.',
 		noMemberForEmail:
 			'Aucun profil membre n’est lié à cette adresse de connexion. Si vous utilisez une autre adresse dans nos dossiers, connectez-vous avec celle-ci ou communiquez avec l’association.',
 		statusActiveTitle: 'Votre adhésion {{year}} est active',
@@ -929,8 +929,8 @@ export const memberCopy: Record<
 		statusActiveGeneralVoteLabel: 'Adhésion avec droit de vote pour l’adresse au lac :',
 		statusInactiveTitle: 'Aucune adhésion active pour {{year}}',
 		statusInactiveLead:
-			'Choisissez un type d’adhésion ci-dessous, puis démarrez votre demande. L’adhésion générale exige une adresse au lac dans votre profil.',
-		statusInactiveStep1: 'Choisissez l’adhésion générale (droit de vote) ou associée (sans droit de vote).',
+			'Choisissez un type d’adhésion ci-dessous, puis démarrez votre demande. L’adhésion avec droit de vote exige une adresse au lac dans votre profil.',
+		statusInactiveStep1: 'Choisissez l’adhésion avec droit de vote ou associée (sans droit de vote).',
 		statusInactiveStep2: 'Envoyez la demande — les instructions de paiement suivront.',
 		statusInactiveStep3: 'Votre adhésion devient active lorsque le paiement est reçu ou enregistré par l’association.',
 		tierChoiceLegend: 'Type d’adhésion',
@@ -1002,9 +1002,9 @@ export const memberCopy: Record<
 		profileSecondaryMemberHelp:
 			'Vous pouvez ajouter le nom et les coordonnées d’un contact secondaire à votre dossier membre, si vous le souhaitez, à des fins de tenue de dossier.',
 		profileLakeHelp:
-			'Indiquez l’adresse au lac Bernard liée à ce foyer. Une adhésion générale exige cette adresse.',
+			'Indiquez l’adresse au lac Bernard liée à ce foyer. L’adhésion avec droit de vote exige cette adresse.',
 		profileLakeDisplayHelp:
-			"Voici l’adresse au lac Bernard associée à votre foyer et liée à une adhésion générale.",
+			'Voici l’adresse au lac Bernard associée à votre foyer et liée à une adhésion avec droit de vote.',
 		profileFirstName: 'Prénom',
 		profileLastName: 'Nom',
 		profileSecondaryFirstName: 'Prénom',
@@ -1036,7 +1036,7 @@ export const memberCopy: Record<
 
 export function membershipTierLabel(tier: string, locale: MemberLocale): string {
 	const t = memberCopy[locale];
-	if (tier === 'general') return t.tierGeneral;
+	if (tier === 'voting' || tier === 'general') return t.tierGeneral;
 	if (tier === 'associate') return t.tierAssociate;
 	return tier;
 }

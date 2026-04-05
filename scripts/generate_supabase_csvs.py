@@ -8,7 +8,7 @@ First Name is split on the first `` & ``, `` / ``, or `` and `` into first_name 
 
 Imports align with the current schema (tier fees, payment split, membership status):
   payments.amount = membership_amount + donation_amount; donation_amount is 0 for these rows.
-  Tier fees: general $75, associate $25 (same as membership_tier_fee_amount / Stripe checkout).
+  Tier fees: voting $75, associate $25 (same as membership_tier_fee_amount / Stripe checkout).
   Payment/membership created_at and payment date: Jan 1 (America/Toronto) of
   min(membership_year, current_year) so prepaid future years do not sort above
   current activity in the admin UI. Actual membership year stays on memberships.year.
@@ -55,7 +55,7 @@ import pandas as pd
 from dotenv import load_dotenv
 
 # Must match public.membership_tier_fee_amount / MEMBERSHIP_TIER_CENTS (src/lib/membership/stripeCheckout.ts).
-TIER_FEE_DOLLARS = {"general": 75, "associate": 25}
+TIER_FEE_DOLLARS = {"voting": 75, "associate": 25}
 
 TZ = ZoneInfo("America/Toronto")
 
@@ -86,8 +86,10 @@ METHOD_MAP = {
 }
 
 TIER_MAP = {
-    "voting member":    "general",
+    "voting member":    "voting",
     "associate member": "associate",
+    "general member":   "voting",
+    "general":          "voting",
 }
 
 IMPORT_PAYMENT_NOTE_BASE = (
