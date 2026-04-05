@@ -10,5 +10,3 @@ Alors que le développement de la colonisation s'est étendu, les territoires tr
 Aujourd'hui, elles jouent un rôle actif dans la prise de décision régionale, la gestion environnementale et la revitalisation culturelle, garantissant que leur lien ancestral avec la terre reste visible et respecté au milieu de l'utilisation récréative croissante.
 
 Nous n'avons pas encore construit un dossier documentaire du rôle important que ces communautés jouent dans la vie de la région et, surtout, dans la vie de notre communauté autour du lac Bernard. Veuillez nous aider à combler cette lacune en contribuant vos documents et surtout vos histoires. Ce sont ces documents et histoires qui permettront à nos communautés respectives de mieux se comprendre et s'apprécier mutuellement, et de profiter des avantages de ce que chacune a à offrir à l'autre.
-
-<a href="https://drive.google.com/drive/folders/10xTw41zINMi-csg6-GE1NuTYVhFCU4GK?usp=share_link" target="_blank" rel="noopener noreferrer" class="drive-link-button">Voir les documents des Premières Nations dans Google Drive →</a>

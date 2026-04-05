@@ -42,6 +42,12 @@ export function getStripeWebhookSecret(): string {
 	return key.trim();
 }
 
+/** Server-only: same JSON as Sheets sync; used by the public Drive folder browser API. */
+export function getGoogleServiceAccountJsonOptional(): string | null {
+	const raw = getServerEnv('GOOGLE_SERVICE_ACCOUNT_JSON');
+	return typeof raw === 'string' && raw.trim() ? raw.trim() : null;
+}
+
 /** Server-only: Google Sheets spreadsheet id + service account JSON for scheduled syncs. */
 export function getGoogleSheetsEnv(): { sheetId: string; serviceAccountJson: string } {
 	const sheetId = getServerEnv('GOOGLE_SHEET_ID');

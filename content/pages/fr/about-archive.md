@@ -14,5 +14,3 @@ Vous pouvez également rechercher par mot-clé dans les titres des fichiers et, 
 L'archiviste de l'Association, Charles Topp (archives@lacbernard.ca), soutenu par les membres du comité Histoire et Archives, est le gardien des dossiers. Bien que des copies de photos, documents et histoires orales puissent être utilisées à diverses fins (publication sur le site Web, réponse aux demandes, etc.), l'archiviste de l'Association est responsable du stockage et de la maintenance des copies maîtres en tant qu'archives de l'Association.
 
 Si vous avez des questions ou besoin d'aide pour accéder et rechercher dans les archives, veuillez contacter : archives@lacbernard.ca
-
-<a href="https://drive.google.com/drive/folders/1FymO4jIrA_Xa4a2mwRo-UnTsWZQOOOCf" target="_blank" rel="noopener noreferrer" class="drive-link-button">Ouvrir le dossier d'archives dans Google Drive →</a>

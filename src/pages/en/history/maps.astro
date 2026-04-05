@@ -1,5 +1,6 @@
 ---
 import Page from '@/layouts/Page.astro';
+import DriveFolderBrowser from '@/components/DriveFolderBrowser.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
 const page = await loadContentPage('en', 'history-maps');
@@ -7,4 +8,8 @@ const title = page.frontmatter?.title ?? "Maps";
 const description = page.frontmatter?.description;
 ---
 
-<Page title={title} description={description} content={page} section="history" />
+<Page title={title} description={description} content={page} section="history">
+  <div slot="extra">
+    <DriveFolderBrowser rootFolderId="1dVjk4UBQvUVXI70q1k5DCUK4YTSYdFuq" locale="en" />
+  </div>
+</Page>

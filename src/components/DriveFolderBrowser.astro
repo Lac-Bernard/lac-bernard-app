@@ -1,0 +1,20 @@
+---
+interface Props {
+	rootFolderId: string;
+	locale: 'en' | 'fr';
+}
+
+const { rootFolderId, locale } = Astro.props;
+---
+
+<div class="drive-folder-browser" data-root-folder-id={rootFolderId} data-locale={locale}></div>
+<script>
+	import { mountDriveFolderBrowser } from '../scripts/driveFolderBrowserMount';
+
+	document.querySelectorAll('.drive-folder-browser:not([data-drive-mounted])').forEach((node) => {
+		if (node instanceof HTMLElement) {
+			node.setAttribute('data-drive-mounted', '1');
+			mountDriveFolderBrowser(node);
+		}
+	});
+</script>

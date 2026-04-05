@@ -302,6 +302,486 @@
   outline-offset: 2px;
 }
 
+/* Embedded Google Drive folder browser (list view) */
+.drive-folder-browser {
+  --dfb-radius: 14px;
+  --dfb-row-pad-y: 11px;
+  --dfb-row-pad-x: 14px;
+  /* Fixed list viewport (desktop file-manager pattern): page height stays stable when folder size changes. */
+  --dfb-list-viewport: min(55vh, 520px);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin-top: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--dfb-radius);
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 6px 20px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.prose .drive-folder-browser {
+  max-width: none;
+  width: 100%;
+}
+
+.drive-folder-browser__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 0, 0, 0.04));
+  border-bottom: 1px solid var(--border);
+}
+
+.drive-folder-browser__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.drive-folder-browser__back::before {
+  content: '←';
+  font-size: 14px;
+  opacity: 0.65;
+}
+
+.drive-folder-browser__back:hover:not(:disabled) {
+  background: rgba(72, 196, 255, 0.08);
+  border-color: rgba(72, 196, 255, 0.35);
+}
+
+.drive-folder-browser__back:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.drive-folder-browser__back:focus-visible {
+  outline: 2px solid rgba(72, 196, 255, 0.55);
+  outline-offset: 2px;
+}
+
+.drive-folder-browser__open-drive {
+  margin-left: auto;
+  font-size: 15px;
+  font-weight: 500;
+  color: #0066cc;
+  text-decoration: none;
+  padding: 6px 4px;
+  border-radius: 6px;
+}
+
+.drive-folder-browser__open-drive:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.drive-folder-browser__open-drive:focus-visible {
+  outline: 2px solid rgba(72, 196, 255, 0.55);
+  outline-offset: 2px;
+}
+
+.prose .drive-folder-browser__open-drive,
+.prose a.drive-folder-browser__open-drive {
+  color: #0066cc !important;
+  text-decoration: none !important;
+}
+
+.prose .drive-folder-browser__open-drive:hover {
+  text-decoration: underline !important;
+}
+
+.drive-folder-browser__crumbs {
+  padding: 8px 16px 10px;
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid var(--border);
+}
+
+.drive-folder-browser__crumb-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.drive-folder-browser__crumb-item {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+}
+
+.drive-folder-browser__crumb-item:not(:last-child)::after {
+  content: '/';
+  margin: 0 0.45rem;
+  color: rgba(0, 0, 0, 0.22);
+  font-size: 13px;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.drive-folder-browser__crumb {
+  max-width: min(14rem, 42vw);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: none;
+  background: transparent;
+  padding: 2px 4px;
+  margin: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: #0066cc;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 4px;
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 102, 204, 0.25);
+  text-underline-offset: 2px;
+}
+
+.drive-folder-browser__crumb:hover {
+  text-decoration-color: rgba(0, 102, 204, 0.55);
+}
+
+.drive-folder-browser__crumb:focus-visible {
+  outline: 2px solid rgba(72, 196, 255, 0.55);
+  outline-offset: 2px;
+}
+
+.drive-folder-browser__crumb--current {
+  color: var(--text);
+  font-weight: 600;
+  cursor: default;
+  text-decoration: none;
+}
+
+.prose .drive-folder-browser__crumb {
+  color: #0066cc !important;
+}
+
+.prose .drive-folder-browser__crumb--current {
+  color: var(--text) !important;
+}
+
+/* Holds loading / error / empty-folder messages (aria-live). Hidden when blank so it doesn’t leave a gap. */
+.drive-folder-browser__status {
+  padding: 10px 16px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.drive-folder-browser__status:empty {
+  display: none;
+}
+
+.drive-folder-browser__status--error {
+  color: #b91c1c;
+  font-weight: 500;
+  padding-bottom: 12px;
+}
+
+.drive-folder-browser__scroll-wrap {
+  position: relative;
+  height: var(--dfb-list-viewport);
+  border-top: 1px solid var(--border);
+}
+
+.drive-folder-browser__scroll {
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.35) rgba(0, 0, 0, 0.07);
+  background: rgba(250, 250, 250, 0.85);
+}
+
+.drive-folder-browser__scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.drive-folder-browser__scroll::-webkit-scrollbar-track {
+  margin: 2px 0;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+}
+
+.drive-folder-browser__scroll::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.32);
+  border-radius: 6px;
+  border: 2px solid rgba(250, 250, 250, 0.85);
+  background-clip: padding-box;
+}
+
+.drive-folder-browser__scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.45);
+  background-clip: padding-box;
+}
+
+/* Bottom fade + cue when there is more content below. */
+.drive-folder-browser__scroll-fade {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 52px;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    rgba(250, 250, 250, 0) 0%,
+    rgba(250, 250, 250, 0.5) 35%,
+    rgba(235, 240, 246, 0.96) 100%
+  );
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.07);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.drive-folder-browser__scroll-fade::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 7px;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 7px solid rgba(0, 0, 0, 0.28);
+}
+
+.drive-folder-browser__scroll-wrap--more-below .drive-folder-browser__scroll-fade {
+  opacity: 1;
+}
+
+/* Programmatic focus keeps scroll position when the active row button is removed; don’t show a ring. */
+.drive-folder-browser__scroll:focus {
+  outline: none;
+}
+
+.drive-folder-browser__list-head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 var(--dfb-row-pad-x);
+  min-height: 40px;
+  background: rgba(250, 250, 250, 0.97);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(6px);
+}
+
+.drive-folder-browser__list-head-label {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.drive-folder-browser__item-count {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 5.5rem;
+  height: 22px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: 0.01em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.drive-folder-browser__spinner {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-top-color: rgba(72, 196, 255, 0.95);
+  border-radius: 50%;
+  animation: drive-folder-browser-spin 0.7s linear infinite;
+}
+
+@keyframes drive-folder-browser-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.drive-folder-browser__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.drive-folder-browser__list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0 8px;
+}
+
+.drive-folder-browser__row {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.drive-folder-browser__row:last-child {
+  border-bottom: none;
+}
+
+.drive-folder-browser__row:nth-child(even) .drive-folder-browser__row-btn {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.drive-folder-browser__row-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  padding: var(--dfb-row-pad-y) var(--dfb-row-pad-x);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--text);
+  transition: background 0.12s ease;
+}
+
+.drive-folder-browser__row-btn:hover {
+  background: rgba(72, 196, 255, 0.1) !important;
+}
+
+.drive-folder-browser__row-btn:focus-visible {
+  outline: 2px solid rgba(72, 196, 255, 0.55);
+  outline-offset: -2px;
+  position: relative;
+  z-index: 0;
+}
+
+.drive-folder-browser__row--folder .drive-folder-browser__row-btn {
+  font-weight: 500;
+}
+
+.drive-folder-browser__row--file .drive-folder-browser__name {
+  font-weight: 400;
+  color: rgba(0, 0, 0, 0.82);
+}
+
+.drive-folder-browser__row--folder .drive-folder-browser__row-btn::after {
+  content: '›';
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 1.15rem;
+  font-weight: 300;
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+.drive-folder-browser__row--file .drive-folder-browser__row-btn::after {
+  content: '↗';
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.drive-folder-browser__row--file .drive-folder-browser__row-btn:hover::after {
+  opacity: 0.55;
+}
+
+.drive-folder-browser__glyph {
+  width: 22px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 3px;
+}
+
+.drive-folder-browser__glyph--folder {
+  background: linear-gradient(145deg, #ffe08a 0%, #e8b84a 45%, #c9a227 100%);
+  box-shadow:
+    0 0 0 1px rgba(180, 140, 40, 0.35) inset,
+    0 1px 2px rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.drive-folder-browser__glyph--folder::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  right: 4px;
+  top: 2px;
+  height: 5px;
+  border-radius: 2px 3px 0 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.1));
+}
+
+.drive-folder-browser__glyph--file {
+  background: linear-gradient(180deg, #fff 0%, #f1f5f9 100%);
+  box-shadow:
+    0 0 0 1px var(--border) inset,
+    0 1px 2px rgba(0, 0, 0, 0.04);
+  position: relative;
+}
+
+.drive-folder-browser__glyph--file::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 6px;
+  height: 6px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 0 2px 0 0;
+  background: linear-gradient(135deg, transparent 50%, rgba(0, 0, 0, 0.06) 50%);
+}
+
+.drive-folder-browser__name {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 /* Cards */
 .card {
   border: 1px solid var(--border);

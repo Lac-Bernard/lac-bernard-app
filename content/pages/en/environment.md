@@ -46,8 +46,6 @@ The good news is we can all have a positive impact in these areas by following s
 
 ## Reports
 
-<a href="https://drive.google.com/drive/folders/1pLhabTA7ZbPmijuT2lexmZd8AmXvjcyY" target="_blank" rel="noopener noreferrer" class="drive-link-button">View Environment Reports in Google Drive →</a>
-
 ## What the Association is Doing
 
 ### Monitor

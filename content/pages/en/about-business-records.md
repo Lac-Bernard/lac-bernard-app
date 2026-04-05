@@ -10,5 +10,3 @@ Records generated in year 1 are retained until the end of calendar year 3, thus 
 As soon as a record is made available in this section it is copied to the archives. As a result, even though it will eventually be deleted, it will be available in the Archives.
 
 We hope this section will be useful in providing you with quick and ready access to the essential information you need in order to keep engaged in the work of the Association and to be an active participant in setting its strategic direction.
-
-<a href="https://drive.google.com/drive/folders/1dBOjaQn37pO5-445XgENTO4VHI620ozB" target="_blank" rel="noopener noreferrer" class="drive-link-button">Open Business Records Folder in Google Drive →</a>
