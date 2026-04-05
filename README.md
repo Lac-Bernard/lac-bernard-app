@@ -225,7 +225,7 @@ This project is configured for deployment on Vercel with server-side rendering e
 
    - **TinaCMS:** `TINA_CLIENT_ID`, `TINA_TOKEN`
    - **Supabase:** `SUPABASE_URL`, `SUPABASE_ANON_KEY` (you can also set `PUBLIC_SUPABASE_URL` / `PUBLIC_SUPABASE_ANON_KEY` for client bundles); `SUPABASE_SERVICE_ROLE_KEY` for server routes, CSV import, and crons
-   - **Stripe (checkout / webhooks):** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+   - **Stripe (checkout / webhooks):** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`. In the [Stripe Dashboard webhook](https://dashboard.stripe.com/webhooks) for this endpoint, subscribe at least: `checkout.session.completed`, `charge.refunded`, `charge.dispute.closed` (last two drive full-refund and lost-chargeback handling).
    - **Google (Drive embeds + optional Sheets sync):** `GOOGLE_SERVICE_ACCOUNT_JSON`; `GOOGLE_SHEET_ID` and sharing for sheet sync — see [Google service account](#google-service-account-drive-and-sheets)
    - **Crons:** `CRON_SECRET` must match the `Authorization: Bearer …` header Vercel sends to cron routes. Schedules are in `vercel.json`: `/api/cron/sync-google-sheets` and `/api/cron/membership-admin-daily-summary`
    - **Membership summary email:** `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MEMBERSHIP_ADMIN_SUMMARY_FROM`, `MEMBERSHIP_ADMIN_SUMMARY_TO` (see `.env.example`)
