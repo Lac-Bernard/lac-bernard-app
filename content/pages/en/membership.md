@@ -48,7 +48,7 @@ The Association members work together to ensure the long term sustainability of 
 
 ## Key Objectives
 
-By enrolling or renewing, you are agreeing to support our objectives outlined below. These are core to our Letters Patent and Bylaws. If you have questions regarding any of these, please reach out to [president@lacbernard.ca](mailto:president@lacbernard.ca).
+By enrolling or renewing, you are agreeing to support our objectives outlined below. These are core to our Bylaws. If you have questions regarding any of these, please reach out to [president@lacbernard.ca](mailto:president@lacbernard.ca).
 
 - Manage the Corporation in a transparent and respectful manner in both official languages wherever possible
 - Promote the preservation and enhancement of the environmental and ecological well-being of the lake
