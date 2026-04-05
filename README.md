@@ -45,7 +45,7 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 
 3. **Configure environment variables**
    
-   Copy `.env.example` to `.env` and fill in values. At minimum you need **TinaCMS** credentials for `npm run dev`. For the **member** pages (sign-in, account), set `SUPABASE_URL` and `SUPABASE_ANON_KEY` from your Supabase project (or from `supabase status` when using local Supabase—see below).
+   Copy `.env.example` to `.env` and fill in values. At minimum you need **TinaCMS** credentials for `npm run dev`. For the **member** pages (sign-in, account), set `SUPABASE_URL` and `SUPABASE_ANON_KEY` from your Supabase project (or from `supabase status` when using local Supabase—see below). For **Drive folder embeds** or **Google Sheets sync**, set `GOOGLE_SERVICE_ACCOUNT_JSON` (and related vars)—see [Google service account](#google-service-account-drive-and-sheets).
 
 4. **Start the development server**
    ```bash
@@ -96,6 +96,30 @@ The npm scripts `db:import-members-csv` / `db:import-members-csv:local` use `scr
 After `supabase db reset`, run `npm run db:import-members-csv:local -- /path/to/Master_Membership_List.csv`. To wipe first, **put `--reset` after the `--`** (e.g. `npm run db:import-members-csv -- --reset ./sheet.csv`). If you write `npm run db:import-members-csv --reset ./sheet.csv`, npm never passes `--reset` to the script and old rows remain. The import uses the **service role** key; with `:local`, URL and key come from `supabase status`. For production, use `npm run db:import-members-csv` with credentials in `.env` (or a CI secret).
 
 To match a real sign-in email to a seeded member row, update `primary_email` (or `secondary_email`) in the `members` table in your local DB (Table Editor in local Studio, or SQL).
+
+## Google service account (Drive and Sheets)
+
+The site uses one **Google Cloud service account** (JSON key in `GOOGLE_SERVICE_ACCOUNT_JSON`) for:
+
+- **Embedded Drive folder browsers** on public pages (API route `GET /api/drive/list`)
+- **Optional membership → Google Sheets sync** (`GOOGLE_SHEET_ID`, cron, etc.)
+
+**Website access service account (share Drive folders and Sheets with this address):**
+
+`lac-bernard-website-access@lac-bernard-app.iam.gserviceaccount.com`
+
+**In Google Cloud**
+
+- Enable the **Google Drive API** on the project that owns this service account (required for the folder browser API).
+
+**In Google Drive**
+
+- **Link sharing (“anyone with the link”) does not grant the API access.** Each folder whose files should appear in the embedded browser must be shared explicitly with the service account email above, with **Viewer** (or broader if you intentionally need it).
+- New top-level folders used on the site must also be added to the allowlist in `src/lib/googleDrive/allowedFolderRoots.ts`.
+
+**Google Sheets**
+
+- If you use the membership sync, share the target spreadsheet with the same service account so it can edit the sheet.
 
 ## 📁 Project Structure
 
@@ -176,6 +200,7 @@ This project is configured for deployment on Vercel with server-side rendering e
 3. Add environment variables (see `.env.example`):
    - `TINA_CLIENT_ID`, `TINA_TOKEN`
    - `SUPABASE_URL`, `SUPABASE_ANON_KEY` (for member sign-in and account)
+   - `GOOGLE_SERVICE_ACCOUNT_JSON`, `GOOGLE_SHEET_ID`, `CRON_SECRET` (if you use Sheets sync and/or the embedded Drive folder browser—see [Google service account](#google-service-account-drive-and-sheets) below)
 4. Deploy!
 
 The build process will:
