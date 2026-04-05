@@ -54,7 +54,7 @@ There is no separate password. **Signing in** (Google or magic link) *is* how yo
 
 If you sign in successfully but the association **does not yet have an online profile** tied to your email, the site will invite you to **create your member profile** (name, contact details, lake address, optional secondary contact, mailing address, email preferences). Complete the form and save.
 
-After your profile exists, you land on your **account** page where you can **purchase or renew membership** (see below). General information about membership categories may also appear on the public **Enrollment** and **Renewal** pages under Membership on the main site; **payment and status** are handled in the **member area** after you sign in.
+After your profile exists, you land on your **account** page where you can **purchase or renew membership** (see below). General information about membership is on the public **[Membership](https://lacbernard.ca/en/membership)** page; **payment and status** are handled in the **member area** after you sign in.
 
 ---
 
