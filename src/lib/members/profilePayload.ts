@@ -1,6 +1,6 @@
 /** Editable member profile fields (API ↔ DB). */
 export type MemberProfilePayload = {
-	first_name: string | null;
+	first_name: string;
 	secondary_first_name: string | null;
 	last_name: string;
 	secondary_last_name: string | null;
@@ -73,6 +73,10 @@ export function parseMemberProfilePayload(body: unknown): { ok: true; value: Mem
 		return { ok: false, error: 'invalid_json' };
 	}
 	const o = body as Record<string, unknown>;
+	const first = typeof o.first_name === 'string' ? o.first_name.trim() : '';
+	if (!first) {
+		return { ok: false, error: 'first_name_required' };
+	}
 	const last = typeof o.last_name === 'string' ? o.last_name.trim() : '';
 	if (!last) {
 		return { ok: false, error: 'last_name_required' };
@@ -125,7 +129,7 @@ export function parseMemberProfilePayload(body: unknown): { ok: true; value: Mem
 	return {
 		ok: true,
 		value: {
-			first_name: trimOrNull(o.first_name),
+			first_name: first,
 			secondary_first_name: trimOrNull(o.secondary_first_name),
 			last_name: last,
 			secondary_last_name: trimOrNull(o.secondary_last_name),

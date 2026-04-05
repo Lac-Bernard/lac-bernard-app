@@ -102,6 +102,8 @@ const adminKeys = [
 	'profileSecondaryMemberHelp',
 	'profileLakeHelp',
 	'profileSecondaryEmail',
+	'profileErrorFirstName',
+	'profileErrorLastName',
 ] as const;
 
 const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
@@ -145,7 +147,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
               <fieldset class="adminProfileSection">
                 <legend class="adminProfileLegend">{t.profileSectionPrimaryMember}</legend>
                 <div class="adminFormGrid">
-                  <label>{t.profileFirstName} <input type="text" id="admin-field-first_name" name="first_name" class="adminInput" /></label>
+                  <label>{t.profileFirstName} * <input type="text" id="admin-field-first_name" name="first_name" class="adminInput" required /></label>
                   <label>{t.profileLastName} * <input type="text" id="admin-field-last_name" name="last_name" class="adminInput" required /></label>
                   <label>{t.adminPrimaryEmailLabel} <input type="email" id="admin-field-primary_email" name="primary_email" class="adminInput" /></label>
                   <label>{t.profilePrimaryPhone} <input type="text" id="admin-field-primary_phone" name="primary_phone" class="adminInput" /></label>

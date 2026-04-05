@@ -345,6 +345,10 @@ export const memberCopy: Record<
 		profileSecondaryMemberHelp: string;
 		profileLakeHelp: string;
 		profileLakeDisplayHelp: string;
+		/** Shown once above contact fields; explains the * marker. */
+		profileRequiredFieldsNote: string;
+		/** Appended to optional field labels, e.g. "First name (optional)". */
+		profileOptionalMark: string;
 		profileFirstName: string;
 		profileLastName: string;
 		profileSecondaryFirstName: string;
@@ -368,6 +372,7 @@ export const memberCopy: Record<
 		profileCreateSubmit: string;
 		profileSaveSubmit: string;
 		profileBackToAccount: string;
+		profileErrorFirstName: string;
 		profileErrorLastName: string;
 		profileErrorPrimaryEmail: string;
 		profileErrorSecondaryEmail: string;
@@ -690,9 +695,11 @@ export const memberCopy: Record<
 		profileSecondaryMemberHelp:
 			'You can add a secondary contact’s name and details to your member record if you wish, for record-keeping purposes.',
 		profileLakeHelp:
-			'Enter the Lac Bernard address tied to this household. Voting membership requires this address.',
+			"Your lake address is required for voting membership. Associate members don't need to add one.",
 		profileLakeDisplayHelp:
 			'This is the Lac Bernard address on file for your household and the address tied to voting membership.',
+		profileRequiredFieldsNote: 'Fields marked with * are required.',
+		profileOptionalMark: '(optional)',
 		profileFirstName: 'First name',
 		profileLastName: 'Last name',
 		profileSecondaryFirstName: 'First name',
@@ -703,7 +710,7 @@ export const memberCopy: Record<
 		profileLakeCivic: 'Civic number',
 		profileLakeStreet: 'Street name',
 		profileLakeSearchLabel: 'Find your lake address',
-		profileLakeSearchPlaceholder: 'Start typing a civic address in Canada…',
+		profileLakeSearchPlaceholder: 'Start typing your lake address',
 		profileLakeManualLink: "My address isn't listed",
 		profileLakeNoSuggestions: 'No matches — try manual entry below.',
 		profileLakeBackToSearch: 'Search for an address',
@@ -716,6 +723,7 @@ export const memberCopy: Record<
 		profileCreateSubmit: 'Create profile',
 		profileSaveSubmit: 'Save changes',
 		profileBackToAccount: 'Back to member area',
+		profileErrorFirstName: 'First name is required.',
 		profileErrorLastName: 'Last name is required.',
 		profileErrorPrimaryEmail: 'The email on this account is not valid. Please contact us if this continues.',
 		profileErrorSecondaryEmail: 'Enter a valid email for the secondary contact.',
@@ -1040,9 +1048,11 @@ export const memberCopy: Record<
 		profileSecondaryMemberHelp:
 			'Vous pouvez ajouter le nom et les coordonnées d’un contact secondaire à votre dossier membre, si vous le souhaitez, à des fins de tenue de dossier.',
 		profileLakeHelp:
-			'Indiquez l’adresse au lac Bernard liée à ce foyer. L’adhésion avec droit de vote exige cette adresse.',
+			'Votre adresse au lac est requise pour une adhésion avec droit de vote. Les membres associés peuvent ignorer cette section.',
 		profileLakeDisplayHelp:
 			'Voici l’adresse au lac Bernard associée à votre foyer et liée à une adhésion avec droit de vote.',
+		profileRequiredFieldsNote: 'Les champs suivis d’une astérisque (*) sont obligatoires.',
+		profileOptionalMark: '(facultatif)',
 		profileFirstName: 'Prénom',
 		profileLastName: 'Nom',
 		profileSecondaryFirstName: 'Prénom',
@@ -1053,7 +1063,7 @@ export const memberCopy: Record<
 		profileLakeCivic: 'Numéro civique',
 		profileLakeStreet: 'Rue',
 		profileLakeSearchLabel: 'Trouver votre adresse au lac',
-		profileLakeSearchPlaceholder: 'Commencez à saisir une adresse civique au Canada…',
+		profileLakeSearchPlaceholder: 'Commencez à saisir votre adresse au lac',
 		profileLakeManualLink: 'Mon adresse ne figure pas dans la liste',
 		profileLakeNoSuggestions: 'Aucune suggestion — essayez la saisie manuelle ci-dessous.',
 		profileLakeBackToSearch: 'Chercher une adresse',
@@ -1066,6 +1076,7 @@ export const memberCopy: Record<
 		profileCreateSubmit: 'Créer le profil',
 		profileSaveSubmit: 'Enregistrer',
 		profileBackToAccount: 'Retour à l’espace membre',
+		profileErrorFirstName: 'Le prénom est obligatoire.',
 		profileErrorLastName: 'Le nom est obligatoire.',
 		profileErrorPrimaryEmail: 'Le courriel de ce compte n’est pas valide. Veuillez nous contacter si le problème persiste.',
 		profileErrorSecondaryEmail: 'Entrez un courriel valide pour le contact secondaire.',
