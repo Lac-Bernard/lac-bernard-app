@@ -126,6 +126,10 @@ The site uses one **Google Cloud service account** (JSON key in `GOOGLE_SERVICE_
 
 - If you use the membership sync, share the target spreadsheet with the same service account so it can edit the sheet.
 
+## Membership admin (operator guide)
+
+For volunteers and staff using the **membership dashboard**, **daily summary email**, or **Google Sheets** export (non-technical), see **[docs/admin-membership-guide.md](docs/admin-membership-guide.md)**.
+
 ## 📁 Project Structure
 
 ```
