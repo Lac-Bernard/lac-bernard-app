@@ -41,7 +41,6 @@ After you sign in, your **account home** is:
 You have two options on the sign-in page:
 
 1. **Continue with Google**: uses your Google account. Remember: the Google email should match your **primary** email on file with the association (see above).
-
 2. **Email magic link**: enter your email and choose **Send magic link**. You will receive an email with a **one-time link** (no password). Open the link in the same browser you normally use if you can. Check **spam or junk** if nothing arrives in a few minutes.
 
 If you need to try another address, use **Use a different email** and submit again.
@@ -89,8 +88,8 @@ When you do **not** yet have an **active** membership for the **current calendar
 
 1. **Choose a membership type**: **Voting** (tied to your lake property for the year) or **Associate** (non-voting).
 2. Choose how to pay (both options are on the same screen as the type picker):
-   - **Pay with credit card** opens a short window where you can add an **optional donation** and a **note**, then continue to **secure checkout** (handled by Stripe). Your **pending** membership for the year is created when you continue; when payment succeeds, your membership should show as **active** on your account shortly.
-   - **Pay another way** creates a **pending** membership right away and refreshes the page. You then see **other ways to pay**—**INTERAC e-Transfer**, **cheque** (mailing address on screen), or **cash** (contact email on screen)—and you can still use **Pay with credit card** from that pending section if you change your mind.
+  - **Pay with credit card** opens a short window where you can add an **optional donation** and a **note**, then continue to **secure checkout** (handled by Stripe). Your **pending** membership for the year is created when you continue; when payment succeeds, your membership should show as **active** on your account shortly.
+  - **Pay another way** creates a **pending** membership right away and refreshes the page. You then see **other ways to pay**—**INTERAC e-Transfer**, **cheque** (mailing address on screen), or **cash** (contact email on screen)—and you can still use **Pay with credit card** from that pending section if you change your mind.
 
 ### After you’re pending
 
@@ -107,5 +106,5 @@ If your membership is **pending** and you change your mind before paying, you ca
 ## Need help?
 
 - **Wrong email / can’t see my record**: confirm with the association which email is your **primary** email, or ask them to update it.  
-- **Payment or status doesn’t look right**: contact **membership@lacbernard.ca** (or the address your association publishes).  
+- **Payment or status doesn’t look right**: contact **[membership@lacbernard.ca](mailto:membership@lacbernard.ca)** (or the address your association publishes).  
 - **Website or sign-in errors**: contact whoever supports the association website.
