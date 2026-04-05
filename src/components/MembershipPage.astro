@@ -5,6 +5,7 @@ import SiteHeader from '@/components/SiteHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
 import type { Language } from '@/utils/i18n';
 import { loadContentPage } from '@/utils/loadContentPage';
+import { memberPaths } from '@/lib/members/i18n';
 import { membershipUi } from '@/i18n/membership';
 import { siteUi } from '@/i18n/site';
 
@@ -22,6 +23,7 @@ const description = page.frontmatter?.description as string | undefined;
 const { Content } = page;
 
 const metaDescription = description ?? site.pageMetaDescriptionFallback(title);
+const accountPath = memberPaths[lang].account;
 ---
 
 <html lang={lang}>
@@ -30,7 +32,6 @@ const metaDescription = description ?? site.pageMetaDescriptionFallback(title);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} | {site.siteNameSuffix}</title>
     <meta name="description" content={metaDescription} />
-    <script async src="https://tally.so/widgets/embed.js"></script>
   </head>
 
   <body>
@@ -41,6 +42,10 @@ const metaDescription = description ?? site.pageMetaDescriptionFallback(title);
         <div class="container heroInner">
           <div class="heroCopy">
             <h1>{title}</h1>
+            <p class="heroIntro">{ui.heroAccountIntro}</p>
+            <div class="heroActions">
+              <a href={accountPath} class="btnPrimary heroAccountBtn">{ui.heroAccountCta}</a>
+            </div>
           </div>
         </div>
       </section>
@@ -100,6 +105,24 @@ const metaDescription = description ?? site.pageMetaDescriptionFallback(title);
     line-height: 1.06;
     letter-spacing: -.03em;
     color: white;
+  }
+
+  .heroIntro {
+    margin: 0 0 22px;
+    max-width: 36rem;
+    font-size: clamp(17px, 2vw, 20px);
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .heroActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .heroAccountBtn {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
   .membership-actions {
