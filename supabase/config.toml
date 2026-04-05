@@ -233,7 +233,7 @@ otp_expiry = 3600
 # content_path = "./supabase/templates/invite.html"
 
 [auth.email.template.magic_link]
-subject = "Sign in to the Lac Bernard Association member area"
+subject = "Connexion à l’espace membres — Association du lac Bernard"
 content_path = "./supabase/templates/magic_link.html"
 
 # Uncomment to customize notification email template
