@@ -22,13 +22,17 @@ const { Content, frontmatter } = home;
 
 const fm = frontmatter as { heroTitle?: string; heroSubtitle?: string } | undefined;
 const heroTitle = fm?.heroTitle ?? ui.defaultHeroTitle;
-const heroSubtitle = fm?.heroSubtitle ?? '';
+const heroSubtitleCustom = fm?.heroSubtitle?.trim() ?? '';
+const membershipPath = `/${lang}/membership`;
+const newsArchivePath = `/${lang}/news/`;
 
 const allPosts = await getCollection('blog');
 const latestPosts = allPosts
 	.filter((post) => post.id.startsWith(`${lang}/`))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
 	.slice(0, 3);
+
+const newsHeroHref = latestPosts.length > 0 ? '#latest-news' : newsArchivePath;
 
 const title = ui.siteTitle;
 ---
@@ -48,22 +52,43 @@ const title = ui.siteTitle;
       <section class="hero" aria-label={ui.heroAriaLabel}>
         <div class="container heroInner">
           <div class="heroCopy">
+            <p class="kicker">{ui.heroKicker}</p>
             <h1>{heroTitle}</h1>
-            {heroSubtitle && <p class="subtitle" set:html={heroSubtitle} />}
+            {heroSubtitleCustom ? (
+              <p class="subtitle" set:html={heroSubtitleCustom} />
+            ) : (
+              <p class="subtitle">{ui.heroTagline}</p>
+            )}
+            <div class="heroActions">
+              <a href={membershipPath} class="btnPrimary heroPrimaryBtn">{ui.ctaMembership}</a>
+              <a href={newsHeroHref} class="btnGhost heroSecondaryBtn">{ui.ctaNews}</a>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="section">
+      <section class="section homeIntro">
         <div class="container prose">
           <Content />
         </div>
       </section>
 
+      <section class="section stats">
+        <div class="container">
+          <h2>{ui.impact}</h2>
+          <div class="statsGrid">
+            <div class="stat"><div class="num">92</div><div class="label">{ui.years}</div></div>
+            <div class="stat"><div class="num">200+</div><div class="label">{ui.members}</div></div>
+            <div class="stat"><div class="num">3+</div><div class="label">{ui.events}</div></div>
+            <div class="stat"><div class="num">100%</div><div class="label">{ui.volunteerRun}</div></div>
+          </div>
+        </div>
+      </section>
+
       {latestPosts.length > 0 && (
-        <section class="section">
+        <section class="section alt" id="latest-news" aria-labelledby="home-latest-news-heading">
           <div class="container">
-            <h2>{ui.latestNews}</h2>
+            <h2 id="home-latest-news-heading">{ui.latestNews}</h2>
             <ul class="newsList">
               {latestPosts.map((post) => (
                 <li>
@@ -85,18 +110,6 @@ const title = ui.siteTitle;
         </section>
       )}
 
-      <section class="section stats">
-        <div class="container">
-          <h2>{ui.impact}</h2>
-          <div class="statsGrid">
-            <div class="stat"><div class="num">92</div><div class="label">{ui.years}</div></div>
-            <div class="stat"><div class="num">200+</div><div class="label">{ui.members}</div></div>
-            <div class="stat"><div class="num">3+</div><div class="label">{ui.events}</div></div>
-            <div class="stat"><div class="num">100%</div><div class="label">{ui.volunteerRun}</div></div>
-          </div>
-        </div>
-      </section>
-
       <section class="section land">
         <div class="container">
           <h2>{ui.landAck}</h2>
@@ -110,11 +123,15 @@ const title = ui.siteTitle;
     <style>
       /* Page-specific styles for homepage */
       .hero {
-        padding: 72px 0 var(--spacing-section);
+        min-height: min(78vh, 720px);
+        display: flex;
+        align-items: center;
+        padding: 96px 0 88px;
         position: relative;
-        background-image: url('/images/mirrorlake_jeffstubbins-2.jpg');
+        background-color: #0f2433;
+        background-image: url('/images/home-hero-lake-rainbow.jpg');
         background-size: cover;
-        background-position: center;
+        background-position: center 38%;
         background-repeat: no-repeat;
         color: white;
       }
@@ -126,7 +143,12 @@ const title = ui.siteTitle;
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
+        background: linear-gradient(
+          180deg,
+          rgba(8, 18, 28, 0.42) 0%,
+          rgba(8, 18, 28, 0.18) 42%,
+          rgba(6, 14, 22, 0.72) 100%
+        );
         z-index: 0;
       }
 
@@ -160,14 +182,59 @@ const title = ui.siteTitle;
       }
 
       .hero .subtitle {
-        margin: 0 0 22px;
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 19px;
+        margin: 0 0 28px;
+        max-width: 40rem;
+        color: rgba(255, 255, 255, 0.92);
+        font-size: clamp(18px, 2.2vw, 22px);
+        line-height: 1.45;
+      }
+
+      .heroActions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+
+      .heroPrimaryBtn {
+        box-shadow: 0 2px 14px rgba(0, 0, 0, 0.25);
+      }
+
+      .hero .heroSecondaryBtn {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.55);
+        color: white;
+      }
+
+      .hero .heroSecondaryBtn:hover {
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.75);
+        color: white;
+      }
+
+      .hero .heroSecondaryBtn:focus-visible {
+        outline-color: rgba(255, 255, 255, 0.85);
+      }
+
+      .homeIntro :global(.prose > p:first-of-type) {
+        font-size: clamp(1.05rem, 0.6vw + 1rem, 1.28rem);
+        line-height: 1.55;
+        color: var(--text);
+      }
+
+      .homeIntro :global(.prose h2:first-of-type) {
+        margin-top: 2.25rem;
       }
 
       .prose .btnPrimary {
         margin-top: 20px;
         display: inline-block;
+      }
+
+      .stats {
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        background: rgba(0, 0, 0, 0.02);
       }
 
       .land {
@@ -236,9 +303,22 @@ const title = ui.siteTitle;
         font-weight: 500;
       }
 
-      @media (max-width: 920px) {
-        .heroInner {
-          grid-template-columns: 1fr;
+      @media (max-width: 640px) {
+        .hero {
+          min-height: min(70vh, 560px);
+          padding: 72px 0 64px;
+          background-position: center 30%;
+        }
+
+        .heroActions {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
+        .heroActions .btnPrimary,
+        .heroActions .btnGhost {
+          width: 100%;
+          justify-content: center;
         }
       }
     </style>
