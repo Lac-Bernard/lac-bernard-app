@@ -596,10 +596,11 @@ export const memberCopy: Record<
 		tierGeneral: 'Voting',
 		tierAssociate: 'Associate',
 		tierGeneralExplainer:
-			'Voting membership. One per lake property per calendar year. Requires a lake civic number and street on your profile.',
+			'Full voting membership. Requires a lake address. Limit of one voting membership per property.',
 		tierGeneralExplainerWithAddress:
-			'You’re purchasing voting membership for {{lakeAddress}}. You’ll be the voting member for that address for this year. Only one voting membership is allowed per property per calendar year.',
-		tierAssociateExplainer: 'Non-voting. Lake address is optional.',
+			'Full voting membership for {{lakeAddress}}. Limit of one voting membership per property.',
+		tierAssociateExplainer:
+			'Non-voting membership with all the other benefits.',
 		tierGeneralBlockedLead:
 			'To request voting membership, add your lake civic number and street under your profile:',
 		pendingCreateErrorNoLakeAddress:
@@ -950,10 +951,11 @@ export const memberCopy: Record<
 		tierGeneral: 'Votant',
 		tierAssociate: 'Associée',
 		tierGeneralExplainer:
-			'Adhésion avec droit de vote. Une par propriété au lac pour l’année civile. Exige le numéro civique et la rue au lac dans votre profil.',
+			'Adhésion avec droit de vote complète. Exige une adresse au lac. Limite d’une adhésion avec droit de vote par propriété.',
 		tierGeneralExplainerWithAddress:
-			'Vous achetez l’adhésion avec droit de vote pour {{lakeAddress}}. Vous serez le membre ayant le droit de vote pour cette adresse cette année. Une seule adhésion avec droit de vote est permise par propriété par année civile.',
-		tierAssociateExplainer: 'Sans droit de vote. L’adresse au lac est facultative.',
+			'Adhésion avec droit de vote complète pour {{lakeAddress}}. Limite d’une adhésion avec droit de vote par propriété.',
+		tierAssociateExplainer:
+			'Adhésion sans droit de vote avec tous les autres avantages.',
 		tierGeneralBlockedLead:
 			'Pour l’adhésion avec droit de vote, ajoutez le numéro civique et la rue au lac dans votre profil :',
 		pendingCreateErrorNoLakeAddress:
