@@ -5,7 +5,7 @@ import { getMembershipCalendarYear } from '../members/membershipYear';
 export type AdminMemberListFilters = {
 	year: number;
 	membership: 'active' | 'not_active' | 'all' | 'has_membership_history';
-	tier: 'all' | 'general' | 'associate';
+	tier: 'all' | 'voting' | 'associate';
 	/** Directory lifecycle filter (members.status); default verified. */
 	memberStatus: 'verified' | 'new' | 'disabled' | 'all';
 	/** Pass to RPC as `p_q` via `q || null` */
@@ -27,8 +27,8 @@ export function parseAdminMemberListFilters(searchParams: URLSearchParams): Admi
 	else if (membershipRaw === 'has_membership_history') membership = 'has_membership_history';
 
 	const tierRaw = (searchParams.get('tier') ?? 'all').trim().toLowerCase();
-	const tier: 'all' | 'general' | 'associate' =
-		tierRaw === 'general' || tierRaw === 'associate' ? tierRaw : 'all';
+	const tier: 'all' | 'voting' | 'associate' =
+		tierRaw === 'voting' || tierRaw === 'associate' ? tierRaw : 'all';
 
 	const msRaw = (searchParams.get('memberStatus') ?? 'verified').trim().toLowerCase();
 	let memberStatus: AdminMemberListFilters['memberStatus'] = 'verified';

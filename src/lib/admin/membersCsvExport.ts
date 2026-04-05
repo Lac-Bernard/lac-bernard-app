@@ -31,7 +31,7 @@ export function formatLakeAddressLine(civic: string | null | undefined, street: 
 }
 
 function tierLabelForCsv(raw: string | null | undefined, locale: MemberLocale): string {
-	if (raw === 'general') return memberCopy[locale].tierGeneral;
+	if (raw === 'voting' || raw === 'general') return memberCopy[locale].tierGeneral;
 	if (raw === 'associate') return memberCopy[locale].tierAssociate;
 	return (raw ?? '').trim();
 }

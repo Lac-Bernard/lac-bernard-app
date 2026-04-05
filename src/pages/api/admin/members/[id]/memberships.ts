@@ -4,7 +4,7 @@ import { insertAdminAudit } from '../../../../../lib/admin/audit';
 import { requireAdminSession } from '../../../../../lib/admin/session';
 import { createSupabaseServiceRoleClient } from '../../../../../lib/supabase/service';
 
-const TIERS = new Set(['general', 'associate']);
+const TIERS = new Set(['voting', 'associate']);
 const METHODS = new Set(['e-transfer', 'cheque', 'cash', 'unknown']);
 
 export const POST: APIRoute = async ({ request, cookies, params }) => {

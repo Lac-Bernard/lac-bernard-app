@@ -97,7 +97,7 @@ This is your searchable directory.
 - **Sort** — for example newest first or last name A–Z.
 - **Show** — limit to everyone, only people with membership history, **active for [year]**, or **did not renew for [year]**.
 - **Membership year** — the year those filters apply to.
-- **Type** — General, Associate, or all.
+- **Type** — Voting, Associate, or all.
 - **Member status** — Verified, New, Disabled, or all.
 
 Click **Apply** to refresh the table.
@@ -191,6 +191,7 @@ The association can keep a **Google Spreadsheet** that is **filled automatically
 
 - Three tabs: **Members**, **Memberships**, and **Payments**.
 - The sheet is **refreshed on a schedule** (once per day on the server). It is **not** a live second-by-second mirror.
+- On the **Memberships** tab, the **tier** column stores the same values as the database: **`voting`** or **`associate`**. If you use formulas, filters, or pivot tables that assumed the old value **`general`**, update them to **`voting`**.
 
 ### How to use it
 

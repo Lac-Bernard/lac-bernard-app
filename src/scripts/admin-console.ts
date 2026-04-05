@@ -23,7 +23,7 @@ export function parseAdminTabQueryParam(tabParam: string | null | undefined): Ad
 type MemberRow = {
 	id: string;
 	created_at: string;
-	/** general | associate from memberships for the admin filter year; null if no row for that year */
+	/** voting | associate from memberships for the admin filter year; null if no row for that year */
 	membership_tier_for_year: string | null;
 	first_name: string | null;
 	last_name: string;
@@ -300,7 +300,7 @@ function formatExpectedMembershipFee(cents: number | null | undefined, numberLoc
 
 export function initAdminConsole(
 	strings: AdminConsoleStrings,
-	tierLabels: { general: string; associate: string },
+	tierLabels: { voting: string; associate: string },
 	defaultMembershipYear: number,
 	adminMembersBase: string,
 	numberLocale: string = 'en-CA',
@@ -324,7 +324,7 @@ export function initAdminConsole(
 		const preview = el<HTMLElement>('#admin-payment-split-preview');
 		const amtInput = el<HTMLInputElement>('#admin-payment-amount');
 		if (!preview || !amtInput) return;
-		const tier = el<HTMLInputElement>('#admin-payment-tier')?.value ?? 'general';
+		const tier = el<HTMLInputElement>('#admin-payment-tier')?.value ?? 'voting';
 		const status = el<HTMLInputElement>('#admin-payment-status')?.value ?? 'pending';
 		const sumPaidRaw = el<HTMLInputElement>('#admin-payment-sum-paid')?.value ?? '0';
 		const sumPaid = roundMoney(parseFloat(sumPaidRaw) || 0);
@@ -729,7 +729,7 @@ export function initAdminConsole(
 
 	function overviewTierLabel(raw: string | null | undefined): string {
 		if (raw == null || raw === '') return '—';
-		if (raw === 'general') return tierLabels.general;
+		if (raw === 'voting') return tierLabels.voting;
 		if (raw === 'associate') return tierLabels.associate;
 		return raw;
 	}
@@ -903,7 +903,7 @@ export function initAdminConsole(
 					:	`<td>—</td>`;
 				const email = mem?.primary_email ?? '—';
 				const tier =
-					m.tier === 'general' ? tierLabels.general : m.tier === 'associate' ? tierLabels.associate : m.tier;
+					m.tier === 'voting' ? tierLabels.voting : m.tier === 'associate' ? tierLabels.associate : m.tier;
 				const expected = formatExpectedMembershipFee(m.expected_membership_cents, numberLocale);
 				const sumPaid =
 					typeof m.sum_membership_paid === 'number' && Number.isFinite(m.sum_membership_paid) ?
@@ -929,7 +929,7 @@ export function initAdminConsole(
 					const tierEl = el<HTMLInputElement>('#admin-payment-tier');
 					const statusEl = el<HTMLInputElement>('#admin-payment-status');
 					const sumEl = el<HTMLInputElement>('#admin-payment-sum-paid');
-					if (tierEl) tierEl.value = b.dataset.tier ?? 'general';
+					if (tierEl) tierEl.value = b.dataset.tier ?? 'voting';
 					if (statusEl) statusEl.value = b.dataset.status ?? 'pending';
 					if (sumEl) sumEl.value = b.dataset.sumPaid ?? '0';
 					paymentDialog.showModal();
@@ -1016,7 +1016,7 @@ export function initAdminConsole(
 				const email = m.primary_email ?? '—';
 				const rawTier = m.membership_tier_for_year;
 				let tierCell = '';
-				if (rawTier === 'general') tierCell = tierLabels.general;
+				if (rawTier === 'voting') tierCell = tierLabels.voting;
 				else if (rawTier === 'associate') tierCell = tierLabels.associate;
 				else if (rawTier) tierCell = rawTier;
 				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;
@@ -1067,7 +1067,7 @@ export function initAdminConsole(
 				const email = m.primary_email ?? '—';
 				const rawTier = m.membership_tier_for_year;
 				let tierCell = '';
-				if (rawTier === 'general') tierCell = tierLabels.general;
+				if (rawTier === 'voting') tierCell = tierLabels.voting;
 				else if (rawTier === 'associate') tierCell = tierLabels.associate;
 				else if (rawTier) tierCell = rawTier;
 				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;

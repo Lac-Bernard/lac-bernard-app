@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import { findMemberByAuthEmail } from '../../../lib/members/memberLookup';
 import { getMembershipCalendarYear } from '../../../lib/members/membershipYear';
 
-const TIERS = new Set(['general', 'associate']);
+const TIERS = new Set(['voting', 'associate']);
 
 export const POST: APIRoute = async ({ request, cookies }) => {
 	const supabase = createSupabaseServerClient(request, cookies);
@@ -75,8 +75,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		});
 	}
 
-	if (tier === 'general') {
-		const { data: elig, error: eligErr } = await supabase.rpc('membership_general_eligibility', {
+	if (tier === 'voting') {
+		const { data: elig, error: eligErr } = await supabase.rpc('membership_voting_eligibility', {
 			p_member_id: member.id,
 			p_year: currentYear,
 		});

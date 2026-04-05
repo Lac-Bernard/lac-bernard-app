@@ -77,7 +77,7 @@ From your account page, open **Edit profile** (or go to `/en/membership/account/
 
 You can update **contact information**, **lake address** (civic number and street), **mailing address**, optional **secondary contact**, and **email opt-in**. Your **sign-in email** is shown for reference but is tied to how you signed in; if you need a different sign-in address, contact the association so they can align your **primary email** with the account you want to use.
 
-**General (voting) membership** requires a **complete lake address** on your profile. **Associate** membership does not require a lake address in the same way. If general membership is disabled until you add the address, the page will say so and link you back to **Edit profile**.
+**Voting membership** requires a **complete lake address** on your profile. **Associate** membership does not require a lake address in the same way. If voting membership is disabled until you add the address, the page will say so and link you back to **Edit profile**.
 
 Save your changes before starting or changing a membership request.
 
@@ -87,7 +87,7 @@ Save your changes before starting or changing a membership request.
 
 When you do **not** yet have an **active** membership for the **current calendar year**, the account page walks you through:
 
-1. **Choose a membership type** — **General** (voting; tied to your lake property for the year) or **Associate** (non-voting).
+1. **Choose a membership type** — **Voting** (tied to your lake property for the year) or **Associate** (non-voting).
 2. Tap **Start membership request** (or the equivalent in French). That creates a **pending** membership for the year.
 
 Then:

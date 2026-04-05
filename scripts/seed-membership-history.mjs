@@ -241,7 +241,7 @@ async function main() {
 		if (plannedYears.has(year)) {
 			continue;
 		}
-		const tier = year % 2 === 0 ? 'general' : 'associate';
+		const tier = year % 2 === 0 ? 'voting' : 'associate';
 		pushRow(year, tier, 'active', 'past');
 	}
 
@@ -260,7 +260,7 @@ async function main() {
 			console.log(`  skip ${year} prepaid (already in past/custom list)`);
 			return;
 		}
-		const tier = year % 2 === 0 ? 'general' : 'associate';
+		const tier = year % 2 === 0 ? 'voting' : 'associate';
 		/* First future year paid ahead (active); next row pending so both appear in the prepaid table */
 		const status = i % 2 === 0 ? 'active' : 'pending';
 		pushRow(year, tier, status, 'prepaid');

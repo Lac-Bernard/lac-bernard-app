@@ -1,6 +1,6 @@
 /** CAD amounts in cents for Stripe Checkout line items. */
 export const MEMBERSHIP_TIER_CENTS = {
-	general: 7500,
+	voting: 7500,
 	associate: 2500,
 } as const;
 
@@ -8,7 +8,7 @@ export const MEMBERSHIP_TIER_CENTS = {
 export const MAX_DONATION_DOLLARS = 50_000;
 
 export function membershipCentsForTier(tier: string): number | null {
-	if (tier === 'general') return MEMBERSHIP_TIER_CENTS.general;
+	if (tier === 'voting') return MEMBERSHIP_TIER_CENTS.voting;
 	if (tier === 'associate') return MEMBERSHIP_TIER_CENTS.associate;
 	return null;
 }

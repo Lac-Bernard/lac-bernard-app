@@ -77,7 +77,7 @@ Depuis la page compte, ouvrez **Modifier le profil** (ou allez à `/en/membershi
 
 Vous pouvez mettre à jour les **coordonnées**, l’**adresse au lac** (numéro civique et rue), l’**adresse postale**, un **contact secondaire** facultatif et l’**abonnement aux courriels** de l’association. Votre **courriel de connexion** est affiché à titre indicatif et est lié à la façon dont vous vous connectez ; pour utiliser une autre adresse de connexion, communiquez avec l’association afin d’aligner votre **courriel principal** avec le compte que vous souhaitez utiliser.
 
-L’adhésion **générale** (avec droit de vote) exige une **adresse au lac complète** dans votre profil. L’adhésion **associée** ne fonctionne pas de la même façon à cet égard. Si l’adhésion générale est bloquée tant que l’adresse manque, la page l’indique et renvoie vers **Modifier le profil**.
+L’adhésion **avec droit de vote** exige une **adresse au lac complète** dans votre profil. L’adhésion **associée** ne fonctionne pas de la même façon à cet égard. Si l’adhésion avec droit de vote est bloquée tant que l’adresse manque, la page l’indique et renvoie vers **Modifier le profil**.
 
 Enregistrez vos changements avant de démarrer ou de modifier une demande d’adhésion.
 
@@ -87,7 +87,7 @@ Enregistrez vos changements avant de démarrer ou de modifier une demande d’ad
 
 Lorsque vous n’avez pas encore une adhésion **active** pour l’**année civile en cours**, la page compte vous guide ainsi :
 
-1. **Choisissez un type d’adhésion** — **Générale** (droit de vote ; liée à votre propriété au lac pour l’année) ou **Associée** (sans droit de vote).
+1. **Choisissez un type d’adhésion** — **Votant** (liée à votre propriété au lac pour l’année) ou **Associée** (sans droit de vote).
 2. Appuyez sur **Démarrer la demande d’adhésion**. Cela crée une adhésion **en attente** pour l’année.
 
 Ensuite :

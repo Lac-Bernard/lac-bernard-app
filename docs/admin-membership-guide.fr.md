@@ -97,7 +97,7 @@ C’est votre répertoire consultable.
 - **Tri** — par exemple plus récents d’abord ou nom de famille A–Z.
 - **Afficher** — tout le monde, seulement les personnes avec des antécédents d’adhésion, **actifs pour [année]**, ou **non renouvelés pour [année]**.
 - **Année d’adhésion** — l’année à laquelle s’appliquent ces filtres.
-- **Type** — Générale, Associée ou tous.
+- **Type** — Votant, Associée ou tous.
 - **Statut du dossier** — Vérifiés, Nouveau, Désactivé ou tous.
 
 Cliquez sur **Appliquer** pour actualiser le tableau.
@@ -191,6 +191,7 @@ L’association peut tenir une **feuille Google** **remplie automatiquement** à
 
 - Trois onglets : **Members**, **Memberships** et **Payments** (noms techniques côté feuille).
 - La feuille est **actualisée selon un horaire** (en général une fois par jour sur le serveur). Ce n’est **pas** un miroir instantané.
+- Dans l’onglet **Memberships**, la colonne **tier** reprend les valeurs de la base : **`voting`** ou **`associate`**. Si des formules, filtres ou tableaux croisés utilisaient l’ancienne valeur **`general`**, remplacez-la par **`voting`**.
 
 ### Utilisation
 
