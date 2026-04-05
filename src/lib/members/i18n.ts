@@ -289,9 +289,13 @@ export const memberCopy: Record<
 		donationHint: string;
 		donationNoteLabel: string;
 		donationNoteHint: string;
+		/** Shorter helper under the optional note field in the card checkout modal */
+		checkoutModalNoteHint: string;
 		checkoutModalTitle: string;
 		checkoutModalMembershipLabel: string;
 		checkoutModalFeeLabel: string;
+		checkoutModalDonationLabel: string;
+		checkoutModalTotalLabel: string;
 		checkoutModalContinue: string;
 		checkoutModalCancel: string;
 		checkoutErrorGeneric: string;
@@ -627,9 +631,12 @@ export const memberCopy: Record<
 		donationHint: 'Add any amount to support the association, or leave at 0.',
 		donationNoteLabel: 'Note with your donation (optional)',
 		donationNoteHint: 'Shown on your payment record. Max 500 characters.',
+		checkoutModalNoteHint: 'Max 500 characters.',
 		checkoutModalTitle: 'Pay with card',
 		checkoutModalMembershipLabel: 'Membership',
 		checkoutModalFeeLabel: 'Membership fee',
+		checkoutModalDonationLabel: 'Donation (optional)',
+		checkoutModalTotalLabel: 'Total',
 		checkoutModalContinue: 'Continue to secure checkout',
 		checkoutModalCancel: 'Cancel',
 		checkoutErrorGeneric: 'Could not start checkout. Please try again.',
@@ -973,9 +980,12 @@ export const memberCopy: Record<
 		donationHint: 'Ajoutez un montant pour soutenir l’association, ou laissez 0.',
 		donationNoteLabel: 'Note accompagnant le don (facultatif)',
 		donationNoteHint: 'Affichée sur votre dossier de paiement. 500 caractères maximum.',
+		checkoutModalNoteHint: '500 caractères maximum.',
 		checkoutModalTitle: 'Payer par carte',
 		checkoutModalMembershipLabel: 'Adhésion',
 		checkoutModalFeeLabel: 'Cotisation',
+		checkoutModalDonationLabel: 'Don (facultatif)',
+		checkoutModalTotalLabel: 'Total',
 		checkoutModalContinue: 'Continuer vers le paiement sécurisé',
 		checkoutModalCancel: 'Annuler',
 		checkoutErrorGeneric: 'Impossible de démarrer le paiement. Veuillez réessayer.',

@@ -8,7 +8,7 @@
 
 - You can now manage your Lac Bernard membership online  
 - New: sign in, renew, and pay your membership on the website  
-- Your 2026 membership: online sign-in and card payment  
+- Your 2026 membership: online sign-in and card payment
 
 ---
 
@@ -49,10 +49,10 @@ If you prefer not to use a card, choose **Pay another way** on your account; the
 
 ### Quick steps: buy your 2026 membership online
 
-1. Open the **sign-in** link above (pick English or French).  
-2. Sign in with **Google** or your **magic link** email.  
-3. If the site asks you to **create or complete your profile**, fill it in and save, especially your **lake address** if you want **General** (voting) membership.  
-4. On your **account** page, choose **General** or **Associate**, then click **Pay with credit card** (complete checkout) **or** **Pay another way** (then follow the on-screen instructions).  
+1. Open the **sign-in** link above (pick English or French).
+2. Sign in with **Google** or your **magic link** email.
+3. If the site asks you to **create or complete your profile**, fill it in and save, especially your **lake address** if you want **General** (voting) membership.
+4. On your **account** page, choose **General** or **Associate**, then click **Pay with credit card** (complete checkout) **or** **Pay another way** (then follow the on-screen instructions).
 
 That’s it. If you already have an active 2026 membership, you’ll see that instead of the payment flow.
 
@@ -61,7 +61,7 @@ That’s it. If you already have an active 2026 membership, you’ll see that in
 Step-by-step instructions, troubleshooting, and French copy live in our member guides (not required reading for everyone, but handy to bookmark):
 
 - **English:** [Member account guide on GitHub](https://github.com/Lac-Bernard/lac-bernard-app/blob/main/docs/member-membership-guide.md)  
-- **Français :** [Guide du compte membre sur GitHub](https://github.com/Lac-Bernard/lac-bernard-app/blob/main/docs/member-membership-guide.fr.md)  
+- **Français :** [Guide du compte membre sur GitHub](https://github.com/Lac-Bernard/lac-bernard-app/blob/main/docs/member-membership-guide.fr.md)
 
 ### Questions?
 
