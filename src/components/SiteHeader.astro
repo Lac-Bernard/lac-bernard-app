@@ -9,6 +9,13 @@ import {
 	type Language,
 } from '../utils/i18n';
 
+interface Props {
+	/** When true, language toggle points to localized home only (e.g. 404 at `/404` would otherwise link to `/en/404`). */
+	langToggleUsesHome?: boolean;
+}
+
+const { langToggleUsesHome = false } = Astro.props;
+
 const localeCookieSecure = import.meta.env.PROD;
 
 const currentPath = Astro.url.pathname;
@@ -18,7 +25,9 @@ const alternateLang = getAlternateLanguage(currentLang);
 // Get the path without locale prefix for switching
 // Match /en or /fr only when followed by / or end of string, not part of a word
 const pathWithoutLocale = currentPath.replace(/^\/(en|fr)(\/|$)/, '/') || '/';
-const alternatePath = getLocalizedPath(pathWithoutLocale, alternateLang);
+const alternatePath = langToggleUsesHome
+	? getLocalizedPath('/', alternateLang)
+	: getLocalizedPath(pathWithoutLocale, alternateLang);
 
 // Navigation labels
 const navLabels = {
