@@ -161,7 +161,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 
 	const origin = getPublicRequestOrigin(request);
 	const accountPath = memberPaths[locale].account;
-	const successUrl = `${origin}${accountPath}?checkout=success`;
+	const successUrl = `${origin}/api/membership/checkout-success?session_id={CHECKOUT_SESSION_ID}&locale=${locale}`;
 	const cancelUrl = `${origin}${accountPath}?checkout=cancelled`;
 
 	const membershipLabel = locale === 'fr' ? 'Cotisation' : 'Membership';
