@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guide d'administration des adhésions (FR)</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #202124;
+      max-width: 40rem;
+      margin: 1.5rem auto;
+      padding: 0 1rem 3rem;
+    }
+    h1 { font-size: 18pt; margin: 1.25rem 0 0.5rem; font-weight: 700; }
+    h2 { font-size: 14pt; margin: 1.25rem 0 0.5rem; font-weight: 700; border-bottom: 1px solid #dadce0; padding-bottom: 0.2rem; }
+    h3 { font-size: 12pt; margin: 1rem 0 0.35rem; font-weight: 700; }
+    p { margin: 0.5rem 0; }
+    ul, ol { margin: 0.5rem 0; padding-left: 1.5rem; }
+    li { margin: 0.2rem 0; }
+    hr { border: none; border-top: 1px solid #dadce0; margin: 1.25rem 0; }
+    a { color: #1a73e8; }
+    code { font-family: "Consolas", "Menlo", monospace; font-size: 10pt; background: #f1f3f4; padding: 0.1em 0.35em; border-radius: 3px; }
+    strong { font-weight: 700; }
+    em { font-style: italic; }
+    blockquote { margin: 0.5rem 0; padding-left: 1rem; border-left: 3px solid #dadce0; color: #5f6368; }
+  </style>
+</head>
+<body>
+<h1>Guide d’administration des adhésions</h1>
+<p><em><a href="admin-membership-guide.md">English version: admin-membership-guide.md</a></em></p>
+<p>Ce guide s’adresse aux <strong>bénévoles et au personnel</strong> de l’association qui gèrent les adhésions : le <strong>tableau de bord administrateur</strong> sur le site, le <strong>courriel quotidien de synthèse</strong> et la <strong>feuille Google</strong> qui liste les membres. Aucune compétence technique n’est requise.</p>
+<p>Pour les <strong>membres</strong> qui gèrent eux-mêmes leur connexion, leur profil et leurs paiements en ligne, voir plutôt <strong><a href="member-membership-guide.fr.md">member-membership-guide.fr.md</a></strong>. Le présent document porte uniquement sur <strong>l’administration</strong>.</p>
+<hr>
+<h2>Ce n’est pas la même chose que modifier le site web</h2>
+<p>Les <strong>pages et nouvelles</strong> du site se modifient avec <strong>TinaCMS</strong> à <code>/admin</code> lorsque vous travaillez sur le site public. C’est un rôle distinct de celui d’<strong>administrateur des adhésions</strong>.</p>
+<p>Ce guide couvre <strong>les membres et les paiements</strong> seulement : la console <strong>Adhésion → Administration</strong> après votre connexion.</p>
+<hr>
+<h2>Connexion et accès administrateur</h2>
+<ol>
+<li>Ouvrez l’espace adhésion en <strong>anglais</strong> ou en <strong>français</strong> (les mêmes outils, interface dans la langue choisie) :<ul>
+<li>Administration en anglais : <a href="https://lacbernard.ca/en/membership/admin">https://lacbernard.ca/en/membership/admin</a> (remplacez le domaine si vous utilisez un site de mise à l’essai)</li>
+<li>Administration en français : le même chemin avec <code>/fr/membership/admin</code></li>
+</ul>
+</li>
+<li>Connectez-vous comme les membres : <strong>lien magique</strong> (lien par courriel, sans mot de passe). <em>(La page peut aussi proposer Google selon la configuration.)</em></li>
+<li>Si vous n’êtes pas administrateur, vous êtes renvoyé vers la page <strong>compte</strong> habituelle. <strong>L’accès admin ne s’active pas tout seul</strong>: la personne qui tient la base de données (par exemple votre contact TI ou site web) doit vous l’accorder sur votre compte dans <strong>Supabase</strong>. Ensuite, les pages d’administration fonctionnent pour vous.</li>
+</ol>
+<p><strong>Liens directs vers un onglet</strong> (signet facultatif) :</p>
+<ul>
+<li>Aperçu : <code>?tab=overview</code></li>
+<li>Paiements en attente : <code>?tab=pending</code></li>
+<li>Nouveaux membres : <code>?tab=newMembers</code></li>
+<li>Membres : <code>?tab=members</code></li>
+<li>Journal d’audit : <code>?tab=auditLog</code></li>
+</ul>
+<p>Exemple : <code>/fr/membership/admin?tab=pending</code></p>
+<hr>
+<h2>À quoi sert le tableau de bord</h2>
+<p>En bref : <strong>voir l’activité</strong>, les <strong>paiements en attente</strong> et le <strong>répertoire des membres</strong> ; <strong>ouvrir un membre</strong> pour tout l’historique, <strong>enregistrer des paiements manuels</strong> et <strong>accorder le rôle administrateur</strong> à une autre personne qui doit aider.</p>
+<hr>
+<h2>Onglet Aperçu</h2>
+<p>L’onglet <strong>Aperçu</strong> donne une vue d’ensemble :</p>
+<ul>
+<li><strong>Compteurs</strong> (vous pouvez cliquer pour aller au bon endroit) :<ul>
+<li><strong>Adhésions en attente</strong>: toutes les années, tout ce qui attend encore un paiement ou une finalisation.</li>
+<li><strong>Adhésions actives</strong>: pour l’<strong>année civile d’adhésion en cours</strong> (l’année que l’association utilise pour les cotisations).</li>
+<li><strong>Nouveaux membres</strong>: profils qui attendent encore votre révision (voir l’onglet <strong>Nouveaux membres</strong>).</li>
+</ul>
+</li>
+<li><strong>Membres récents</strong>: profils <strong>vérifiés</strong> récemment.</li>
+<li><strong>Adhésions actives récentes</strong>: adhésions devenues <strong>actives</strong> récemment.</li>
+</ul>
+<p>Utilisez cet onglet pour un coup d’œil du matin avant de parcourir les listes.</p>
+<hr>
+<h2>Onglet Paiements en attente</h2>
+<p>Cette liste regroupe toutes les personnes dont l’adhésion est encore <strong>en attente</strong> pour une année donnée (nom, courriel, année, type d’adhésion, statut, cotisation prévue, actions).</p>
+<h3>Enregistrer un paiement manuel</h3>
+<p>Lorsqu’une personne paie <strong>en dehors du paiement par carte en ligne</strong> (par exemple <strong>virement</strong>, <strong>chèque</strong> ou <strong>comptant</strong>) :</p>
+<ol>
+<li>Cliquez sur <strong>Enregistrer le paiement</strong> pour cette ligne.</li>
+<li>Saisissez le <strong>montant</strong>, le <strong>mode</strong>, la <strong>date du paiement</strong>, une <strong>référence</strong> facultative (détails du virement, numéro de chèque, etc.) et des <strong>notes</strong> facultatives.</li>
+<li>Enregistrez.</li>
+</ol>
+<p>Si le montant est <strong>supérieur à la cotisation de base</strong>, le formulaire peut indiquer ce qui compte pour l’<strong>adhésion</strong> par rapport à un <strong>don</strong>: suivez l’aperçu à l’écran.</p>
+<p>Les paiements par <strong>carte (Stripe)</strong> en ligne sont en principe créés automatiquement lorsque le paiement est complété ; vous utilisez surtout cette fenêtre pour les paiements hors ligne.</p>
+<h3>Retirer une adhésion en attente</h3>
+<p><strong>Retirer l’adhésion en attente</strong> supprime cette demande en attente. La personne devra peut-être <strong>choisir de nouveau son type d’adhésion</strong> à sa prochaine connexion. Confirmez seulement si vous voulez vraiment retirer cette ligne.</p>
+<hr>
+<h2>Onglet Nouveaux membres</h2>
+<p>Vous y voyez les personnes dont le profil est encore <strong>Nouveau</strong> (en attente de vérification). Utilisez <strong>Précédent</strong> / <strong>Suivant</strong> si la liste est longue.</p>
+<p><strong>Déroulement typique :</strong> ouvrez la personne (<strong>Ouvrir</strong>), vérifiez les renseignements, puis lorsque tout est correct réglez le <strong>statut du membre</strong> sur <strong>Vérifié</strong> sur la page du membre (voir ci-dessous). Jusque-là, elle reste dans cette liste.</p>
+<hr>
+<h2>Onglet Membres (répertoire)</h2>
+<p>C’est votre répertoire consultable.</p>
+<h3>Filtres et recherche</h3>
+<ul>
+<li><strong>Recherche</strong>: par nom ou courriel.</li>
+<li><strong>Tri</strong>: par exemple plus récents d’abord ou nom de famille A–Z.</li>
+<li><strong>Afficher</strong>: tout le monde, seulement les personnes avec des antécédents d’adhésion, <strong>actifs pour [année]</strong>, ou <strong>non renouvelés pour [année]</strong>.</li>
+<li><strong>Année d’adhésion</strong>: l’année à laquelle s’appliquent ces filtres.</li>
+<li><strong>Type</strong>: Votant, Associée ou tous.</li>
+<li><strong>Statut du dossier</strong>: Vérifiés, Nouveau, Désactivé ou tous.</li>
+</ul>
+<p>Cliquez sur <strong>Appliquer</strong> pour actualiser le tableau.</p>
+<h3>Copier la liste de courriels</h3>
+<p><strong>Copier la liste de courriels</strong> utilise les <strong>mêmes filtres que le tableau</strong>. Elle inclut les <strong>courriels principaux non vides</strong> ; si un <strong>courriel secondaire</strong> est indiqué, il est inclus aussi, avec le nom de chaque personne sur son adresse. <strong>Obtenez le consentement avant un envoi de masse.</strong></p>
+<p>Si la copie automatique est bloquée, le site peut afficher du texte à copier manuellement.</p>
+<h3>Exporter CSV</h3>
+<p><strong>Exporter CSV</strong> télécharge une feuille de calcul (<strong>UTF-8</strong>) selon les <strong>mêmes filtres que le tableau</strong>: utile pour les dossiers ou la publipostage hors site.</p>
+<h3>Ouvrir un membre</h3>
+<p><strong>Ouvrir</strong> mène à la <strong>page détail</strong> de cette personne (section suivante).</p>
+<hr>
+<h2>Ajouter un membre</h2>
+<p>Utilisez <strong>Ajouter un membre</strong> (en haut de la page d’administration) lorsqu’une personne s’inscrit <strong>en dehors</strong> du parcours en ligne habituel (sur place, par téléphone, etc.).</p>
+<p>Chemins :</p>
+<ul>
+<li>Anglais : <code>/en/membership/admin/members/new</code></li>
+<li>Français : <code>/fr/membership/admin/members/new</code></li>
+</ul>
+<p>Vous pouvez saisir les renseignements du <strong>profil</strong>, l’<strong>adresse au lac</strong>, un <strong>contact secondaire</strong> facultatif, et éventuellement créer une <strong>adhésion pour l’année civile en cours</strong> soit comme :</p>
+<ul>
+<li><strong>En attente de paiement</strong>: la personne doit encore payer ; apparaît sous <strong>Paiements en attente</strong>, ou  </li>
+<li><strong>Enregistrer le paiement maintenant (comptant, virement, etc.)</strong>: si vous saisissez tout de suite un paiement hors ligne.</li>
+</ul>
+<p>Soumettez pour créer le membre.</p>
+<hr>
+<h2>Page détail d’un membre</h2>
+<p>Depuis le répertoire, <strong>Ouvrir</strong> une ligne pour voir le dossier complet.</p>
+<h3>Profil et statut</h3>
+<ul>
+<li>Modifiez <strong>nom</strong>, <strong>courriels</strong>, <strong>téléphones</strong>, <strong>adresse au lac</strong>, <strong>abonnement aux courriels</strong> et <strong>notes internes</strong> (réservées aux admins ; les membres ne voient pas ces notes).</li>
+<li><strong>Statut du membre</strong> :<ul>
+<li><strong>Nouveau</strong>: encore à vérifier (apparaît sous <strong>Nouveaux membres</strong>).</li>
+<li><strong>Vérifié</strong>: profil normal et actif.</li>
+<li><strong>Désactivé</strong>: exclure l’accès selon vos règles.</li>
+</ul>
+</li>
+</ul>
+<p>Enregistrez avec <strong>Enregistrer</strong>.</p>
+<h3>Accorder le rôle admin</h3>
+<p><strong>Accorder le rôle admin</strong> donne à cette personne l’accès au même tableau de bord administrateur. Cela ne fonctionne que si elle a déjà un <strong>compte de connexion lié</strong> (inscription avec lien magique ou équivalent). En cas de succès, elle devra peut-être <strong>se déconnecter et se reconnecter</strong> avant de voir les pages d’administration.</p>
+<h3>Adhésions et paiements</h3>
+<ul>
+<li>Choisissez l’<strong>année d’adhésion</strong> à consulter.</li>
+<li>Vous voyez les <strong>adhésions</strong> de cette personne et les <strong>paiements</strong> pour l’année sélectionnée.</li>
+<li><strong>Enregistrer le paiement</strong>: même principe que sous <strong>Paiements en attente</strong> (paiements manuels / hors ligne).</li>
+<li><strong>Retirer</strong> sur un paiement le supprime après confirmation ; le <strong>statut d’adhésion est recalculé</strong> selon ce qui reste. Action irréversible.</li>
+<li>Les paiements par <strong>carte (Stripe)</strong> apparaissent à titre de référence ; les débits courants par carte sont créés par le site, pas saisis ici.</li>
+<li><strong>Ajouter une adhésion</strong>: pour une autre année ou une autre situation si nécessaire (par exemple une nouvelle saison).</li>
+</ul>
+<hr>
+<h2>Onglet Journal d’audit</h2>
+<p>Le <strong>Journal d’audit</strong> est un tableau historique en lecture seule : <strong>quand</strong> l’action a eu lieu, <strong>quel administrateur</strong> (par courriel), <strong>quelle action</strong>, <strong>quel enregistrement</strong>, et des <strong>détails</strong> supplémentaires.</p>
+<p>On y trouve notamment :</p>
+<ul>
+<li>Création d’un membre  </li>
+<li>Mise à jour du profil  </li>
+<li>Ajout d’une adhésion depuis l’admin  </li>
+<li>Enregistrement d’un paiement <strong>manuel</strong>  </li>
+<li>Annulation d’une adhésion <strong>en attente</strong>  </li>
+<li>Suppression d’un paiement  </li>
+<li>Octroi du rôle <strong>admin</strong></li>
+</ul>
+<p>Utile pour répondre à « qui a modifié ceci ? » sans deviner.</p>
+<hr>
+<h2>Synchronisation avec Google Sheets</h2>
+<p>L’association peut tenir une <strong>feuille Google</strong> <strong>remplie automatiquement</strong> à partir des mêmes données que le site.</p>
+<h3>Contenu</h3>
+<ul>
+<li>Trois onglets : <strong>Members</strong>, <strong>Memberships</strong> et <strong>Payments</strong> (noms techniques côté feuille).</li>
+<li>La feuille est <strong>actualisée selon un horaire</strong> (en général une fois par jour sur le serveur). Ce n’est <strong>pas</strong> un miroir instantané.</li>
+<li>Dans l’onglet <strong>Memberships</strong>, la colonne <strong>tier</strong> reprend les valeurs de la base : <strong><code>voting</code></strong> ou <strong><code>associate</code></strong>. Si des formules, filtres ou tableaux croisés utilisaient l’ancienne valeur <strong><code>general</code></strong>, remplacez-la par <strong><code>voting</code></strong>.</li>
+</ul>
+<h3>Utilisation</h3>
+<ul>
+<li>Considérez la <strong>base de données du site</strong> comme <strong>source de vérité</strong>. <strong>Les changements faits seulement dans la feuille ne reviennent pas</strong> dans les dossiers d’adhésion.</li>
+<li>Servez-vous de la feuille pour les <strong>rapports</strong>, <strong>dossiers de conseil</strong>, <strong>publipostage</strong> ou un tableau familier.</li>
+<li>Une personne ayant accès au <strong>partage Google</strong> doit partager la feuille avec le <strong>compte de service</strong> de l’association (courriel indiqué dans le <strong>README</strong> du projet, section <em>Google service account</em>) :<br><code>lac-bernard-website-access@lac-bernard-app.iam.gserviceaccount.com</code><br>pour que les mises à jour automatiques fonctionnent.</li>
+</ul>
+<p>Si les lignes semblent anciennes, attendez la prochaine mise à jour quotidienne ou demandez à votre contact technique si la synchro est activée.</p>
+<hr>
+<h2>Courriel quotidien de synthèse</h2>
+<p>Certaines personnes admin reçoivent chaque jour un <strong>courriel automatique</strong> avec des chiffres clés. <strong>L’heure d’envoi exacte</strong> dépend de l’hébergement (souvent <strong>le matin, heure de l’Est</strong>) ; les <strong>dates dans le courriel</strong> utilisent <strong>Toronto (heure de l’Est)</strong> pour délimiter la « journée ».</p>
+<p><strong>Les destinataires</strong> sont configurés sur le serveur (votre contact technique gère la liste).</p>
+<h3>Signification des chiffres</h3>
+<ul>
+<li><strong>Adhésions en attente (toutes années)</strong>: nombre d’adhésions encore <strong>en attente</strong> (paiement ou finalisation), toutes années confondues.</li>
+<li><strong>Nouveaux membres en attente de vérification</strong>: nombre de <strong>profils</strong> encore au statut <strong>Nouveau</strong>.</li>
+<li><strong>Adhésions activées le jour civil précédent (Toronto)</strong>: nombre d’adhésions passées <strong>actives</strong> <strong>hier</strong> selon la date à Toronto (selon l’horodatage d’activation).</li>
+</ul>
+<p>Le courriel contient aussi des <strong>liens</strong> pour ouvrir la console d’administration en <strong>anglais</strong> et en <strong>français</strong>.</p>
+<p>Servez-vous-en comme <strong>rappel</strong> pour ouvrir le tableau de bord ; l’<strong>Aperçu</strong> et les onglets affichent toujours le détail à jour.</p>
+<hr>
+<h2>Parcours rapide : du courriel au paiement enregistré</h2>
+<ol>
+<li>Lisez le courriel quotidien (ou ouvrez l’<strong>Aperçu</strong>).  </li>
+<li>Si <strong>Adhésions en attente</strong> n’est pas zéro, allez à <strong>Paiements en attente</strong>.  </li>
+<li><strong>Ouvrez</strong> une ligne ou travaillez depuis la liste.  </li>
+<li><strong>Enregistrez le paiement</strong> lorsque l’argent est reçu, ou <strong>retirez l’adhésion en attente</strong> seulement si vous voulez vraiment annuler cette demande.  </li>
+<li>Pour les nouvelles personnes, utilisez <strong>Nouveaux membres</strong>, ouvrez le profil et passez le statut à <strong>Vérifié</strong> lorsque c’est approprié.</li>
+</ol>
+<hr>
+<h2>Besoin d’aide ?</h2>
+<ul>
+<li><strong>Problème d’accès</strong> (impossible d’ouvrir l’admin du tout) : contactez la personne qui gère <strong>Supabase</strong> / les comptes du site.  </li>
+<li><strong>Feuille qui ne se met pas à jour</strong> ou <strong>courriel qui n’arrive pas</strong>: contactez l’<strong>hébergement web</strong> ou votre contact technique (synchro et courriel utilisent des réglages serveur que vous n’avez pas à modifier vous-même).</li>
+</ul>
+
+</body>
+</html>
