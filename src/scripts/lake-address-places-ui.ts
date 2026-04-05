@@ -60,6 +60,29 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 
 	const searchWrap = o.searchInput.parentElement;
 
+	/**
+	 * "My address isn't listed" while the combobox is visible.
+	 * With no committed lake address yet, keep the link visible on load (no pop-in).
+	 * Once civic+street are set but the combobox is shown again, only show while actively searching.
+	 */
+	const syncManualToggleVisibility = () => {
+		if (o.searchSection.hidden || o.comboboxBlock.hidden) {
+			o.manualToggle.hidden = true;
+			return;
+		}
+		const hasCommittedLake =
+			Boolean(o.civicHidden.value.trim()) && Boolean(o.streetHidden.value.trim());
+		if (!hasCommittedLake) {
+			o.manualToggle.hidden = false;
+			return;
+		}
+		const usingSearch =
+			o.searchInput === document.activeElement ||
+			o.searchInput.value.trim().length > 0 ||
+			!o.suggestionsEl.hidden;
+		o.manualToggle.hidden = !usingSearch;
+	};
+
 	const setSuggestionsOpen = (open: boolean) => {
 		o.suggestionsEl.hidden = !open;
 		o.searchInput.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -72,6 +95,7 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 				el.removeAttribute('aria-selected');
 			}
 		}
+		syncManualToggleVisibility();
 	};
 
 	const setPlacesPickConfirmed = (confirmed: boolean) => {
@@ -81,6 +105,7 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 			o.searchInput.value = '';
 			setSuggestionsOpen(false);
 		}
+		syncManualToggleVisibility();
 	};
 
 	const clearPlacesPickAndShowSearch = () => {
@@ -151,7 +176,6 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 		}
 		setPlacesPickConfirmed(false);
 		sessionToken = newSessionToken();
-		o.searchInput.focus();
 	};
 
 	/** From manual mode: show search again without clearing hidden submission fields. */
@@ -164,8 +188,12 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 		const street = o.streetHidden.value.trim();
 		const fmt = o.formattedInput.value.trim();
 		const isPlaces = o.sourceInput.value === 'places' && o.placeIdInput.value.trim() !== '';
+		const display = fmt || `${civic} ${street}`.trim();
 		if (isPlaces && o.summaryEl) {
-			const display = fmt || `${civic} ${street}`.trim();
+			o.summaryEl.textContent = display;
+			o.summaryEl.hidden = false;
+			setPlacesPickConfirmed(true);
+		} else if (display && o.summaryEl) {
 			o.summaryEl.textContent = display;
 			o.summaryEl.hidden = false;
 			setPlacesPickConfirmed(true);
@@ -175,13 +203,17 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 				o.summaryEl.hidden = true;
 			}
 			setPlacesPickConfirmed(false);
-			o.searchInput.value = fmt || `${civic} ${street}`.trim();
+			o.searchInput.value = display;
 		}
 		o.suggestionsEl.innerHTML = '';
 		lastSuggestions = [];
 		setSuggestionsOpen(false);
 		sessionToken = newSessionToken();
-		o.searchInput.focus();
+		if (o.comboboxBlock.hidden) {
+			o.changeAddressToggle.focus();
+		} else {
+			o.searchInput.focus();
+		}
 	};
 
 	const syncManualToHidden = () => {
@@ -313,9 +345,15 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 
 	const debouncedAuto = debounce((q: string) => void runAutocomplete(q), 320);
 
-	o.manualToggle.addEventListener('click', () => {
+	const openManual = () => {
 		showManual();
+	};
+	/** pointerdown runs before the input blur; blur was hiding the button before click. */
+	o.manualToggle.addEventListener('pointerdown', (e) => {
+		if (e.button !== 0) return;
+		openManual();
 	});
+	o.manualToggle.addEventListener('click', openManual);
 
 	o.changeAddressToggle.addEventListener('click', () => {
 		clearPlacesPickAndShowSearch();
@@ -329,14 +367,24 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 	o.streetVisible.addEventListener('input', syncManualToHidden);
 
 	o.searchInput.addEventListener('input', () => {
+		syncManualToggleVisibility();
 		const q = o.searchInput.value;
 		debouncedAuto(q);
 	});
 
 	o.searchInput.addEventListener('focus', () => {
+		syncManualToggleVisibility();
 		if (o.searchInput.value.trim().length >= 2 && placesAvailable) {
 			void runAutocomplete(o.searchInput.value);
 		}
+	});
+
+	o.searchInput.addEventListener('blur', (e) => {
+		const rt = e.relatedTarget;
+		if (rt instanceof Node && (rt === o.manualToggle || o.manualToggle.contains(rt))) {
+			return;
+		}
+		queueMicrotask(() => syncManualToggleVisibility());
 	});
 
 	o.searchInput.addEventListener('keydown', (ev) => {
@@ -417,14 +465,17 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 		o.searchSection.hidden = false;
 		o.civicVisible.value = '';
 		o.streetVisible.value = '';
-		o.searchInput.value =
-			(o.initialFormatted ?? '').trim() || `${o.initialCivic} ${o.initialStreet}`.trim();
+		const display = (o.initialFormatted ?? '').trim() || `${o.initialCivic} ${o.initialStreet}`.trim();
 		o.suggestionsEl.innerHTML = '';
 		lastSuggestions = [];
 		setSuggestionsOpen(false);
 		if (o.summaryEl) {
-			o.summaryEl.textContent = '';
-			o.summaryEl.hidden = true;
+			o.summaryEl.textContent = display;
+			o.summaryEl.hidden = false;
+			setPlacesPickConfirmed(true);
+		} else {
+			setPlacesPickConfirmed(false);
+			o.searchInput.value = display;
 		}
 	} else {
 		o.sourceInput.value = '';

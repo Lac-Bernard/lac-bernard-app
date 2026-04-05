@@ -85,6 +85,8 @@ export function initAdminMemberNew(
 	syncMembershipFieldsVisibility();
 
 	function createErrorMessage(code: string | undefined): string {
+		if (code === 'first_name_required') return t(strings, 'profileErrorFirstName');
+		if (code === 'last_name_required') return t(strings, 'profileErrorLastName');
 		if (code === 'no_lake_address') return t(strings, 'adminAddMemberErrorNoLake');
 		if (code === 'voting_address_taken') return t(strings, 'adminAddMemberErrorAddressTaken');
 		if (code === 'already_exists') return t(strings, 'adminAddMemberErrorDuplicateYear');

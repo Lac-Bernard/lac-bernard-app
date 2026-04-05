@@ -41,8 +41,10 @@ const city = isEdit ? v(member?.primary_city) : '';
 const province = isEdit ? v(member?.primary_province) : '';
 const country = isEdit ? v(member?.primary_country) : '';
 const postal = isEdit ? v(member?.primary_postal_code) : '';
-const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : false;
+const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : true;
 const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || secondaryEmail || secondaryPhone);
+/** Hide manual link in HTML until JS runs when a lake address already exists (avoids flash on edit). */
+const hideLakeManualUntilHydrated = isEdit && Boolean(lakeCivic || lakeStreet);
 
 const lakePlacesStrings = {
 	manualLink: t.profileLakeManualLink,
@@ -74,39 +76,63 @@ const lakeProfileInitJson = JSON.stringify({
 
 				<fieldset class="profileFieldset">
 					<legend class="profileLegend">{t.profileSectionContact}</legend>
+					<p class="profileRequiredNote">{t.profileRequiredFieldsNote}</p>
 					<div class="profileNamesGroup">
-						<label class="fieldLabel" for="profile-email-readonly">{t.profileSignInEmail}</label>
-						<input
-							class="fieldInput fieldInputReadonly"
-							id="profile-email-readonly"
-							type="email"
-							value={email}
-							readonly
-							tabindex={-1}
-							aria-readonly="true"
-						/>
+						<div class="profileField">
+							<label class="fieldLabel" for="profile-email-readonly">{t.profileSignInEmail}</label>
+							<input
+								class="fieldInput fieldInputReadonly"
+								id="profile-email-readonly"
+								type="email"
+								value={email}
+								readonly
+								tabindex={-1}
+								aria-readonly="true"
+							/>
+						</div>
 
-						<label class="fieldLabel" for="first_name">{t.profileFirstName}</label>
-						<input class="fieldInput" id="first_name" name="first_name" type="text" autocomplete="given-name" value={firstName} />
+						<div class="profileField">
+							<label class="fieldLabel fieldLabel--required" for="first_name">{t.profileFirstName}</label>
+							<input
+								class="fieldInput"
+								id="first_name"
+								name="first_name"
+								type="text"
+								autocomplete="given-name"
+								required
+								value={firstName}
+							/>
+						</div>
 
-						<label class="fieldLabel" for="last_name">{t.profileLastName}</label>
-						<input
-							class="fieldInput"
-							id="last_name"
-							name="last_name"
-							type="text"
-							autocomplete="family-name"
-							required
-							value={lastName}
-						/>
+						<div class="profileField">
+							<label class="fieldLabel fieldLabel--required" for="last_name">{t.profileLastName}</label>
+							<input
+								class="fieldInput"
+								id="last_name"
+								name="last_name"
+								type="text"
+								autocomplete="family-name"
+								required
+								value={lastName}
+							/>
+						</div>
 
-						<label class="fieldLabel" for="primary_phone">{t.profilePrimaryPhone}</label>
-						<input class="fieldInput" id="primary_phone" name="primary_phone" type="text" autocomplete="tel" value={primaryPhone} />
+						<div class="profileField">
+							<label class="fieldLabel" for="primary_phone">
+								{t.profilePrimaryPhone}
+								<span class="fieldOptionalMark">{t.profileOptionalMark}</span>
+							</label>
+							<input class="fieldInput" id="primary_phone" name="primary_phone" type="text" autocomplete="tel" value={primaryPhone} />
+						</div>
 					</div>
 
 					<div
 						id="secondary-contact-group"
-						class:list={['profileNamesGroup', { 'profileNamesGroup--collapsed': !hasSecondaryContact }]}
+						class:list={[
+							'profileNamesGroup',
+							'profileSecondaryContactGroup',
+							{ 'profileNamesGroup--collapsed': !hasSecondaryContact },
+						]}
 					>
 						<label class="toggleLabel" for="show_secondary_contact">
 							<input
@@ -125,38 +151,46 @@ const lakeProfileInitJson = JSON.stringify({
 							aria-hidden={!hasSecondaryContact ? 'true' : 'false'}
 							class:list={['secondaryFields', { 'secondaryFields--hidden': !hasSecondaryContact }]}
 						>
-							<label class="fieldLabel" for="secondary_first_name">{t.profileSecondaryFirstName}</label>
-							<input
-								class="fieldInput"
-								id="secondary_first_name"
-								name="secondary_first_name"
-								type="text"
-								autocomplete="off"
-								value={secondaryFirstName}
-							/>
+							<div class="profileField">
+								<label class="fieldLabel" for="secondary_first_name">{t.profileSecondaryFirstName}</label>
+								<input
+									class="fieldInput"
+									id="secondary_first_name"
+									name="secondary_first_name"
+									type="text"
+									autocomplete="off"
+									value={secondaryFirstName}
+								/>
+							</div>
 
-							<label class="fieldLabel" for="secondary_last_name">{t.profileSecondaryLastName}</label>
-							<input
-								class="fieldInput"
-								id="secondary_last_name"
-								name="secondary_last_name"
-								type="text"
-								autocomplete="off"
-								value={secondaryLastName}
-							/>
+							<div class="profileField">
+								<label class="fieldLabel" for="secondary_last_name">{t.profileSecondaryLastName}</label>
+								<input
+									class="fieldInput"
+									id="secondary_last_name"
+									name="secondary_last_name"
+									type="text"
+									autocomplete="off"
+									value={secondaryLastName}
+								/>
+							</div>
 
-							<label class="fieldLabel" for="secondary_email">{t.profileSecondaryEmail}</label>
-							<input
-								class="fieldInput"
-								id="secondary_email"
-								name="secondary_email"
-								type="email"
-								autocomplete="email"
-								value={secondaryEmail}
-							/>
+							<div class="profileField">
+								<label class="fieldLabel" for="secondary_email">{t.profileSecondaryEmail}</label>
+								<input
+									class="fieldInput"
+									id="secondary_email"
+									name="secondary_email"
+									type="email"
+									autocomplete="email"
+									value={secondaryEmail}
+								/>
+							</div>
 
-							<label class="fieldLabel" for="secondary_phone">{t.profileSecondaryPhone}</label>
-							<input class="fieldInput" id="secondary_phone" name="secondary_phone" type="text" autocomplete="tel" value={secondaryPhone} />
+							<div class="profileField">
+								<label class="fieldLabel" for="secondary_phone">{t.profileSecondaryPhone}</label>
+								<input class="fieldInput" id="secondary_phone" name="secondary_phone" type="text" autocomplete="tel" value={secondaryPhone} />
+							</div>
 						</div>
 					</div>
 				</fieldset>
@@ -173,45 +207,60 @@ const lakeProfileInitJson = JSON.stringify({
 
 					<div id="lake-search-section" class="lakeAddressSearchSection">
 						<div id="lake-address-combobox-block" class="lakeAddressComboboxBlock">
-							<label class="fieldLabel" for="lake-address-search">{t.profileLakeSearchLabel}</label>
-							<div class="lakeAddressSearchWrap">
-								<input
-									class="fieldInput"
-									id="lake-address-search"
-									type="text"
-									autocomplete="off"
-									placeholder={t.profileLakeSearchPlaceholder}
-									role="combobox"
-									aria-autocomplete="list"
-									aria-haspopup="listbox"
-									aria-controls="lake-address-suggestions"
-									aria-expanded="false"
-								/>
-								<ul
-									id="lake-address-suggestions"
-									class="lakeAddressSuggestList"
-									hidden
-									role="listbox"
-									aria-label={t.profileLakeSearchLabel}
-								>
-								</ul>
+							<div class="profileField">
+								<label class="fieldLabel" for="lake-address-search">
+									{t.profileLakeSearchLabel}
+									<span class="fieldOptionalMark">{t.profileOptionalMark}</span>
+								</label>
+								<div class="lakeAddressSearchWrap">
+									<input
+										class="fieldInput"
+										id="lake-address-search"
+										type="text"
+										autocomplete="off"
+										placeholder={t.profileLakeSearchPlaceholder}
+										role="combobox"
+										aria-autocomplete="list"
+										aria-haspopup="listbox"
+										aria-controls="lake-address-suggestions"
+										aria-expanded="false"
+									/>
+									<ul
+										id="lake-address-suggestions"
+										class="lakeAddressSuggestList"
+										hidden
+										role="listbox"
+										aria-label={t.profileLakeSearchLabel}
+									>
+									</ul>
+								</div>
 							</div>
 						</div>
 						<p id="lake-places-summary" class="lakeAddressSummary" hidden role="status" aria-live="polite"></p>
 						<button type="button" class="lakeAddressTextBtn" id="lake-change-address" hidden>
 							{t.profileLakeBackToSearch}
 						</button>
-						<button type="button" class="lakeAddressTextBtn" id="lake-manual-toggle">
+						<button type="button" class="lakeAddressTextBtn" id="lake-manual-toggle" hidden={hideLakeManualUntilHydrated}>
 							{t.profileLakeManualLink}
 						</button>
 					</div>
 
 					<div id="lake-manual-section" class="lakeAddressManualSection profileNamesGroup" hidden>
-						<label class="fieldLabel" for="lake_civic_visible">{t.profileLakeCivic}</label>
-						<input class="fieldInput" id="lake_civic_visible" type="text" autocomplete="off" value={lakeCivic} />
+						<div class="profileField">
+							<label class="fieldLabel" for="lake_civic_visible">
+								{t.profileLakeCivic}
+								<span class="fieldOptionalMark">{t.profileOptionalMark}</span>
+							</label>
+							<input class="fieldInput" id="lake_civic_visible" type="text" autocomplete="off" value={lakeCivic} />
+						</div>
 
-						<label class="fieldLabel" for="lake_street_visible">{t.profileLakeStreet}</label>
-						<input class="fieldInput" id="lake_street_visible" type="text" autocomplete="off" value={lakeStreet} />
+						<div class="profileField">
+							<label class="fieldLabel" for="lake_street_visible">
+								{t.profileLakeStreet}
+								<span class="fieldOptionalMark">{t.profileOptionalMark}</span>
+							</label>
+							<input class="fieldInput" id="lake_street_visible" type="text" autocomplete="off" value={lakeStreet} />
+						</div>
 
 						<button type="button" class="lakeAddressTextBtn" id="lake-back-search">
 							{t.profileLakeBackToSearch}
@@ -219,9 +268,9 @@ const lakeProfileInitJson = JSON.stringify({
 					</div>
 				</fieldset>
 
-				<label class="checkLabel">
+				<label class="checkLabel profileEmailOptInCard">
 					<input type="checkbox" name="email_opt_in" checked={emailOptIn ? true : undefined} class="checkInput" />
-					<span>{t.profileEmailOptIn}</span>
+					<span class="checkLabelText">{t.profileEmailOptIn}</span>
 				</label>
 
 				<p id="profile-form-message" class="formMessage" role="status" aria-live="polite"></p>
@@ -328,6 +377,7 @@ const lakeProfileInitJson = JSON.stringify({
 		preservedPrimaryCountry: country,
 		preservedPrimaryPostalCode: postal,
 		errNetwork: t.errorNetwork,
+		errFirstName: t.profileErrorFirstName,
 		errLastName: t.profileErrorLastName,
 		errSecondaryEmail: t.profileErrorSecondaryEmail,
 		errSecondaryContact: t.profileErrorSecondaryContact,
@@ -386,6 +436,7 @@ const lakeProfileInitJson = JSON.stringify({
 	}
 
 	function validateBody(body) {
+		if (!body.first_name) return errFirstName;
 		if (!body.last_name) return errLastName;
 		if (body.secondary_email && !isValidEmail(body.secondary_email)) return errSecondaryEmail;
 
@@ -411,6 +462,8 @@ const lakeProfileInitJson = JSON.stringify({
 
 	function messageForApiError(error) {
 		switch (error) {
+			case 'first_name_required':
+				return errFirstName;
 			case 'last_name_required':
 				return errLastName;
 			case 'invalid_secondary_email':
@@ -441,7 +494,7 @@ const lakeProfileInitJson = JSON.stringify({
 
 	function payloadFromForm(fd) {
 		return {
-			first_name: fd.get('first_name') || null,
+			first_name: String(fd.get('first_name') ?? '').trim(),
 			secondary_first_name: fd.get('secondary_first_name') || null,
 			last_name: String(fd.get('last_name') ?? '').trim(),
 			secondary_last_name: fd.get('secondary_last_name') || null,
@@ -561,8 +614,27 @@ const lakeProfileInitJson = JSON.stringify({
 		display: block;
 	}
 
-	.profileNamesGroup > *:not(:first-child) {
-		margin-top: 0.7rem;
+	/*
+	 * One wrapper per label+control so spacing is between *fields*, not between label and input.
+	 * Otherwise equal margin on alternating siblings makes labels look glued to the input above.
+	 */
+	.profileField {
+		display: block;
+		margin: 0;
+	}
+
+	.profileNamesGroup > .profileField:not(:first-child) {
+		margin-top: 0.85rem;
+	}
+
+	.profileField .fieldLabel {
+		display: block;
+		margin: 0 0 0.4rem;
+		line-height: 1.25;
+	}
+
+	.profileField .fieldInput {
+		margin: 0;
 	}
 
 	.profileNamesGroup .profileLegend {
@@ -577,11 +649,31 @@ const lakeProfileInitJson = JSON.stringify({
 		color: var(--text, #0f172a);
 	}
 
+	.profileRequiredNote {
+		margin: 0;
+		font-size: 0.8rem;
+		line-height: 1.45;
+		color: var(--color-muted, #64748b);
+		letter-spacing: 0.01em;
+	}
+
 	.fieldLabel {
 		font-weight: 600;
 		font-size: 0.82rem;
 		letter-spacing: 0.01em;
 		color: var(--text, #1e293b);
+	}
+
+	.fieldLabel--required::after {
+		content: ' *';
+		font-weight: 700;
+		color: #b91c1c;
+	}
+
+	.fieldOptionalMark {
+		font-weight: 500;
+		font-size: 0.92em;
+		color: var(--color-muted, #64748b);
 	}
 
 	.fieldInput {
@@ -626,9 +718,10 @@ const lakeProfileInitJson = JSON.stringify({
 	.toggleLabel {
 		display: flex;
 		align-items: center;
-		gap: 0.7rem;
+		gap: 0.65rem;
 		font-size: 0.94rem;
 		font-weight: 600;
+		line-height: 1.35;
 		color: var(--text, #1e293b);
 		cursor: pointer;
 	}
@@ -636,14 +729,21 @@ const lakeProfileInitJson = JSON.stringify({
 	.toggleInput {
 		margin: 0;
 		flex-shrink: 0;
+		width: 1.08em;
+		height: 1.08em;
+		align-self: center;
+	}
+
+	.profileNamesGroup > .profileSecondaryContactGroup {
+		margin-top: 1.05rem;
 	}
 
 	.secondaryFields {
 		display: block;
 	}
 
-	.secondaryFields > *:not(:first-child) {
-		margin-top: 0.7rem;
+	.secondaryFields > .profileField:not(:first-child) {
+		margin-top: 0.85rem;
 	}
 
 	.secondaryFields--hidden {
@@ -656,20 +756,37 @@ const lakeProfileInitJson = JSON.stringify({
 
 	.checkLabel {
 		display: flex;
-		align-items: flex-start;
-		gap: 0.75rem;
-		padding: 0.9rem 1rem;
-		border: 1px solid rgba(15, 23, 42, 0.08);
-		border-radius: 14px;
-		background: rgba(248, 250, 252, 0.72);
-		font-size: 0.94rem;
-		line-height: 1.5;
+		align-items: center;
+		gap: 0.65rem;
+		margin: 0;
 		cursor: pointer;
 	}
 
+	.profileEmailOptInCard {
+		padding: 1.2rem 1.35rem;
+		border: 1px solid rgba(15, 23, 42, 0.08);
+		border-radius: 18px;
+		background: linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(248, 250, 252, 0.92));
+		box-shadow:
+			0 1px 2px rgba(15, 23, 42, 0.04),
+			0 12px 32px rgba(15, 23, 42, 0.05);
+		font-size: 0.94rem;
+		line-height: 1.45;
+		font-weight: 600;
+		color: var(--text, #1e293b);
+	}
+
+	.checkLabelText {
+		flex: 1;
+		min-width: 0;
+	}
+
 	.checkInput {
-		margin-top: 0.2rem;
+		margin: 0;
 		flex-shrink: 0;
+		width: 1.08em;
+		height: 1.08em;
+		align-self: center;
 	}
 
 	.formMessage {

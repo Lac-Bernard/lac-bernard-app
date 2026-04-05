@@ -571,7 +571,14 @@ export function initAdminMemberDetail(
 			body: JSON.stringify(body),
 		});
 		if (!ok) {
-			setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
+			const code = data?.error;
+			const msg =
+				code === 'first_name_required'
+					? t(strings, 'profileErrorFirstName')
+					: code === 'last_name_required'
+						? t(strings, 'profileErrorLastName')
+						: (code ?? t(strings, 'adminErrorGeneric'));
+			setStatus(msg, 'error');
 			return;
 		}
 		setStatus(t(strings, 'adminMemberSaved'), 'success');

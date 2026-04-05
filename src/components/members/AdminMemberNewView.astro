@@ -47,6 +47,8 @@ const adminKeys = [
 	'profileShowSecondaryMember',
 	'profileSecondaryMemberHelp',
 	'profileLakeHelp',
+	'profileErrorFirstName',
+	'profileErrorLastName',
 	'profileFirstName',
 	'profileLastName',
 	'profileSecondaryFirstName',
@@ -99,7 +101,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
               <fieldset class="adminProfileSection">
                 <legend class="adminProfileLegend">{t.profileSectionPrimaryMember}</legend>
                 <div class="adminFormGrid">
-                  <label>{t.profileFirstName} <input type="text" name="first_name" class="adminInput" /></label>
+                  <label>{t.profileFirstName} * <input type="text" name="first_name" class="adminInput" required /></label>
                   <label>{t.profileLastName} * <input type="text" name="last_name" class="adminInput" required /></label>
                   <label>{t.adminPrimaryEmailLabel} <input type="email" name="primary_email" class="adminInput" /></label>
                   <label>{t.profilePrimaryPhone} <input type="text" name="primary_phone" class="adminInput" /></label>
