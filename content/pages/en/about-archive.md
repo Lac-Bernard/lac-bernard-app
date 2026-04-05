@@ -14,5 +14,3 @@ You can also search by keyword in the file titles and, in most cases, the conten
 The Association Archivist, Charles Topp (archives@lacbernard.ca), supported by the members of the History and Archives Committee, is the keeper of the records. While copies of photos, documents, and oral histories may be used for a variety of purposes (posting on the web site, responding to requests, etc.), the Association Archivist is responsible for storing and maintaining the master copies as the Archives of the Association.
 
 If you have any questions or need assistance in accessing and searching the archives, please contact: archives@lacbernard.ca
-
-<a href="https://drive.google.com/drive/folders/1FymO4jIrA_Xa4a2mwRo-UnTsWZQOOOCf" target="_blank" rel="noopener noreferrer" class="drive-link-button">Open Archive Folder in Google Drive →</a>

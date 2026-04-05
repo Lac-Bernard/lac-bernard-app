@@ -1,5 +1,6 @@
 ---
 import Page from '@/layouts/Page.astro';
+import DriveFolderBrowser from '@/components/DriveFolderBrowser.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
 const page = await loadContentPage('fr', 'history-newspaper-clippings');
@@ -7,4 +8,8 @@ const title = page.frontmatter?.title ?? "Collection de coupures de journaux du 
 const description = page.frontmatter?.description;
 ---
 
-<Page title={title} description={description} content={page} section="history" />
+<Page title={title} description={description} content={page} section="history">
+  <div slot="extra">
+    <DriveFolderBrowser rootFolderId="1H_LvoSzirCfczkBn_WiGJUAl6K43Yfyq" locale="fr" />
+  </div>
+</Page>

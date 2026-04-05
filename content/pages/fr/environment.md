@@ -46,8 +46,6 @@ La bonne nouvelle est que nous pouvons tous avoir un impact positif dans ces dom
 
 ## Rapports
 
-<a href="https://drive.google.com/drive/folders/1pLhabTA7ZbPmijuT2lexmZd8AmXvjcyY" target="_blank" rel="noopener noreferrer" class="drive-link-button">Voir les rapports environnementaux dans Google Drive →</a>
-
 ## Ce que l'Association fait
 
 ### Surveiller
