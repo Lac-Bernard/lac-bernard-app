@@ -11,7 +11,6 @@ export type HomeUi = {
 	heroTagline: string;
 	ctaMembership: string;
 	ctaNews: string;
-	impact: string;
 	years: string;
 	members: string;
 	events: string;
@@ -33,7 +32,6 @@ export const homeUi: Record<Language, HomeUi> = {
 		heroTagline: 'Protecting the lake, building community, and supporting cottagers.',
 		ctaMembership: 'Membership',
 		ctaNews: 'News',
-		impact: 'Our Impact',
 		years: 'Years of Service',
 		members: 'Active Members',
 		events: 'Annual Events',
@@ -54,7 +52,6 @@ export const homeUi: Record<Language, HomeUi> = {
 		heroTagline: 'Protéger le lac, rassembler la communauté et soutenir les propriétaires.',
 		ctaMembership: 'Adhésion',
 		ctaNews: 'Nouvelles',
-		impact: 'Notre impact',
 		years: 'Années de service',
 		members: 'Membres actifs',
 		events: 'Événements annuels',

@@ -43,7 +43,7 @@ Après la connexion, vous arrivez dans votre **espace membre**. Vous y voyez un 
 
 ### Payer par carte de crédit
 
-La grande nouveauté pour plusieurs : **Payer par carte de crédit**. Vous suivrez un court parcours de paiement sécurisé (Stripe). Vous pouvez ajouter un **don facultatif** pour soutenir l’association à la même étape si vous le souhaitez. Une fois le paiement réussi, votre adhésion devrait s’afficher comme **active** sous peu dans votre compte.
+La grande nouveauté pour plusieurs : **Payer par carte de crédit**. Vous suivrez un court parcours de paiement sécurisé (Stripe). Vous pouvez ajouter un **don facultatif** pour soutenir l’association à la même étape si vous le souhaitez. Une fois le paiement réussi, votre adhésion devrait s’afficher comme **active** sous peu.
 
 Si vous préférez ne pas utiliser la carte, choisissez **Autre mode de paiement** sur votre compte ; la page affichera tout ce qu’il faut pour le **virement**, le **chèque** ou le **comptant**, y compris comment indiquer un **don facultatif** (vous pourrez encore passer à la carte plus tard depuis la section « en attente » si vous voulez).
 
@@ -51,8 +51,8 @@ Si vous préférez ne pas utiliser la carte, choisissez **Autre mode de paiement
 
 1. Ouvrez le lien de **connexion** ci-dessus (choisissez l’anglais ou le français).  
 2. Connectez-vous avec **Google** ou votre courriel (**lien magique**).  
-3. Si le site vous demande de **créer ou compléter votre profil**, remplissez le formulaire et enregistrez, surtout l’**adresse au lac** si vous voulez une adhésion **générale** (droit de vote).  
-4. Sur la page **compte**, choisissez **Générale** ou **Associée**, puis **Payer par carte de crédit** (terminez le paiement) **ou** **Autre mode de paiement** (puis suivez les instructions à l’écran).  
+3. Si le site vous demande de **créer ou compléter votre profil**, remplissez le formulaire et enregistrez, surtout l’**adresse au lac** si vous souhaitez l’**adhésion avec droit de vote**.  
+4. Sur la page **compte**, choisissez **Votant** ou **Associée** (sans droit de vote), puis **Payer par carte de crédit** (terminez le paiement) **ou** **Autre mode de paiement** (puis suivez les instructions à l’écran).  
 
 C’est tout. Si votre adhésion 2026 est déjà **active**, vous verrez ce statut plutôt que le flux de paiement.
 

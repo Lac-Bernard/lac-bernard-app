@@ -68,14 +68,15 @@ const title = ui.siteTitle;
       </section>
 
       <section class="section homeIntro">
-        <div class="container prose">
-          <Content />
+        <div class="container">
+          <div class="homeReadingColumn prose">
+            <Content />
+          </div>
         </div>
       </section>
 
       <section class="section stats">
         <div class="container">
-          <h2>{ui.impact}</h2>
           <div class="statsGrid">
             <div class="stat"><div class="num">92</div><div class="label">{ui.years}</div></div>
             <div class="stat"><div class="num">200+</div><div class="label">{ui.members}</div></div>
@@ -86,34 +87,38 @@ const title = ui.siteTitle;
       </section>
 
       {latestPosts.length > 0 && (
-        <section class="section alt" id="latest-news" aria-labelledby="home-latest-news-heading">
+        <section class="section alt homeLatestNews" id="latest-news" aria-labelledby="home-latest-news-heading">
           <div class="container">
-            <h2 id="home-latest-news-heading">{ui.latestNews}</h2>
-            <ul class="newsList">
-              {latestPosts.map((post) => (
-                <li>
-                  <a href={`/${lang}/news/${blogPostSlug(post.id)}/`}>
-                    <h3>{post.data.title}</h3>
-                    <div class="newsDate">
-                      <FormattedDate date={post.data.pubDate} lang={lang} />
-                    </div>
-                    <p class="excerpt">
-                      {post.data.description}
-                      {' '}
-                      <span class="readMore">{ui.readMore}: {post.data.title}</span>
-                    </p>
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <div class="homeReadingColumn">
+              <h2 id="home-latest-news-heading" class="homeLatestNews-heading">{ui.latestNews}</h2>
+              <ul class="newsList">
+                {latestPosts.map((post) => (
+                  <li>
+                    <a class="newsTeaser" href={`/${lang}/news/${blogPostSlug(post.id)}/`}>
+                      <h3 class="newsTeaser-title">{post.data.title}</h3>
+                      <p class="newsTeaser-meta">
+                        <FormattedDate date={post.data.pubDate} lang={lang} />
+                      </p>
+                      <p class="newsTeaser-excerpt">{post.data.description}</p>
+                      <span class="newsTeaser-cta">
+                        {ui.readMore}
+                        <span class="newsTeaser-ctaArrow" aria-hidden="true">→</span>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </section>
       )}
 
       <section class="section land">
         <div class="container">
-          <h2>{ui.landAck}</h2>
-          <p>{ui.landAckText}</p>
+          <div class="homeReadingColumn homeLandAck">
+            <h2>{ui.landAck}</h2>
+            <p>{ui.landAckText}</p>
+          </div>
         </div>
       </section>
     </main>
@@ -216,6 +221,15 @@ const title = ui.siteTitle;
         outline-color: rgba(255, 255, 255, 0.85);
       }
 
+      /**
+       * Comfortable reading measure (~65–72ch), centered so headings and body share one column.
+       */
+      .homeReadingColumn {
+        max-width: min(44rem, 100%);
+        margin-inline: auto;
+        width: 100%;
+      }
+
       .homeIntro :global(.prose > p:first-of-type) {
         font-size: clamp(1.05rem, 0.6vw + 1rem, 1.28rem);
         line-height: 1.55;
@@ -242,15 +256,30 @@ const title = ui.siteTitle;
         text-align: center;
       }
 
-      .land h2 {
+      .homeLandAck {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .homeLandAck h2 {
+        margin: 0;
         font-size: 28px;
       }
 
-      .land p {
+      .homeLandAck p {
+        margin: 0;
         color: var(--muted);
         font-size: 19px;
-        max-width: 75ch;
-        margin: 0 auto;
+      }
+
+      .homeLatestNews-heading {
+        margin: 0 0 1.75rem;
+        font-size: clamp(1.5rem, 2.5vw, 1.875rem);
+        font-weight: 650;
+        letter-spacing: -0.02em;
+        line-height: 1.2;
       }
 
       .newsList {
@@ -263,44 +292,91 @@ const title = ui.siteTitle;
         margin: 0;
       }
 
-      .newsList a {
+      .newsTeaser {
+        --news-link: #1d4ed8;
+        --news-link-dim: rgba(29, 78, 216, 0.4);
         display: block;
         text-decoration: none;
         color: inherit;
-        padding: 20px 0;
+        padding: 1.625rem 1rem;
+        margin: 0 -1rem;
+        border-radius: 12px;
         border-bottom: 1px solid var(--border);
+        transition: background-color 0.15s ease;
       }
 
-      .newsList a:hover {
-        color: var(--accent);
+      .newsList li:last-child .newsTeaser {
+        border-bottom: none;
       }
 
-      .newsList h3 {
-        margin: 0 0 8px;
-        font-size: 24px;
-        font-weight: 600;
+      .newsTeaser:hover {
+        background: rgba(0, 0, 0, 0.035);
       }
 
-      .newsList .newsDate {
-        display: block;
+      .newsTeaser:focus-visible {
+        outline: 2px solid var(--news-link);
+        outline-offset: 2px;
+      }
+
+      .newsTeaser:hover .newsTeaser-title {
+        color: var(--news-link);
+      }
+
+      .newsTeaser-title {
+        margin: 0 0 0.5rem;
+        font-size: clamp(1.125rem, 1.5vw, 1.3125rem);
+        font-weight: 650;
+        line-height: 1.3;
+        letter-spacing: -0.02em;
+        color: var(--text);
+        transition: color 0.15s ease;
+      }
+
+      .newsTeaser-meta {
+        margin: 0 0 1rem;
+        font-size: 0.8125rem;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
         color: var(--muted);
-        font-size: 14px;
-        margin-bottom: 12px;
       }
 
-      .newsList .newsDate time {
+      .newsTeaser-meta :global(time) {
         color: inherit;
       }
 
-      .newsList .excerpt {
-        margin: 0;
-        color: var(--text);
-        line-height: 1.6;
+      .newsTeaser-excerpt {
+        margin: 0 0 1.125rem;
+        font-size: 1.0625rem;
+        line-height: 1.55;
+        color: rgba(0, 0, 0, 0.78);
       }
 
-      .newsList .readMore {
-        color: var(--accent);
-        font-weight: 500;
+      .newsTeaser-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--news-link);
+        text-decoration: underline;
+        text-decoration-color: var(--news-link-dim);
+        text-underline-offset: 3px;
+        transition: text-decoration-color 0.15s ease, color 0.15s ease;
+      }
+
+      .newsTeaser:hover .newsTeaser-cta {
+        text-decoration-color: var(--news-link);
+      }
+
+      .newsTeaser-ctaArrow {
+        text-decoration: none;
+        display: inline-block;
+        transition: transform 0.15s ease;
+      }
+
+      .newsTeaser:hover .newsTeaser-ctaArrow {
+        transform: translateX(3px);
       }
 
       @media (max-width: 640px) {
