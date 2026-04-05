@@ -13,6 +13,10 @@ export type LakeAddressPlacesStrings = {
 export type LakeAddressPlacesInit = {
 	locale: 'en' | 'fr';
 	strings: LakeAddressPlacesStrings;
+	/** Wraps the "Find your lake address" label + combobox; hidden when a Places pick is confirmed. */
+	comboboxBlock: HTMLElement;
+	/** "Search for an address" — visible only after a Places pick, to change the selection. */
+	changeAddressToggle: HTMLButtonElement;
 	searchInput: HTMLInputElement;
 	suggestionsEl: HTMLUListElement;
 	searchSection: HTMLElement;
@@ -50,8 +54,60 @@ function newSessionToken(): string {
 export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 	let sessionToken = newSessionToken();
 	let placesAvailable = true;
-	let openDebounce: (() => void) | undefined;
 	let acAbort: AbortController | undefined;
+	let lastSuggestions: { placeId: string; text: string }[] = [];
+	let activeIndex = -1;
+
+	const searchWrap = o.searchInput.parentElement;
+
+	const setSuggestionsOpen = (open: boolean) => {
+		o.suggestionsEl.hidden = !open;
+		o.searchInput.setAttribute('aria-expanded', open ? 'true' : 'false');
+		searchWrap?.classList.toggle('lakeAddressSearchWrap--open', open);
+		if (!open) {
+			activeIndex = -1;
+			o.searchInput.removeAttribute('aria-activedescendant');
+			for (const el of o.suggestionsEl.querySelectorAll('.lakeAddressSuggestOption')) {
+				el.classList.remove('lakeAddressSuggestOption--active');
+				el.removeAttribute('aria-selected');
+			}
+		}
+	};
+
+	const setPlacesPickConfirmed = (confirmed: boolean) => {
+		o.comboboxBlock.hidden = confirmed;
+		o.changeAddressToggle.hidden = !confirmed;
+		if (confirmed) {
+			o.searchInput.value = '';
+			setSuggestionsOpen(false);
+		}
+	};
+
+	const clearPlacesPickAndShowSearch = () => {
+		o.placeIdInput.value = '';
+		o.formattedInput.value = '';
+		o.sourceInput.value = '';
+		o.civicHidden.value = '';
+		o.streetHidden.value = '';
+		if (o.summaryEl) {
+			o.summaryEl.textContent = '';
+			o.summaryEl.hidden = true;
+		}
+		setPlacesPickConfirmed(false);
+		sessionToken = newSessionToken();
+		o.searchInput.focus();
+	};
+
+	const highlightActive = () => {
+		const opts = o.suggestionsEl.querySelectorAll<HTMLElement>('.lakeAddressSuggestOption');
+		opts.forEach((el, i) => {
+			const on = i === activeIndex;
+			el.classList.toggle('lakeAddressSuggestOption--active', on);
+			el.setAttribute('aria-selected', on ? 'true' : 'false');
+			if (on) o.searchInput.setAttribute('aria-activedescendant', el.id);
+		});
+		if (activeIndex < 0) o.searchInput.removeAttribute('aria-activedescendant');
+	};
 
 	const showManual = () => {
 		o.searchSection.hidden = true;
@@ -63,7 +119,9 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 		o.streetVisible.value = o.streetHidden.value;
 		o.searchInput.value = '';
 		o.suggestionsEl.innerHTML = '';
-		o.suggestionsEl.hidden = true;
+		lastSuggestions = [];
+		setSuggestionsOpen(false);
+		setPlacesPickConfirmed(false);
 		if (o.summaryEl) {
 			o.summaryEl.textContent = '';
 			o.summaryEl.hidden = true;
@@ -72,7 +130,8 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 		o.civicVisible.focus();
 	};
 
-	const showSearch = () => {
+	/** Empty state: clear stored address and show only the search field. */
+	const clearAndShowSearch = () => {
 		o.manualSection.hidden = true;
 		o.searchSection.hidden = false;
 		o.civicHidden.value = '';
@@ -84,11 +143,43 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 		o.streetVisible.value = '';
 		o.searchInput.value = '';
 		o.suggestionsEl.innerHTML = '';
-		o.suggestionsEl.hidden = true;
+		lastSuggestions = [];
+		setSuggestionsOpen(false);
 		if (o.summaryEl) {
 			o.summaryEl.textContent = '';
 			o.summaryEl.hidden = true;
 		}
+		setPlacesPickConfirmed(false);
+		sessionToken = newSessionToken();
+		o.searchInput.focus();
+	};
+
+	/** From manual mode: show search again without clearing hidden submission fields. */
+	const showSearchFromManual = () => {
+		o.manualSection.hidden = true;
+		o.searchSection.hidden = false;
+		o.civicVisible.value = '';
+		o.streetVisible.value = '';
+		const civic = o.civicHidden.value.trim();
+		const street = o.streetHidden.value.trim();
+		const fmt = o.formattedInput.value.trim();
+		const isPlaces = o.sourceInput.value === 'places' && o.placeIdInput.value.trim() !== '';
+		if (isPlaces && o.summaryEl) {
+			const display = fmt || `${civic} ${street}`.trim();
+			o.summaryEl.textContent = display;
+			o.summaryEl.hidden = false;
+			setPlacesPickConfirmed(true);
+		} else {
+			if (o.summaryEl) {
+				o.summaryEl.textContent = '';
+				o.summaryEl.hidden = true;
+			}
+			setPlacesPickConfirmed(false);
+			o.searchInput.value = fmt || `${civic} ${street}`.trim();
+		}
+		o.suggestionsEl.innerHTML = '';
+		lastSuggestions = [];
+		setSuggestionsOpen(false);
 		sessionToken = newSessionToken();
 		o.searchInput.focus();
 	};
@@ -102,20 +193,23 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 		o.civicHidden.value = civic;
 		o.streetHidden.value = street;
 		o.sourceInput.value = 'places';
+		const line = formatted || `${civic} ${street}`.trim();
 		if (o.summaryEl) {
-			o.summaryEl.textContent = formatted || `${civic} ${street}`.trim();
+			o.summaryEl.textContent = line;
 			o.summaryEl.hidden = false;
 		}
 		o.manualSection.hidden = true;
 		o.searchSection.hidden = false;
-		o.searchInput.value = formatted || `${civic} ${street}`.trim();
-		o.suggestionsEl.hidden = true;
+		lastSuggestions = [];
+		setSuggestionsOpen(false);
+		setPlacesPickConfirmed(true);
 	};
 
 	const runAutocomplete = async (q: string) => {
 		if (!placesAvailable || q.trim().length < 2) {
 			o.suggestionsEl.innerHTML = '';
-			o.suggestionsEl.hidden = true;
+			lastSuggestions = [];
+			setSuggestionsOpen(false);
 			return;
 		}
 		acAbort?.abort();
@@ -135,41 +229,52 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 			}
 			if (!res.ok) {
 				o.suggestionsEl.innerHTML = '';
-				o.suggestionsEl.hidden = true;
+				lastSuggestions = [];
+				setSuggestionsOpen(false);
 				return;
 			}
 			const data = (await res.json()) as { suggestions?: { placeId: string; text: string }[] };
 			const sugs = data.suggestions ?? [];
+			lastSuggestions = sugs.map((s) => ({ placeId: s.placeId, text: s.text }));
+			activeIndex = -1;
 			o.suggestionsEl.innerHTML = '';
 			if (sugs.length === 0) {
 				const li = document.createElement('li');
 				li.className = 'lakeAddressSuggestHint';
+				li.setAttribute('role', 'presentation');
 				li.textContent = o.strings.noSuggestions;
 				o.suggestionsEl.appendChild(li);
-				o.suggestionsEl.hidden = false;
+				setSuggestionsOpen(true);
+				o.searchInput.removeAttribute('aria-activedescendant');
 				return;
 			}
-			for (const s of sugs) {
+			for (let i = 0; i < sugs.length; i++) {
+				const s = sugs[i];
 				const li = document.createElement('li');
-				const btn = document.createElement('button');
-				btn.type = 'button';
-				btn.className = 'lakeAddressSuggestBtn';
-				btn.textContent = s.text;
-				btn.addEventListener('click', () => void pickPlace(s.placeId));
-				li.appendChild(btn);
+				li.setAttribute('role', 'option');
+				li.className = 'lakeAddressSuggestOption';
+				li.id = `lake-address-sug-${i}`;
+				li.textContent = s.text;
+				li.setAttribute('aria-selected', 'false');
+				li.tabIndex = -1;
+				li.addEventListener('mousedown', (e) => e.preventDefault());
+				li.addEventListener('click', () => void pickPlace(s.placeId));
 				o.suggestionsEl.appendChild(li);
 			}
-			o.suggestionsEl.hidden = false;
+			setSuggestionsOpen(true);
+			highlightActive();
 		} catch {
 			if ((acAbort as AbortController).signal.aborted) return;
 			o.suggestionsEl.innerHTML = '';
-			o.suggestionsEl.hidden = true;
+			lastSuggestions = [];
+			setSuggestionsOpen(false);
 		}
 	};
 
 	const pickPlace = async (placeId: string) => {
 		o.suggestionsEl.innerHTML = '';
-		o.suggestionsEl.hidden = true;
+		lastSuggestions = [];
+		setSuggestionsOpen(false);
 		try {
 			const res = await fetch('/api/places/details', {
 				method: 'POST',
@@ -207,14 +312,17 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 	};
 
 	const debouncedAuto = debounce((q: string) => void runAutocomplete(q), 320);
-	openDebounce = () => undefined;
 
 	o.manualToggle.addEventListener('click', () => {
 		showManual();
 	});
 
+	o.changeAddressToggle.addEventListener('click', () => {
+		clearPlacesPickAndShowSearch();
+	});
+
 	o.backToggle?.addEventListener('click', () => {
-		showSearch();
+		showSearchFromManual();
 	});
 
 	o.civicVisible.addEventListener('input', syncManualToHidden);
@@ -231,13 +339,64 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 		}
 	});
 
-	document.addEventListener('click', (ev) => {
-		if (!o.searchSection.contains(ev.target as Node)) {
-			o.suggestionsEl.hidden = true;
+	o.searchInput.addEventListener('keydown', (ev) => {
+		if (o.suggestionsEl.hidden) {
+			if (ev.key === 'ArrowDown' && o.searchInput.value.trim().length >= 2 && placesAvailable) {
+				ev.preventDefault();
+				void runAutocomplete(o.searchInput.value);
+			}
+			return;
+		}
+		const opts = o.suggestionsEl.querySelectorAll<HTMLElement>('.lakeAddressSuggestOption');
+		const n = opts.length;
+		if (n === 0) {
+			if (ev.key === 'Escape') {
+				ev.preventDefault();
+				setSuggestionsOpen(false);
+			}
+			return;
+		}
+		if (ev.key === 'Escape') {
+			ev.preventDefault();
+			setSuggestionsOpen(false);
+			return;
+		}
+		if (ev.key === 'ArrowDown') {
+			ev.preventDefault();
+			activeIndex = activeIndex < n - 1 ? activeIndex + 1 : 0;
+			highlightActive();
+			opts[activeIndex]?.scrollIntoView({ block: 'nearest' });
+			return;
+		}
+		if (ev.key === 'ArrowUp') {
+			ev.preventDefault();
+			activeIndex = activeIndex > 0 ? activeIndex - 1 : n - 1;
+			highlightActive();
+			opts[activeIndex]?.scrollIntoView({ block: 'nearest' });
+			return;
+		}
+		if (ev.key === 'Enter') {
+			const idx = activeIndex >= 0 ? activeIndex : 0;
+			const s = lastSuggestions[idx];
+			if (s) {
+				ev.preventDefault();
+				void pickPlace(s.placeId);
+			}
 		}
 	});
 
-	/* Initial layout */
+	document.addEventListener('click', (ev) => {
+		if (!o.searchSection.contains(ev.target as Node)) {
+			setSuggestionsOpen(false);
+			o.suggestionsEl.innerHTML = '';
+			lastSuggestions = [];
+		}
+	});
+
+	/*
+	 * Initial layout: always default to the address search picker; manual fields stay hidden
+	 * until the user clicks "My address isn't listed". Saved Places picks show the summary in the search block.
+	 */
 	const src = o.initialSource?.trim() ?? '';
 	const hasAddr = Boolean(o.initialCivic.trim() || o.initialStreet.trim());
 
@@ -251,11 +410,24 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 	} else if (hasAddr) {
 		o.civicHidden.value = o.initialCivic;
 		o.streetHidden.value = o.initialStreet;
-		o.sourceInput.value = 'manual';
+		o.placeIdInput.value = '';
 		o.formattedInput.value = o.initialFormatted ?? '';
-		showManual();
+		o.sourceInput.value = 'manual';
+		o.manualSection.hidden = true;
+		o.searchSection.hidden = false;
+		o.civicVisible.value = '';
+		o.streetVisible.value = '';
+		o.searchInput.value =
+			(o.initialFormatted ?? '').trim() || `${o.initialCivic} ${o.initialStreet}`.trim();
+		o.suggestionsEl.innerHTML = '';
+		lastSuggestions = [];
+		setSuggestionsOpen(false);
+		if (o.summaryEl) {
+			o.summaryEl.textContent = '';
+			o.summaryEl.hidden = true;
+		}
 	} else {
 		o.sourceInput.value = '';
-		showSearch();
+		clearAndShowSearch();
 	}
 }
