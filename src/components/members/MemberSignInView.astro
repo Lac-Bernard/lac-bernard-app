@@ -18,33 +18,28 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
   heroTitle={t.signInHero}
   heroSubtitle={t.signInLead}
 >
-  <section class="section">
-    <div class="container narrow">
-      <div class="card">
-        <a
-          class="btnGoogle"
-          href={`/api/auth/sign-in-google?next=${encodeURIComponent(next)}`}
-        >
-          {t.signInWithGoogle}
-        </a>
-        <p class="signInDivider" role="separator">
-          <span>{t.signInDivider}</span>
-        </p>
+  <section class="section signInSection">
+    <div class="container memberSignInColumn">
+      <div class="signInCard">
         <form id="sign-in-form" class="signInForm" novalidate aria-busy="false">
           <input type="hidden" name="next" value={next} />
-          <label class="fieldLabel" for="email">{t.emailLabel}</label>
-          <input
-            class="fieldInput"
-            id="email"
-            name="email"
-            type="email"
-            autocomplete="email"
-            required
-            placeholder={t.emailPlaceholder}
-          />
-          <p id="form-message" class="formMessage" role="status" aria-live="polite">
-            {t.magicLinkFormExplainer}
-          </p>
+          <div class="signInField">
+            <label class="fieldLabel" for="email">{t.emailLabel}</label>
+            <input
+              class="fieldInput"
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              required
+              placeholder={t.emailPlaceholder}
+              aria-describedby="sign-in-email-hint"
+            />
+            <p id="sign-in-email-hint" class="signInHint">
+              {t.magicLinkFormExplainer}
+            </p>
+          </div>
+          <p id="form-message" class="formMessage" role="status" aria-live="polite" hidden></p>
           <button type="submit" class="btnPrimary btnMagicSubmit" id="submit-btn">
             <span class="btnMagicSubmit-spinner" aria-hidden="true"></span>
             <span class="btnMagicSubmit-label">{t.sendMagicLink}</span>
@@ -55,6 +50,33 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
             </button>
           </p>
         </form>
+        <p class="signInDivider" role="separator">
+          <span class="signInDividerText">{t.signInDivider}</span>
+        </p>
+        <a
+          class="btnGoogle btnGoogleSecondary"
+          href={`/api/auth/sign-in-google?next=${encodeURIComponent(next)}`}
+        >
+          <svg class="btnGoogleIcon" width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+            <path
+              fill="#EA4335"
+              d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
+            ></path>
+            <path
+              fill="#4285F4"
+              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6C43.98 37.98 46.98 31.92 46.98 24.55z"
+            ></path>
+            <path
+              fill="#FBBC05"
+              d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"
+            ></path>
+            <path
+              fill="#34A853"
+              d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
+            ></path>
+          </svg>
+          {t.signInWithGoogle}
+        </a>
       </div>
     </div>
   </section>
@@ -65,7 +87,6 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     next,
     errGeneric: t.errorGeneric,
     errNetwork: t.errorNetwork,
-    magicLinkFormExplainer: t.magicLinkFormExplainer,
     checkEmail: t.checkEmail,
     sendingMagicLink: t.sendingMagicLink,
     sendMagicLink: t.sendMagicLink,
@@ -73,6 +94,7 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
 >
   const form = document.getElementById('sign-in-form');
   const messageEl = document.getElementById('form-message');
+  const hintEl = document.getElementById('sign-in-email-hint');
   const submitBtn = document.getElementById('submit-btn');
   const emailInput = document.getElementById('email');
   const tryAnotherWrap = document.getElementById('try-another-wrap');
@@ -80,10 +102,25 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
   const labelEl = submitBtn?.querySelector('.btnMagicSubmit-label');
   let magicLinkJustSent = false;
 
+  function setEmailHintVisible(visible) {
+    if (!hintEl || !emailInput) return;
+    hintEl.hidden = !visible;
+    if (visible) {
+      emailInput.setAttribute('aria-describedby', 'sign-in-email-hint');
+    } else {
+      emailInput.removeAttribute('aria-describedby');
+    }
+  }
+
   function resetMagicLinkIdle() {
-    if (!messageEl || !tryAnotherWrap || !submitBtn || !labelEl) return;
+    if (!tryAnotherWrap || !submitBtn || !labelEl) return;
     magicLinkJustSent = false;
-    messageEl.textContent = magicLinkFormExplainer;
+    setEmailHintVisible(true);
+    if (messageEl) {
+      messageEl.textContent = '';
+      messageEl.hidden = true;
+      messageEl.classList.remove('formMessage--error');
+    }
     tryAnotherWrap.hidden = true;
     submitBtn.removeAttribute('disabled');
     labelEl.textContent = sendMagicLink;
@@ -117,7 +154,9 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     const n = String(fd.get('next') ?? next);
 
     tryAnotherWrap.hidden = true;
+    messageEl.hidden = true;
     messageEl.textContent = '';
+    messageEl.classList.remove('formMessage--error');
     setMagicLinkLoading(true);
 
     try {
@@ -129,12 +168,18 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        setEmailHintVisible(true);
         messageEl.textContent = data.error || errGeneric;
+        messageEl.hidden = false;
+        messageEl.classList.add('formMessage--error');
         setMagicLinkLoading(false);
         return;
       }
 
+      setEmailHintVisible(false);
       messageEl.textContent = checkEmail;
+      messageEl.hidden = false;
+      messageEl.classList.remove('formMessage--error');
       magicLinkJustSent = true;
       submitBtn.setAttribute('disabled', 'true');
       submitBtn.classList.remove('is-loading');
@@ -143,62 +188,86 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
       tryAnotherWrap.hidden = false;
       submitBtn.blur();
     } catch {
+      setEmailHintVisible(true);
       messageEl.textContent = errNetwork;
+      messageEl.hidden = false;
+      messageEl.classList.add('formMessage--error');
       setMagicLinkLoading(false);
     }
   });
 </script>
 
 <style>
-  .narrow {
-    max-width: 480px;
+  .signInSection {
+    padding-bottom: 3.5rem;
   }
 
-  .card {
-    padding: 28px 24px;
-    border-radius: 12px;
-    background: var(--color-surface, #fff);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+  /* Same horizontal measure as `.memberWorkspaceHeadInner` / `.memberHomeProse` */
+  .memberSignInColumn {
+    max-width: min(var(--member-column-max), 100%);
+    margin-inline: auto;
+  }
+
+  .signInCard {
+    padding: 2rem 1.75rem;
+    border-radius: 14px;
+    background: #fff;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  @media (min-width: 480px) {
+    .signInCard {
+      padding: 2.25rem 2rem;
+    }
   }
 
   .btnGoogle {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 10px;
     width: 100%;
     padding: 12px 16px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
     background: #fff;
-    color: #1f1f1f;
-    font-size: 1rem;
-    font-weight: 600;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-weight: 500;
     text-decoration: none;
     box-sizing: border-box;
-    transition: background 0.15s ease, border-color 0.15s ease;
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .btnGoogleIcon {
+    flex-shrink: 0;
   }
 
   .btnGoogle:hover {
-    background: #f8f8f8;
-    border-color: rgba(0, 0, 0, 0.28);
+    background: rgba(0, 0, 0, 0.03);
+    border-color: rgba(0, 0, 0, 0.18);
   }
 
   .btnGoogle:focus-visible {
-    outline: 2px solid var(--color-accent, #1a5f4a);
+    outline: 2px solid rgba(37, 99, 235, 0.45);
     outline-offset: 2px;
+  }
+
+  .btnGoogleSecondary {
+    color: rgba(0, 0, 0, 0.78);
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  .btnGoogleSecondary:hover {
+    background: rgba(0, 0, 0, 0.05);
   }
 
   .signInDivider {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin: 20px 0 4px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--color-muted, #666);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+    margin: 1.75rem 0 1.25rem;
   }
 
   .signInDivider::before,
@@ -206,7 +275,15 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     content: '';
     flex: 1;
     height: 1px;
-    background: rgba(0, 0, 0, 0.12);
+    background: var(--border);
+  }
+
+  .signInDividerText {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    text-transform: lowercase;
   }
 
   /* Block stack avoids flex whitespace text nodes (same issue as profile / member home forms). */
@@ -222,36 +299,75 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     margin-top: 0;
   }
 
+  .signInField {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .signInField .fieldInput {
+    margin-top: 0.15rem;
+  }
+
   .fieldLabel {
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
+    letter-spacing: 0.01em;
+    color: var(--text);
   }
 
   .fieldInput {
     width: 100%;
-    padding: 12px 14px;
-    border-radius: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 0.65rem 0.85rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
     font-size: 1rem;
+    line-height: 1.45;
     box-sizing: border-box;
+    background: #fff;
+    color: var(--text);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .fieldInput::placeholder {
+    color: rgba(0, 0, 0, 0.38);
+  }
+
+  .fieldInput:hover {
+    border-color: rgba(0, 0, 0, 0.22);
   }
 
   .fieldInput:focus {
-    outline: 2px solid var(--color-accent, #1a5f4a);
-    outline-offset: 2px;
+    outline: none;
+    border-color: rgba(37, 99, 235, 0.55);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  .signInHint {
+    margin: 0.15rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--muted);
   }
 
   .formMessage {
-    margin: 4px 0 0;
-    min-height: 1.25em;
-    font-size: 0.95rem;
-    color: var(--color-muted, #444);
+    margin: 0.25rem 0 0;
+    font-size: 0.9rem;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  .formMessage--error {
+    color: #b91c1c;
   }
 
   .signInForm .btnPrimary {
-    margin-top: 20px;
+    margin-top: 1.25rem;
     justify-content: center;
     width: 100%;
+    border-radius: 10px;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
   }
 
   /* After success: reads clearly as unavailable (global :hover no longer lifts it). */
