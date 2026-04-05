@@ -50,6 +50,17 @@ const lakePlacesStrings = {
 	backToSearch: t.profileLakeBackToSearch,
 	placesUnavailable: t.errorNetwork,
 };
+
+/** Passed to a separate module script so static `import` works (no `define:vars` in that script). */
+const lakeProfileInitJson = JSON.stringify({
+	locale: lakeLocale,
+	strings: lakePlacesStrings,
+	initialSource: lakeSource,
+	initialPlaceId: lakePlaceId,
+	initialFormatted: lakeFormatted,
+	initialCivic: lakeCivic,
+	initialStreet: lakeStreet,
+});
 ---
 
 <MemberAppLayout lang={locale} title={title} description={description} heroTitle={heroTitle}>
@@ -161,35 +172,50 @@ const lakePlacesStrings = {
 					<input type="hidden" name="lake_street_name" id="lake_street_name" value={lakeStreet} />
 
 					<div id="lake-search-section" class="lakeAddressSearchSection">
-						<label class="fieldLabel" for="lake-address-search">{t.profileLakeSearchLabel}</label>
-						<div class="lakeAddressSearchWrap">
-							<input
-								class="fieldInput"
-								id="lake-address-search"
-								type="text"
-								autocomplete="off"
-								placeholder={t.profileLakeSearchPlaceholder}
-								aria-autocomplete="list"
-								aria-controls="lake-address-suggestions"
-								aria-expanded="false"
-							/>
-							<ul id="lake-address-suggestions" class="lakeAddressSuggestList" hidden role="listbox"></ul>
+						<div id="lake-address-combobox-block" class="lakeAddressComboboxBlock">
+							<label class="fieldLabel" for="lake-address-search">{t.profileLakeSearchLabel}</label>
+							<div class="lakeAddressSearchWrap">
+								<input
+									class="fieldInput"
+									id="lake-address-search"
+									type="text"
+									autocomplete="off"
+									placeholder={t.profileLakeSearchPlaceholder}
+									role="combobox"
+									aria-autocomplete="list"
+									aria-haspopup="listbox"
+									aria-controls="lake-address-suggestions"
+									aria-expanded="false"
+								/>
+								<ul
+									id="lake-address-suggestions"
+									class="lakeAddressSuggestList"
+									hidden
+									role="listbox"
+									aria-label={t.profileLakeSearchLabel}
+								>
+								</ul>
+							</div>
 						</div>
-						<p id="lake-places-summary" class="lakeAddressSummary" hidden></p>
+						<p id="lake-places-summary" class="lakeAddressSummary" hidden role="status" aria-live="polite"></p>
+						<button type="button" class="lakeAddressTextBtn" id="lake-change-address" hidden>
+							{t.profileLakeBackToSearch}
+						</button>
 						<button type="button" class="lakeAddressTextBtn" id="lake-manual-toggle">
 							{t.profileLakeManualLink}
 						</button>
 					</div>
 
-					<div id="lake-manual-section" class="lakeAddressManualSection" hidden>
-						<button type="button" class="lakeAddressTextBtn lakeAddressTextBtn--back" id="lake-back-search">
-							{t.profileLakeBackToSearch}
-						</button>
+					<div id="lake-manual-section" class="lakeAddressManualSection profileNamesGroup" hidden>
 						<label class="fieldLabel" for="lake_civic_visible">{t.profileLakeCivic}</label>
 						<input class="fieldInput" id="lake_civic_visible" type="text" autocomplete="off" value={lakeCivic} />
 
 						<label class="fieldLabel" for="lake_street_visible">{t.profileLakeStreet}</label>
 						<input class="fieldInput" id="lake_street_visible" type="text" autocomplete="off" value={lakeStreet} />
+
+						<button type="button" class="lakeAddressTextBtn" id="lake-back-search">
+							{t.profileLakeBackToSearch}
+						</button>
 					</div>
 				</fieldset>
 
@@ -212,6 +238,85 @@ const lakePlacesStrings = {
 	</section>
 </MemberAppLayout>
 
+<script type="application/json" id="member-profile-lake-init" set:html={lakeProfileInitJson} />
+<script>
+	import { initLakeAddressPlacesUi } from '../../scripts/lake-address-places-ui';
+
+	const raw = document.getElementById('member-profile-lake-init')?.textContent;
+	if (raw) {
+		const cfg = JSON.parse(raw) as {
+			locale: 'en' | 'fr';
+			strings: Record<string, string>;
+			initialSource: string | null;
+			initialPlaceId: string;
+			initialFormatted: string;
+			initialCivic: string;
+			initialStreet: string;
+		};
+
+		const lakeSearch = document.getElementById('lake-address-search');
+		const lakeSug = document.getElementById('lake-address-suggestions');
+		const lakeSearchSection = document.getElementById('lake-search-section');
+		const lakeManualSection = document.getElementById('lake-manual-section');
+		const lakeSummary = document.getElementById('lake-places-summary');
+		const lakeCivicH = document.getElementById('lake_civic_number');
+		const lakeStreetH = document.getElementById('lake_street_name');
+		const lakeSourceEl = document.getElementById('lake_address_source');
+		const lakePlaceIdEl = document.getElementById('lake_google_place_id');
+		const lakeFormattedEl = document.getElementById('lake_formatted_address');
+		const lakeComboboxBlock = document.getElementById('lake-address-combobox-block');
+		const lakeChangeAddressBtn = document.getElementById('lake-change-address');
+		const lakeManualBtn = document.getElementById('lake-manual-toggle');
+		const lakeBackBtn = document.getElementById('lake-back-search');
+		const lakeCivicVis = document.getElementById('lake_civic_visible');
+		const lakeStreetVis = document.getElementById('lake_street_visible');
+
+		if (
+			lakeSearch instanceof HTMLInputElement &&
+			lakeSug instanceof HTMLUListElement &&
+			lakeSearchSection instanceof HTMLElement &&
+			lakeManualSection instanceof HTMLElement &&
+			lakeCivicH instanceof HTMLInputElement &&
+			lakeStreetH instanceof HTMLInputElement &&
+			lakeSourceEl instanceof HTMLInputElement &&
+			lakePlaceIdEl instanceof HTMLInputElement &&
+			lakeFormattedEl instanceof HTMLInputElement &&
+			lakeComboboxBlock instanceof HTMLElement &&
+			lakeChangeAddressBtn instanceof HTMLButtonElement &&
+			lakeManualBtn instanceof HTMLButtonElement &&
+			lakeBackBtn instanceof HTMLButtonElement &&
+			lakeCivicVis instanceof HTMLInputElement &&
+			lakeStreetVis instanceof HTMLInputElement
+		) {
+			initLakeAddressPlacesUi({
+				locale: cfg.locale,
+				strings: cfg.strings,
+				comboboxBlock: lakeComboboxBlock,
+				changeAddressToggle: lakeChangeAddressBtn,
+				searchInput: lakeSearch,
+				suggestionsEl: lakeSug,
+				searchSection: lakeSearchSection,
+				manualSection: lakeManualSection,
+				summaryEl: lakeSummary,
+				civicHidden: lakeCivicH,
+				streetHidden: lakeStreetH,
+				sourceInput: lakeSourceEl,
+				placeIdInput: lakePlaceIdEl,
+				formattedInput: lakeFormattedEl,
+				manualToggle: lakeManualBtn,
+				backToggle: lakeBackBtn,
+				civicVisible: lakeCivicVis,
+				streetVisible: lakeStreetVis,
+				initialSource: cfg.initialSource,
+				initialPlaceId: cfg.initialPlaceId,
+				initialFormatted: cfg.initialFormatted,
+				initialCivic: cfg.initialCivic,
+				initialStreet: cfg.initialStreet,
+			});
+		}
+	}
+</script>
+
 <script
 	define:vars={{
 		mode,
@@ -232,17 +337,8 @@ const lakePlacesStrings = {
 		errAlreadyMember: t.profileErrorAlreadyMember,
 		errSave: t.profileErrorSave,
 		accountPath: paths.account,
-		lakeLocale,
-		lakePlacesStrings,
-		lakeInitialSource: lakeSource,
-		lakeInitialPlaceId: lakePlaceId,
-		lakeInitialFormatted: lakeFormatted,
-		lakeInitialCivic: lakeCivic,
-		lakeInitialStreet: lakeStreet,
 	}}
 >
-	import { initLakeAddressPlacesUi } from '../../scripts/lake-address-places-ui';
-
 	const form = document.getElementById('member-profile-form');
 	const msg = document.getElementById('profile-form-message');
 	const submitBtn = document.getElementById('profile-submit');
@@ -273,61 +369,6 @@ const lakePlacesStrings = {
 
 	showSecondaryContact?.addEventListener('change', syncSecondaryFields);
 	syncSecondaryFields();
-
-	const lakeSearch = document.getElementById('lake-address-search');
-	const lakeSug = document.getElementById('lake-address-suggestions');
-	const lakeSearchSection = document.getElementById('lake-search-section');
-	const lakeManualSection = document.getElementById('lake-manual-section');
-	const lakeSummary = document.getElementById('lake-places-summary');
-	const lakeCivicH = document.getElementById('lake_civic_number');
-	const lakeStreetH = document.getElementById('lake_street_name');
-	const lakeSourceEl = document.getElementById('lake_address_source');
-	const lakePlaceIdEl = document.getElementById('lake_google_place_id');
-	const lakeFormattedEl = document.getElementById('lake_formatted_address');
-	const lakeManualBtn = document.getElementById('lake-manual-toggle');
-	const lakeBackBtn = document.getElementById('lake-back-search');
-	const lakeCivicVis = document.getElementById('lake_civic_visible');
-	const lakeStreetVis = document.getElementById('lake_street_visible');
-
-	if (
-		lakeSearch instanceof HTMLInputElement &&
-		lakeSug instanceof HTMLUListElement &&
-		lakeSearchSection instanceof HTMLElement &&
-		lakeManualSection instanceof HTMLElement &&
-		lakeCivicH instanceof HTMLInputElement &&
-		lakeStreetH instanceof HTMLInputElement &&
-		lakeSourceEl instanceof HTMLInputElement &&
-		lakePlaceIdEl instanceof HTMLInputElement &&
-		lakeFormattedEl instanceof HTMLInputElement &&
-		lakeManualBtn instanceof HTMLButtonElement &&
-		lakeBackBtn instanceof HTMLButtonElement &&
-		lakeCivicVis instanceof HTMLInputElement &&
-		lakeStreetVis instanceof HTMLInputElement
-	) {
-		initLakeAddressPlacesUi({
-			locale: lakeLocale,
-			strings: lakePlacesStrings,
-			searchInput: lakeSearch,
-			suggestionsEl: lakeSug,
-			searchSection: lakeSearchSection,
-			manualSection: lakeManualSection,
-			summaryEl: lakeSummary,
-			civicHidden: lakeCivicH,
-			streetHidden: lakeStreetH,
-			sourceInput: lakeSourceEl,
-			placeIdInput: lakePlaceIdEl,
-			formattedInput: lakeFormattedEl,
-			manualToggle: lakeManualBtn,
-			backToggle: lakeBackBtn,
-			civicVisible: lakeCivicVis,
-			streetVisible: lakeStreetVis,
-			initialSource: lakeInitialSource,
-			initialPlaceId: lakeInitialPlaceId,
-			initialFormatted: lakeInitialFormatted,
-			initialCivic: lakeInitialCivic,
-			initialStreet: lakeInitialStreet,
-		});
-	}
 
 	function trimOrNull(value) {
 		if (typeof value !== 'string') return null;
@@ -654,54 +695,85 @@ const lakePlacesStrings = {
 		display: block;
 	}
 
+	.lakeAddressComboboxBlock {
+		display: block;
+	}
+
+	.lakeAddressComboboxBlock[hidden] {
+		display: none;
+	}
+
+	.lakeAddressSearchSection > *:not(:first-child) {
+		margin-top: 0.7rem;
+	}
+
+	/* `[hidden]` must win over `display: block` above (otherwise manual block shows on load). */
+	.lakeAddressSearchSection[hidden] {
+		display: none;
+	}
+
 	.lakeAddressSearchWrap {
 		position: relative;
+		z-index: 1;
+	}
+
+	.lakeAddressSearchWrap.lakeAddressSearchWrap--open {
+		z-index: 5;
 	}
 
 	.lakeAddressSuggestList {
 		position: absolute;
 		left: 0;
 		right: 0;
-		top: calc(100% + 4px);
-		z-index: 20;
+		top: calc(100% + 6px);
+		z-index: 10;
 		margin: 0;
-		padding: 0.25rem 0;
+		padding: 0.35rem 0;
 		list-style: none;
 		border-radius: 10px;
-		border: 1px solid rgba(148, 163, 184, 0.45);
+		border: 1px solid rgba(148, 163, 184, 0.35);
 		background: rgba(255, 255, 255, 0.98);
-		box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
-		max-height: 14rem;
+		box-shadow:
+			0 1px 2px rgba(15, 23, 42, 0.05),
+			0 8px 28px rgba(15, 23, 42, 0.1);
+		max-height: min(14rem, 60vh);
 		overflow: auto;
+		box-sizing: border-box;
 	}
 
-	.lakeAddressSuggestList :global(.lakeAddressSuggestBtn) {
-		display: block;
-		width: 100%;
-		text-align: left;
-		padding: 0.55rem 0.85rem;
-		border: none;
-		background: transparent;
-		font: inherit;
+	.lakeAddressSuggestList :global(.lakeAddressSuggestOption) {
+		display: flex;
+		align-items: center;
+		min-height: 2.75rem;
+		padding: 0.5rem 0.9rem;
+		margin: 0;
+		font-size: 0.98rem;
+		line-height: 1.4;
 		color: var(--text, #0f172a);
 		cursor: pointer;
-		border-radius: 6px;
+		border-radius: 8px;
+		transition: background-color 120ms ease;
 	}
 
-	.lakeAddressSuggestList :global(.lakeAddressSuggestBtn:hover),
-	.lakeAddressSuggestList :global(.lakeAddressSuggestBtn:focus-visible) {
-		background: rgba(37, 99, 235, 0.08);
-		outline: none;
+	.lakeAddressSuggestList :global(.lakeAddressSuggestOption:hover),
+	.lakeAddressSuggestList :global(.lakeAddressSuggestOption.lakeAddressSuggestOption--active) {
+		background: rgba(37, 99, 235, 0.07);
+	}
+
+	.lakeAddressSuggestList :global(.lakeAddressSuggestOption:focus-visible) {
+		outline: 2px solid rgba(37, 99, 235, 0.45);
+		outline-offset: -2px;
 	}
 
 	.lakeAddressSuggestList :global(.lakeAddressSuggestHint) {
-		padding: 0.5rem 0.85rem;
-		font-size: 0.88rem;
+		padding: 0.65rem 0.9rem;
+		font-size: 0.92rem;
+		line-height: 1.45;
 		color: var(--color-muted, #64748b);
 	}
 
 	.lakeAddressSummary {
-		margin: 0.65rem 0 0;
+		margin: 0;
 		padding: 0.65rem 0.85rem;
 		border-radius: 10px;
 		border: 1px solid rgba(37, 99, 235, 0.2);
@@ -726,13 +798,16 @@ const lakePlacesStrings = {
 		cursor: pointer;
 	}
 
-	.lakeAddressTextBtn--back {
-		margin-top: 0;
-		margin-bottom: 0.75rem;
+	.lakeAddressTextBtn[hidden] {
+		display: none;
 	}
 
 	.lakeAddressManualSection {
 		display: block;
+	}
+
+	.lakeAddressManualSection[hidden] {
+		display: none;
 	}
 
 	.profileBack {

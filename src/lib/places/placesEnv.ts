@@ -5,16 +5,17 @@ export function getPlacesAutocompleteBody(
 	sessionToken: string,
 	locale: 'en' | 'fr' = 'en',
 ): Record<string, unknown> {
-	const lat = Number(import.meta.env.GOOGLE_PLACES_BIAS_LAT ?? '45.968');
-	const lng = Number(import.meta.env.GOOGLE_PLACES_BIAS_LNG ?? '-75.879');
-	const radius = Number(import.meta.env.GOOGLE_PLACES_BIAS_RADIUS_M ?? '50000');
+	/* Default centre: Lac Bernard (~middle of the lake). Override via GOOGLE_PLACES_BIAS_LAT/LNG. */
+	const lat = Number(import.meta.env.GOOGLE_PLACES_BIAS_LAT ?? '45.756872');
+	const lng = Number(import.meta.env.GOOGLE_PLACES_BIAS_LNG ?? '-75.987225');
+	const radius = Number(import.meta.env.GOOGLE_PLACES_BIAS_RADIUS_M ?? '5000');
 
 	const circle: { center: { latitude: number; longitude: number }; radius: number } = {
 		center: {
-			latitude: Number.isFinite(lat) ? lat : 45.968,
-			longitude: Number.isFinite(lng) ? lng : -75.879,
+			latitude: Number.isFinite(lat) ? lat : 45.756872,
+			longitude: Number.isFinite(lng) ? lng : -75.987225,
 		},
-		radius: Number.isFinite(radius) && radius > 0 ? radius : 50000,
+		radius: Number.isFinite(radius) && radius > 0 ? radius : 5000,
 	};
 
 	return {
