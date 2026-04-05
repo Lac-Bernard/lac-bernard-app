@@ -15,6 +15,9 @@ export type MemberProfile = {
 	secondary_phone: string | null;
 	lake_civic_number: string | null;
 	lake_street_name: string | null;
+	lake_address_source: string | null;
+	lake_google_place_id: string | null;
+	lake_formatted_address: string | null;
 	primary_address: string | null;
 	primary_city: string | null;
 	primary_province: string | null;
@@ -41,6 +44,9 @@ function normalizeMember(row: {
 	secondary_phone: string | null;
 	lake_civic_number: string | null;
 	lake_street_name: string | null;
+	lake_address_source: string | null;
+	lake_google_place_id: string | null;
+	lake_formatted_address: string | null;
 	primary_address: string | null;
 	primary_city: string | null;
 	primary_province: string | null;
@@ -53,6 +59,9 @@ function normalizeMember(row: {
 		secondary_first_name: row.secondary_first_name ?? null,
 		secondary_last_name: row.secondary_last_name ?? null,
 		email_opt_in: Boolean(row.email_opt_in),
+		lake_address_source: row.lake_address_source ?? null,
+		lake_google_place_id: row.lake_google_place_id ?? null,
+		lake_formatted_address: row.lake_formatted_address ?? null,
 	};
 }
 
@@ -66,7 +75,7 @@ export async function findMemberByAuthEmail(
 
 	const selectCols =
 		'id, first_name, secondary_first_name, last_name, secondary_last_name, primary_email, secondary_email, user_id, ' +
-		'primary_phone, secondary_phone, lake_civic_number, lake_street_name, ' +
+		'primary_phone, secondary_phone, lake_civic_number, lake_street_name, lake_address_source, lake_google_place_id, lake_formatted_address, ' +
 		'primary_address, primary_city, primary_province, primary_country, primary_postal_code, email_opt_in';
 
 	const { data: userData } = await supabase.auth.getUser();

@@ -350,6 +350,11 @@ export const memberCopy: Record<
 		profileSecondaryPhone: string;
 		profileLakeCivic: string;
 		profileLakeStreet: string;
+		profileLakeSearchLabel: string;
+		profileLakeSearchPlaceholder: string;
+		profileLakeManualLink: string;
+		profileLakeNoSuggestions: string;
+		profileLakeBackToSearch: string;
 		profileStreetAddress: string;
 		profileCity: string;
 		profileProvince: string;
@@ -690,6 +695,11 @@ export const memberCopy: Record<
 		profileSecondaryPhone: 'Phone',
 		profileLakeCivic: 'Civic number',
 		profileLakeStreet: 'Street name',
+		profileLakeSearchLabel: 'Find your lake address',
+		profileLakeSearchPlaceholder: 'Start typing a civic address in Canada…',
+		profileLakeManualLink: 'My address is not listed — enter civic number and street manually',
+		profileLakeNoSuggestions: 'No matches — try manual entry below.',
+		profileLakeBackToSearch: 'Search for address instead',
 		profileStreetAddress: 'Street address',
 		profileCity: 'City',
 		profileProvince: 'Province / state',
@@ -1032,6 +1042,11 @@ export const memberCopy: Record<
 		profileSecondaryPhone: 'Téléphone',
 		profileLakeCivic: 'Numéro civique',
 		profileLakeStreet: 'Rue',
+		profileLakeSearchLabel: 'Trouver votre adresse au lac',
+		profileLakeSearchPlaceholder: 'Commencez à saisir une adresse civique au Canada…',
+		profileLakeManualLink: 'Mon adresse n’apparaît pas — saisir le numéro civique et la rue manuellement',
+		profileLakeNoSuggestions: 'Aucune suggestion — essayez la saisie manuelle ci-dessous.',
+		profileLakeBackToSearch: 'Chercher une adresse à la place',
 		profileStreetAddress: 'Adresse',
 		profileCity: 'Ville',
 		profileProvince: 'Province / État',

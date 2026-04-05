@@ -20,6 +20,9 @@ type MemberRow = {
 	secondary_phone: string | null;
 	lake_civic_number: string | null;
 	lake_street_name: string | null;
+	lake_address_source: string | null;
+	lake_google_place_id: string | null;
+	lake_formatted_address: string | null;
 	primary_address: string | null;
 	primary_city: string | null;
 	primary_province: string | null;
@@ -69,6 +72,9 @@ const MEMBER_COLUMNS: (keyof MemberRow)[] = [
 	'secondary_phone',
 	'lake_civic_number',
 	'lake_street_name',
+	'lake_address_source',
+	'lake_google_place_id',
+	'lake_formatted_address',
 	'primary_address',
 	'primary_city',
 	'primary_province',

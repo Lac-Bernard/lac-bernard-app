@@ -20,6 +20,9 @@ type MemberRow = {
 	secondary_phone: string | null;
 	lake_civic_number: string | null;
 	lake_street_name: string | null;
+	lake_address_source: string | null;
+	lake_google_place_id: string | null;
+	lake_formatted_address: string | null;
 	primary_address: string | null;
 	primary_city: string | null;
 	primary_province: string | null;
@@ -528,6 +531,16 @@ export function initAdminMemberDetail(
 		e.preventDefault();
 		if (!memberForm) return;
 		const fd = new FormData(memberForm);
+		const lakeCivic = String(fd.get('lake_civic_number') ?? '').trim() || null;
+		const lakeStreet = String(fd.get('lake_street_name') ?? '').trim() || null;
+		let lakeSource = currentMember?.lake_address_source ?? null;
+		let lakePlaceId = currentMember?.lake_google_place_id ?? null;
+		let lakeFormatted = currentMember?.lake_formatted_address ?? null;
+		if (lakeCivic !== currentMember?.lake_civic_number || lakeStreet !== currentMember?.lake_street_name) {
+			lakeSource = lakeCivic && lakeStreet ? 'manual' : null;
+			lakePlaceId = null;
+			lakeFormatted = lakeCivic && lakeStreet ? `${lakeCivic} ${lakeStreet}`.trim() : null;
+		}
 		const body: Record<string, unknown> = {
 			first_name: fd.get('first_name') || null,
 			secondary_first_name: fd.get('secondary_first_name') || null,
@@ -535,8 +548,11 @@ export function initAdminMemberDetail(
 			secondary_last_name: fd.get('secondary_last_name') || null,
 			primary_phone: fd.get('primary_phone') || null,
 			secondary_phone: fd.get('secondary_phone') || null,
-			lake_civic_number: fd.get('lake_civic_number') || null,
-			lake_street_name: fd.get('lake_street_name') || null,
+			lake_civic_number: lakeCivic,
+			lake_street_name: lakeStreet,
+			lake_address_source: lakeSource,
+			lake_google_place_id: lakePlaceId,
+			lake_formatted_address: lakeFormatted,
 			primary_address: currentMember?.primary_address ?? null,
 			primary_city: currentMember?.primary_city ?? null,
 			primary_province: currentMember?.primary_province ?? null,
