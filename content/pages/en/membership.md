@@ -27,7 +27,7 @@ When you join the Owners' and Residents' Association of Lac Bernard you become a
 - Environmental Stewardship
 - Safety and Security of our Community
 
-The Association members work together to ensure the long term sustainability of our lake, as well as organizing a social calendar, anchored by the annual **Regatta** held in **Regatta Bay**!
+The Association members work together to ensure the long term sustainability of our lake, as well as organizing a social calendar, anchored by the annual Regatta held in Regatta Bay!
 
 ## Key Objectives
 

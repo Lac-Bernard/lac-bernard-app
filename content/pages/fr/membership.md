@@ -27,7 +27,7 @@ Lorsque vous rejoignez l'Association des propriétaires et résidents du lac Ber
 - Gestion environnementale
 - Sécurité et sûreté de notre communauté
 
-Les membres de l'Association travaillent ensemble pour assurer la durabilité à long terme de notre lac, ainsi que d'organiser un calendrier d'activités sociales, ancré par la **Régate** annuelle tenue à la **baie Regatta**!
+Les membres de l'Association travaillent ensemble pour assurer la durabilité à long terme de notre lac, ainsi que d'organiser un calendrier d'activités sociales, ancré par la régate annuelle tenue à la baie Regatta!
 
 ## Objectifs clés
 
