@@ -16,7 +16,7 @@ interface Props {
 	email: string;
 	currentYear: number;
 	accountData: MemberAccountPayload;
-	checkoutFlash?: 'success' | 'cancelled' | null;
+	checkoutFlash?: 'success' | 'cancelled' | 'error' | null;
 }
 
 const { locale, email, currentYear, accountData, checkoutFlash = null } = Astro.props;
@@ -115,6 +115,9 @@ const hasSecondaryContactInfo = Boolean(
       )}
       {checkoutFlash === 'cancelled' && (
         <p class="checkoutBanner checkoutBannerCancelled" role="status">{t.checkoutCancelledBanner}</p>
+      )}
+      {checkoutFlash === 'error' && (
+        <p class="checkoutBanner checkoutBannerError" role="status">{t.checkoutErrorBanner}</p>
       )}
 
       {
@@ -1802,6 +1805,12 @@ const hasSecondaryContactInfo = Boolean(
   .checkoutBannerCancelled {
     background: rgba(234, 179, 8, 0.15);
     border: 1px solid rgba(202, 138, 4, 0.35);
+  }
+
+  .checkoutBannerError {
+    background: rgba(185, 28, 28, 0.08);
+    border: 1px solid rgba(185, 28, 28, 0.28);
+    color: rgba(91, 15, 15, 0.95);
   }
 
   .donationRow {

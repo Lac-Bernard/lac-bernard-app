@@ -300,6 +300,7 @@ export const memberCopy: Record<
 		checkoutInvalidDonationNote: string;
 		checkoutSuccessBanner: string;
 		checkoutCancelledBanner: string;
+		checkoutErrorBanner: string;
 		otherPaymentTitle: string;
 		/** Pending card: under “Other ways to pay”, optional donation when paying offline */
 		otherPaymentDonationTitle: string;
@@ -631,8 +632,10 @@ export const memberCopy: Record<
 		checkoutInvalidDonation: 'Enter a valid donation amount (0 or more, up to 50,000).',
 		checkoutInvalidDonationNote: 'Keep the note to 500 characters or fewer.',
 		checkoutSuccessBanner:
-			'Thank you. When your payment succeeds, your membership will show as active here shortly.',
+			'Thank you. Your payment went through and your membership is now active.',
 		checkoutCancelledBanner: 'Checkout was cancelled. You can try again when you are ready.',
+		checkoutErrorBanner:
+			'We could not confirm your payment from this link. If you completed checkout, your membership will update shortly; otherwise try paying again from this page.',
 		otherPaymentTitle: 'Other ways to pay',
 		otherPaymentDonationTitle: 'Want to contribute a little more?',
 		otherPaymentDonationBody:
@@ -971,8 +974,10 @@ export const memberCopy: Record<
 		checkoutInvalidDonation: 'Entrez un montant de don valide (0 ou plus, jusqu’à 50 000).',
 		checkoutInvalidDonationNote: 'Limitez la note à 500 caractères ou moins.',
 		checkoutSuccessBanner:
-			'Merci. Lorsque le paiement est réussi, votre adhésion active s’affichera ici sous peu.',
+			'Merci. Votre paiement a été accepté et votre adhésion est maintenant active.',
 		checkoutCancelledBanner: 'Le paiement a été annulé. Vous pouvez réessayer quand vous voulez.',
+		checkoutErrorBanner:
+			'Nous n’avons pas pu confirmer votre paiement à partir de ce lien. Si le paiement a réussi, votre adhésion sera mise à jour sous peu; sinon, réessayez à partir de cette page.',
 		otherPaymentTitle: 'Autres modes de paiement',
 		otherPaymentDonationTitle: 'Vous souhaitez contribuer un peu plus ?',
 		otherPaymentDonationBody:

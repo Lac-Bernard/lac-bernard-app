@@ -36,7 +36,13 @@ flushCookies();
 const email = user.email ?? '';
 const checkoutParam = Astro.url.searchParams.get('checkout');
 const checkoutFlash =
-	checkoutParam === 'success' ? 'success' : checkoutParam === 'cancelled' ? 'cancelled' : null;
+	checkoutParam === 'success'
+		? 'success'
+		: checkoutParam === 'cancelled'
+			? 'cancelled'
+			: checkoutParam === 'error'
+				? 'error'
+				: null;
 ---
 
 <MemberHomeView
