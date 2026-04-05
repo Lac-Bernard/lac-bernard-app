@@ -182,12 +182,12 @@
     },
     {
       "source": "/adhesion/enrollment",
-      "destination": "/fr/membership/enrollment",
+      "destination": "/fr/membership/account",
       "permanent": true
     },
     {
       "source": "/adhesion/renewal",
-      "destination": "/fr/membership/renewal",
+      "destination": "/fr/membership/account",
       "permanent": true
     },
     {
@@ -387,12 +387,32 @@
     },
     {
       "source": "/membership/enrollment",
-      "destination": "/en/membership/enrollment",
+      "destination": "/en/membership/account",
       "permanent": true
     },
     {
       "source": "/membership/renewal",
-      "destination": "/en/membership/renewal",
+      "destination": "/en/membership/account",
+      "permanent": true
+    },
+    {
+      "source": "/en/membership/enrollment",
+      "destination": "/en/membership/account",
+      "permanent": true
+    },
+    {
+      "source": "/en/membership/renewal",
+      "destination": "/en/membership/account",
+      "permanent": true
+    },
+    {
+      "source": "/fr/membership/enrollment",
+      "destination": "/fr/membership/account",
+      "permanent": true
+    },
+    {
+      "source": "/fr/membership/renewal",
+      "destination": "/fr/membership/account",
       "permanent": true
     },
     {

@@ -59,8 +59,8 @@ export const legacyFrenchPathToEnglishPath: Record<string, string> = {
 	'histoire/proprietes-et-titres': 'history/properties-and-deeds',
 	'histoire/histoire-connexe': 'history/related-history',
 	adhesion: 'membership',
-	'adhesion/enrollment': 'membership/enrollment',
-	'adhesion/renewal': 'membership/renewal',
+	'adhesion/enrollment': 'membership/account',
+	'adhesion/renewal': 'membership/account',
 	contact: 'contact',
 	news: 'news',
 };

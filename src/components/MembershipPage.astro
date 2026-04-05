@@ -5,6 +5,7 @@ import SiteHeader from '@/components/SiteHeader.astro';
 import SiteFooter from '@/components/SiteFooter.astro';
 import type { Language } from '@/utils/i18n';
 import { loadContentPage } from '@/utils/loadContentPage';
+import { memberPaths } from '@/lib/members/i18n';
 import { membershipUi } from '@/i18n/membership';
 import { siteUi } from '@/i18n/site';
 
@@ -22,6 +23,7 @@ const description = page.frontmatter?.description as string | undefined;
 const { Content } = page;
 
 const metaDescription = description ?? site.pageMetaDescriptionFallback(title);
+const accountPath = memberPaths[lang].account;
 ---
 
 <html lang={lang}>
@@ -30,7 +32,6 @@ const metaDescription = description ?? site.pageMetaDescriptionFallback(title);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} | {site.siteNameSuffix}</title>
     <meta name="description" content={metaDescription} />
-    <script async src="https://tally.so/widgets/embed.js"></script>
   </head>
 
   <body>
@@ -41,6 +42,10 @@ const metaDescription = description ?? site.pageMetaDescriptionFallback(title);
         <div class="container heroInner">
           <div class="heroCopy">
             <h1>{title}</h1>
+            <p class="heroIntro">{ui.heroAccountIntro}</p>
+            <div class="heroActions">
+              <a href={accountPath} class="btnPrimary heroAccountBtn">{ui.heroAccountCta}</a>
+            </div>
           </div>
         </div>
       </section>
@@ -59,31 +64,23 @@ const metaDescription = description ?? site.pageMetaDescriptionFallback(title);
 </html>
 
 <style>
-  /* Page-specific styles for membership page */
+  /*
+   * No photo hero: on-disk JPEGs are small/compressed and look poor full-bleed.
+   * Lake-toned gradient ties to the site primary (cyan) without a weak stock image.
+   */
   .hero {
     padding: 72px 0 var(--spacing-section);
     position: relative;
-    background-image: url('/images/hahsexfw1m0.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
     color: white;
-  }
-
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 0;
+    background-color: #0e3040;
+    background-image:
+      radial-gradient(ellipse 100% 140% at 18% -20%, rgba(72, 196, 255, 0.34), transparent 55%),
+      radial-gradient(ellipse 85% 90% at 92% 108%, rgba(72, 196, 255, 0.18), transparent 52%),
+      linear-gradient(168deg, #0a2230 0%, #143e50 44%, #0c2834 100%);
   }
 
   .hero .container {
     position: relative;
-    z-index: 1;
   }
 
   .heroInner {
@@ -100,6 +97,24 @@ const metaDescription = description ?? site.pageMetaDescriptionFallback(title);
     line-height: 1.06;
     letter-spacing: -.03em;
     color: white;
+  }
+
+  .heroIntro {
+    margin: 0 0 22px;
+    max-width: 36rem;
+    font-size: clamp(17px, 2vw, 20px);
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .heroActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .heroAccountBtn {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   }
 
   .membership-actions {

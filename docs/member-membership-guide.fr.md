@@ -54,7 +54,7 @@ Il n’y a pas de mot de passe séparé. **Se connecter** (Google ou lien magiqu
 
 Si la connexion réussit mais que l’association n’a **pas encore de profil en ligne** lié à votre courriel, le site vous invite à **créer votre profil membre** (nom, coordonnées, adresse au lac, contact secondaire facultatif, adresse postale, préférences de courriel). Remplissez le formulaire et enregistrez.
 
-Une fois le profil créé, vous arrivez sur la page **compte**, où vous pouvez **acheter ou renouveler** votre adhésion (voir ci-dessous). Des renseignements généraux sur les catégories d’adhésion peuvent aussi figurer sur les pages publiques **Adhésion** et **Renouvellement** du site ; le **paiement et le statut** se gèrent dans l’**espace membre** après connexion.
+Une fois le profil créé, vous arrivez sur la page **compte**, où vous pouvez **acheter ou renouveler** votre adhésion (voir ci-dessous). Des renseignements généraux sur l’adhésion figurent sur la page publique **[Adhésion](https://lacbernard.ca/fr/membership)** ; le **paiement et le statut** se gèrent dans l’**espace membre** après connexion.
 
 ---
 
