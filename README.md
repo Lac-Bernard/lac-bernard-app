@@ -10,6 +10,8 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 - **[MDX](https://mdxjs.com/)** - Markdown with JSX components
 - **[Vercel](https://vercel.com)** - Deployment platform
 - **[Supabase](https://supabase.com)** - Auth and Postgres for the member account area (optional locally)
+- **[Stripe](https://stripe.com)** - Membership checkout and webhooks (production server routes)
+- **[Google APIs](https://developers.google.com/workspace)** - Drive (embedded archive browsers) and optional Sheets sync via a service account
 
 ## ✨ Features
 
@@ -22,6 +24,7 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 - ✅ **Type Safety** - Type-checked content collections with Zod schemas
 - ✅ **Server-Side Rendering** - Dynamic content with Astro's SSR capabilities
 - ✅ **Member area** - Magic-link sign-in; account and admin routes under `/en/membership/...` and `/fr/membership/...` (backed by Supabase)
+- ✅ **Archive folder browsers** - Selected About, Environment, and History pages embed a Drive-backed file list (`/api/drive/list`; needs `GOOGLE_SERVICE_ACCOUNT_JSON` and folder sharing—see [Google service account](#google-service-account-drive-and-sheets))
 
 ## 📋 Prerequisites
 
@@ -71,6 +74,8 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 | `npm run db:seed:apply:reset` | Same as `db:seed:apply`, but remove prior dummy seed rows first (`ALLOW_DUMMY_SEED_RESET=1` as well). Not the same as CSV `--reset` — see `node scripts/generate-dummy-seeds.mjs --help` |
 | `npm run db:import-members-csv` | Import the association master membership CSV into Supabase (Python deps in a **venv** — see below; needs `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` in `.env`) |
 | `npm run db:import-members-csv:local` | Same, but targets the **local** Docker stack (`supabase start`); credentials come from `supabase status` |
+
+If `npm run build` fails because Tina’s dev port is in use, run `npx astro build` to verify the Astro output only.
 
 ## 🗄️ Supabase (optional, local)
 
@@ -126,12 +131,15 @@ The site uses one **Google Cloud service account** (JSON key in `GOOGLE_SERVICE_
 ```
 ├── public/                 # Static assets (images, fonts, etc.)
 │   └── fonts/             # Custom fonts
+├── content/
+│   └── pages/             # Site page Markdown (`en/`, `fr/` — loaded by Astro routes)
 ├── src/
 │   ├── assets/           # Image assets
 │   ├── components/       # Astro components (BaseHead, Header, Footer, etc.)
 │   ├── content/          # Astro content collections
 │   │   └── blog/        # News: `en/*.md` and `fr/*.md` (paired slugs)
 │   ├── layouts/          # Page layouts
+│   ├── lib/              # Server helpers (Supabase, Google Drive allowlist/client, etc.)
 │   ├── pages/            # Astro routes (`/en/*`, `/fr/*`; root redirects to `/fr/`)
 │   │   ├── en/          # English pages (same path slugs as `fr/`)
 │   │   │   ├── about/
@@ -141,13 +149,15 @@ The site uses one **Google Cloud service account** (JSON key in `GOOGLE_SERVICE_
 │   │   │   ├── membership/
 │   │   │   └── news/
 │   │   ├── fr/          # French pages (same English slugs as `en/`)
-│   │   └── api/         # API routes
-│   └── styles/           # Global styles
+│   │   └── api/         # API routes (auth, admin, Stripe webhook, Drive list, crons, …)
+│   ├── styles/           # Global styles
+│   └── utils/            # Shared utilities (e.g. `loadContentPage.ts`)
 ├── tina/                 # TinaCMS configuration
 │   └── config.ts         # CMS schema and settings
 ├── supabase/             # Supabase CLI: migrations, seed.sql, local config
 ├── astro.config.mjs       # Astro configuration
 ├── src/content.config.ts # Content collection schemas
+├── vercel.json           # Vercel redirects and cron schedules
 └── package.json
 ```
 
@@ -184,7 +194,7 @@ heroImage: ./path/to/image.jpg  # optional
 
 ### Bilingual Content
 
-- **Site page copy (Markdown)** lives in `content/pages/en/` and `content/pages/fr/` (mirrored filenames, e.g. `about.md` in each folder). Astro pages load them via `Astro.glob(...)`.
+- **Site page copy (Markdown)** lives in `content/pages/en/` and `content/pages/fr/` (mirrored filenames, e.g. `about.md` in each folder). Astro pages load them via `loadContentPage` in `src/utils/loadContentPage.ts`.
 - Both locales use the same English URL slugs; pages live under `/fr/...` and `/en/...` (for example `/fr/about`, `/en/about`)
 - The site root `/` redirects to `/fr/`; `vercel.json` lists permanent redirects from legacy French slugs (for example `/a-propos` → `/fr/about`)
 - News posts are stored per locale under `src/content/blog/en/` and `src/content/blog/fr/`; public URLs are `/en/news/<slug>` and `/fr/news/<slug>` with the same `<slug>` in both languages when both exist
@@ -197,10 +207,15 @@ This project is configured for deployment on Vercel with server-side rendering e
 
 1. Push your code to GitHub/GitLab/Bitbucket
 2. Import the project in Vercel
-3. Add environment variables (see `.env.example`):
-   - `TINA_CLIENT_ID`, `TINA_TOKEN`
-   - `SUPABASE_URL`, `SUPABASE_ANON_KEY` (for member sign-in and account)
-   - `GOOGLE_SERVICE_ACCOUNT_JSON`, `GOOGLE_SHEET_ID`, `CRON_SECRET` (if you use Sheets sync and/or the embedded Drive folder browser—see [Google service account](#google-service-account-drive-and-sheets) below)
+3. Add environment variables (full list and comments in `.env.example`). Commonly needed:
+
+   - **TinaCMS:** `TINA_CLIENT_ID`, `TINA_TOKEN`
+   - **Supabase:** `SUPABASE_URL`, `SUPABASE_ANON_KEY` (you can also set `PUBLIC_SUPABASE_URL` / `PUBLIC_SUPABASE_ANON_KEY` for client bundles); `SUPABASE_SERVICE_ROLE_KEY` for server routes, CSV import, and crons
+   - **Stripe (checkout / webhooks):** `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
+   - **Google (Drive embeds + optional Sheets sync):** `GOOGLE_SERVICE_ACCOUNT_JSON`; `GOOGLE_SHEET_ID` and sharing for sheet sync — see [Google service account](#google-service-account-drive-and-sheets)
+   - **Crons:** `CRON_SECRET` must match the `Authorization: Bearer …` header Vercel sends to cron routes. Schedules are in `vercel.json`: `/api/cron/sync-google-sheets` and `/api/cron/membership-admin-daily-summary`
+   - **Membership summary email:** `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MEMBERSHIP_ADMIN_SUMMARY_FROM`, `MEMBERSHIP_ADMIN_SUMMARY_TO` (see `.env.example`)
+
 4. Deploy!
 
 The build process will:
