@@ -48,7 +48,7 @@ Les membres de l'Association travaillent ensemble pour assurer la durabilité à
 
 ## Objectifs clés
 
-En vous inscrivant ou en renouvelant, vous acceptez de soutenir nos objectifs décrits ci-dessous. Ceux-ci sont au cœur de nos lettres patentes et règlements. Si vous avez des questions concernant l'un de ceux-ci, veuillez contacter [president@lacbernard.ca](mailto:president@lacbernard.ca).
+En vous inscrivant ou en renouvelant, vous acceptez de soutenir nos objectifs décrits ci-dessous. Ceux-ci sont au cœur de nos règlements. Si vous avez des questions concernant l'un de ceux-ci, veuillez contacter [president@lacbernard.ca](mailto:president@lacbernard.ca).
 
 - Gérer la Corporation de manière transparente et respectueuse dans les deux langues officielles dans la mesure du possible
 - Promouvoir la préservation et l'amélioration du bien-être environnemental et écologique du lac
