@@ -1,8 +1,10 @@
 # Membership admin guide
 
+*[Français : admin-membership-guide.fr.md](admin-membership-guide.fr.md)*
+
 This guide is for **association volunteers and staff** who help run membership: the **admin dashboard** on the website, the **daily summary email**, and the **Google Sheet** that lists members. You do not need a technical background to use these tools.
 
-A separate **member** guide (for people renewing or managing their own account) may be added later. This document is only about **administration**.
+For **members** managing their own sign-in, profile, and payments online, see the **[member guide (English)](member-membership-guide.md)** or **[guide du compte membre (français)](member-membership-guide.fr.md)**. This document is only about **administration**.
 
 ---
 

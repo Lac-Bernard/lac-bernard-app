@@ -128,7 +128,17 @@ The site uses one **Google Cloud service account** (JSON key in `GOOGLE_SERVICE_
 
 ## Membership admin (operator guide)
 
-For volunteers and staff using the **membership dashboard**, **daily summary email**, or **Google Sheets** export (non-technical), see **[docs/admin-membership-guide.md](docs/admin-membership-guide.md)**.
+For volunteers and staff using the **membership dashboard**, **daily summary email**, or **Google Sheets** export (non-technical):
+
+- **English:** [docs/admin-membership-guide.md](docs/admin-membership-guide.md)
+- **Français :** [docs/admin-membership-guide.fr.md](docs/admin-membership-guide.fr.md)
+
+## Member account (user guide)
+
+For **members** signing in, updating their profile, and paying online (non-technical):
+
+- **English:** [docs/member-membership-guide.md](docs/member-membership-guide.md)
+- **Français :** [docs/member-membership-guide.fr.md](docs/member-membership-guide.fr.md)
 
 ## 📁 Project Structure
 
