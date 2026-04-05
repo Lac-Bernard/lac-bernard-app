@@ -209,10 +209,17 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     background: rgba(0, 0, 0, 0.12);
   }
 
+  /* Block stack avoids flex whitespace text nodes (same issue as profile / member home forms). */
   .signInForm {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+    display: block;
+  }
+
+  .signInForm > *:not(:first-child) {
+    margin-top: 12px;
+  }
+
+  .signInForm > input[type='hidden'] + * {
+    margin-top: 0;
   }
 
   .fieldLabel {
@@ -242,7 +249,7 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
   }
 
   .signInForm .btnPrimary {
-    margin-top: 8px;
+    margin-top: 20px;
     justify-content: center;
     width: 100%;
   }

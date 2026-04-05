@@ -84,6 +84,10 @@ const votingFeeCad =
 const associateFeeCad =
 	associateCents != null ? (associateCents / 100).toFixed(2) : '0.00';
 
+/** Default-checked tier on inactive card: voting when lake address exists, else associate */
+const inactiveModalTierLabel = membershipTierLabel(hasLakeAddress ? 'voting' : 'associate', locale);
+const inactiveModalFeeCad = hasLakeAddress ? votingFeeCad : associateFeeCad;
+
 const displayEmail = member ? (member.primary_email?.trim() || email) : '';
 const memberPrimaryNameOnly = member ? formatMemberPrimaryName(member) : '';
 const secondaryContactFirstName = member?.secondary_first_name?.trim() ?? '';
@@ -261,11 +265,11 @@ const hasSecondaryContactInfo = Boolean(
                           <dl class="checkoutModalSummary">
                             <div class="checkoutModalSummaryRow">
                               <dt>{t.checkoutModalMembershipLabel}</dt>
-                              <dd>{thisYearTierLabel}</dd>
+                              <dd id="checkout-modal-summary-tier">{thisYearTierLabel}</dd>
                             </div>
                             <div class="checkoutModalSummaryRow">
                               <dt>{t.checkoutModalFeeLabel}</dt>
-                              <dd>{pendingMembershipFeeCad} CAD</dd>
+                              <dd id="checkout-modal-summary-fee">{pendingMembershipFeeCad} CAD</dd>
                             </div>
                           </dl>
                           <div class="checkoutModalField donationRow">
@@ -333,6 +337,16 @@ const hasSecondaryContactInfo = Boolean(
                           {t.payCashAfterLink}
                         </p>
                       </div>
+                    </div>
+                    <div
+                      class="payAltDonationBlurb"
+                      role="group"
+                      aria-labelledby="pay-alt-donation-heading"
+                    >
+                      <p id="pay-alt-donation-heading" class="payAltDonationTitle">
+                        {t.otherPaymentDonationTitle}
+                      </p>
+                      <p class="payAltDonationBody">{t.otherPaymentDonationBody}</p>
                     </div>
                   </div>
 
@@ -406,9 +420,77 @@ const hasSecondaryContactInfo = Boolean(
                         <a class="profileEditLink" href={paths.edit}>{t.linkEditProfile}</a>
                       </p>
                     )}
-                    <button type="submit" class="btnPrimary createPendingSubmitBtn" id="create-pending-submit">{t.createPendingSubmit}</button>
+                    <div class="createPendingPayRow">
+                      <button type="button" class="btnPrimary payCardBtn payCardBtnFull" id="open-checkout-modal">
+                        {t.payWithCard}
+                      </button>
+                      <button
+                        type="button"
+                        class="btnGhost createPendingManualBtn"
+                        id="create-pending-manual-btn"
+                      >
+                        {t.payOtherMethodsBtn}
+                      </button>
+                    </div>
                     <p id="create-pending-message" class="actionMessage" role="status" aria-live="polite"></p>
                   </form>
+
+                  <dialog id="checkout-modal" class="checkoutModal" aria-labelledby="checkout-modal-title">
+                    <div class="checkoutModalInner">
+                      <form id="checkout-modal-form" class="checkoutModalForm" data-membership-id="">
+                        <div class="checkoutModalScroll">
+                          <h2 id="checkout-modal-title" class="checkoutModalHeading">{t.checkoutModalTitle}</h2>
+                          <dl class="checkoutModalSummary">
+                            <div class="checkoutModalSummaryRow">
+                              <dt>{t.checkoutModalMembershipLabel}</dt>
+                              <dd id="checkout-modal-summary-tier">{inactiveModalTierLabel}</dd>
+                            </div>
+                            <div class="checkoutModalSummaryRow">
+                              <dt>{t.checkoutModalFeeLabel}</dt>
+                              <dd id="checkout-modal-summary-fee">{inactiveModalFeeCad} CAD</dd>
+                            </div>
+                          </dl>
+                          <div class="checkoutModalField donationRow">
+                            <label class="donationLabel" for="modal-donation">{t.donationLabel}</label>
+                            <input
+                              type="number"
+                              class="donationInput checkoutModalInput"
+                              id="modal-donation"
+                              name="donation"
+                              min="0"
+                              max="50000"
+                              step="0.01"
+                              placeholder="0"
+                              inputmode="decimal"
+                              aria-describedby="modal-donation-hint"
+                            />
+                            <p id="modal-donation-hint" class="stripeNote checkoutModalHint">{t.donationHint}</p>
+                          </div>
+                          <div class="checkoutModalField donationNoteRow">
+                            <label class="donationLabel" for="modal-donation-note">{t.donationNoteLabel}</label>
+                            <textarea
+                              class="donationNoteInput"
+                              id="modal-donation-note"
+                              name="donationNote"
+                              rows="3"
+                              maxlength="500"
+                              aria-describedby="modal-donation-note-hint"
+                            ></textarea>
+                            <p id="modal-donation-note-hint" class="stripeNote checkoutModalHint">{t.donationNoteHint}</p>
+                          </div>
+                        </div>
+                        <p id="pay-checkout-message" class="actionMessage checkoutModalError" role="status" aria-live="polite"></p>
+                        <div class="checkoutModalActions">
+                          <button type="button" class="btnGhost checkoutModalBtnSecondary" id="checkout-modal-cancel">
+                            {t.checkoutModalCancel}
+                          </button>
+                          <button type="submit" class="btnPrimary checkoutModalBtnPrimary" id="checkout-modal-submit">
+                            {t.checkoutModalContinue}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </dialog>
                 </div>
               </div>
             )}
@@ -496,6 +578,10 @@ const hasSecondaryContactInfo = Boolean(
       errCheckoutInvalidDonationNote: t.checkoutInvalidDonationNote,
       errNoLake: t.pendingCreateErrorNoLakeAddress,
       errGeneralTaken: t.pendingCreateErrorGeneralAddressTaken,
+      tierLabelVoting: t.tierGeneral,
+      tierLabelAssociate: t.tierAssociate,
+      feeVotingDisplay: `${votingFeeCad} CAD`,
+      feeAssociateDisplay: `${associateFeeCad} CAD`,
     }}
   >
     function createErrorMessage(code) {
@@ -507,15 +593,30 @@ const hasSecondaryContactInfo = Boolean(
       return errCreateGeneric;
     }
 
+    function syncCheckoutModalSummaryFromTierForm() {
+      const tierEl = document.getElementById('checkout-modal-summary-tier');
+      const feeEl = document.getElementById('checkout-modal-summary-fee');
+      if (!tierEl || !feeEl) return;
+      const form = document.getElementById('create-pending-form');
+      const input = form?.querySelector('input[name="tier"]:checked');
+      const tier = input && input instanceof HTMLInputElement ? input.value : 'associate';
+      if (tier === 'voting') {
+        tierEl.textContent = tierLabelVoting;
+        feeEl.textContent = feeVotingDisplay;
+      } else {
+        tierEl.textContent = tierLabelAssociate;
+        feeEl.textContent = feeAssociateDisplay;
+      }
+    }
+
     const createForm = document.getElementById('create-pending-form');
     const createMsg = document.getElementById('create-pending-message');
-    const createSubmit = document.getElementById('create-pending-submit');
+    const manualPendingBtn = document.getElementById('create-pending-manual-btn');
 
-    createForm?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      if (!createMsg || !createSubmit) return;
+    manualPendingBtn?.addEventListener('click', async () => {
+      if (!createMsg || !createForm || !manualPendingBtn) return;
       createMsg.textContent = '';
-      createSubmit.setAttribute('disabled', 'true');
+      manualPendingBtn.setAttribute('disabled', 'true');
       const fd = new FormData(createForm);
       const tier = String(fd.get('tier') ?? '');
       try {
@@ -533,7 +634,7 @@ const hasSecondaryContactInfo = Boolean(
       } catch {
         createMsg.textContent = errNetwork;
       } finally {
-        createSubmit.removeAttribute('disabled');
+        manualPendingBtn.removeAttribute('disabled');
       }
     });
 
@@ -577,6 +678,9 @@ const hasSecondaryContactInfo = Boolean(
     openCheckoutBtn?.addEventListener('click', () => {
       if (checkoutMsg) checkoutMsg.textContent = '';
       checkoutModalForm?.reset();
+      if (createForm) {
+        syncCheckoutModalSummaryFromTierForm();
+      }
       checkoutModal?.showModal();
     });
 
@@ -589,8 +693,6 @@ const hasSecondaryContactInfo = Boolean(
     checkoutModalForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
       if (!checkoutMsg || !checkoutSubmit || !checkoutModalForm) return;
-      const membershipId = checkoutModalForm.getAttribute('data-membership-id');
-      if (!membershipId) return;
       checkoutMsg.textContent = '';
       checkoutSubmit.setAttribute('disabled', 'true');
       let donationDollars = 0;
@@ -614,7 +716,36 @@ const hasSecondaryContactInfo = Boolean(
         checkoutSubmit.removeAttribute('disabled');
         return;
       }
+
+      let membershipId = checkoutModalForm.getAttribute('data-membership-id')?.trim() ?? '';
       try {
+        if (!membershipId) {
+          if (!createForm) {
+            checkoutMsg.textContent = errCheckoutGeneric;
+            return;
+          }
+          const fd = new FormData(createForm);
+          const tier = String(fd.get('tier') ?? '');
+          const cre = await fetch('/api/membership/create-pending', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ tier }),
+          });
+          const creData = await cre.json().catch(() => ({}));
+          if (!cre.ok) {
+            checkoutMsg.textContent =
+              createErrorMessage(creData.error) || errCreateGeneric;
+            return;
+          }
+          const newId = typeof creData.id === 'string' ? creData.id : '';
+          if (!newId) {
+            checkoutMsg.textContent = errCheckoutGeneric;
+            return;
+          }
+          membershipId = newId;
+          checkoutModalForm.setAttribute('data-membership-id', membershipId);
+        }
+
         const res = await fetch('/api/membership/create-checkout-session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -929,9 +1060,51 @@ const hasSecondaryContactInfo = Boolean(
 
   .statusCard {
     border-radius: 14px;
-    padding: 1.35rem 1.35rem 1.25rem;
+    padding: 1.35rem;
     margin-bottom: 1.5rem;
     border: 1px solid var(--border, rgba(0, 0, 0, 0.12));
+  }
+
+  /*
+   * Member home uses `prose` on the column; global `.prose p` adds large bottom margins.
+   * Reset inside status cards, then restore spacing only where we need it.
+   */
+  .prose.memberHomeProse .statusCard p {
+    margin-bottom: 0;
+  }
+
+  .prose.memberHomeProse .statusCard p.statusActiveScope {
+    margin-bottom: 1.05rem;
+  }
+
+  .prose.memberHomeProse .statusCard .activeTierSummary > .tierLegend,
+  .prose.memberHomeProse .statusCard .pendingTierSummary > .tierLegend {
+    margin-bottom: 0.45rem;
+  }
+
+  .prose.memberHomeProse .statusCard p.statusPendingLead {
+    margin-bottom: 1.1rem;
+  }
+
+  .prose.memberHomeProse .statusCard p.statusLead {
+    margin-bottom: 1.25rem;
+  }
+
+  .prose.memberHomeProse .statusCard .statusCardBodyInactive p.statusLead {
+    margin-bottom: 0.65rem;
+  }
+
+  .prose.memberHomeProse .statusCard .activeTierVoteLabel {
+    margin-bottom: 0.25rem;
+  }
+
+  .prose.memberHomeProse .statusCard p.payAltDonationTitle {
+    margin-bottom: 0.4rem;
+  }
+
+  .prose.memberHomeProse .statusCard p.actionMessage:empty {
+    margin-top: 0;
+    min-height: 0;
   }
 
   .statusCardActive {
@@ -1220,25 +1393,38 @@ const hasSecondaryContactInfo = Boolean(
     color: var(--text, rgba(0, 0, 0, 0.88));
   }
 
+  /*
+   * Block layout (not flex) so indentation/newlines between form children are not treated as
+   * flex items — flex + gap made whitespace text nodes look like a phantom gap above the pay row.
+   */
   .createPendingForm {
+    display: block;
+    margin-bottom: 0;
+    width: 100%;
+  }
+
+  .createPendingForm > * + * {
+    margin-top: 1rem;
+  }
+
+  .createPendingForm > .tierFieldset + .createPendingPayRow {
+    margin-top: 1.25rem;
+  }
+
+  .createPendingPayRow {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    gap: 1rem;
-    margin-bottom: 0.5rem;
+    gap: 0.65rem;
     width: 100%;
   }
 
-  .createPendingSubmitBtn {
+  .createPendingManualBtn {
     width: 100%;
     box-sizing: border-box;
-    margin-top: 0.25rem;
+    text-align: center;
   }
 
-  /* Override global `.prose .btnPrimary` spacing for full-width CTA */
-  .prose .createPendingSubmitBtn.btnPrimary {
-    display: block;
-    margin-top: 0.25rem;
+  .prose .createPendingPayRow .payCardBtnFull.btnPrimary {
     text-align: center;
   }
 
@@ -1386,7 +1572,7 @@ const hasSecondaryContactInfo = Boolean(
   }
 
   .cancelPendingBtn {
-    margin-bottom: 0.25rem;
+    margin-bottom: 0;
   }
 
   .payPrimary {
@@ -1394,10 +1580,6 @@ const hasSecondaryContactInfo = Boolean(
   }
 
   .prose .payCardBtnFull.btnPrimary {
-    display: block;
-    width: 100%;
-    box-sizing: border-box;
-    margin-top: 0;
     text-align: center;
   }
 
@@ -1667,6 +1849,25 @@ const hasSecondaryContactInfo = Boolean(
     font-size: 0.95rem;
     font-weight: 600;
     letter-spacing: 0.01em;
+  }
+
+  .payAltDonationBlurb {
+    margin: 0.9rem 0 0;
+  }
+
+  .payAltDonationTitle {
+    margin: 0 0 0.4rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--text, rgba(0, 0, 0, 0.88));
+  }
+
+  .payAltDonationBody {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--muted, #555);
   }
 
   .payMethodGrid {

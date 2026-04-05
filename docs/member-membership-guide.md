@@ -79,7 +79,7 @@ You can update **contact information**, **lake address** (civic number and stree
 
 **Voting membership** requires a **complete lake address** on your profile. **Associate** membership does not require a lake address in the same way. If voting membership is disabled until you add the address, the page will say so and link you back to **Edit profile**.
 
-Save your changes before starting or changing a membership request.
+Save your changes before starting or changing a membership payment.
 
 ---
 
@@ -88,17 +88,15 @@ Save your changes before starting or changing a membership request.
 When you do **not** yet have an **active** membership for the **current calendar year**, the account page walks you through:
 
 1. **Choose a membership type**: **Voting** (tied to your lake property for the year) or **Associate** (non-voting).
-2. Tap **Start membership request** (or the equivalent in French). That creates a **pending** membership for the year.
+2. Choose how to pay (both options are on the same screen as the type picker):
+   - **Pay with credit card** opens a short window where you can add an **optional donation** and a **note**, then continue to **secure checkout** (handled by Stripe). Your **pending** membership for the year is created when you continue; when payment succeeds, your membership should show as **active** on your account shortly.
+   - **Pay another way** creates a **pending** membership right away and refreshes the page. You then see **other ways to pay**—**INTERAC e-Transfer**, **cheque** (mailing address on screen), or **cash** (contact email on screen)—and you can still use **Pay with credit card** from that pending section if you change your mind.
 
-Then:
+### After you’re pending
 
-### Pay online with a card
+Your membership becomes **active** when the association **confirms or records** your payment (online or manually).
 
-If **Pay with credit card** is available, use it. You can add an **optional donation** and a short **note** before continuing to the **secure checkout** (handled by Stripe). When payment succeeds, your membership should show as **active** on your account shortly.
-
-### Pay another way
-
-The site lists **other ways to pay**, such as **INTERAC e-Transfer**, **cheque** (mailing address shown on screen), or **cash** (contact email shown on screen). Your membership becomes **active** when the association **confirms or records** your payment.
+When you use **other ways to pay**, the Interac, cheque, and cash instructions appear first; below them, a short note asks **Want to contribute a little more?** You’re welcome to add an extra donation to **ORALB** with the same payment; to aim your gift at a specific fund or project, say so in your **e-Transfer message** or your **cheque memo**.
 
 ### If you need to start over
 

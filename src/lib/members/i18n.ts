@@ -271,7 +271,8 @@ export const memberCopy: Record<
 		statusInactiveStep2: string;
 		statusInactiveStep3: string;
 		tierChoiceLegend: string;
-		createPendingSubmit: string;
+		/** Inactive card: pay by Interac, cheque, or cash (creates pending, then shows instructions) */
+		payOtherMethodsBtn: string;
 		statusPendingTitle: string;
 		statusPendingLead: string;
 		cancelPending: string;
@@ -300,6 +301,9 @@ export const memberCopy: Record<
 		checkoutSuccessBanner: string;
 		checkoutCancelledBanner: string;
 		otherPaymentTitle: string;
+		/** Pending card: under “Other ways to pay”, optional donation when paying offline */
+		otherPaymentDonationTitle: string;
+		otherPaymentDonationBody: string;
 		payInteracTitle: string;
 		payInteracBeforeLink: string;
 		payInteracAfterLink: string;
@@ -594,12 +598,14 @@ export const memberCopy: Record<
 			'You also have {{count}} prepaid year(s) on file—see the section below.',
 		statusActiveGeneralVoteLabel: 'Voting membership for this lake address:',
 		statusInactiveTitle: 'No active membership for {{year}}',
-		statusInactiveLead: 'Choose a membership type below, then start your request. Voting membership needs a lake address on your profile.',
+		statusInactiveLead:
+			'Choose a membership type below, then pay with a card or pick another payment method. Voting membership needs a lake address on your profile.',
 		statusInactiveStep1: 'Pick voting or associate (non-voting).',
-		statusInactiveStep2: 'Submit the request — you’ll get payment instructions next.',
+		statusInactiveStep2:
+			'Use Pay with credit card (optional donation in the window that opens) or Pay another way for Interac, cheque, or cash.',
 		statusInactiveStep3: 'Your membership activates when payment is received or recorded by the association.',
 		tierChoiceLegend: 'Membership type',
-		createPendingSubmit: 'Start membership request',
+		payOtherMethodsBtn: 'Pay another way',
 		statusPendingTitle: 'Your {{year}} membership is pending payment',
 		statusPendingLead:
 			'Use one of the options below to pay. Your membership will become active when payment is confirmed (online or by an administrator).',
@@ -628,6 +634,9 @@ export const memberCopy: Record<
 			'Thank you. When your payment succeeds, your membership will show as active here shortly.',
 		checkoutCancelledBanner: 'Checkout was cancelled. You can try again when you are ready.',
 		otherPaymentTitle: 'Other ways to pay',
+		otherPaymentDonationTitle: 'Want to contribute a little more?',
+		otherPaymentDonationBody:
+			"You're welcome to include an additional donation to ORALB along with your membership payment. To direct your gift to a specific fund or project, simply add a note in the e-transfer message field, or the memo field on your cheque.",
 		payInteracTitle: 'INTERAC e-Transfer',
 		payInteracBeforeLink: 'Send your payment from your bank to ',
 		payInteracAfterLink: '. The association does not collect banking details.',
@@ -929,12 +938,13 @@ export const memberCopy: Record<
 		statusActiveGeneralVoteLabel: 'Adhésion avec droit de vote pour l’adresse au lac :',
 		statusInactiveTitle: 'Aucune adhésion active pour {{year}}',
 		statusInactiveLead:
-			'Choisissez un type d’adhésion ci-dessous, puis démarrez votre demande. L’adhésion avec droit de vote exige une adresse au lac dans votre profil.',
+			'Choisissez un type d’adhésion ci-dessous, puis payez par carte ou choisissez un autre mode de paiement. L’adhésion avec droit de vote exige une adresse au lac dans votre profil.',
 		statusInactiveStep1: 'Choisissez l’adhésion avec droit de vote ou associée (sans droit de vote).',
-		statusInactiveStep2: 'Envoyez la demande — les instructions de paiement suivront.',
+		statusInactiveStep2:
+			'Utilisez Payer par carte de crédit (don facultatif dans la fenêtre) ou Autre mode de paiement pour Interac, chèque ou comptant.',
 		statusInactiveStep3: 'Votre adhésion devient active lorsque le paiement est reçu ou enregistré par l’association.',
 		tierChoiceLegend: 'Type d’adhésion',
-		createPendingSubmit: 'Démarrer la demande d’adhésion',
+		payOtherMethodsBtn: 'Autre mode de paiement',
 		statusPendingTitle: 'Votre adhésion {{year}} est en attente de paiement',
 		statusPendingLead:
 			'Utilisez l’une des options ci-dessous pour payer. Votre adhésion deviendra active lorsque le paiement sera confirmé (en ligne ou par un administrateur).',
@@ -964,6 +974,9 @@ export const memberCopy: Record<
 			'Merci. Lorsque le paiement est réussi, votre adhésion active s’affichera ici sous peu.',
 		checkoutCancelledBanner: 'Le paiement a été annulé. Vous pouvez réessayer quand vous voulez.',
 		otherPaymentTitle: 'Autres modes de paiement',
+		otherPaymentDonationTitle: 'Vous souhaitez contribuer un peu plus ?',
+		otherPaymentDonationBody:
+			'Vous pouvez ajouter un don supplémentaire à l’ORALB en même temps que votre cotisation. Pour orienter votre don vers un fonds ou un projet précis, indiquez-le dans le message de votre virement Interac ou dans le champ mémo de votre chèque.',
 		payInteracTitle: 'Virement Interac',
 		payInteracBeforeLink: 'Envoyez votre paiement à partir de votre banque à ',
 		payInteracAfterLink: '. L’association ne recueille pas vos données bancaires.',

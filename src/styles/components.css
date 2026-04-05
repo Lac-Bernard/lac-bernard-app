@@ -948,6 +948,18 @@
   margin-top: 16px;
 }
 
+/*
+ * Membership status cards stack buttons in flex columns with their own spacing.
+ * Prose’s margin-top + inline-block stacks with flex gap and can look like a
+ * phantom gap until hover/reflow; restore the base button display and no extra top margin.
+ */
+.prose .statusCard .btnPrimary {
+  margin-top: 0;
+  display: inline-flex;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .prose .btnPrimary:hover {
   color: white !important;
   text-decoration: none !important;

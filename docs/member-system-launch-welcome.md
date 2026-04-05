@@ -39,21 +39,20 @@ After you sign in, you’ll land in your **member area**. You should see a short
 
 - **Update your profile:** lake address, phones, mailing address, and optional secondary contact.  
 - **Start or renew** your membership for the year when you’re not yet active.  
-- **Pay** by **credit card** through a secure checkout, or use the **other payment options** shown on your account (e.g. Interac e-Transfer, cheque).
+- **Pay** from the same screen where you pick your type: **Pay with credit card** (optional donation in the window that opens, then Stripe checkout) or **Pay another way** (Interac, cheque, or cash—instructions appear after the page updates; you can add an optional donation with the same offline payment—see the note on screen).
 
 ### Paying by credit card
 
 The big new piece for many of you is **Pay with credit card**. You’ll go through a short, secure checkout (handled by Stripe). You can add an **optional donation** to support the association in the same step if you wish. When payment succeeds, your membership should show as **active** on your account shortly after.
 
-If you prefer not to use a card, everything you need for **e-Transfer, cheque, or cash** is still listed on the same page once you’ve started your membership request.
+If you prefer not to use a card, choose **Pay another way** on your account; the page will show everything you need for **e-Transfer, cheque, or cash**, including how to note an **optional donation** (and you can still switch to card later from the pending section if you want).
 
 ### Quick steps: buy your 2026 membership online
 
 1. Open the **sign-in** link above (pick English or French).  
 2. Sign in with **Google** or your **magic link** email.  
 3. If the site asks you to **create or complete your profile**, fill it in and save, especially your **lake address** if you want **General** (voting) membership.  
-4. On your **account** page, choose **General** or **Associate**, then click **Start membership request**.  
-5. Click **Pay with credit card** and complete checkout, or follow the **other payment** instructions on screen.  
+4. On your **account** page, choose **General** or **Associate**, then click **Pay with credit card** (complete checkout) **or** **Pay another way** (then follow the on-screen instructions).  
 
 That’s it. If you already have an active 2026 membership, you’ll see that instead of the payment flow.
 

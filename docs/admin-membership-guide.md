@@ -61,6 +61,8 @@ Use this tab when you want a morning snapshot before drilling into lists.
 
 This list is everyone with a membership still in **pending** status for a given year (you see name, email, year, membership type, status, expected fee, and actions).
 
+Members reach **pending** from their **account** page after they pick a membership type and either start **Pay with credit card** (the pending row is created when they continue toward checkout) or choose **Pay another way** (pending is created immediately so they can see offline payment instructions, including how to note an optional donation). Admin workflows below are unchanged.
+
 ### Record a manual payment
 
 When someone pays **outside the online card checkout** (for example **e-Transfer**, **cheque**, or **cash**):
