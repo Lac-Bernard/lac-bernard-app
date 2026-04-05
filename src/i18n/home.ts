@@ -4,7 +4,13 @@ export type HomeUi = {
 	siteTitle: string;
 	metaDescription: string;
 	heroAriaLabel: string;
+	/** Short line above the main headline */
+	heroKicker: string;
 	defaultHeroTitle: string;
+	/** Shown under the title unless frontmatter `heroSubtitle` overrides */
+	heroTagline: string;
+	ctaMembership: string;
+	ctaNews: string;
 	impact: string;
 	years: string;
 	members: string;
@@ -22,7 +28,11 @@ export const homeUi: Record<Language, HomeUi> = {
 		metaDescription:
 			'Join the Lac Bernard Association - a volunteer-run organization dedicated to protecting our lake, building community, and promoting safety since 1979.',
 		heroAriaLabel: 'Homepage hero',
+		heroKicker: 'Volunteer-run · Since 1979',
 		defaultHeroTitle: 'Welcome to the Lac Bernard Association',
+		heroTagline: 'Protecting the lake, building community, and supporting cottagers.',
+		ctaMembership: 'Membership',
+		ctaNews: 'News',
 		impact: 'Our Impact',
 		years: 'Years of Service',
 		members: 'Active Members',
@@ -39,7 +49,11 @@ export const homeUi: Record<Language, HomeUi> = {
 		metaDescription:
 			"Rejoignez l'Association du lac Bernard - une organisation gérée par des bénévoles dédiée à la protection de notre lac, à la construction de la communauté et à la promotion de la sécurité depuis 1979.",
 		heroAriaLabel: 'Accueil',
+		heroKicker: 'Gérée par des bénévoles · Depuis 1979',
 		defaultHeroTitle: "Bienvenue à l'Association du lac Bernard",
+		heroTagline: 'Protéger le lac, rassembler la communauté et soutenir les propriétaires.',
+		ctaMembership: 'Adhésion',
+		ctaNews: 'Nouvelles',
 		impact: 'Notre impact',
 		years: 'Années de service',
 		members: 'Membres actifs',
