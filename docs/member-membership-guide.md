@@ -76,6 +76,8 @@ From your account page, open **Edit profile** (or go to `/en/membership/account/
 
 You can update **contact information**, **lake address** (civic number and street), **mailing address**, optional **secondary contact**, and **email opt-in**. Your **sign-in email** is shown for reference but is tied to how you signed in; if you need a different sign-in address, contact the association so they can align your **primary email** with the account you want to use.
 
+When entering your **lake address**, the form may show **address suggestions** as you type (choose the closest match). If you don’t see a good match, keep typing and enter it manually.
+
 **Voting membership** requires a **complete lake address** on your profile. **Associate** membership does not require a lake address in the same way. If voting membership is disabled until you add the address, the page will say so and link you back to **Edit profile**.
 
 Save your changes before starting or changing a membership payment.

@@ -1,7 +1,7 @@
 ---
 title: 'Online member area: sign in, renew, and pay on lacbernard.ca'
 description: 'The member area is live. Check your membership status, update your contact details, and pay securely by credit card—or use Interac, cheque, or cash.'
-pubDate: '2026-04-05'
+pubDate: '2026-04-06'
 ---
 
 The **online member area** on [lacbernard.ca](https://lacbernard.ca) is ready. Members can check their membership status, keep contact details up to date, and this year **pay securely by credit card** from the website—something many of you have asked for. Thank you for your patience while we put this in place.
