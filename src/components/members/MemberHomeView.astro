@@ -523,8 +523,9 @@ const hasSecondaryContactInfo = Boolean(
                   </div>
 
                   <div class="cancelRow">
-                    <button type="button" class="btnGhost cancelPendingBtn" id="cancel-pending-btn" data-membership-id={pendingThisYear.id}>
-                      {t.cancelPending}
+                    <button type="button" class="btnGhost cancelPendingBtn checkoutModalSubmit" id="cancel-pending-btn" data-membership-id={pendingThisYear.id}>
+                      <span class="checkoutModalSubmit-spinner" aria-hidden="true"></span>
+                      <span class="checkoutModalSubmit-label">{t.cancelPending}</span>
                     </button>
                     <p id="cancel-pending-message" class="actionMessage" role="status" aria-live="polite"></p>
                   </div>
@@ -598,10 +599,11 @@ const hasSecondaryContactInfo = Boolean(
                       </button>
                       <button
                         type="button"
-                        class="btnGhost createPendingManualBtn"
+                        class="btnGhost createPendingManualBtn checkoutModalSubmit"
                         id="create-pending-manual-btn"
                       >
-                        {t.payOtherMethodsBtn}
+                        <span class="checkoutModalSubmit-spinner" aria-hidden="true"></span>
+                        <span class="checkoutModalSubmit-label">{t.payOtherMethodsBtn}</span>
                       </button>
                     </div>
                     <p id="create-pending-message" class="actionMessage" role="status" aria-live="polite"></p>
@@ -841,6 +843,7 @@ const hasSecondaryContactInfo = Boolean(
       if (!createMsg || !createForm || !manualPendingBtn) return;
       createMsg.textContent = '';
       manualPendingBtn.setAttribute('disabled', 'true');
+      manualPendingBtn.classList.add('is-loading');
       const fd = new FormData(createForm);
       const tier = String(fd.get('tier') ?? '');
       try {
@@ -859,6 +862,7 @@ const hasSecondaryContactInfo = Boolean(
         createMsg.textContent = errNetwork;
       } finally {
         manualPendingBtn.removeAttribute('disabled');
+        manualPendingBtn.classList.remove('is-loading');
       }
     });
 
@@ -871,6 +875,7 @@ const hasSecondaryContactInfo = Boolean(
       if (!id) return;
       cancelMsg.textContent = '';
       cancelBtn.setAttribute('disabled', 'true');
+      cancelBtn.classList.add('is-loading');
       try {
         const res = await fetch('/api/membership/cancel-pending', {
           method: 'POST',
@@ -888,6 +893,7 @@ const hasSecondaryContactInfo = Boolean(
         cancelMsg.textContent = errNetwork;
       } finally {
         cancelBtn.removeAttribute('disabled');
+        cancelBtn.classList.remove('is-loading');
       }
     });
 

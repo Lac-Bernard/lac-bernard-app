@@ -2,7 +2,7 @@
 
 import { formatAdminLocaleDate, formatAdminLocaleDateTime } from '../lib/admin/formatLocaleDate';
 import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymentSplit';
-import { formatAdminMemberNameTd, formatMemberJoinedNames } from '../lib/members/memberDisplayName';
+import { formatAdminMemberNameTd } from '../lib/members/memberDisplayName';
 
 export type AdminConsoleStrings = Record<string, string>;
 
@@ -71,6 +71,27 @@ type MembershipEmbed = {
 /** Trash icon for pending row remove (stroke uses `currentColor`) */
 const ADMIN_PENDING_TRASH_ICON =
 	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>';
+
+function formatPersonName(first: string | null | undefined, last: string | null | undefined): string {
+	const f = (first ?? '').trim();
+	const l = (last ?? '').trim();
+	if (f && l) return `${f} ${l}`;
+	return f || l || '—';
+}
+
+function primaryName(m: {
+	first_name: string | null;
+	last_name: string;
+}): string {
+	return formatPersonName(m.first_name, m.last_name);
+}
+
+function secondaryName(m: {
+	secondary_first_name?: string | null;
+	secondary_last_name?: string | null;
+}): string {
+	return formatPersonName(m.secondary_first_name ?? null, m.secondary_last_name ?? null);
+}
 
 function el<T extends HTMLElement>(sel: string): T | null {
 	return document.querySelector(sel) as T | null;
@@ -316,6 +337,7 @@ export function initAdminConsole(
 	statusElGlobal = el<HTMLElement>('#admin-status');
 	const tabs = document.querySelectorAll<HTMLButtonElement>('[data-admin-tab]');
 	const panels = document.querySelectorAll<HTMLElement>('[data-admin-panel]');
+	const paymentSubmitBtn = el<HTMLButtonElement>('#admin-payment-submit');
 
 	const fmtCad = (n: number) =>
 		new Intl.NumberFormat(numberLocale, { style: 'currency', currency: 'CAD' }).format(n);
@@ -358,6 +380,14 @@ export function initAdminConsole(
 
 	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
 		setStatusGlobal(strings, msg, kind);
+	}
+
+	function setPaymentSubmitLoading(loading: boolean) {
+		const form = el<HTMLFormElement>('#admin-payment-form');
+		if (form) form.setAttribute('aria-busy', loading ? 'true' : 'false');
+		if (!paymentSubmitBtn) return;
+		paymentSubmitBtn.classList.toggle('is-loading', loading);
+		paymentSubmitBtn.toggleAttribute('disabled', loading);
 	}
 
 	function setPendingBadge(count: number) {
@@ -505,6 +535,7 @@ export function initAdminConsole(
 
 	el<HTMLFormElement>('#admin-payment-form')?.addEventListener('submit', async (e) => {
 		e.preventDefault();
+		if (paymentSubmitBtn?.disabled) return;
 		const form = e.target as HTMLFormElement;
 		const fd = new FormData(form);
 		const amount = parseFloat(String(fd.get('amount') ?? ''));
@@ -518,26 +549,34 @@ export function initAdminConsole(
 			setStatus(t(strings, 'adminErrorGeneric'), 'error');
 			return;
 		}
+		setPaymentSubmitLoading(true);
 		setStatus(t(strings, 'adminLoading'));
-		const { ok, data } = await fetchJson<{ error?: string }>(`/api/admin/memberships/${encodeURIComponent(mid)}/record-payment`, {
-			method: 'POST',
-			body: JSON.stringify({
-				amount,
-				method,
-				date: date || undefined,
-				notes: notes || undefined,
-				...(reference ? { reference } : {}),
-			}),
-		});
-		if (!ok) {
-			setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
-			return;
+		try {
+			const { ok, data } = await fetchJson<{ error?: string }>(
+				`/api/admin/memberships/${encodeURIComponent(mid)}/record-payment`,
+				{
+					method: 'POST',
+					body: JSON.stringify({
+						amount,
+						method,
+						date: date || undefined,
+						notes: notes || undefined,
+						...(reference ? { reference } : {}),
+					}),
+				},
+			);
+			if (!ok) {
+				setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
+				return;
+			}
+			paymentDialog?.close();
+			form.reset();
+			setStatus(t(strings, 'adminPaymentSaved'), 'success');
+			await loadPending();
+			void loadOverview();
+		} finally {
+			setPaymentSubmitLoading(false);
 		}
-		paymentDialog?.close();
-		form.reset();
-		setStatus(t(strings, 'adminPaymentSaved'), 'success');
-		await loadPending();
-		void loadOverview();
 	});
 
 	el<HTMLButtonElement>('#admin-payment-cancel')?.addEventListener('click', () => paymentDialog?.close());
@@ -742,7 +781,7 @@ export function initAdminConsole(
 		secondary_last_name?: string | null;
 	}): string {
 		const href = `${adminMembersBase}/${encodeURIComponent(mem.id)}`;
-		const name = formatMemberJoinedNames(mem);
+		const name = primaryName(mem);
 		const rowLabel = `${t(strings, 'adminMemberOpen')}: ${name}`;
 		return ` data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}"`;
 	}
@@ -889,18 +928,7 @@ export function initAdminConsole(
 		pendingBody.innerHTML = rows
 			.map((m) => {
 				const mem = m.members;
-				const nameTd =
-					mem ?
-						formatAdminMemberNameTd(
-							{
-								first_name: mem.first_name,
-								last_name: mem.last_name,
-								secondary_first_name: mem.secondary_first_name,
-								secondary_last_name: mem.secondary_last_name,
-							},
-							escapeHtml,
-						)
-					:	`<td>—</td>`;
+				const nameTd = mem ? `<td class="adminMemberNameCell">${escapeHtml(primaryName(mem))}</td>` : `<td>—</td>`;
 				const email = mem?.primary_email ?? '—';
 				const tier =
 					m.tier === 'voting' ? tierLabels.voting : m.tier === 'associate' ? tierLabels.associate : m.tier;
@@ -989,7 +1017,7 @@ export function initAdminConsole(
 	async function loadMembers() {
 		const body = el<HTMLTableSectionElement>('#admin-members-body');
 		if (!body) return;
-		body.innerHTML = `<tr><td colspan="4">${t(strings, 'adminLoading')}</td></tr>`;
+		body.innerHTML = `<tr><td colspan="8">${t(strings, 'adminLoading')}</td></tr>`;
 		const params = buildMembersListParams();
 		const { ok, data } = await fetchJson<{
 			members?: MemberRow[];
@@ -999,7 +1027,7 @@ export function initAdminConsole(
 			error?: string;
 		}>(`/api/admin/members?${params}`);
 		if (!ok || !data.members) {
-			body.innerHTML = `<tr><td colspan="4">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
+			body.innerHTML = `<tr><td colspan="8">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
 			return;
 		}
 		const total = data.total ?? 0;
@@ -1012,18 +1040,26 @@ export function initAdminConsole(
 
 		body.innerHTML = data.members
 			.map((m) => {
-				const nameTd = formatAdminMemberNameTd(m, escapeHtml);
-				const email = m.primary_email ?? '—';
+				const primaryNameTd = `<td class="adminMemberNameCell">${escapeHtml(primaryName(m))}</td>`;
+				const primaryEmailTd = `<td>${escapeHtml(m.primary_email ?? '—')}</td>`;
+				const secondaryNameTd = `<td class="adminMemberNameCell">${escapeHtml(secondaryName(m))}</td>`;
+				const secondaryEmailTd = `<td>${escapeHtml(m.secondary_email ?? '—')}</td>`;
+				const lakeCivicTd = `<td>${escapeHtml(m.lake_civic_number ?? '—')}</td>`;
+				const lakeStreetTd = `<td>${escapeHtml(m.lake_street_name ?? '—')}</td>`;
 				const rawTier = m.membership_tier_for_year;
 				let tierCell = '';
 				if (rawTier === 'voting') tierCell = tierLabels.voting;
 				else if (rawTier === 'associate') tierCell = tierLabels.associate;
 				else if (rawTier) tierCell = rawTier;
 				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;
-				const rowLabel = `${t(strings, 'adminMemberOpen')}: ${formatMemberJoinedNames(m)}`;
+				const rowLabel = `${t(strings, 'adminMemberOpen')}: ${primaryName(m)}`;
 				return `<tr data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}">
-          ${nameTd}
-          <td>${escapeHtml(email)}</td>
+          ${primaryNameTd}
+          ${primaryEmailTd}
+          ${secondaryNameTd}
+          ${secondaryEmailTd}
+          ${lakeCivicTd}
+          ${lakeStreetTd}
           <td>${escapeHtml(tierCell)}</td>
           <td>${escapeHtml(formatAdminLocaleDate(m.created_at))}</td>
         </tr>`;
@@ -1035,7 +1071,7 @@ export function initAdminConsole(
 	async function loadNewMembers() {
 		const body = el<HTMLTableSectionElement>('#admin-new-members-body');
 		if (!body) return;
-		body.innerHTML = `<tr><td colspan="4">${t(strings, 'adminLoading')}</td></tr>`;
+		body.innerHTML = `<tr><td colspan="8">${t(strings, 'adminLoading')}</td></tr>`;
 		const params = buildNewMembersListParams();
 		const { ok, data } = await fetchJson<{
 			members?: MemberRow[];
@@ -1045,7 +1081,7 @@ export function initAdminConsole(
 			error?: string;
 		}>(`/api/admin/members?${params}`);
 		if (!ok || !data.members) {
-			body.innerHTML = `<tr><td colspan="4">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
+			body.innerHTML = `<tr><td colspan="8">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
 			return;
 		}
 		const total = data.total ?? 0;
@@ -1057,24 +1093,32 @@ export function initAdminConsole(
 		}
 
 		if (data.members.length === 0) {
-			body.innerHTML = `<tr><td colspan="4">${t(strings, 'adminNewMembersEmpty')}</td></tr>`;
+			body.innerHTML = `<tr><td colspan="8">${t(strings, 'adminNewMembersEmpty')}</td></tr>`;
 			return;
 		}
 
 		body.innerHTML = data.members
 			.map((m) => {
-				const nameTd = formatAdminMemberNameTd(m, escapeHtml);
-				const email = m.primary_email ?? '—';
+				const primaryNameTd = `<td class="adminMemberNameCell">${escapeHtml(primaryName(m))}</td>`;
+				const primaryEmailTd = `<td>${escapeHtml(m.primary_email ?? '—')}</td>`;
+				const secondaryNameTd = `<td class="adminMemberNameCell">${escapeHtml(secondaryName(m))}</td>`;
+				const secondaryEmailTd = `<td>${escapeHtml(m.secondary_email ?? '—')}</td>`;
+				const lakeCivicTd = `<td>${escapeHtml(m.lake_civic_number ?? '—')}</td>`;
+				const lakeStreetTd = `<td>${escapeHtml(m.lake_street_name ?? '—')}</td>`;
 				const rawTier = m.membership_tier_for_year;
 				let tierCell = '';
 				if (rawTier === 'voting') tierCell = tierLabels.voting;
 				else if (rawTier === 'associate') tierCell = tierLabels.associate;
 				else if (rawTier) tierCell = rawTier;
 				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;
-				const rowLabel = `${t(strings, 'adminMemberOpen')}: ${formatMemberJoinedNames(m)}`;
+				const rowLabel = `${t(strings, 'adminMemberOpen')}: ${primaryName(m)}`;
 				return `<tr data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}">
-          ${nameTd}
-          <td>${escapeHtml(email)}</td>
+          ${primaryNameTd}
+          ${primaryEmailTd}
+          ${secondaryNameTd}
+          ${secondaryEmailTd}
+          ${lakeCivicTd}
+          ${lakeStreetTd}
           <td>${escapeHtml(tierCell)}</td>
           <td>${escapeHtml(formatAdminLocaleDate(m.created_at))}</td>
         </tr>`;

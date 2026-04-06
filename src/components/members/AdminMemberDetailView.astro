@@ -142,7 +142,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
         <p id="admin-detail-status" class="adminStatus" aria-live="polite"></p>
 
         <div class="adminPanel adminCard adminPanel--profile">
-          <form id="admin-member-detail-form" class="adminMemberForm">
+          <form id="admin-member-detail-form" class="adminMemberForm" aria-busy="false">
             <div class="adminProfileSections">
               <fieldset class="adminProfileSection">
                 <legend class="adminProfileLegend">{t.profileSectionPrimaryMember}</legend>
@@ -188,7 +188,10 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
               </div>
             </div>
             <div class="adminFormActions">
-              <button type="submit" class="adminBtn adminBtn--solid">{t.adminSaveMemberBtn}</button>
+              <button type="submit" class="adminBtn adminBtn--solid adminBtn--submit" id="admin-member-save">
+                <span class="adminBtnSpinner" aria-hidden="true"></span>
+                <span class="adminBtnLabel">{t.adminSaveMemberBtn}</span>
+              </button>
               <button type="button" class="adminBtn adminBtn--ghost" id="admin-promote-btn" title={t.adminPromoteAdminTitle}>
                 {t.adminPromoteBtn}
               </button>
@@ -204,7 +207,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     </div>
 
     <dialog id="admin-payment-dialog" class="adminDialog">
-      <form id="admin-payment-form" class="adminPaymentForm">
+      <form id="admin-payment-form" class="adminPaymentForm" aria-busy="false">
         <h3>{t.adminPaymentHeading}</h3>
         <input type="hidden" id="admin-payment-membership-id" value="" />
         <label>
@@ -236,14 +239,17 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
           <p class="adminHint adminPaymentFieldHint">{t.adminPaymentNotesVisibleHint}</p>
         </label>
         <div class="adminDialogActions">
-          <button type="submit" class="adminBtn adminBtn--solid" value="default">{t.adminSubmitPaymentBtn}</button>
+          <button type="submit" class="adminBtn adminBtn--solid adminBtn--submit" id="admin-payment-submit" value="default">
+            <span class="adminBtnSpinner" aria-hidden="true"></span>
+            <span class="adminBtnLabel">{t.adminSubmitPaymentBtn}</span>
+          </button>
           <button type="button" class="adminBtn adminBtn--ghost" id="admin-payment-cancel">{t.checkoutModalCancel}</button>
         </div>
       </form>
     </dialog>
 
     <dialog id="admin-add-membership-dialog" class="adminDialog">
-      <form id="admin-add-membership-form" class="adminPaymentForm">
+      <form id="admin-add-membership-form" class="adminPaymentForm" aria-busy="false">
         <h3>{t.adminAddMembershipDialogTitle}</h3>
         <label>
           {t.adminMembershipYearLabel}
@@ -301,7 +307,10 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
           </label>
         </div>
         <div class="adminDialogActions">
-          <button type="submit" class="adminBtn adminBtn--solid">{t.adminAddMembershipSubmit}</button>
+          <button type="submit" class="adminBtn adminBtn--solid adminBtn--submit" id="admin-add-membership-submit">
+            <span class="adminBtnSpinner" aria-hidden="true"></span>
+            <span class="adminBtnLabel">{t.adminAddMembershipSubmit}</span>
+          </button>
           <button type="button" class="adminBtn adminBtn--ghost" id="admin-add-membership-cancel">{t.checkoutModalCancel}</button>
         </div>
       </form>
@@ -1105,6 +1114,40 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     font-size: 0.72rem;
     font-weight: 600;
     white-space: nowrap;
+  }
+
+  .adminPage :global(.adminBtn--submit) {
+    gap: 0.55rem;
+  }
+
+  .adminPage :global(.adminBtnSpinner) {
+    display: none;
+    width: 1.05rem;
+    height: 1.05rem;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    box-sizing: border-box;
+  }
+
+  .adminPage :global(.adminBtn--submit.is-loading .adminBtnSpinner) {
+    display: inline-block;
+    animation: adminBtnSpin 0.65s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .adminPage :global(.adminBtn--submit.is-loading .adminBtnSpinner) {
+      animation: none;
+      border-color: rgba(255, 255, 255, 0.5);
+      border-top-color: rgba(255, 255, 255, 0.85);
+    }
+  }
+
+  @keyframes adminBtnSpin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .adminDetailMembershipList :global(.adminDetailTdActions) {

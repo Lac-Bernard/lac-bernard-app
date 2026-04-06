@@ -193,8 +193,12 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
             <table class="adminTable adminTable--members">
               <thead>
                 <tr>
-                  <th>{t.adminTableName}</th>
-                  <th>{t.adminTableEmail}</th>
+                  <th>{t.adminTablePrimaryName}</th>
+                  <th>{t.adminTablePrimaryEmail}</th>
+                  <th>{t.adminTableSecondaryName}</th>
+                  <th>{t.adminTableSecondaryEmail}</th>
+                  <th>{t.adminTableLakeCivic}</th>
+                  <th>{t.adminTableLakeStreet}</th>
                   <th>{t.adminTableTier}</th>
                   <th>{t.adminTableCreated}</th>
                 </tr>
@@ -283,8 +287,12 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
             <table class="adminTable adminTable--members">
               <thead>
                 <tr>
-                  <th>{t.adminTableName}</th>
-                  <th>{t.adminTableEmail}</th>
+                  <th>{t.adminTablePrimaryName}</th>
+                  <th>{t.adminTablePrimaryEmail}</th>
+                  <th>{t.adminTableSecondaryName}</th>
+                  <th>{t.adminTableSecondaryEmail}</th>
+                  <th>{t.adminTableLakeCivic}</th>
+                  <th>{t.adminTableLakeStreet}</th>
                   <th>{t.adminTableTier}</th>
                   <th>{t.adminTableCreated}</th>
                 </tr>
@@ -324,7 +332,7 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
     </div>
 
     <dialog id="admin-payment-dialog" class="adminDialog">
-      <form id="admin-payment-form" class="adminPaymentForm">
+      <form id="admin-payment-form" class="adminPaymentForm" aria-busy="false">
         <h3>{t.adminPaymentHeading}</h3>
         <input type="hidden" id="admin-payment-membership-id" value="" />
         <input type="hidden" id="admin-payment-tier" value="" />
@@ -359,7 +367,10 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
           <p class="adminHint adminPaymentFieldHint">{t.adminPaymentNotesVisibleHint}</p>
         </label>
         <div class="adminDialogActions">
-          <button type="submit" class="adminBtn adminBtn--solid" value="default">{t.adminSubmitPaymentBtn}</button>
+          <button type="submit" class="adminBtn adminBtn--solid adminBtn--submit" id="admin-payment-submit" value="default">
+            <span class="adminBtnSpinner" aria-hidden="true"></span>
+            <span class="adminBtnLabel">{t.adminSubmitPaymentBtn}</span>
+          </button>
           <button type="button" class="adminBtn adminBtn--ghost" id="admin-payment-cancel">{t.checkoutModalCancel}</button>
         </div>
       </form>
@@ -1195,5 +1206,39 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
 
   .adminPage :global(.adminBtn--link:hover) {
     color: var(--admin-text);
+  }
+
+  .adminPage :global(.adminBtn--submit) {
+    gap: 0.55rem;
+  }
+
+  .adminPage :global(.adminBtnSpinner) {
+    display: none;
+    width: 1.05rem;
+    height: 1.05rem;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    box-sizing: border-box;
+  }
+
+  .adminPage :global(.adminBtn--submit.is-loading .adminBtnSpinner) {
+    display: inline-block;
+    animation: adminBtnSpin 0.65s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .adminPage :global(.adminBtn--submit.is-loading .adminBtnSpinner) {
+      animation: none;
+      border-color: rgba(255, 255, 255, 0.5);
+      border-top-color: rgba(255, 255, 255, 0.85);
+    }
+  }
+
+  @keyframes adminBtnSpin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 </style>

@@ -33,6 +33,7 @@ export function initAdminMemberNew(
 ) {
 	const statusEl = el<HTMLElement>('#admin-new-member-status');
 	const form = el<HTMLFormElement>('#admin-new-member-form');
+	const submitBtn = el<HTMLButtonElement>('#admin-new-member-submit');
 	const createMembership = el<HTMLInputElement>('#admin-new-member-create-membership');
 	const paidBlock = el<HTMLElement>('#admin-new-member-paid-fields');
 
@@ -47,6 +48,13 @@ export function initAdminMemberNew(
 		statusEl.textContent = msg;
 		statusEl.dataset.error = kind === 'error' ? '1' : '';
 		statusEl.dataset.success = kind === 'success' ? '1' : '';
+	}
+
+	function setSubmitLoading(loading: boolean) {
+		if (form) form.setAttribute('aria-busy', loading ? 'true' : 'false');
+		if (!submitBtn) return;
+		submitBtn.classList.toggle('is-loading', loading);
+		submitBtn.toggleAttribute('disabled', loading);
 	}
 
 	/** Toggle inner membership fields (not the “add membership” checkbox). When off, disable inputs so `required` does not block submit. */
@@ -97,6 +105,7 @@ export function initAdminMemberNew(
 	form?.addEventListener('submit', async (e) => {
 		e.preventDefault();
 		if (!form) return;
+		if (submitBtn?.disabled) return;
 		const fd = new FormData(form);
 		const body: Record<string, unknown> = {
 			first_name: fd.get('first_name') || null,
@@ -113,63 +122,69 @@ export function initAdminMemberNew(
 			primary_email: fd.get('primary_email') || null,
 		};
 
+		setSubmitLoading(true);
 		setStatus(t(strings, 'adminLoading'));
-		const { ok, data } = await fetchJson<{ member?: { id: string }; error?: string }>('/api/admin/members', {
-			method: 'POST',
-			body: JSON.stringify(body),
-		});
-		if (!ok || !data.member?.id) {
-			setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
-			return;
-		}
-
-		const memberId = data.member.id;
-		const addMs = fd.get('create_membership') === 'on';
-		if (addMs) {
-			const tier = String(fd.get('membership_tier') ?? '');
-			const initial = String(fd.get('membership_initial') ?? '');
-			const year = parseInt(String(fd.get('membership_year') ?? calendarYear), 10);
-			let payment: Record<string, unknown> | undefined;
-			if (initial === 'active_with_payment') {
-				const amount = parseFloat(String(fd.get('payment_amount') ?? ''));
-				const method = String(fd.get('payment_method') ?? '').trim();
-				if (!isValidManualPaymentAmount(amount)) {
-					setStatus(t(strings, 'adminErrorGeneric'), 'error');
-					return;
-				}
-				if (!MANUAL_PAYMENT_METHODS.has(method)) {
-					setStatus(t(strings, 'adminErrorGeneric'), 'error');
-					return;
-				}
-				const date = String(fd.get('payment_date') ?? '').trim();
-				const notes = String(fd.get('payment_notes') ?? '').trim();
-				payment = {
-					amount,
-					method,
-					...(date ? { date } : {}),
-					...(notes ? { notes } : {}),
-				};
-			}
-			const msRes = await fetchJson<{ error?: string }>(
-				`/api/admin/members/${encodeURIComponent(memberId)}/memberships`,
-				{
-					method: 'POST',
-					body: JSON.stringify({
-						year,
-						tier,
-						initial,
-						...(payment ? { payment } : {}),
-					}),
-				},
-			);
-			if (!msRes.ok) {
-				const err = (msRes.data as { error?: string })?.error;
-				setStatus(createErrorMessage(err), 'error');
+		try {
+			const { ok, data } = await fetchJson<{ member?: { id: string }; error?: string }>('/api/admin/members', {
+				method: 'POST',
+				body: JSON.stringify(body),
+			});
+			if (!ok || !data.member?.id) {
+				setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
 				return;
 			}
-		}
 
-		setStatus('', 'success');
-		window.location.href = `${adminMemberDetailBase}/${encodeURIComponent(memberId)}`;
+			const memberId = data.member.id;
+			const addMs = fd.get('create_membership') === 'on';
+			if (addMs) {
+				const tier = String(fd.get('membership_tier') ?? '');
+				const initial = String(fd.get('membership_initial') ?? '');
+				const year = parseInt(String(fd.get('membership_year') ?? calendarYear), 10);
+				let payment: Record<string, unknown> | undefined;
+				if (initial === 'active_with_payment') {
+					const amount = parseFloat(String(fd.get('payment_amount') ?? ''));
+					const method = String(fd.get('payment_method') ?? '').trim();
+					if (!isValidManualPaymentAmount(amount)) {
+						setStatus(t(strings, 'adminErrorGeneric'), 'error');
+						return;
+					}
+					if (!MANUAL_PAYMENT_METHODS.has(method)) {
+						setStatus(t(strings, 'adminErrorGeneric'), 'error');
+						return;
+					}
+					const date = String(fd.get('payment_date') ?? '').trim();
+					const notes = String(fd.get('payment_notes') ?? '').trim();
+					payment = {
+						amount,
+						method,
+						...(date ? { date } : {}),
+						...(notes ? { notes } : {}),
+					};
+				}
+				const msRes = await fetchJson<{ error?: string }>(
+					`/api/admin/members/${encodeURIComponent(memberId)}/memberships`,
+					{
+						method: 'POST',
+						body: JSON.stringify({
+							year,
+							tier,
+							initial,
+							...(payment ? { payment } : {}),
+						}),
+					},
+				);
+				if (!msRes.ok) {
+					const err = (msRes.data as { error?: string })?.error;
+					setStatus(createErrorMessage(err), 'error');
+					return;
+				}
+			}
+
+			setStatus('', 'success');
+			window.location.href = `${adminMemberDetailBase}/${encodeURIComponent(memberId)}`;
+		} finally {
+			// In the success case we leave the page; otherwise re-enable.
+			setSubmitLoading(false);
+		}
 	});
 }
