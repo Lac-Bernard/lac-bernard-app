@@ -18,11 +18,6 @@ export type MemberProfile = {
 	lake_address_source: string | null;
 	lake_google_place_id: string | null;
 	lake_formatted_address: string | null;
-	primary_address: string | null;
-	primary_city: string | null;
-	primary_province: string | null;
-	primary_country: string | null;
-	primary_postal_code: string | null;
 	email_opt_in: boolean;
 };
 
@@ -47,11 +42,6 @@ function normalizeMember(row: {
 	lake_address_source: string | null;
 	lake_google_place_id: string | null;
 	lake_formatted_address: string | null;
-	primary_address: string | null;
-	primary_city: string | null;
-	primary_province: string | null;
-	primary_country: string | null;
-	primary_postal_code: string | null;
 	email_opt_in: boolean | null;
 }): MemberProfile {
 	return {
@@ -76,7 +66,7 @@ export async function findMemberByAuthEmail(
 	const selectCols =
 		'id, first_name, secondary_first_name, last_name, secondary_last_name, primary_email, secondary_email, user_id, ' +
 		'primary_phone, secondary_phone, lake_civic_number, lake_street_name, lake_address_source, lake_google_place_id, lake_formatted_address, ' +
-		'primary_address, primary_city, primary_province, primary_country, primary_postal_code, email_opt_in';
+		'email_opt_in';
 
 	const { data: userData } = await supabase.auth.getUser();
 	const uid = userData.user?.id;

@@ -35,11 +35,6 @@ type MemberRow = {
 	secondary_phone: string | null;
 	lake_civic_number: string | null;
 	lake_street_name: string | null;
-	primary_address: string | null;
-	primary_city: string | null;
-	primary_province: string | null;
-	primary_country: string | null;
-	primary_postal_code: string | null;
 	email_opt_in: boolean;
 	notes: string | null;
 	status: string;

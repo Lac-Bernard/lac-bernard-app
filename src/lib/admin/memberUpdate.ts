@@ -104,11 +104,6 @@ export function adminPatchToRow(p: AdminMemberPatch): Record<string, unknown> {
 		lake_address_source: p.lake_address_source,
 		lake_google_place_id: p.lake_google_place_id,
 		lake_formatted_address: p.lake_formatted_address,
-		primary_address: p.primary_address,
-		primary_city: p.primary_city,
-		primary_province: p.primary_province,
-		primary_country: p.primary_country,
-		primary_postal_code: p.primary_postal_code,
 		email_opt_in: p.email_opt_in,
 	};
 	if (Object.prototype.hasOwnProperty.call(p, 'notes')) row.notes = p.notes ?? null;
