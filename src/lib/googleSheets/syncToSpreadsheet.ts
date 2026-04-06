@@ -1,5 +1,5 @@
 import { google } from 'googleapis';
-import { formatMemberJoinedNames } from '../members/memberDisplayName';
+import { formatMemberPrimaryName } from '../members/memberDisplayName';
 import { getGoogleSheetsEnv } from '../supabase/env';
 import { createSupabaseServiceRoleClient } from '../supabase/service';
 
@@ -23,11 +23,6 @@ type MemberRow = {
 	lake_address_source: string | null;
 	lake_google_place_id: string | null;
 	lake_formatted_address: string | null;
-	primary_address: string | null;
-	primary_city: string | null;
-	primary_province: string | null;
-	primary_country: string | null;
-	primary_postal_code: string | null;
 	email_opt_in: boolean;
 	notes: string | null;
 	status: string;
@@ -75,11 +70,6 @@ const MEMBER_COLUMNS: (keyof MemberRow)[] = [
 	'lake_address_source',
 	'lake_google_place_id',
 	'lake_formatted_address',
-	'primary_address',
-	'primary_city',
-	'primary_province',
-	'primary_country',
-	'primary_postal_code',
 	'email_opt_in',
 	'notes',
 	'status',
@@ -131,7 +121,7 @@ function memberName(
 	member: Pick<MemberRow, 'first_name' | 'last_name' | 'secondary_first_name' | 'secondary_last_name'> | null,
 ): string {
 	if (!member) return '';
-	return formatMemberJoinedNames(member);
+	return formatMemberPrimaryName(member);
 }
 
 async function createSheetsClient() {

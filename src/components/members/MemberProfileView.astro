@@ -36,11 +36,6 @@ const lakeSource = isEdit ? (member?.lake_address_source ?? null) : null;
 const lakePlaceId = isEdit ? v(member?.lake_google_place_id) : '';
 const lakeFormatted = isEdit ? v(member?.lake_formatted_address) : '';
 const lakeLocale = locale === 'fr' ? 'fr' : 'en';
-const addr = isEdit ? v(member?.primary_address) : '';
-const city = isEdit ? v(member?.primary_city) : '';
-const province = isEdit ? v(member?.primary_province) : '';
-const country = isEdit ? v(member?.primary_country) : '';
-const postal = isEdit ? v(member?.primary_postal_code) : '';
 const emailOptIn = isEdit ? Boolean(member?.email_opt_in) : true;
 const hasSecondaryContact = Boolean(secondaryFirstName || secondaryLastName || secondaryEmail || secondaryPhone);
 /** Hide manual link in HTML until JS runs when a lake address already exists (avoids flash on edit). */
@@ -371,11 +366,6 @@ const lakeProfileInitJson = JSON.stringify({
 		mode,
 		nextUrl,
 		initialHasSecondaryContact: hasSecondaryContact,
-		preservedPrimaryAddress: addr,
-		preservedPrimaryCity: city,
-		preservedPrimaryProvince: province,
-		preservedPrimaryCountry: country,
-		preservedPrimaryPostalCode: postal,
 		errNetwork: t.errorNetwork,
 		errFirstName: t.profileErrorFirstName,
 		errLastName: t.profileErrorLastName,
@@ -506,11 +496,6 @@ const lakeProfileInitJson = JSON.stringify({
 			lake_address_source: fd.get('lake_address_source') || null,
 			lake_google_place_id: fd.get('lake_google_place_id') || null,
 			lake_formatted_address: fd.get('lake_formatted_address') || null,
-			primary_address: preservedPrimaryAddress || null,
-			primary_city: preservedPrimaryCity || null,
-			primary_province: preservedPrimaryProvince || null,
-			primary_country: preservedPrimaryCountry || null,
-			primary_postal_code: preservedPrimaryPostalCode || null,
 			email_opt_in: fd.get('email_opt_in') === 'on',
 		};
 	}

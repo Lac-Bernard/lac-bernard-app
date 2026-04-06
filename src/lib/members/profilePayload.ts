@@ -9,11 +9,6 @@ export type MemberProfilePayload = {
 	secondary_phone: string | null;
 	lake_civic_number: string | null;
 	lake_street_name: string | null;
-	primary_address: string | null;
-	primary_city: string | null;
-	primary_province: string | null;
-	primary_country: string | null;
-	primary_postal_code: string | null;
 	email_opt_in: boolean;
 	/** How lake civic/street were captured: Google Places vs manual (null = legacy / unspecified). */
 	lake_address_source: 'places' | 'manual' | null;
@@ -97,7 +92,6 @@ export function parseMemberProfilePayload(body: unknown): { ok: true; value: Mem
 	if (rawSecondaryPhone && !secondaryPhone) {
 		return { ok: false, error: 'invalid_secondary_phone' };
 	}
-	const postalCode = normalizePostalCode(o.primary_postal_code);
 	const lakeCivicNumber = trimOrNull(o.lake_civic_number);
 	const lakeStreetName = trimOrNull(o.lake_street_name);
 	if (Boolean(lakeCivicNumber) !== Boolean(lakeStreetName)) {
@@ -138,11 +132,6 @@ export function parseMemberProfilePayload(body: unknown): { ok: true; value: Mem
 			secondary_phone: secondaryPhone,
 			lake_civic_number: lakeCivicNumber,
 			lake_street_name: lakeStreetName,
-			primary_address: trimOrNull(o.primary_address),
-			primary_city: trimOrNull(o.primary_city),
-			primary_province: trimOrNull(o.primary_province),
-			primary_country: trimOrNull(o.primary_country),
-			primary_postal_code: postalCode,
 			email_opt_in: bool(o.email_opt_in, false),
 			lake_address_source: lakeSource,
 			lake_google_place_id: lakePlaceId,
@@ -167,11 +156,6 @@ export function payloadToRow(
 		secondary_phone: p.secondary_phone,
 		lake_civic_number: p.lake_civic_number,
 		lake_street_name: p.lake_street_name,
-		primary_address: p.primary_address,
-		primary_city: p.primary_city,
-		primary_province: p.primary_province,
-		primary_country: p.primary_country,
-		primary_postal_code: p.primary_postal_code,
 		email_opt_in: p.email_opt_in,
 		lake_address_source: p.lake_address_source,
 		lake_google_place_id: p.lake_google_place_id,
@@ -194,11 +178,6 @@ export function payloadToUpdate(
 		secondary_phone: p.secondary_phone,
 		lake_civic_number: p.lake_civic_number,
 		lake_street_name: p.lake_street_name,
-		primary_address: p.primary_address,
-		primary_city: p.primary_city,
-		primary_province: p.primary_province,
-		primary_country: p.primary_country,
-		primary_postal_code: p.primary_postal_code,
 		email_opt_in: p.email_opt_in,
 		lake_address_source: p.lake_address_source,
 		lake_google_place_id: p.lake_google_place_id,

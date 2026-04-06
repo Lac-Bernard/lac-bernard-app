@@ -23,11 +23,6 @@ type MemberRow = {
 	lake_address_source: string | null;
 	lake_google_place_id: string | null;
 	lake_formatted_address: string | null;
-	primary_address: string | null;
-	primary_city: string | null;
-	primary_province: string | null;
-	primary_country: string | null;
-	primary_postal_code: string | null;
 	email_opt_in: boolean;
 	notes: string | null;
 	status: string;
@@ -553,11 +548,6 @@ export function initAdminMemberDetail(
 			lake_address_source: lakeSource,
 			lake_google_place_id: lakePlaceId,
 			lake_formatted_address: lakeFormatted,
-			primary_address: currentMember?.primary_address ?? null,
-			primary_city: currentMember?.primary_city ?? null,
-			primary_province: currentMember?.primary_province ?? null,
-			primary_country: currentMember?.primary_country ?? null,
-			primary_postal_code: currentMember?.primary_postal_code ?? null,
 			email_opt_in: fd.get('email_opt_in') === 'on',
 			notes: fd.get('notes') ?? null,
 			secondary_email: fd.get('secondary_email') || null,
