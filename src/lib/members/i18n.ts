@@ -166,7 +166,10 @@ export const memberCopy: Record<
 		adminDateLabel: string;
 		/** External reference stored in payments.payment_id (e-transfer, cheque #, Stripe id if entered manually) */
 		adminPaymentReferenceLabel: string;
+		/** Helper under reference / notes on record-payment dialog */
+		adminPaymentReferenceVisibleHint: string;
 		adminNotesLabel: string;
+		adminPaymentNotesVisibleHint: string;
 		adminSubmitPaymentBtn: string;
 		adminPromoteBtn: string;
 		adminPromoteSuccess: string;
@@ -265,6 +268,39 @@ export const memberCopy: Record<
 		statusActivePrepaidTeaser: string;
 		/** Shown under voting tier when active — line above the lake civic address */
 		statusActiveGeneralVoteLabel: string;
+		/** Active card: payment history subsection */
+		memberPaymentsSectionTitle: string;
+		memberPaymentsSectionLead: string;
+		memberPaymentsColDate: string;
+		memberPaymentsColMethod: string;
+		memberPaymentsColTotal: string;
+		memberPaymentsColMembership: string;
+		memberPaymentsColDonation: string;
+		memberPaymentsColReference: string;
+		memberPaymentsColNote: string;
+		/** Admin-entered payment notes (payments.notes), distinct from donation note */
+		memberPaymentsColRecordNote: string;
+		memberPaymentsEmpty: string;
+		memberPaymentMethodStripe: string;
+		memberPaymentMethodEtransfer: string;
+		memberPaymentMethodCheque: string;
+		memberPaymentMethodCash: string;
+		memberPaymentMethodUnknown: string;
+		/** Active card: compact status chip */
+		memberActiveBadge: string;
+		memberActiveSnapshotHeading: string;
+		memberActiveSnapshotTypeLabel: string;
+		memberActiveSnapshotFeeLabel: string;
+		/** One-line stats above payment list; {{count}}, {{donation}} */
+		memberActivePaymentOverview: string;
+		/** When no donation amounts this year; {{count}} */
+		memberActivePaymentOverviewFeesOnly: string;
+		memberActivePaymentItemTotal: string;
+		memberActivePaymentSplitMembership: string;
+		memberActivePaymentSplitDonation: string;
+		memberActivePaymentReference: string;
+		/** Expandable block for payment reference / internal record note */
+		memberPaymentSeeDetails: string;
 		statusInactiveTitle: string;
 		statusInactiveLead: string;
 		statusInactiveStep1: string;
@@ -505,7 +541,9 @@ export const memberCopy: Record<
 		adminMethodUnknown: 'Unknown',
 		adminDateLabel: 'Payment date',
 		adminPaymentReferenceLabel: 'Reference (optional) — e-transfer, cheque #, etc.',
+		adminPaymentReferenceVisibleHint: 'Visible to the member on their account.',
 		adminNotesLabel: 'Notes (optional)',
+		adminPaymentNotesVisibleHint: 'Visible to the member on their account.',
 		adminSubmitPaymentBtn: 'Save payment',
 		adminPromoteBtn: 'Grant admin role',
 		adminPromoteSuccess: 'Admin role granted. They may need to sign out and back in.',
@@ -617,6 +655,33 @@ export const memberCopy: Record<
 		statusActivePrepaidTeaser:
 			'You also have {{count}} prepaid year(s) on file—see the section below.',
 		statusActiveGeneralVoteLabel: 'Voting membership for this lake address:',
+		memberPaymentsSectionTitle: 'Payment history',
+		memberPaymentsSectionLead: 'Receipts for this membership year—including any optional donation you added.',
+		memberPaymentsColDate: 'Date',
+		memberPaymentsColMethod: 'Method',
+		memberPaymentsColTotal: 'Total',
+		memberPaymentsColMembership: 'Membership',
+		memberPaymentsColDonation: 'Donation',
+		memberPaymentsColReference: 'Reference',
+		memberPaymentsColNote: 'Note',
+		memberPaymentsColRecordNote: 'Record note',
+		memberPaymentsEmpty: 'No payments are listed for this year yet.',
+		memberPaymentMethodStripe: 'Card',
+		memberPaymentMethodEtransfer: 'INTERAC e-Transfer',
+		memberPaymentMethodCheque: 'Cheque',
+		memberPaymentMethodCash: 'Cash',
+		memberPaymentMethodUnknown: 'Other',
+		memberActiveBadge: 'Registered',
+		memberActiveSnapshotHeading: 'Membership details',
+		memberActiveSnapshotTypeLabel: 'Type',
+		memberActiveSnapshotFeeLabel: 'Annual fee',
+		memberActivePaymentOverview: '{{count}} payments on file · {{donation}} in donations',
+		memberActivePaymentOverviewFeesOnly: '{{count}} payment(s) on file for this year',
+		memberActivePaymentItemTotal: 'Total',
+		memberActivePaymentSplitMembership: 'Membership',
+		memberActivePaymentSplitDonation: 'Donation',
+		memberActivePaymentReference: 'Reference',
+		memberPaymentSeeDetails: 'See details',
 		statusInactiveTitle: 'No active membership for {{year}}',
 		statusInactiveLead:
 			'Choose a membership type below, then pay with a card or pick another payment method. Voting membership needs a lake address on your profile.',
@@ -860,7 +925,9 @@ export const memberCopy: Record<
 		adminMethodUnknown: 'Inconnu',
 		adminDateLabel: 'Date du paiement',
 		adminPaymentReferenceLabel: 'Référence (facultatif) — virement, nº de chèque, etc.',
+		adminPaymentReferenceVisibleHint: 'Visible par le membre dans son compte.',
 		adminNotesLabel: 'Notes (facultatif)',
+		adminPaymentNotesVisibleHint: 'Visible par le membre dans son compte.',
 		adminSubmitPaymentBtn: 'Enregistrer le paiement',
 		adminPromoteBtn: 'Accorder le rôle admin',
 		adminPromoteSuccess: 'Rôle administrateur accordé. La personne devra peut-être se déconnecter et se reconnecter.',
@@ -973,6 +1040,33 @@ export const memberCopy: Record<
 		statusActivePrepaidTeaser:
 			'Vous avez aussi {{count}} année(s) payée(s) d’avance dans votre dossier — voir la section ci-dessous.',
 		statusActiveGeneralVoteLabel: 'Adhésion avec droit de vote pour l’adresse au lac :',
+		memberPaymentsSectionTitle: 'Historique des paiements',
+		memberPaymentsSectionLead: 'Reçus pour l’année d’adhésion en cours, y compris tout don facultatif.',
+		memberPaymentsColDate: 'Date',
+		memberPaymentsColMethod: 'Mode de paiement',
+		memberPaymentsColTotal: 'Total',
+		memberPaymentsColMembership: 'Cotisation',
+		memberPaymentsColDonation: 'Don',
+		memberPaymentsColReference: 'Référence',
+		memberPaymentsColNote: 'Note',
+		memberPaymentsColRecordNote: 'Note au dossier',
+		memberPaymentsEmpty: 'Aucun paiement n’est indiqué pour cette année pour l’instant.',
+		memberPaymentMethodStripe: 'Carte',
+		memberPaymentMethodEtransfer: 'Virement Interac',
+		memberPaymentMethodCheque: 'Chèque',
+		memberPaymentMethodCash: 'Comptant',
+		memberPaymentMethodUnknown: 'Autre',
+		memberActiveBadge: 'Inscrit',
+		memberActiveSnapshotHeading: 'Détails de l’adhésion',
+		memberActiveSnapshotTypeLabel: 'Type',
+		memberActiveSnapshotFeeLabel: 'Cotisation annuelle',
+		memberActivePaymentOverview: '{{count}} paiements au dossier · {{donation}} en dons',
+		memberActivePaymentOverviewFeesOnly: '{{count}} paiement(s) au dossier pour cette année',
+		memberActivePaymentItemTotal: 'Total',
+		memberActivePaymentSplitMembership: 'Cotisation',
+		memberActivePaymentSplitDonation: 'Don',
+		memberActivePaymentReference: 'Référence',
+		memberPaymentSeeDetails: 'Voir les détails',
 		statusInactiveTitle: 'Aucune adhésion active pour {{year}}',
 		statusInactiveLead:
 			'Choisissez un type d’adhésion ci-dessous, puis payez par carte ou choisissez un autre mode de paiement. L’adhésion avec droit de vote exige une adresse au lac dans votre profil.',

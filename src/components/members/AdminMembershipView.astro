@@ -351,10 +351,12 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
         <label>
           {t.adminPaymentReferenceLabel}
           <input type="text" name="reference" class="adminInput" autocomplete="off" maxlength="512" />
+          <p class="adminHint adminPaymentFieldHint">{t.adminPaymentReferenceVisibleHint}</p>
         </label>
         <label>
           {t.adminNotesLabel}
           <input type="text" name="notes" class="adminInput" />
+          <p class="adminHint adminPaymentFieldHint">{t.adminPaymentNotesVisibleHint}</p>
         </label>
         <div class="adminDialogActions">
           <button type="submit" class="adminBtn adminBtn--solid" value="default">{t.adminSubmitPaymentBtn}</button>
@@ -1085,6 +1087,16 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
     text-transform: none;
     letter-spacing: normal;
     font-weight: 400;
+  }
+
+  .adminPaymentForm .adminPaymentFieldHint {
+    margin-top: 0.35rem;
+    margin-bottom: 0;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 400;
+    font-size: 0.8125rem;
+    line-height: 1.4;
   }
 
   .adminPaymentSplitPreview {

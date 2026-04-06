@@ -228,10 +228,12 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
         <label>
           {t.adminPaymentReferenceLabel}
           <input type="text" name="reference" class="adminInput" autocomplete="off" maxlength="512" />
+          <p class="adminHint adminPaymentFieldHint">{t.adminPaymentReferenceVisibleHint}</p>
         </label>
         <label>
           {t.adminNotesLabel}
           <input type="text" name="notes" class="adminInput" />
+          <p class="adminHint adminPaymentFieldHint">{t.adminPaymentNotesVisibleHint}</p>
         </label>
         <div class="adminDialogActions">
           <button type="submit" class="adminBtn adminBtn--solid" value="default">{t.adminSubmitPaymentBtn}</button>
@@ -295,6 +297,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
           <label>
             {t.adminNotesLabel}
             <input type="text" name="payment_notes" class="adminInput" />
+            <p class="adminHint adminPaymentFieldHint">{t.adminPaymentNotesVisibleHint}</p>
           </label>
         </div>
         <div class="adminDialogActions">
@@ -1119,6 +1122,14 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     font-size: 0.8125rem;
     color: var(--muted);
     margin: 0;
+  }
+
+  .adminPaymentForm .adminPaymentFieldHint {
+    margin-top: 0.35rem;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 400;
+    line-height: 1.4;
   }
 
   /* Payments table: full width of card; Stripe ids wrap (injected — :global) */

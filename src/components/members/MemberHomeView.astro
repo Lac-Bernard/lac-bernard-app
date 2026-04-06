@@ -8,6 +8,7 @@ import {
 	type MemberLocale,
 } from '../../lib/members/i18n';
 import type { MemberAccountPayload } from '../../lib/members/accountData';
+import { formatMemberCad, formatMemberLocaleDate } from '../../lib/members/formatMemberDisplay';
 import { formatMemberPrimaryName } from '../../lib/members/memberDisplayName';
 import { membershipCentsForTier } from '../../lib/membership/stripeCheckout';
 
@@ -22,7 +23,17 @@ interface Props {
 const { locale, email, currentYear, accountData, checkoutFlash = null } = Astro.props;
 const t = memberCopy[locale];
 const paths = memberPaths[locale];
-const { member, currentMemberships, historicalMemberships } = accountData;
+const { member, currentMemberships, historicalMemberships, currentYearPayments } = accountData;
+
+function memberPaymentMethodLabel(method: string | null): string {
+	if (!method) return t.memberPaymentMethodUnknown;
+	if (method === 'stripe') return t.memberPaymentMethodStripe;
+	if (method === 'e-transfer') return t.memberPaymentMethodEtransfer;
+	if (method === 'cheque') return t.memberPaymentMethodCheque;
+	if (method === 'cash') return t.memberPaymentMethodCash;
+	if (method === 'unknown') return t.memberPaymentMethodUnknown;
+	return method;
+}
 
 function membershipRows(rows: typeof currentMemberships) {
 	return rows.map((row) => ({
@@ -58,10 +69,31 @@ const activeFeeCents =
 	thisYearMembership?.status === 'active'
 		? membershipCentsForTier(thisYearMembership.tier)
 		: null;
-const activeMembershipFeeCad =
-	activeFeeCents != null ? (activeFeeCents / 100).toFixed(2) : '0.00';
 
 const activeYearScope = t.statusActiveYearScope.replace('{{year}}', String(currentYear));
+
+const currentYearDonationSum = currentYearPayments.reduce((sum, p) => {
+	const d = p.donation_amount;
+	if (d == null || !Number.isFinite(d)) return sum;
+	return sum + d;
+}, 0);
+const hasCurrentYearDonationTotal = currentYearDonationSum > 0.0001;
+const activePaymentOverviewLine =
+	currentYearPayments.length === 0
+		? ''
+		: hasCurrentYearDonationTotal
+			? t.memberActivePaymentOverview
+					.replace('{{count}}', String(currentYearPayments.length))
+					.replace('{{donation}}', formatMemberCad(locale, currentYearDonationSum))
+			: t.memberActivePaymentOverviewFeesOnly.replace(
+					'{{count}}',
+					String(currentYearPayments.length),
+				);
+
+const activeTierFeeDisplay = formatMemberCad(
+	locale,
+	activeFeeCents != null ? activeFeeCents / 100 : null,
+);
 
 const showMemberActions = Boolean(member);
 const hasLakeAddress = Boolean(
@@ -197,38 +229,155 @@ const hasSecondaryContactInfo = Boolean(
             </div>
 
             {hasActiveCurrentYear ? (
-              <div class="statusCard statusCardActive" role="status">
-                <div class="statusActiveHead">
-                  <div class="statusActiveMark" aria-hidden="true">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M20 6 9 17l-5-5" />
-                    </svg>
+              <div class="statusCard statusCardActive memberActiveCard" role="status">
+                <header class="memberActiveHero">
+                  <div class="memberActiveHeroTop">
+                    <span class="memberActiveBadge">{t.memberActiveBadge}</span>
+                    <span class="memberActiveYearChip">{currentYear}</span>
                   </div>
-                  <h2 class="statusTitle">{activeTitle}</h2>
-                </div>
-                <div class="statusCardBody statusCardBodyActive">
-                  <p class="statusActiveScope">{activeYearScope}</p>
-                  <div class="activeTierSummary">
-                    <p class="tierLegend">{t.statusActiveTierLabel}</p>
-                    <div class="activeTierTile">
-                      <div class="activeTierTileRow">
-                        <span class="activeTierName">{thisYearTierLabel}</span>
-                        <span class="activeTierFee">{activeMembershipFeeCad} CAD</span>
-                      </div>
-                      {thisYearMembership?.tier === 'voting' && (
-                        <div class="activeTierVote">
-                          <p class="activeTierVoteLabel">{t.statusActiveGeneralVoteLabel}</p>
-                          <p class="activeTierVoteAddress">{lakeAddressLine || t.homeAddressNotOnFile}</p>
-                        </div>
-                      )}
+                  <div class="memberActiveHeroTitleRow">
+                    <div class="memberActiveIcon" aria-hidden="true">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
                     </div>
+                    <h2 class="memberActiveTitle">{activeTitle}</h2>
                   </div>
-                  {futureRows.length > 0 && (
-                    <p class="statusActivePrepaid">
-                      {t.statusActivePrepaidTeaser.replace('{{count}}', String(futureRows.length))}
-                    </p>
+                  <p class="memberActiveScope">{activeYearScope}</p>
+                </header>
+
+                <div class="memberActiveSnapshot">
+                  <h3 class="memberActiveSnapshotHeading">{t.memberActiveSnapshotHeading}</h3>
+                  <dl class="memberActiveSnapshotGrid">
+                    <div class="memberActiveSnapshotCell">
+                      <dt>{t.memberActiveSnapshotTypeLabel}</dt>
+                      <dd>{thisYearTierLabel}</dd>
+                    </div>
+                    <div class="memberActiveSnapshotCell">
+                      <dt>{t.memberActiveSnapshotFeeLabel}</dt>
+                      <dd>{activeTierFeeDisplay}</dd>
+                    </div>
+                  </dl>
+                  {thisYearMembership?.tier === 'voting' && (
+                    <div class="memberActiveLake">
+                      <p class="memberActiveLakeLabel">{t.statusActiveGeneralVoteLabel}</p>
+                      <p class="memberActiveLakeValue">{lakeAddressLine || t.homeAddressNotOnFile}</p>
+                    </div>
                   )}
                 </div>
+
+                <section class="memberActivePayments" aria-labelledby="member-active-payments-heading">
+                  <div class="memberActivePaymentsHead">
+                    <h3 id="member-active-payments-heading" class="memberActivePaymentsTitle">
+                      {t.memberPaymentsSectionTitle}
+                    </h3>
+                    <p class="memberActivePaymentsLead">{t.memberPaymentsSectionLead}</p>
+                    {activePaymentOverviewLine ? (
+                      <p class="memberActivePaymentsOverview">{activePaymentOverviewLine}</p>
+                    ) : null}
+                  </div>
+                  <div class="memberActivePaymentsBody">
+                    {currentYearPayments.length === 0 ? (
+                      <p class="memberActivePaymentsEmpty">{t.memberPaymentsEmpty}</p>
+                    ) : (
+                      <ul class="memberActivePaymentList">
+                              {currentYearPayments.map((p) => {
+                                const donationNote = (p.donation_note ?? '').trim();
+                                const recordNote = (p.notes ?? '').trim();
+                                const paymentRefRaw = (p.payment_id ?? '').trim();
+                                const hasPaymentTechnicalDetails = Boolean(recordNote || paymentRefRaw);
+                                const dAmt = p.donation_amount;
+                          const showDonation =
+                            dAmt != null && Number.isFinite(dAmt) && dAmt > 0.0001;
+                          return (
+                            <li class="memberActivePaymentItem">
+                              <div class="memberActivePaymentItemHeader">
+                                <div class="memberActivePaymentItemMeta">
+                                  <time
+                                    class="memberActivePaymentDate"
+                                    datetime={p.date ?? undefined}
+                                  >
+                                    {formatMemberLocaleDate(locale, p.date)}
+                                  </time>
+                                  <span class="memberActivePaymentMethod">
+                                    {memberPaymentMethodLabel(p.method)}
+                                  </span>
+                                </div>
+                                <div class="memberActivePaymentTotalBlock">
+                                  <span class="memberActivePaymentTotalLabel">
+                                    {t.memberActivePaymentItemTotal}
+                                  </span>
+                                  <span class="memberActivePaymentTotalAmount">
+                                    {formatMemberCad(locale, p.amount)}
+                                  </span>
+                                </div>
+                              </div>
+                              <div class="memberActivePaymentSplit">
+                                <span class="memberActivePaymentSplitChip">
+                                  <span class="memberActivePaymentSplitLabel">
+                                    {t.memberActivePaymentSplitMembership}
+                                  </span>
+                                  <span class="memberActivePaymentSplitValue">
+                                    {formatMemberCad(locale, p.membership_amount)}
+                                  </span>
+                                </span>
+                                {showDonation ? (
+                                  <span class="memberActivePaymentSplitChip memberActivePaymentSplitChip--donation">
+                                    <span class="memberActivePaymentSplitLabel">
+                                      {t.memberActivePaymentSplitDonation}
+                                    </span>
+                                    <span class="memberActivePaymentSplitValue">
+                                      {formatMemberCad(locale, p.donation_amount)}
+                                    </span>
+                                  </span>
+                                ) : null}
+                              </div>
+                              {donationNote ? (
+                                <p class="memberActivePaymentRefLine">
+                                  <span class="memberActivePaymentRefKey">{t.memberPaymentsColNote}</span>
+                                  <span class="memberActivePaymentRefVal memberActivePaymentRefVal--wrap">
+                                    {donationNote}
+                                  </span>
+                                </p>
+                              ) : null}
+                              {hasPaymentTechnicalDetails ? (
+                                <details class="memberActivePaymentDetails">
+                                  <summary class="memberActivePaymentDetailsSummary">
+                                    {t.memberPaymentSeeDetails}
+                                  </summary>
+                                  <div class="memberActivePaymentDetailsBody">
+                                    {recordNote ? (
+                                      <p class="memberActivePaymentRefLine">
+                                        <span class="memberActivePaymentRefKey">{t.memberPaymentsColRecordNote}</span>
+                                        <span class="memberActivePaymentRefVal memberActivePaymentRefVal--wrap">
+                                          {recordNote}
+                                        </span>
+                                      </p>
+                                    ) : null}
+                                    {paymentRefRaw !== '' ? (
+                                      <p class="memberActivePaymentRefLine">
+                                        <span class="memberActivePaymentRefKey">{t.memberActivePaymentReference}</span>
+                                        <span class="memberActivePaymentRefVal memberActivePaymentRefVal--wrap">
+                                          {paymentRefRaw}
+                                        </span>
+                                      </p>
+                                    ) : null}
+                                  </div>
+                                </details>
+                              ) : null}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                </section>
+
+                {futureRows.length > 0 ? (
+                  <p class="memberActivePrepaid">
+                    {t.statusActivePrepaidTeaser.replace('{{count}}', String(futureRows.length))}
+                  </p>
+                ) : null}
               </div>
             ) : pendingThisYear ? (
               <div class="statusCard statusCardPending" role="status">
@@ -1167,13 +1316,29 @@ const hasSecondaryContactInfo = Boolean(
     margin-bottom: 0;
   }
 
-  .prose.memberHomeProse .statusCard p.statusActiveScope {
-    margin-bottom: 1.05rem;
+  .prose.memberHomeProse .statusCard p.memberActiveScope {
+    margin-bottom: 1.1rem;
   }
 
   .prose.memberHomeProse .statusCard .activeTierSummary > .tierLegend,
   .prose.memberHomeProse .statusCard .pendingTierSummary > .tierLegend {
     margin-bottom: 0.45rem;
+  }
+
+  .prose.memberHomeProse .statusCard .memberActivePaymentsTitle {
+    margin-bottom: 0.35rem;
+  }
+
+  .prose.memberHomeProse .statusCard .memberActivePaymentsLead {
+    margin-bottom: 0.5rem;
+  }
+
+  .prose.memberHomeProse .statusCard .memberActivePaymentsOverview {
+    margin-bottom: 0;
+  }
+
+  .prose.memberHomeProse .statusCard p.memberActivePaymentsEmpty {
+    margin-bottom: 0;
   }
 
   .prose.memberHomeProse .statusCard p.statusPendingLead {
@@ -1201,120 +1366,419 @@ const hasSecondaryContactInfo = Boolean(
     min-height: 0;
   }
 
-  .statusCardActive {
+  .statusCardActive.memberActiveCard {
     display: block;
-    background: rgba(22, 163, 74, 0.08);
-    border-color: rgba(22, 163, 74, 0.35);
+    padding: 1.35rem 1.4rem 1.4rem;
+    border-radius: 16px;
+    border: 1px solid rgba(22, 163, 74, 0.14);
+    background: linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.97) 0%,
+      rgba(240, 253, 244, 0.88) 55%,
+      rgba(220, 252, 231, 0.45) 100%
+    );
+    box-shadow:
+      0 1px 2px rgba(15, 23, 42, 0.04),
+      0 8px 28px rgba(22, 163, 74, 0.07);
   }
 
-  .statusActiveHead {
+  .memberActiveHero {
+    margin-bottom: 1.15rem;
+  }
+
+  .memberActiveHeroTop {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.85rem;
+    gap: 0.5rem;
+    margin-bottom: 0.65rem;
   }
 
-  .statusActiveHead .statusTitle {
-    margin: 0;
-    flex: 1;
-    min-width: 0;
-    color: rgba(20, 83, 45, 0.98);
+  .memberActiveBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.22rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: rgba(21, 128, 61, 0.98);
+    background: rgba(22, 163, 74, 0.14);
+    border: 1px solid rgba(22, 163, 74, 0.22);
   }
 
-  .statusActiveMark {
+  .memberActiveYearChip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.55rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: rgba(20, 83, 45, 0.92);
+    background: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(22, 163, 74, 0.12);
+  }
+
+  .memberActiveHeroTitleRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .memberActiveIcon {
     flex-shrink: 0;
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    background: rgba(22, 163, 74, 0.95);
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 10px;
+    background: linear-gradient(145deg, rgba(22, 163, 74, 0.98), rgba(5, 150, 105, 0.95));
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    line-height: 1;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.28);
   }
 
-  .statusActiveMark svg {
+  .memberActiveIcon svg {
     display: block;
   }
 
-  .statusCardBodyActive {
+  .memberActiveTitle {
+    margin: 0;
+    flex: 1;
     min-width: 0;
-    width: 100%;
-  }
-
-  .statusActiveScope {
-    margin: 0 0 1.05rem;
-    font-size: 0.95rem;
-    line-height: 1.45;
-    color: var(--muted, #555);
-  }
-
-  .activeTierSummary {
-    margin: 0 0 0.85rem;
-  }
-
-  .activeTierSummary .tierLegend {
-    margin-bottom: 0.45rem;
-  }
-
-  .activeTierTile {
-    padding: 0.85rem 1rem;
-    border-radius: 12px;
-    border: 2px solid rgba(22, 163, 74, 0.38);
-    background: rgba(255, 255, 255, 0.75);
-  }
-
-  .activeTierTileRow {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.35rem 0.75rem;
-  }
-
-  .activeTierName {
-    font-weight: 600;
-    font-size: 1.05rem;
-  }
-
-  .activeTierFee {
-    font-weight: 600;
-    font-size: 0.82rem;
-    padding: 0.2rem 0.55rem;
-    border-radius: 999px;
-    background: rgba(22, 163, 74, 0.16);
+    font-size: clamp(1.15rem, 2.8vw, 1.35rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
     color: rgba(20, 83, 45, 0.98);
-    white-space: nowrap;
   }
 
-  .activeTierVote {
-    margin-top: 0.85rem;
-    padding-top: 0.85rem;
-    border-top: 1px solid rgba(22, 163, 74, 0.22);
+  .memberActiveScope {
+    margin: 0;
+    padding-left: calc(2.25rem + 0.65rem);
+    font-size: 0.93rem;
+    line-height: 1.5;
+    color: var(--muted, #5c5c5c);
   }
 
-  .activeTierVoteLabel {
-    margin: 0 0 0.25rem;
+  @media (max-width: 480px) {
+    .memberActiveScope {
+      padding-left: 0;
+    }
+  }
+
+  .memberActiveSnapshot {
+    margin-bottom: 1.2rem;
+    padding: 1rem 1.1rem 1.05rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  }
+
+  .memberActiveSnapshotHeading {
+    margin: 0 0 0.75rem;
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--muted, #555);
+    color: rgba(82, 82, 82, 0.95);
   }
 
-  .activeTierVoteAddress {
+  .memberActiveSnapshotGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.85rem 1.25rem;
+    margin: 0;
+  }
+
+  @media (max-width: 520px) {
+    .memberActiveSnapshotGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .memberActiveSnapshotCell {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .memberActiveSnapshotCell dt {
+    margin: 0 0 0.2rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--muted, #666);
+  }
+
+  .memberActiveSnapshotCell dd {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: rgba(20, 83, 45, 0.98);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .memberActiveLake {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(22, 163, 74, 0.12);
+  }
+
+  .memberActiveLakeLabel {
+    margin: 0 0 0.28rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted, #666);
+  }
+
+  .memberActiveLakeValue {
     margin: 0;
     font-size: 1rem;
     font-weight: 600;
-    line-height: 1.35;
+    line-height: 1.4;
     color: rgba(20, 83, 45, 0.98);
   }
 
-  .statusActivePrepaid {
+  .memberActivePayments {
+    min-width: 0;
+  }
+
+  .memberActivePaymentsHead {
+    margin-bottom: 0.85rem;
+  }
+
+  .memberActivePaymentsTitle {
+    margin: 0 0 0.35rem;
+    font-size: 1.02rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: rgba(20, 83, 45, 0.98);
+  }
+
+  .memberActivePaymentsLead {
+    margin: 0 0 0.5rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--muted, #5a5a5a);
+  }
+
+  .memberActivePaymentsOverview {
     margin: 0;
-    padding-top: 0.85rem;
-    border-top: 1px solid rgba(22, 163, 74, 0.2);
+    font-size: 0.84rem;
+    font-weight: 600;
+    line-height: 1.45;
+    color: rgba(21, 128, 61, 0.92);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .memberActivePaymentsBody {
+    min-width: 0;
+  }
+
+  .memberActivePaymentsEmpty {
+    margin: 0;
+    padding: 1rem 1.05rem;
+    border-radius: 12px;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    color: var(--muted, #666);
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px dashed rgba(22, 163, 74, 0.22);
+  }
+
+  .memberActivePaymentList {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .memberActivePaymentItem {
+    margin: 0;
+    padding: 1rem 1.05rem 1.05rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(15, 23, 42, 0.06);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+
+  .memberActivePaymentItemHeader {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.65rem 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .memberActivePaymentItemMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+  }
+
+  .memberActivePaymentDate {
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: rgba(20, 83, 45, 0.98);
+  }
+
+  .memberActivePaymentMethod {
+    font-size: 0.84rem;
+    font-weight: 500;
+    color: var(--muted, #5c5c5c);
+  }
+
+  .memberActivePaymentTotalBlock {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .memberActivePaymentTotalLabel {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted, #777);
+    margin-bottom: 0.15rem;
+  }
+
+  .memberActivePaymentTotalAmount {
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    color: rgba(20, 83, 45, 0.98);
+  }
+
+  .memberActivePaymentSplit {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .memberActivePaymentSplitChip {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 10px;
+    background: rgba(22, 163, 74, 0.06);
+    border: 1px solid rgba(22, 163, 74, 0.1);
+  }
+
+  .memberActivePaymentSplitChip--donation {
+    background: rgba(59, 130, 246, 0.06);
+    border-color: rgba(59, 130, 246, 0.14);
+  }
+
+  .memberActivePaymentSplitChip--donation .memberActivePaymentSplitValue {
+    color: rgba(30, 64, 175, 0.95);
+  }
+
+  .memberActivePaymentSplitLabel {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted, #666);
+  }
+
+  .memberActivePaymentSplitValue {
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: rgba(20, 83, 45, 0.96);
+  }
+
+  .memberActivePaymentRefVal--wrap {
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .memberActivePaymentRefLine {
+    margin: 0.45rem 0 0;
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--muted, #666);
+    word-break: break-word;
+  }
+
+  .memberActivePaymentRefKey {
+    font-weight: 600;
+    margin-right: 0.35rem;
+    color: rgba(82, 82, 82, 0.95);
+  }
+
+  .memberActivePaymentRefVal {
+    font-variant-numeric: tabular-nums;
+    color: rgba(51, 65, 85, 0.92);
+  }
+
+  .memberActivePaymentDetails {
+    margin: 0.55rem 0 0;
+  }
+
+  .memberActivePaymentDetailsSummary {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.15rem 0;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-accent, #1a5f4a);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    list-style: none;
+  }
+
+  .memberActivePaymentDetailsSummary::-webkit-details-marker {
+    display: none;
+  }
+
+  .memberActivePaymentDetailsSummary::after {
+    content: '▸';
+    font-size: 0.65rem;
+    opacity: 0.72;
+    text-decoration: none;
+    transition: transform 0.15s ease;
+  }
+
+  .memberActivePaymentDetails[open] .memberActivePaymentDetailsSummary::after {
+    transform: rotate(90deg);
+  }
+
+  .memberActivePaymentDetailsBody {
+    margin-top: 0.45rem;
+    padding: 0.45rem 0 0.15rem 0.65rem;
+    border-left: 2px solid rgba(22, 163, 74, 0.18);
+  }
+
+  .memberActivePaymentDetailsBody .memberActivePaymentRefLine {
+    margin-top: 0.35rem;
+  }
+
+  .memberActivePaymentDetailsBody .memberActivePaymentRefLine:first-child {
+    margin-top: 0;
+  }
+
+  .memberActivePrepaid {
+    margin: 1.1rem 0 0;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(22, 163, 74, 0.15);
     font-size: 0.9rem;
     line-height: 1.45;
     color: var(--muted, #555);
