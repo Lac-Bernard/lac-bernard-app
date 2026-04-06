@@ -297,6 +297,8 @@ export const memberCopy: Record<
 		checkoutModalDonationLabel: string;
 		checkoutModalTotalLabel: string;
 		checkoutModalContinue: string;
+		/** Shown on the checkout modal submit control while redirecting to Stripe */
+		checkoutModalContinuing: string;
 		checkoutModalCancel: string;
 		checkoutErrorGeneric: string;
 		checkoutStripeMisconfigured: string;
@@ -646,6 +648,7 @@ export const memberCopy: Record<
 		checkoutModalDonationLabel: 'Donation (optional)',
 		checkoutModalTotalLabel: 'Total',
 		checkoutModalContinue: 'Continue to secure checkout',
+		checkoutModalContinuing: 'Continuing…',
 		checkoutModalCancel: 'Cancel',
 		checkoutErrorGeneric: 'Could not start checkout. Please try again.',
 		checkoutStripeMisconfigured: 'Online payment is not configured. Please use another payment method or try again later.',
@@ -1001,6 +1004,7 @@ export const memberCopy: Record<
 		checkoutModalDonationLabel: 'Don (facultatif)',
 		checkoutModalTotalLabel: 'Total',
 		checkoutModalContinue: 'Continuer vers le paiement sécurisé',
+		checkoutModalContinuing: 'Redirection…',
 		checkoutModalCancel: 'Annuler',
 		checkoutErrorGeneric: 'Impossible de démarrer le paiement. Veuillez réessayer.',
 		checkoutStripeMisconfigured:
