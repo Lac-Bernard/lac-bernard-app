@@ -137,7 +137,13 @@ export const memberCopy: Record<
 		adminDetailDonationNoteLabel: string;
 		adminTablePaymentRef: string;
 		adminTableName: string;
+		adminTablePrimaryName: string;
 		adminTableEmail: string;
+		adminTablePrimaryEmail: string;
+		adminTableSecondaryName: string;
+		adminTableSecondaryEmail: string;
+		adminTableLakeCivic: string;
+		adminTableLakeStreet: string;
 		adminTableYear: string;
 		adminTableTier: string;
 		adminTableStatus: string;
@@ -514,7 +520,13 @@ export const memberCopy: Record<
 		adminDetailDonationNoteLabel: 'Donation note',
 		adminTablePaymentRef: 'Reference',
 		adminTableName: 'Name',
+		adminTablePrimaryName: 'Primary name',
 		adminTableEmail: 'Email',
+		adminTablePrimaryEmail: 'Primary email',
+		adminTableSecondaryName: 'Secondary name',
+		adminTableSecondaryEmail: 'Secondary email',
+		adminTableLakeCivic: 'Civic #',
+		adminTableLakeStreet: 'Street',
 		adminTableYear: 'Year',
 		adminTableTier: 'Type',
 		adminTableStatus: 'Status',
@@ -898,7 +910,13 @@ export const memberCopy: Record<
 		adminDetailDonationNoteLabel: 'Note du don',
 		adminTablePaymentRef: 'Référence',
 		adminTableName: 'Nom',
+		adminTablePrimaryName: 'Nom principal',
 		adminTableEmail: 'Courriel',
+		adminTablePrimaryEmail: 'Courriel principal',
+		adminTableSecondaryName: 'Nom secondaire',
+		adminTableSecondaryEmail: 'Courriel secondaire',
+		adminTableLakeCivic: 'Nº civique',
+		adminTableLakeStreet: 'Rue',
 		adminTableYear: 'Année',
 		adminTableTier: 'Type',
 		adminTableStatus: 'Statut',

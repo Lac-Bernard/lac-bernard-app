@@ -66,7 +66,7 @@ const lakeProfileInitJson = JSON.stringify({
 		<div class="container narrow">
 			{!isEdit && <p class="intro">{t.profileJoinIntro}</p>}
 
-			<form id="member-profile-form" class="profileForm" novalidate>
+			<form id="member-profile-form" class="profileForm" novalidate aria-busy="false">
 				<input type="hidden" name="nextUrl" value={nextUrl} />
 
 				<fieldset class="profileFieldset">
@@ -271,8 +271,9 @@ const lakeProfileInitJson = JSON.stringify({
 				<p id="profile-form-message" class="formMessage" role="status" aria-live="polite"></p>
 
 				<div class="profileActions">
-					<button type="submit" class="btnPrimary" id="profile-submit">
-						{isEdit ? t.profileSaveSubmit : t.profileCreateSubmit}
+					<button type="submit" class="btnPrimary profileSubmit" id="profile-submit">
+						<span class="profileSubmitSpinner" aria-hidden="true"></span>
+						<span class="profileSubmitLabel">{isEdit ? t.profileSaveSubmit : t.profileCreateSubmit}</span>
 					</button>{isEdit ? (
 						<a class="btnGhost profileBack" href={paths.account}>{t.profileBackToAccount}</a>
 					) : null}
@@ -503,14 +504,19 @@ const lakeProfileInitJson = JSON.stringify({
 	form?.addEventListener('submit', async (e) => {
 		e.preventDefault();
 		if (!msg || !submitBtn) return;
+		if (submitBtn.hasAttribute('disabled')) return;
 		msg.textContent = '';
+		form?.setAttribute('aria-busy', 'true');
 		submitBtn.setAttribute('disabled', 'true');
+		submitBtn.classList.add('is-loading');
 		syncLakeManualToHidden();
 		const fd = new FormData(form);
 		const body = payloadFromForm(fd);
 		const validationError = validateBody(body);
 		if (validationError) {
 			msg.textContent = validationError;
+			form?.setAttribute('aria-busy', 'false');
+			submitBtn.classList.remove('is-loading');
 			submitBtn.removeAttribute('disabled');
 			return;
 		}
@@ -536,6 +542,8 @@ const lakeProfileInitJson = JSON.stringify({
 		} catch {
 			msg.textContent = errNetwork;
 		} finally {
+			form?.setAttribute('aria-busy', 'false');
+			submitBtn.classList.remove('is-loading');
 			submitBtn.removeAttribute('disabled');
 		}
 	});
@@ -931,6 +939,43 @@ const lakeProfileInitJson = JSON.stringify({
 
 	.profileActions :global(.btnPrimary) {
 		box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18);
+	}
+
+	.profileSubmit {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.65rem;
+	}
+
+	.profileSubmitSpinner {
+		display: none;
+		width: 1.125rem;
+		height: 1.125rem;
+		flex-shrink: 0;
+		border: 2px solid rgba(255, 255, 255, 0.35);
+		border-top-color: currentColor;
+		border-radius: 50%;
+		box-sizing: border-box;
+	}
+
+	.profileSubmit.is-loading .profileSubmitSpinner {
+		display: inline-block;
+		animation: profileSubmitSpin 0.65s linear infinite;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.profileSubmit.is-loading .profileSubmitSpinner {
+			animation: none;
+			border-color: rgba(255, 255, 255, 0.5);
+			border-top-color: rgba(255, 255, 255, 0.85);
+		}
+	}
+
+	@keyframes profileSubmitSpin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.profileActions :global(.btnGhost) {

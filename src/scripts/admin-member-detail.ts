@@ -124,6 +124,9 @@ export function initAdminMemberDetail(
 	const addMembershipDialog = el<HTMLDialogElement>('#admin-add-membership-dialog');
 	const addMembershipForm = el<HTMLFormElement>('#admin-add-membership-form');
 	const addMsPaidBlock = el<HTMLElement>('#admin-add-ms-paid');
+	const saveMemberBtn = el<HTMLButtonElement>('#admin-member-save');
+	const savePaymentBtn = el<HTMLButtonElement>('#admin-payment-submit');
+	const addMembershipSubmitBtn = el<HTMLButtonElement>('#admin-add-membership-submit');
 	let currentMember: MemberRow | null = null;
 
 	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
@@ -188,6 +191,13 @@ export function initAdminMemberDetail(
 			: ms.tier === 'associate'
 				? tierLabels.associate
 				: ms.tier;
+	}
+
+	function setFormSubmitLoading(formEl: HTMLFormElement | null, btn: HTMLButtonElement | null, loading: boolean) {
+		if (formEl) formEl.setAttribute('aria-busy', loading ? 'true' : 'false');
+		if (!btn) return;
+		btn.classList.toggle('is-loading', loading);
+		btn.toggleAttribute('disabled', loading);
 	}
 
 	function getYearOptions(): number[] {
@@ -525,6 +535,7 @@ export function initAdminMemberDetail(
 	memberForm?.addEventListener('submit', async (e) => {
 		e.preventDefault();
 		if (!memberForm) return;
+		if (saveMemberBtn?.disabled) return;
 		const fd = new FormData(memberForm);
 		const lakeCivic = String(fd.get('lake_civic_number') ?? '').trim() || null;
 		const lakeStreet = String(fd.get('lake_street_name') ?? '').trim() || null;
@@ -555,24 +566,30 @@ export function initAdminMemberDetail(
 			user_id: fd.get('user_id') || null,
 			primary_email: fd.get('primary_email') || null,
 		};
+
+		setFormSubmitLoading(memberForm, saveMemberBtn, true);
 		setStatus(t(strings, 'adminLoading'));
-		const { ok, data } = await fetchJson<{ error?: string }>(`/api/admin/members/${encodeURIComponent(memberId)}`, {
-			method: 'PATCH',
-			body: JSON.stringify(body),
-		});
-		if (!ok) {
-			const code = data?.error;
-			const msg =
-				code === 'first_name_required'
-					? t(strings, 'profileErrorFirstName')
-					: code === 'last_name_required'
-						? t(strings, 'profileErrorLastName')
-						: (code ?? t(strings, 'adminErrorGeneric'));
-			setStatus(msg, 'error');
-			return;
+		try {
+			const { ok, data } = await fetchJson<{ error?: string }>(`/api/admin/members/${encodeURIComponent(memberId)}`, {
+				method: 'PATCH',
+				body: JSON.stringify(body),
+			});
+			if (!ok) {
+				const code = data?.error;
+				const msg =
+					code === 'first_name_required'
+						? t(strings, 'profileErrorFirstName')
+						: code === 'last_name_required'
+							? t(strings, 'profileErrorLastName')
+							: (code ?? t(strings, 'adminErrorGeneric'));
+				setStatus(msg, 'error');
+				return;
+			}
+			setStatus(t(strings, 'adminMemberSaved'), 'success');
+			void load();
+		} finally {
+			setFormSubmitLoading(memberForm, saveMemberBtn, false);
 		}
-		setStatus(t(strings, 'adminMemberSaved'), 'success');
-		void load();
 	});
 
 	el<HTMLButtonElement>('#admin-promote-btn')?.addEventListener('click', async () => {
@@ -596,6 +613,7 @@ export function initAdminMemberDetail(
 	el<HTMLFormElement>('#admin-payment-form')?.addEventListener('submit', async (e) => {
 		e.preventDefault();
 		const form = e.target as HTMLFormElement;
+		if (savePaymentBtn?.disabled) return;
 		const fd = new FormData(form);
 		const amount = parseFloat(String(fd.get('amount') ?? ''));
 		const method = String(fd.get('method') ?? '');
@@ -604,28 +622,33 @@ export function initAdminMemberDetail(
 		const reference = String(fd.get('reference') ?? '').trim();
 		const mid = paymentMembershipId?.value;
 		if (!mid) return;
+		setFormSubmitLoading(form, savePaymentBtn, true);
 		setStatus(t(strings, 'adminLoading'));
-		const { ok, data } = await fetchJson<{ error?: string }>(
-			`/api/admin/memberships/${encodeURIComponent(mid)}/record-payment`,
-			{
-				method: 'POST',
-				body: JSON.stringify({
-					amount,
-					method,
-					date: date || undefined,
-					notes: notes || undefined,
-					...(reference ? { reference } : {}),
-				}),
-			},
-		);
-		if (!ok) {
-			setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
-			return;
+		try {
+			const { ok, data } = await fetchJson<{ error?: string }>(
+				`/api/admin/memberships/${encodeURIComponent(mid)}/record-payment`,
+				{
+					method: 'POST',
+					body: JSON.stringify({
+						amount,
+						method,
+						date: date || undefined,
+						notes: notes || undefined,
+						...(reference ? { reference } : {}),
+					}),
+				},
+			);
+			if (!ok) {
+				setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
+				return;
+			}
+			setStatus(t(strings, 'adminPaymentSaved'), 'success');
+			paymentDialog?.close();
+			form.reset();
+			void load();
+		} finally {
+			setFormSubmitLoading(form, savePaymentBtn, false);
 		}
-		setStatus(t(strings, 'adminPaymentSaved'), 'success');
-		paymentDialog?.close();
-		form.reset();
-		void load();
 	});
 
 	el<HTMLInputElement>('#admin-payment-amount')?.addEventListener('input', updatePaymentPreview);
@@ -649,6 +672,7 @@ export function initAdminMemberDetail(
 	addMembershipForm?.addEventListener('submit', async (e) => {
 		e.preventDefault();
 		if (!addMembershipForm) return;
+		if (addMembershipSubmitBtn?.disabled) return;
 		const fd = new FormData(addMembershipForm);
 		const year = parseInt(String(fd.get('year') ?? ''), 10);
 		const tier = String(fd.get('tier') ?? '');
@@ -674,27 +698,32 @@ export function initAdminMemberDetail(
 				...(notes ? { notes } : {}),
 			};
 		}
+		setFormSubmitLoading(addMembershipForm, addMembershipSubmitBtn, true);
 		setStatus(t(strings, 'adminLoading'));
-		const { ok, data } = await fetchJson<{ error?: string }>(
-			`/api/admin/members/${encodeURIComponent(memberId)}/memberships`,
-			{
-				method: 'POST',
-				body: JSON.stringify({
-					year,
-					tier,
-					initial,
-					...(payment ? { payment } : {}),
-				}),
-			},
-		);
-		if (!ok) {
-			setStatus(addMembershipErrorMessage(data?.error), 'error');
-			return;
+		try {
+			const { ok, data } = await fetchJson<{ error?: string }>(
+				`/api/admin/members/${encodeURIComponent(memberId)}/memberships`,
+				{
+					method: 'POST',
+					body: JSON.stringify({
+						year,
+						tier,
+						initial,
+						...(payment ? { payment } : {}),
+					}),
+				},
+			);
+			if (!ok) {
+				setStatus(addMembershipErrorMessage(data?.error), 'error');
+				return;
+			}
+			setStatus(t(strings, 'adminMemberSaved'), 'success');
+			addMembershipDialog?.close();
+			addMembershipForm.reset();
+			void load();
+		} finally {
+			setFormSubmitLoading(addMembershipForm, addMembershipSubmitBtn, false);
 		}
-		setStatus(t(strings, 'adminMemberSaved'), 'success');
-		addMembershipDialog?.close();
-		addMembershipForm.reset();
-		void load();
 	});
 
 	el<HTMLButtonElement>('#admin-add-membership-cancel')?.addEventListener('click', () => {

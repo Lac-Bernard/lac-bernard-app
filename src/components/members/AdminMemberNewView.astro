@@ -94,7 +94,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
       <div class="adminShell">
         <p id="admin-new-member-status" class="adminStatus" aria-live="polite"></p>
 
-        <form id="admin-new-member-form" class="adminMemberForm">
+        <form id="admin-new-member-form" class="adminMemberForm" aria-busy="false">
           <div class="adminPanel adminCard adminPanel--profile">
             <h2 class="adminSubheading">{t.adminAddMemberSectionProfile}</h2>
             <div class="adminProfileSections">
@@ -201,7 +201,10 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
           <div class="adminPanel adminCard adminPanel--actions">
             <div class="adminFormActions">
-              <button type="submit" class="adminBtn adminBtn--solid">{t.adminAddMemberSubmit}</button>
+              <button type="submit" class="adminBtn adminBtn--solid adminBtn--submit" id="admin-new-member-submit">
+                <span class="adminBtnSpinner" aria-hidden="true"></span>
+                <span class="adminBtnLabel">{t.adminAddMemberSubmit}</span>
+              </button>
             </div>
           </div>
         </form>
@@ -488,5 +491,39 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     text-decoration: underline;
     min-height: 0;
     padding: 0.35rem 0.5rem;
+  }
+
+  .adminPage :global(.adminBtn--submit) {
+    gap: 0.55rem;
+  }
+
+  .adminPage :global(.adminBtnSpinner) {
+    display: none;
+    width: 1.05rem;
+    height: 1.05rem;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    box-sizing: border-box;
+  }
+
+  .adminPage :global(.adminBtn--submit.is-loading .adminBtnSpinner) {
+    display: inline-block;
+    animation: adminBtnSpin 0.65s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .adminPage :global(.adminBtn--submit.is-loading .adminBtnSpinner) {
+      animation: none;
+      border-color: rgba(255, 255, 255, 0.5);
+      border-top-color: rgba(255, 255, 255, 0.85);
+    }
+  }
+
+  @keyframes adminBtnSpin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 </style>
