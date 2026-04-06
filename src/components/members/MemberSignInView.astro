@@ -90,8 +90,81 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     checkEmail: t.checkEmail,
     sendingMagicLink: t.sendingMagicLink,
     sendMagicLink: t.sendMagicLink,
+    signInLinkExpiredNotice: t.signInLinkExpiredNotice,
+    signInAuthFailedNotice: t.signInAuthFailedNotice,
   }}
 >
+  /**
+   * Sign-in is a static prerendered page: query/hash are only available in the browser.
+   * Supabase may append errors in the hash, e.g. #error=...&error_code=otp_expired&...
+   */
+  function parseSigninErrorKindFromLocation() {
+    const q = new URLSearchParams(window.location.search).get('signin_error');
+    if (q === 'link_expired' || q === 'auth_failed') {
+      return q;
+    }
+
+    const rawHash = window.location.hash;
+    if (!rawHash || rawHash.length <= 1) {
+      return null;
+    }
+
+    let hp;
+    try {
+      hp = new URLSearchParams(rawHash.startsWith('#') ? rawHash.slice(1) : rawHash);
+    } catch {
+      return null;
+    }
+
+    const ec = (hp.get('error_code') ?? '').toLowerCase();
+    const err = (hp.get('error') ?? '').toLowerCase();
+    const desc = (hp.get('error_description') ?? '').toLowerCase();
+
+    if (
+      ec === 'otp_expired' ||
+      err === 'otp_expired' ||
+      desc.includes('otp_expired') ||
+      desc.includes('invalid or has expired')
+    ) {
+      return 'link_expired';
+    }
+
+    if (hp.has('error') || hp.has('error_code')) {
+      return 'auth_failed';
+    }
+
+    return null;
+  }
+
+  function applyInitialSigninErrorNotice() {
+    const el = document.getElementById('form-message');
+    if (!el) {
+      return;
+    }
+
+    const kind = parseSigninErrorKindFromLocation();
+    if (!kind) {
+      return;
+    }
+
+    el.textContent = kind === 'link_expired' ? signInLinkExpiredNotice : signInAuthFailedNotice;
+    el.hidden = false;
+    el.classList.remove('formMessage--error', 'formMessage--notice');
+    el.classList.add(kind === 'link_expired' ? 'formMessage--notice' : 'formMessage--error');
+    el.setAttribute('role', 'alert');
+
+    const u = new URL(window.location.href);
+    if (u.searchParams.has('signin_error')) {
+      u.searchParams.delete('signin_error');
+    }
+    if (u.hash && /error(=|_code)|otp_expired/i.test(u.hash)) {
+      u.hash = '';
+    }
+    window.history.replaceState({}, '', `${u.pathname}${u.search}${u.hash}`);
+  }
+
+  applyInitialSigninErrorNotice();
+
   const form = document.getElementById('sign-in-form');
   const messageEl = document.getElementById('form-message');
   const hintEl = document.getElementById('sign-in-email-hint');
@@ -119,7 +192,7 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     if (messageEl) {
       messageEl.textContent = '';
       messageEl.hidden = true;
-      messageEl.classList.remove('formMessage--error');
+      messageEl.classList.remove('formMessage--error', 'formMessage--notice');
     }
     tryAnotherWrap.hidden = true;
     submitBtn.removeAttribute('disabled');
@@ -156,7 +229,7 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     tryAnotherWrap.hidden = true;
     messageEl.hidden = true;
     messageEl.textContent = '';
-    messageEl.classList.remove('formMessage--error');
+    messageEl.classList.remove('formMessage--error', 'formMessage--notice');
     setMagicLinkLoading(true);
 
     try {
@@ -172,6 +245,7 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
         messageEl.textContent = data.error || errGeneric;
         messageEl.hidden = false;
         messageEl.classList.add('formMessage--error');
+        messageEl.classList.remove('formMessage--notice');
         setMagicLinkLoading(false);
         return;
       }
@@ -179,7 +253,7 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
       setEmailHintVisible(false);
       messageEl.textContent = checkEmail;
       messageEl.hidden = false;
-      messageEl.classList.remove('formMessage--error');
+      messageEl.classList.remove('formMessage--error', 'formMessage--notice');
       magicLinkJustSent = true;
       submitBtn.setAttribute('disabled', 'true');
       submitBtn.classList.remove('is-loading');
@@ -192,6 +266,7 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
       messageEl.textContent = errNetwork;
       messageEl.hidden = false;
       messageEl.classList.add('formMessage--error');
+      messageEl.classList.remove('formMessage--notice');
       setMagicLinkLoading(false);
     }
   });
@@ -359,6 +434,15 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
 
   .formMessage--error {
     color: #b91c1c;
+  }
+
+  .formMessage--notice {
+    margin-top: 0.35rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 10px;
+    border: 1px solid rgba(180, 83, 9, 0.35);
+    background: rgba(254, 243, 199, 0.55);
+    color: #78350f;
   }
 
   .signInForm .btnPrimary {

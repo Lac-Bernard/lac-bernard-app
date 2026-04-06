@@ -64,6 +64,10 @@ export const memberCopy: Record<
 		errorNetwork: string;
 		magicLinkFormExplainer: string;
 		checkEmail: string;
+		/** Shown when magic link was superseded or expired (e.g. `signin_error=link_expired`). */
+		signInLinkExpiredNotice: string;
+		/** Shown when auth callback fails for reasons other than an expired link. */
+		signInAuthFailedNotice: string;
 		adminTitle: string;
 		adminDescription: string;
 		adminHeroAria: string;
@@ -447,6 +451,10 @@ export const memberCopy: Record<
 		magicLinkFormExplainer:
 			'We’ll email a one-time link to this address. If nothing arrives in a few minutes, check spam or junk.',
 		checkEmail: 'Check your email for the sign-in link.',
+		signInLinkExpiredNotice:
+			'You followed a sign-in link that is no longer valid. That usually means we sent a newer link to your email, or this link expired. Use the latest email from us, or request a new sign-in link.',
+		signInAuthFailedNotice:
+			'You followed a sign-in link that didn’t work. Enter your email and request a new sign-in link.',
 		adminTitle: 'Admin | Lac Bernard Association',
 		adminDescription: 'Association administration — members and payments.',
 		adminHeroAria: 'Administration',
@@ -836,6 +844,10 @@ export const memberCopy: Record<
 		magicLinkFormExplainer:
 			'Nous enverrons un lien à usage unique à cette adresse. Si rien n’arrive après quelques minutes, vérifiez vos indésirables.',
 		checkEmail: 'Vérifiez votre courriel pour le lien de connexion.',
+		signInLinkExpiredNotice:
+			'Vous avez suivi un lien de connexion qui n’est plus valide. En général, cela signifie qu’un lien plus récent vous a été envoyé par courriel, ou que ce lien a expiré. Utilisez le dernier courriel de notre part, ou demandez un nouveau lien de connexion.',
+		signInAuthFailedNotice:
+			'Vous avez suivi un lien de connexion qui n’a pas fonctionné. Saisissez votre courriel et demandez un nouveau lien de connexion.',
 		adminTitle: 'Administration | Association du lac Bernard',
 		adminDescription: 'Administration de l’association — membres et paiements.',
 		adminHeroAria: 'Administration',
@@ -1215,4 +1227,11 @@ export function safeMemberNext(path: string | null, locale: MemberLocale): strin
 	const fallback = memberPaths[locale].account;
 	if (!path) return fallback;
 	return path.startsWith('/') && !path.startsWith('//') ? path : fallback;
+}
+
+/** Picks `/en/...` or `/fr/...` sign-in from a safe member `next` path (for auth error redirects). */
+export function memberSignInPathForNext(next: string): string {
+	if (next.startsWith('/en/')) return memberPaths.en.signIn;
+	if (next.startsWith('/fr/')) return memberPaths.fr.signIn;
+	return defaultMemberSignInPath;
 }
