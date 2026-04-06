@@ -2,7 +2,6 @@
 
 import { formatAdminLocaleDate, formatAdminLocaleDateTime } from '../lib/admin/formatLocaleDate';
 import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymentSplit';
-import { formatAdminMemberNameTd } from '../lib/members/memberDisplayName';
 
 export type AdminConsoleStrings = Record<string, string>;
 
@@ -809,6 +808,10 @@ export function initAdminConsole(
 					last_name: string;
 					secondary_first_name?: string | null;
 					secondary_last_name?: string | null;
+					primary_email?: string | null;
+					secondary_email?: string | null;
+					lake_civic_number?: string | null;
+					lake_street_name?: string | null;
 				};
 				tier: string | null;
 				eventAt: string;
@@ -826,6 +829,10 @@ export function initAdminConsole(
 					last_name: string;
 					secondary_first_name?: string | null;
 					secondary_last_name?: string | null;
+					primary_email?: string | null;
+					secondary_email?: string | null;
+					lake_civic_number?: string | null;
+					lake_street_name?: string | null;
 				} | null;
 			}>;
 			counts?: {
@@ -848,19 +855,35 @@ export function initAdminConsole(
 
 		const verifiedRows = (data.recentVerifiedMembers ?? [])
 			.map(({ member: m, tier }) => {
-				const nameTd = formatAdminMemberNameTd(m, escapeHtml);
 				const when = m.created_at ? formatAdminLocaleDate(m.created_at) : '—';
-				return `<tr${memberRowOpenAttrs(m)}>${nameTd}<td>${escapeHtml(overviewTierLabel(tier))}</td><td>${escapeHtml(when)}</td></tr>`;
+				return `<tr${memberRowOpenAttrs(m)}>
+					<td class="adminMemberNameCell">${escapeHtml(primaryName(m))}</td>
+					<td>${escapeHtml(m.primary_email ?? '—')}</td>
+					<td class="adminMemberNameCell">${escapeHtml(secondaryName(m))}</td>
+					<td>${escapeHtml(m.secondary_email ?? '—')}</td>
+					<td>${escapeHtml(m.lake_civic_number ?? '—')}</td>
+					<td>${escapeHtml(m.lake_street_name ?? '—')}</td>
+					<td>${escapeHtml(overviewTierLabel(tier))}</td>
+					<td>${escapeHtml(when)}</td>
+				</tr>`;
 			})
 			.join('');
 
 		const activeRows = (data.recentActiveMemberships ?? [])
 			.filter((row): row is typeof row & { member: NonNullable<(typeof row)['member']> } => row.member != null)
 			.map(({ membership: ms, member: m }) => {
-				const nameTd = formatAdminMemberNameTd(m, escapeHtml);
 				const whenRaw = ms.activated_at ?? ms.created_at;
 				const when = whenRaw ? formatAdminLocaleDate(whenRaw) : '—';
-				return `<tr${memberRowOpenAttrs(m)}>${nameTd}<td>${escapeHtml(overviewTierLabel(ms.tier))}</td><td>${ms.year}</td><td>${escapeHtml(when)}</td></tr>`;
+				return `<tr${memberRowOpenAttrs(m)}>
+					<td class="adminMemberNameCell">${escapeHtml(primaryName(m))}</td>
+					<td>${escapeHtml(m.primary_email ?? '—')}</td>
+					<td class="adminMemberNameCell">${escapeHtml(secondaryName(m))}</td>
+					<td>${escapeHtml(m.secondary_email ?? '—')}</td>
+					<td>${escapeHtml(m.lake_civic_number ?? '—')}</td>
+					<td>${escapeHtml(m.lake_street_name ?? '—')}</td>
+					<td>${escapeHtml(overviewTierLabel(ms.tier))}</td>
+					<td>${escapeHtml(when)}</td>
+				</tr>`;
 			})
 			.join('');
 
@@ -883,17 +906,26 @@ export function initAdminConsole(
 			<h3 class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewRecentTitle'))}</h3>
 			<h4 class="adminOverviewSubheading">${escapeHtml(t(strings, 'adminOverviewRecentVerifiedSubtitle'))}</h4>
 			<div class="tableWrap"><table class="adminTable"><thead><tr>
-				<th>${escapeHtml(t(strings, 'adminTableName'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTablePrimaryName'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTablePrimaryEmail'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableSecondaryName'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableSecondaryEmail'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableLakeCivic'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableLakeStreet'))}</th>
 				<th>${escapeHtml(t(strings, 'adminTableTier'))}</th>
-				<th>${escapeHtml(t(strings, 'adminOverviewColWhen'))}</th>
-			</tr></thead><tbody>${verifiedRows || `<tr><td colspan="3">—</td></tr>`}</tbody></table></div>
+				<th>${escapeHtml(t(strings, 'adminTableCreated'))}</th>
+			</tr></thead><tbody>${verifiedRows || `<tr><td colspan="8">—</td></tr>`}</tbody></table></div>
 			<h4 class="adminOverviewSubheading">${escapeHtml(t(strings, 'adminOverviewRecentActiveSubtitle'))}</h4>
 			<div class="tableWrap"><table class="adminTable"><thead><tr>
-				<th>${escapeHtml(t(strings, 'adminTableName'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTablePrimaryName'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTablePrimaryEmail'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableSecondaryName'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableSecondaryEmail'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableLakeCivic'))}</th>
+				<th>${escapeHtml(t(strings, 'adminTableLakeStreet'))}</th>
 				<th>${escapeHtml(t(strings, 'adminTableTier'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableYear'))}</th>
-				<th>${escapeHtml(t(strings, 'adminOverviewColWhen'))}</th>
-			</tr></thead><tbody>${activeRows || `<tr><td colspan="4">—</td></tr>`}</tbody></table></div>
+				<th>${escapeHtml(t(strings, 'adminTableCreated'))}</th>
+			</tr></thead><tbody>${activeRows || `<tr><td colspan="8">—</td></tr>`}</tbody></table></div>
 			</section>
 		`;
 		overviewMount.querySelectorAll<HTMLTableSectionElement>('.adminOverviewSection tbody').forEach((tbody) => {
