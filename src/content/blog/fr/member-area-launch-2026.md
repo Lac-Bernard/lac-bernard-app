@@ -1,7 +1,7 @@
 ---
 title: 'Espace membre en ligne : connexion, renouvellement et paiement sur lacbernard.ca'
 description: 'L’espace membre est disponible. Consultez votre adhésion, mettez à jour vos coordonnées et payez en toute sécurité par carte — ou par virement, chèque ou comptant.'
-pubDate: '2026-04-05'
+pubDate: '2026-04-06'
 ---
 
 L’**espace membre** sur [lacbernard.ca](https://lacbernard.ca) est prêt. Les membres peuvent y consulter le statut de leur adhésion, tenir à jour leurs coordonnées et, cette année, **payer en toute sécurité par carte de crédit** sur le site — ce que plusieurs d’entre vous nous avaient demandé. Merci de votre patience pendant la mise en place.

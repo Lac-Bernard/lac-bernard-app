@@ -41,6 +41,8 @@ After you sign in, you’ll land in your **member area**. You should see a short
 - **Start or renew** your membership for the year when you’re not yet active.  
 - **Pay** from the same screen where you pick your type: **Pay with credit card** (optional donation in the window that opens, then Stripe checkout) or **Pay another way** (Interac, cheque, or cash—instructions appear after the page updates; you can add an optional donation with the same offline payment—see the note on screen).
 
+**Tip for lake address:** the form may show address suggestions as you type. Choose the closest match, or keep typing and enter it manually if needed.
+
 ### Paying by credit card
 
 The big new piece for many of you is **Pay with credit card**. You’ll go through a short, secure checkout (handled by Stripe). You can add an **optional donation** to support the association in the same step if you wish. When payment succeeds, your membership should show as **active** shortly after.

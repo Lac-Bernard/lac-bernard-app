@@ -41,6 +41,8 @@ Après la connexion, vous arrivez dans votre **espace membre**. Vous y voyez un 
 - **Démarrer ou renouveler** votre adhésion pour l’année lorsque vous n’êtes pas encore actif.  
 - **Payer** sur le même écran que le choix du type : **Payer par carte de crédit** (don facultatif dans la fenêtre, puis paiement Stripe) ou **Autre mode de paiement** (virement Interac, chèque ou comptant — les instructions s’affichent après la mise à jour de la page ; un **don facultatif** peut accompagner le même paiement hors ligne — voir la note à l’écran).
 
+**Astuce pour l’adresse au lac :** le formulaire peut proposer des suggestions d’adresse pendant que vous tapez. Choisissez la plus proche, ou continuez de taper et saisissez l’adresse manuellement au besoin.
+
 ### Payer par carte de crédit
 
 La grande nouveauté pour plusieurs : **Payer par carte de crédit**. Vous suivrez un court parcours de paiement sécurisé (Stripe). Vous pouvez ajouter un **don facultatif** pour soutenir l’association à la même étape si vous le souhaitez. Une fois le paiement réussi, votre adhésion devrait s’afficher comme **active** sous peu.

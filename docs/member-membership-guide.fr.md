@@ -77,6 +77,8 @@ Depuis la page compte, ouvrez **Modifier le profil** (ou allez à `/en/membershi
 
 Vous pouvez mettre à jour les **coordonnées**, l’**adresse au lac** (numéro civique et rue), l’**adresse postale**, un **contact secondaire** facultatif et l’**abonnement aux courriels** de l’association. Votre **courriel de connexion** est affiché à titre indicatif et est lié à la façon dont vous vous connectez ; pour utiliser une autre adresse de connexion, communiquez avec l’association afin d’aligner votre **courriel principal** avec le compte que vous souhaitez utiliser.
 
+Lors de la saisie de l’**adresse au lac**, le formulaire peut proposer des **suggestions d’adresse** pendant que vous tapez (choisissez la plus proche). Si aucune suggestion ne convient, continuez de taper et saisissez l’adresse manuellement.
+
 L’adhésion **avec droit de vote** exige une **adresse au lac complète** dans votre profil. L’adhésion **associée** ne fonctionne pas de la même façon à cet égard. Si l’adhésion avec droit de vote est bloquée tant que l’adresse manque, la page l’indique et renvoie vers **Modifier le profil**.
 
 Enregistrez vos changements avant de démarrer ou de modifier un paiement d’adhésion.
