@@ -14,6 +14,9 @@ type MemberNameRow = {
 	secondary_first_name?: string | null;
 	secondary_last_name?: string | null;
 	primary_email?: string | null;
+	secondary_email?: string | null;
+	lake_civic_number?: string | null;
+	lake_street_name?: string | null;
 	created_at?: string;
 };
 
@@ -56,7 +59,9 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 		service.from('members').select('id', { count: 'exact', head: true }).eq('status', 'new'),
 		service
 			.from('members')
-			.select('id, created_at, first_name, last_name, secondary_first_name, secondary_last_name')
+			.select(
+				'id, created_at, first_name, last_name, secondary_first_name, secondary_last_name, primary_email, secondary_email, lake_civic_number, lake_street_name',
+			)
 			.eq('status', 'verified')
 			.order('created_at', { ascending: false })
 			.limit(LIMIT_VERIFIED_RECENT),
@@ -115,7 +120,9 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 	if (activeMemberIds.length > 0) {
 		const { data: mems, error: memErr } = await service
 			.from('members')
-			.select('id, first_name, last_name, secondary_first_name, secondary_last_name, primary_email')
+			.select(
+				'id, first_name, last_name, secondary_first_name, secondary_last_name, primary_email, secondary_email, lake_civic_number, lake_street_name',
+			)
 			.in('id', activeMemberIds);
 		if (memErr) {
 			return new Response(JSON.stringify({ error: 'query_failed', detail: memErr.message }), {

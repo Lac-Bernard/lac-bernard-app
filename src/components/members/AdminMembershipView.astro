@@ -116,6 +116,12 @@ const adminKeys = [
 	'adminTablePaymentDate',
 	'adminPendingBadge',
 	'adminAddMemberNav',
+	'adminTablePrimaryName',
+	'adminTablePrimaryEmail',
+	'adminTableSecondaryName',
+	'adminTableSecondaryEmail',
+	'adminTableLakeCivic',
+	'adminTableLakeStreet',
 ] as const;
 
 const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
