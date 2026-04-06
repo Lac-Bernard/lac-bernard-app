@@ -9,7 +9,7 @@ import {
 	parseDonationNote,
 } from '../../../lib/membership/stripeCheckout';
 import { getMembershipCalendarYear } from '../../../lib/members/membershipYear';
-import { memberPaths, type MemberLocale } from '../../../lib/members/i18n';
+import { memberPaths, membershipTierLabel, type MemberLocale } from '../../../lib/members/i18n';
 import { getStripeSecretKey } from '../../../lib/supabase/env';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 
@@ -164,11 +164,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 	const successUrl = `${origin}/api/membership/checkout-success?session_id={CHECKOUT_SESSION_ID}&locale=${locale}`;
 	const cancelUrl = `${origin}${accountPath}?checkout=cancelled`;
 
-	const membershipLabel = locale === 'fr' ? 'Cotisation' : 'Membership';
-	const membershipDesc =
-		locale === 'fr'
-			? `Année ${String(currentYear)}`
-			: `Year ${String(currentYear)}`;
+	const tierLabel = membershipTierLabel(ms.tier, locale);
+	const membershipLineName = `${String(currentYear)} — ${tierLabel}`;
 
 	const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
 		{
@@ -177,8 +174,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				currency: 'cad',
 				unit_amount: membershipCents,
 				product_data: {
-					name: membershipLabel,
-					description: membershipDesc,
+					name: membershipLineName,
 				},
 			},
 		},
@@ -215,6 +211,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			membership_id: ms.id,
 			member_id: member.id,
 			tier: ms.tier,
+			calendar_year: String(currentYear),
 			membership_amount_cents: String(membershipCents),
 			donation_cents: String(donationCents),
 			donation_note: donationNote,
