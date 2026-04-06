@@ -324,8 +324,13 @@ const hasSecondaryContactInfo = Boolean(
                           <button type="button" class="btnGhost checkoutModalBtnSecondary" id="checkout-modal-cancel">
                             {t.checkoutModalCancel}
                           </button>
-                          <button type="submit" class="btnPrimary checkoutModalBtnPrimary" id="checkout-modal-submit">
-                            {t.checkoutModalContinue}
+                          <button
+                            type="submit"
+                            class="btnPrimary checkoutModalBtnPrimary checkoutModalSubmit"
+                            id="checkout-modal-submit"
+                          >
+                            <span class="checkoutModalSubmit-spinner" aria-hidden="true"></span>
+                            <span class="checkoutModalSubmit-label">{t.checkoutModalContinue}</span>
                           </button>
                         </div>
                       </form>
@@ -517,8 +522,13 @@ const hasSecondaryContactInfo = Boolean(
                           <button type="button" class="btnGhost checkoutModalBtnSecondary" id="checkout-modal-cancel">
                             {t.checkoutModalCancel}
                           </button>
-                          <button type="submit" class="btnPrimary checkoutModalBtnPrimary" id="checkout-modal-submit">
-                            {t.checkoutModalContinue}
+                          <button
+                            type="submit"
+                            class="btnPrimary checkoutModalBtnPrimary checkoutModalSubmit"
+                            id="checkout-modal-submit"
+                          >
+                            <span class="checkoutModalSubmit-spinner" aria-hidden="true"></span>
+                            <span class="checkoutModalSubmit-label">{t.checkoutModalContinue}</span>
                           </button>
                         </div>
                       </form>
@@ -609,6 +619,8 @@ const hasSecondaryContactInfo = Boolean(
       errCheckoutStripeMisconfigured: t.checkoutStripeMisconfigured,
       errCheckoutInvalidDonation: t.checkoutInvalidDonation,
       errCheckoutInvalidDonationNote: t.checkoutInvalidDonationNote,
+      checkoutModalContinue: t.checkoutModalContinue,
+      checkoutModalContinuing: t.checkoutModalContinuing,
       errNoLake: t.pendingCreateErrorNoLakeAddress,
       errGeneralTaken: t.pendingCreateErrorGeneralAddressTaken,
       tierLabelVoting: t.tierGeneral,
@@ -735,12 +747,24 @@ const hasSecondaryContactInfo = Boolean(
     const checkoutModalForm = document.getElementById('checkout-modal-form');
     const checkoutMsg = document.getElementById('pay-checkout-message');
     const checkoutSubmit = document.getElementById('checkout-modal-submit');
+    const checkoutSubmitLabel = checkoutSubmit?.querySelector('.checkoutModalSubmit-label');
     const donationInput = document.getElementById('modal-donation');
     const donationNoteInput = document.getElementById('modal-donation-note');
+
+    function setCheckoutSubmitLoading(loading) {
+      if (!checkoutModalForm || !checkoutSubmit) return;
+      checkoutModalForm.setAttribute('aria-busy', loading ? 'true' : 'false');
+      checkoutSubmit.classList.toggle('is-loading', loading);
+      checkoutSubmit.toggleAttribute('disabled', loading);
+      if (checkoutSubmitLabel) {
+        checkoutSubmitLabel.textContent = loading ? checkoutModalContinuing : checkoutModalContinue;
+      }
+    }
 
     openCheckoutBtn?.addEventListener('click', () => {
       if (checkoutMsg) checkoutMsg.textContent = '';
       checkoutModalForm?.reset();
+      setCheckoutSubmitLoading(false);
       if (createForm) {
         syncCheckoutModalSummaryFromTierForm();
       } else {
@@ -756,6 +780,7 @@ const hasSecondaryContactInfo = Boolean(
     document.getElementById('checkout-modal-cancel')?.addEventListener('click', () => {
       checkoutModalForm?.reset();
       if (checkoutMsg) checkoutMsg.textContent = '';
+      setCheckoutSubmitLoading(false);
       checkoutModal?.close();
     });
 
@@ -763,7 +788,6 @@ const hasSecondaryContactInfo = Boolean(
       e.preventDefault();
       if (!checkoutMsg || !checkoutSubmit || !checkoutModalForm) return;
       checkoutMsg.textContent = '';
-      checkoutSubmit.setAttribute('disabled', 'true');
       let donationDollars = 0;
       if (donationInput) {
         const v = String(donationInput.value ?? '').trim();
@@ -773,7 +797,6 @@ const hasSecondaryContactInfo = Boolean(
           const n = parseFloat(v);
           if (!Number.isFinite(n) || n < 0) {
             checkoutMsg.textContent = errCheckoutInvalidDonation;
-            checkoutSubmit.removeAttribute('disabled');
             return;
           }
           donationDollars = n;
@@ -782,11 +805,12 @@ const hasSecondaryContactInfo = Boolean(
       const donationNote = donationNoteInput ? String(donationNoteInput.value ?? '').trim() : '';
       if (donationNote.length > 500) {
         checkoutMsg.textContent = errCheckoutInvalidDonationNote;
-        checkoutSubmit.removeAttribute('disabled');
         return;
       }
 
+      setCheckoutSubmitLoading(true);
       let membershipId = checkoutModalForm.getAttribute('data-membership-id')?.trim() ?? '';
+      let leavingForCheckout = false;
       try {
         if (!membershipId) {
           if (!createForm) {
@@ -843,6 +867,7 @@ const hasSecondaryContactInfo = Boolean(
           return;
         }
         if (typeof data.url === 'string' && data.url) {
+          leavingForCheckout = true;
           window.location.assign(data.url);
           return;
         }
@@ -850,7 +875,7 @@ const hasSecondaryContactInfo = Boolean(
       } catch {
         checkoutMsg.textContent = errNetwork;
       } finally {
-        checkoutSubmit.removeAttribute('disabled');
+        if (!leavingForCheckout) setCheckoutSubmitLoading(false);
       }
     });
   </script>
@@ -1926,6 +1951,43 @@ const hasSecondaryContactInfo = Boolean(
   .prose .checkoutModalBtnPrimary.btnPrimary {
     margin-top: 0;
     color: #fff !important;
+  }
+
+  .checkoutModalSubmit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .checkoutModalSubmit-spinner {
+    display: none;
+    width: 1.125rem;
+    height: 1.125rem;
+    flex-shrink: 0;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    box-sizing: border-box;
+  }
+
+  .checkoutModalSubmit.is-loading .checkoutModalSubmit-spinner {
+    display: block;
+    animation: checkoutModalSubmitSpin 0.65s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .checkoutModalSubmit.is-loading .checkoutModalSubmit-spinner {
+      animation: none;
+      border-color: rgba(255, 255, 255, 0.5);
+      border-top-color: rgba(255, 255, 255, 0.85);
+    }
+  }
+
+  @keyframes checkoutModalSubmitSpin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .prose .checkoutModalBtnSecondary.btnGhost {
