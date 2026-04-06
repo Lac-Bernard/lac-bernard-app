@@ -236,6 +236,10 @@ otp_expiry = 3600
 subject = "Connexion à l’espace membres — Association du lac Bernard"
 content_path = "./supabase/templates/magic_link.html"
 
+[auth.email.template.confirmation]
+subject = "Confirmez votre courriel — Association du lac Bernard"
+content_path = "./supabase/templates/confirmation.html"
+
 # Uncomment to customize notification email template
 # [auth.email.notification.password_changed]
 # enabled = true
