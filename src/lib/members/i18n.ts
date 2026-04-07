@@ -66,7 +66,7 @@ export const memberCopy: Record<
 		checkEmail: string;
 		/** Shown when magic link was superseded or expired (e.g. `signin_error=link_expired`). */
 		signInLinkExpiredNotice: string;
-		/** Shown when auth callback fails for reasons other than an expired link. */
+		/** Shown when auth callback fails for reasons other than an expired link (catch-all; e.g. private browsing or cookie-blocking extensions). */
 		signInAuthFailedNotice: string;
 		adminTitle: string;
 		adminDescription: string;
@@ -454,7 +454,7 @@ export const memberCopy: Record<
 		signInLinkExpiredNotice:
 			'You followed a sign-in link that is no longer valid. That usually means we sent a newer link to your email, or this link expired. Use the latest email from us, or request a new sign-in link.',
 		signInAuthFailedNotice:
-			'You followed a sign-in link that didn’t work. Enter your email and request a new sign-in link.',
+			'That sign-in link could not finish signing you in. Private or incognito mode and cookie-blocking or privacy extensions often get in the way—try a regular browser window, pause blockers for this site if you use them, or enter your email below to request a new one.',
 		adminTitle: 'Admin | Lac Bernard Association',
 		adminDescription: 'Association administration — members and payments.',
 		adminHeroAria: 'Administration',
@@ -847,7 +847,7 @@ export const memberCopy: Record<
 		signInLinkExpiredNotice:
 			'Vous avez suivi un lien de connexion qui n’est plus valide. En général, cela signifie qu’un lien plus récent vous a été envoyé par courriel, ou que ce lien a expiré. Utilisez le dernier courriel de notre part, ou demandez un nouveau lien de connexion.',
 		signInAuthFailedNotice:
-			'Vous avez suivi un lien de connexion qui n’a pas fonctionné. Saisissez votre courriel et demandez un nouveau lien de connexion.',
+			'Ce lien de connexion n’a pas abouti. La navigation privée ou une extension qui bloque les cookies ou le pistage s’en mêle souvent—ouvrez le lien dans une fenêtre habituelle, autorisez temporairement ce site au besoin, ou saisissez votre courriel ci-dessous pour en demander un nouveau.',
 		adminTitle: 'Administration | Association du lac Bernard',
 		adminDescription: 'Administration de l’association — membres et paiements.',
 		adminHeroAria: 'Administration',
