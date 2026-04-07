@@ -454,7 +454,7 @@ export const memberCopy: Record<
 		signInLinkExpiredNotice:
 			'You followed a sign-in link that is no longer valid. That usually means we sent a newer link to your email, or this link expired. Use the latest email from us, or request a new sign-in link.',
 		signInAuthFailedNotice:
-			'That sign-in link could not finish signing you in. Private or incognito mode and cookie-blocking or privacy extensions often get in the way—try a regular browser window, pause blockers for this site if you use them, or enter your email below to request a new one.',
+			'That sign-in link could not finish signing you in. Private or incognito mode and cookie-blocking or privacy extensions often get in the way—try in a regular browser window, pause blockers if you use them, and try sending a new sign-in link.',
 		adminTitle: 'Admin | Lac Bernard Association',
 		adminDescription: 'Association administration — members and payments.',
 		adminHeroAria: 'Administration',
@@ -847,7 +847,7 @@ export const memberCopy: Record<
 		signInLinkExpiredNotice:
 			'Vous avez suivi un lien de connexion qui n’est plus valide. En général, cela signifie qu’un lien plus récent vous a été envoyé par courriel, ou que ce lien a expiré. Utilisez le dernier courriel de notre part, ou demandez un nouveau lien de connexion.',
 		signInAuthFailedNotice:
-			'Ce lien de connexion n’a pas abouti. La navigation privée ou une extension qui bloque les cookies ou le pistage s’en mêle souvent—ouvrez le lien dans une fenêtre habituelle, autorisez temporairement ce site au besoin, ou saisissez votre courriel ci-dessous pour en demander un nouveau.',
+			'Ce lien de connexion n’a pas abouti. La navigation privée ou une extension qui bloque les cookies ou le pistage s’en mêle souvent—essayez dans une fenêtre de navigation habituelle, mettez les bloqueurs en pause si vous en utilisez, et essayez d’envoyer un nouveau lien de connexion.',
 		adminTitle: 'Administration | Association du lac Bernard',
 		adminDescription: 'Administration de l’association — membres et paiements.',
 		adminHeroAria: 'Administration',
