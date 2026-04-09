@@ -3,7 +3,7 @@ import { getMembershipAdminDailySummaryMailEnv } from '../supabase/env';
 
 export type AdminDailyMembershipSummaryCounts = {
 	pending_memberships: number;
-	new_members_awaiting_verification: number;
+	member_records_created_previous_toronto_day: number;
 	memberships_activated_previous_toronto_day: number;
 	toronto_report_date: string;
 	toronto_previous_date_for_activations: string;
@@ -19,7 +19,7 @@ export function parseAdminDailyMembershipSummary(data: unknown): AdminDailyMembe
 	const o = data as Record<string, unknown>;
 	return {
 		pending_memberships: asNonNegativeInt(o.pending_memberships),
-		new_members_awaiting_verification: asNonNegativeInt(o.new_members_awaiting_verification),
+		member_records_created_previous_toronto_day: asNonNegativeInt(o.member_records_created_previous_toronto_day),
 		memberships_activated_previous_toronto_day: asNonNegativeInt(o.memberships_activated_previous_toronto_day),
 		toronto_report_date: typeof o.toronto_report_date === 'string' ? o.toronto_report_date : '',
 		toronto_previous_date_for_activations:
@@ -40,7 +40,7 @@ export function buildMembershipAdminDailySummaryText(
 		`Report morning (America/Toronto): ${report}`,
 		``,
 		`Pending memberships (all years): ${counts.pending_memberships}`,
-		`New members awaiting verification: ${counts.new_members_awaiting_verification}`,
+		`Member profiles created previous calendar day (${prev}, Toronto): ${counts.member_records_created_previous_toronto_day}`,
 		`Memberships activated previous calendar day (${prev}, Toronto): ${counts.memberships_activated_previous_toronto_day}`,
 		``,
 		`Admin (English):`,

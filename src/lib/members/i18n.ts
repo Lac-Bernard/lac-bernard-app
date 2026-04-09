@@ -76,7 +76,6 @@ export const memberCopy: Record<
 		adminNavPending: string;
 		adminNavOverview: string;
 		adminNavMembers: string;
-		adminNavNewMembers: string;
 		adminNavAuditLog: string;
 		adminAuditColWhen: string;
 		adminAuditColActor: string;
@@ -101,15 +100,13 @@ export const memberCopy: Record<
 		adminMemberPageTitleLoading: string;
 		adminMethodStripe: string;
 		adminOverviewRecentTitle: string;
-		adminOverviewRecentVerifiedSubtitle: string;
+		adminOverviewRecentEnrolledSubtitle: string;
 		adminOverviewRecentActiveSubtitle: string;
 		adminOverviewColWhen: string;
 		adminOverviewCountPending: string;
 		adminOverviewCountActive: string;
-		adminOverviewCountNewMembers: string;
 		adminOverviewKpiAriaMembers: string;
 		adminOverviewKpiAriaPending: string;
-		adminOverviewKpiAriaNewMembers: string;
 		adminTableAmount: string;
 		adminTableDuesPortion: string;
 		adminTableDonationPortion: string;
@@ -211,7 +208,7 @@ export const memberCopy: Record<
 		adminNotesFieldLabel: string;
 		adminStatusMemberLabel: string;
 		adminStatusMemberOptionNew: string;
-		adminStatusMemberOptionVerified: string;
+		adminStatusMemberOptionEnrolled: string;
 		adminStatusMemberOptionDisabled: string;
 		adminStatusMemberFieldTitle: string;
 		adminPromoteAdminTitle: string;
@@ -227,12 +224,10 @@ export const memberCopy: Record<
 		adminFilterTierGeneral: string;
 		adminFilterTierAssociate: string;
 		adminMemberStatusFilterLabel: string;
-		adminMemberStatusFilterVerified: string;
+		adminMemberStatusFilterEnrolled: string;
 		adminMemberStatusFilterNew: string;
 		adminMemberStatusFilterDisabled: string;
 		adminMemberStatusFilterAll: string;
-		adminNewMembersEmpty: string;
-		adminNewMembersBadge: string;
 		adminExportEmails: string;
 		adminExportEmailsCopied: string;
 		adminCopyEmailsFallbackPrompt: string;
@@ -464,7 +459,6 @@ export const memberCopy: Record<
 		adminNavPending: 'Pending payments',
 		adminNavOverview: 'Overview',
 		adminNavMembers: 'Members',
-		adminNavNewMembers: 'New members',
 		adminNavAuditLog: 'Audit log',
 		adminAuditColWhen: 'When',
 		adminAuditColActor: 'Admin',
@@ -487,15 +481,13 @@ export const memberCopy: Record<
 		adminMemberPageTitleLoading: 'Member',
 		adminMethodStripe: 'Card (Stripe)',
 		adminOverviewRecentTitle: 'Recent members',
-		adminOverviewRecentVerifiedSubtitle: 'Recently added verified profiles',
+		adminOverviewRecentEnrolledSubtitle: 'Recently added enrolled profiles',
 		adminOverviewRecentActiveSubtitle: 'Recent active memberships',
 		adminOverviewColWhen: 'When',
 		adminOverviewCountPending: 'Pending memberships',
 		adminOverviewCountActive: 'Active memberships ({{year}})',
-		adminOverviewCountNewMembers: 'New members',
 		adminOverviewKpiAriaMembers: '{{count}} active memberships for {{year}}. Open members directory.',
 		adminOverviewKpiAriaPending: '{{count}} pending memberships. Open pending tab.',
-		adminOverviewKpiAriaNewMembers: '{{count}} new member profiles. Open new members tab.',
 		adminTableAmount: 'Total',
 		adminTableDuesPortion: 'Dues',
 		adminTableDonationPortion: 'Donation',
@@ -596,11 +588,11 @@ export const memberCopy: Record<
 		adminSecondaryPhoneLabel: 'Secondary phone',
 		adminNotesFieldLabel: 'Internal notes',
 		adminStatusMemberLabel: 'Member status',
-		adminStatusMemberOptionNew: 'New — not yet reviewed',
-		adminStatusMemberOptionVerified: 'Verified — OK for directory and comms',
+		adminStatusMemberOptionNew: 'New — no membership activated yet',
+		adminStatusMemberOptionEnrolled: 'Enrolled — OK for directory and comms',
 		adminStatusMemberOptionDisabled: 'Disabled — excluded from default directory and exports',
 		adminStatusMemberFieldTitle:
-			'New: self-serve profile not yet reviewed. Verified: ready for directory. Disabled: inactive / do not contact.',
+			'New: no membership activated yet. Enrolled: directory-ready. Disabled: inactive / do not contact.',
 		adminPromoteAdminTitle: 'Grant this member the admin role in app metadata (they may need to sign out and back in).',
 		adminUserIdLabel: 'Linked auth user id',
 		adminPrimaryEmailLabel: 'Primary email',
@@ -615,12 +607,10 @@ export const memberCopy: Record<
 		adminFilterTierGeneral: 'Voting only',
 		adminFilterTierAssociate: 'Associate only',
 		adminMemberStatusFilterLabel: 'Record status',
-		adminMemberStatusFilterVerified: 'Verified (default)',
+		adminMemberStatusFilterEnrolled: 'Enrolled (default)',
 		adminMemberStatusFilterNew: 'New',
 		adminMemberStatusFilterDisabled: 'Disabled',
 		adminMemberStatusFilterAll: 'All',
-		adminNewMembersEmpty: 'No member profiles awaiting review.',
-		adminNewMembersBadge: '{{count}} new',
 		adminExportEmails: 'Copy email list',
 		adminExportEmailsCopied: 'Comma-separated emails copied to clipboard.',
 		adminCopyEmailsFallbackPrompt:
@@ -857,7 +847,6 @@ export const memberCopy: Record<
 		adminNavPending: 'Paiements en attente',
 		adminNavOverview: 'Aperçu',
 		adminNavMembers: 'Membres',
-		adminNavNewMembers: 'Nouveaux membres',
 		adminNavAuditLog: 'Journal d’audit',
 		adminAuditColWhen: 'Date et heure',
 		adminAuditColActor: 'Administrateur',
@@ -880,16 +869,14 @@ export const memberCopy: Record<
 		adminMemberPageTitleLoading: 'Membre',
 		adminMethodStripe: 'Carte (Stripe)',
 		adminOverviewRecentTitle: 'Membres récents',
-		adminOverviewRecentVerifiedSubtitle: 'Profils vérifiés ajoutés récemment',
+		adminOverviewRecentEnrolledSubtitle: 'Profils inscrits ajoutés récemment',
 		adminOverviewRecentActiveSubtitle: 'Adhésions actives récentes',
 		adminOverviewColWhen: 'Date',
 		adminOverviewCountPending: 'Adhésions en attente',
 		adminOverviewCountActive: 'Adhésions actives ({{year}})',
-		adminOverviewCountNewMembers: 'Nouveaux membres',
 		adminOverviewKpiAriaMembers:
 			'{{count}} adhésions actives pour {{year}}. Ouvrir le répertoire des membres.',
 		adminOverviewKpiAriaPending: '{{count}} adhésions en attente. Ouvrir l’onglet En attente.',
-		adminOverviewKpiAriaNewMembers: '{{count}} nouveaux profils membres. Ouvrir l’onglet Nouveaux membres.',
 		adminTableAmount: 'Total',
 		adminTableDuesPortion: 'Cotisation',
 		adminTableDonationPortion: 'Don',
@@ -990,11 +977,11 @@ export const memberCopy: Record<
 		adminSecondaryPhoneLabel: 'Téléphone secondaire',
 		adminNotesFieldLabel: 'Notes internes',
 		adminStatusMemberLabel: 'Statut du membre',
-		adminStatusMemberOptionNew: 'Nouveau — pas encore révisé',
-		adminStatusMemberOptionVerified: 'Vérifié — OK pour le répertoire et les envois',
+		adminStatusMemberOptionNew: 'Nouveau — aucune adhésion activée pour l’instant',
+		adminStatusMemberOptionEnrolled: 'Inscrit — OK pour le répertoire et les envois',
 		adminStatusMemberOptionDisabled: 'Désactivé — exclu du répertoire par défaut et des exports',
 		adminStatusMemberFieldTitle:
-			'Nouveau : profil créé par le membre, non révisé. Vérifié : prêt pour le répertoire. Désactivé : inactif / ne pas contacter.',
+			'Nouveau : aucune adhésion activée. Inscrit : prêt pour le répertoire. Désactivé : inactif / ne pas contacter.',
 		adminPromoteAdminTitle:
 			'Accorder le rôle admin dans les métadonnées de l’application (déconnexion / reconnexion peut être nécessaire).',
 		adminUserIdLabel: 'Identifiant de compte lié',
@@ -1010,12 +997,10 @@ export const memberCopy: Record<
 		adminFilterTierGeneral: 'Avec droit de vote seulement',
 		adminFilterTierAssociate: 'Associée seulement',
 		adminMemberStatusFilterLabel: 'Statut du dossier',
-		adminMemberStatusFilterVerified: 'Vérifiés (défaut)',
+		adminMemberStatusFilterEnrolled: 'Inscrits (défaut)',
 		adminMemberStatusFilterNew: 'Nouveau',
 		adminMemberStatusFilterDisabled: 'Désactivé',
 		adminMemberStatusFilterAll: 'Tous',
-		adminNewMembersEmpty: 'Aucun profil en attente de révision.',
-		adminNewMembersBadge: '{{count}} nouveaux',
 		adminExportEmails: 'Copier la liste de courriels',
 		adminExportEmailsCopied: 'Courriels séparés par des virgules copiés dans le presse-papiers.',
 		adminCopyEmailsFallbackPrompt:

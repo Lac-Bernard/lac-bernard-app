@@ -69,7 +69,7 @@ async function handleDailySummary({ request }: APIContext): Promise<Response> {
 		JSON.stringify({
 			ok: true,
 			pending_memberships: counts.pending_memberships,
-			new_members_awaiting_verification: counts.new_members_awaiting_verification,
+			member_records_created_previous_toronto_day: counts.member_records_created_previous_toronto_day,
 			memberships_activated_previous_toronto_day: counts.memberships_activated_previous_toronto_day,
 		}),
 		{ status: 200, headers: { 'Content-Type': 'application/json' } },

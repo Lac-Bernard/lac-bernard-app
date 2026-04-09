@@ -25,7 +25,6 @@ const adminKeys = [
 	'adminNavPending',
 	'adminNavOverview',
 	'adminNavMembers',
-	'adminNavNewMembers',
 	'adminNavAuditLog',
 	'adminAuditColWhen',
 	'adminAuditColActor',
@@ -76,12 +75,10 @@ const adminKeys = [
 	'adminFilterTierGeneral',
 	'adminFilterTierAssociate',
 	'adminMemberStatusFilterLabel',
-	'adminMemberStatusFilterVerified',
+	'adminMemberStatusFilterEnrolled',
 	'adminMemberStatusFilterNew',
 	'adminMemberStatusFilterDisabled',
 	'adminMemberStatusFilterAll',
-	'adminNewMembersEmpty',
-	'adminNewMembersBadge',
 	'adminScopeLabel',
 	'adminScopeEveryone',
 	'adminScopeHasHistory',
@@ -98,15 +95,13 @@ const adminKeys = [
 	'adminExportMembersCsvHint',
 	'adminExportEmailsEmpty',
 	'adminOverviewRecentTitle',
-	'adminOverviewRecentVerifiedSubtitle',
+	'adminOverviewRecentEnrolledSubtitle',
 	'adminOverviewRecentActiveSubtitle',
 	'adminOverviewColWhen',
 	'adminOverviewCountPending',
 	'adminOverviewCountActive',
-	'adminOverviewCountNewMembers',
 	'adminOverviewKpiAriaMembers',
 	'adminOverviewKpiAriaPending',
-	'adminOverviewKpiAriaNewMembers',
 	'adminTableAmount',
 	'adminTableDuesPortion',
 	'adminTableDonationPortion',
@@ -160,10 +155,6 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
               {t.adminNavPending}
               <span id="admin-pending-badge" class="adminTabBadge" hidden></span>
             </button>
-            <button type="button" class="adminTab" role="tab" data-admin-tab="newMembers" aria-selected={initialAdminTab === 'newMembers' ? 'true' : 'false'}>
-              {t.adminNavNewMembers}
-              <span id="admin-new-members-badge" class="adminTabBadge" hidden></span>
-            </button>
             <button type="button" class="adminTab" role="tab" data-admin-tab="members" aria-selected={initialAdminTab === 'members' ? 'true' : 'false'}>{t.adminNavMembers}</button>
             <button type="button" class="adminTab" role="tab" data-admin-tab="auditLog" aria-selected={initialAdminTab === 'auditLog' ? 'true' : 'false'}>{t.adminNavAuditLog}</button>
           </div>
@@ -191,31 +182,6 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
               </thead>
               <tbody id="admin-pending-body"></tbody>
             </table>
-          </div>
-        </div>
-
-        <div data-admin-panel="newMembers" class="adminPanel adminCard" hidden={initialAdminTab !== 'newMembers'}>
-          <div class="tableWrap">
-            <table class="adminTable adminTable--members">
-              <thead>
-                <tr>
-                  <th>{t.adminTablePrimaryName}</th>
-                  <th>{t.adminTablePrimaryEmail}</th>
-                  <th>{t.adminTableSecondaryName}</th>
-                  <th>{t.adminTableSecondaryEmail}</th>
-                  <th>{t.adminTableLakeCivic}</th>
-                  <th>{t.adminTableLakeStreet}</th>
-                  <th>{t.adminTableTier}</th>
-                  <th>{t.adminTableCreated}</th>
-                </tr>
-              </thead>
-              <tbody id="admin-new-members-body"></tbody>
-            </table>
-          </div>
-          <div class="adminPager">
-            <button type="button" class="adminBtn adminBtn--ghost" id="admin-new-members-prev">{t.adminPrevPage}</button>
-            <span id="admin-new-members-pageinfo"></span>
-            <button type="button" class="adminBtn adminBtn--ghost" id="admin-new-members-next">{t.adminNextPage}</button>
           </div>
         </div>
 
@@ -266,7 +232,7 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
               <label class="adminField">
                 <span class="adminField__label">{t.adminMemberStatusFilterLabel}</span>
                 <select id="admin-members-member-status" name="memberStatus" class="adminInput">
-                  <option value="verified">{t.adminMemberStatusFilterVerified}</option>
+                  <option value="enrolled">{t.adminMemberStatusFilterEnrolled}</option>
                   <option value="new">{t.adminMemberStatusFilterNew}</option>
                   <option value="disabled">{t.adminMemberStatusFilterDisabled}</option>
                   <option value="all">{t.adminMemberStatusFilterAll}</option>
@@ -912,10 +878,6 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
 
   .adminOverviewMount :global(.adminKpi--activeYear) {
     border-left: 3px solid rgba(34, 120, 80, 0.85);
-  }
-
-  .adminOverviewMount :global(.adminKpi--newMembers) {
-    border-left: 3px solid rgba(28, 95, 118, 0.55);
   }
 
   .adminOverviewMount :global(.adminKpiValue) {

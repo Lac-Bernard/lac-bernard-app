@@ -112,7 +112,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 	}
 	/** Admin-created members are directory-ready unless status was explicitly set. */
 	if (!Object.prototype.hasOwnProperty.call(parsed.value, 'status')) {
-		row.status = 'verified';
+		row.status = 'enrolled';
 	}
 
 	const service = createSupabaseServiceRoleClient();

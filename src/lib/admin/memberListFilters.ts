@@ -6,8 +6,8 @@ export type AdminMemberListFilters = {
 	year: number;
 	membership: 'active' | 'not_active' | 'all' | 'has_membership_history';
 	tier: 'all' | 'voting' | 'associate';
-	/** Directory lifecycle filter (members.status); default verified. */
-	memberStatus: 'verified' | 'new' | 'disabled' | 'all';
+	/** Directory lifecycle filter (members.status); default enrolled. */
+	memberStatus: 'enrolled' | 'new' | 'disabled' | 'all';
 	/** Pass to RPC as `p_q` via `q || null` */
 	q: string;
 };
@@ -30,8 +30,8 @@ export function parseAdminMemberListFilters(searchParams: URLSearchParams): Admi
 	const tier: 'all' | 'voting' | 'associate' =
 		tierRaw === 'voting' || tierRaw === 'associate' ? tierRaw : 'all';
 
-	const msRaw = (searchParams.get('memberStatus') ?? 'verified').trim().toLowerCase();
-	let memberStatus: AdminMemberListFilters['memberStatus'] = 'verified';
+	const msRaw = (searchParams.get('memberStatus') ?? 'enrolled').trim().toLowerCase();
+	let memberStatus: AdminMemberListFilters['memberStatus'] = 'enrolled';
 	if (msRaw === 'new') memberStatus = 'new';
 	else if (msRaw === 'disabled') memberStatus = 'disabled';
 	else if (msRaw === 'all') memberStatus = 'all';
