@@ -229,10 +229,10 @@ export function initAdminMemberDetail(
 		const statusSel = el<HTMLSelectElement>('#admin-field-status');
 		if (statusSel) {
 			const v = (m.status ?? '').trim().toLowerCase();
-			if (v === 'new' || v === 'verified' || v === 'disabled') {
+			if (v === 'new' || v === 'enrolled' || v === 'disabled') {
 				statusSel.value = v;
 			} else {
-				statusSel.value = 'verified';
+				statusSel.value = 'enrolled';
 			}
 		}
 		el<HTMLInputElement>('#admin-field-user_id')!.value = m.user_id ?? '';

@@ -452,7 +452,7 @@ def main() -> None:
         _email_raw = str(row["E-mail address"]).strip() if pd.notna(row["E-mail address"]) else ""
         primary_email = _email_raw if _email_raw else None
 
-        status = "disabled" if str(row.get("Inactive?", "")).strip().lower() == "inactive" else "verified"
+        status = "disabled" if str(row.get("Inactive?", "")).strip().lower() == "inactive" else "enrolled"
 
         fn_primary, fn_secondary = parse_first_name_cell(row.get("First Name"))
 

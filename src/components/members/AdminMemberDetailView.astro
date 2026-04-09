@@ -51,7 +51,7 @@ const adminKeys = [
 	'adminNotesFieldLabel',
 	'adminStatusMemberLabel',
 	'adminStatusMemberOptionNew',
-	'adminStatusMemberOptionVerified',
+	'adminStatusMemberOptionEnrolled',
 	'adminStatusMemberOptionDisabled',
 	'adminStatusMemberFieldTitle',
 	'adminPromoteAdminTitle',
@@ -179,7 +179,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
                   {t.adminStatusMemberLabel}
                   <select id="admin-field-status" name="status" class="adminInput" title={t.adminStatusMemberFieldTitle}>
                     <option value="new">{t.adminStatusMemberOptionNew}</option>
-                    <option value="verified">{t.adminStatusMemberOptionVerified}</option>
+                    <option value="enrolled">{t.adminStatusMemberOptionEnrolled}</option>
                     <option value="disabled">{t.adminStatusMemberOptionDisabled}</option>
                   </select>
                 </label>

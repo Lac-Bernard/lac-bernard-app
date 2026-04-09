@@ -59,7 +59,7 @@ export function parseAdminMemberPatch(body: unknown): { ok: true; value: AdminMe
 	}
 	if (has('status') && typeof o.status === 'string') {
 		const st = o.status.trim().toLowerCase();
-		if (st !== '' && st !== 'new' && st !== 'verified' && st !== 'disabled') {
+		if (st !== '' && st !== 'new' && st !== 'enrolled' && st !== 'disabled') {
 			return { ok: false, error: 'invalid_status' };
 		}
 	}
@@ -112,7 +112,7 @@ export function adminPatchToRow(p: AdminMemberPatch): Record<string, unknown> {
 		if (p.status == null || p.status.trim() === '') row.status = null;
 		else {
 			const st = p.status.trim().toLowerCase();
-			row.status = st === 'new' || st === 'verified' || st === 'disabled' ? st : null;
+			row.status = st === 'new' || st === 'enrolled' || st === 'disabled' ? st : null;
 		}
 	}
 	if (Object.prototype.hasOwnProperty.call(p, 'primary_email')) {

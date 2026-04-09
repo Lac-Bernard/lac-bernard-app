@@ -119,7 +119,7 @@ function buildDataset(cy) {
 		chloe: uid(8),
 		marc: uid(9),
 		julie: uid(10),
-		/** members.status = new — appears on New members tab; verify flow */
+		/** members.status = new — no membership activated yet */
 		nova: uid(11),
 		/** members.status = disabled — soft-off; excluded from default directory / exports */
 		riley: uid(12),
@@ -135,7 +135,7 @@ function buildDataset(cy) {
 			primary_phone: '514-555-0101',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'verified',
+			status: 'enrolled',
 		},
 		{
 			id: M.marie,
@@ -146,7 +146,7 @@ function buildDataset(cy) {
 			primary_phone: '514-555-0102',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'verified',
+			status: 'enrolled',
 		},
 		{
 			id: M.jean,
@@ -156,7 +156,7 @@ function buildDataset(cy) {
 			primary_phone: '418-555-0103',
 			email_opt_in: false,
 			notes: SEED_MARKER,
-			status: 'verified',
+			status: 'enrolled',
 		},
 		{
 			id: M.sophie,
@@ -166,7 +166,7 @@ function buildDataset(cy) {
 			primary_phone: '450-555-0104',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'verified',
+			status: 'enrolled',
 		},
 		{
 			id: M.lucas,
@@ -176,7 +176,7 @@ function buildDataset(cy) {
 			primary_phone: '819-555-0105',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'verified',
+			status: 'enrolled',
 		},
 		{
 			id: M.emma,
@@ -186,7 +186,7 @@ function buildDataset(cy) {
 			primary_phone: '438-555-0106',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'verified',
+			status: 'enrolled',
 		},
 		{
 			id: M.noah,
@@ -196,7 +196,7 @@ function buildDataset(cy) {
 			primary_phone: '514-555-0107',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'verified',
+			status: 'enrolled',
 		},
 		{
 			id: M.chloe,
@@ -206,7 +206,7 @@ function buildDataset(cy) {
 			primary_phone: '514-555-0108',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'verified',
+			status: 'enrolled',
 		},
 		{
 			id: M.marc,
@@ -216,7 +216,7 @@ function buildDataset(cy) {
 			primary_phone: '418-555-0109',
 			email_opt_in: false,
 			notes: SEED_MARKER,
-			status: 'verified',
+			status: 'enrolled',
 		},
 		{
 			id: M.julie,
@@ -226,7 +226,7 @@ function buildDataset(cy) {
 			primary_phone: '450-555-0110',
 			email_opt_in: true,
 			notes: SEED_MARKER,
-			status: 'verified',
+			status: 'enrolled',
 		},
 		{
 			id: M.nova,
@@ -236,7 +236,7 @@ function buildDataset(cy) {
 			secondary_email: null,
 			primary_phone: '514-555-0199',
 			email_opt_in: true,
-			notes: `${SEED_MARKER} · members.status=new (self-serve; use New members tab + Verify)`,
+			notes: `${SEED_MARKER} · members.status=new (self-serve; no membership activated yet)`,
 			status: 'new',
 		},
 		{

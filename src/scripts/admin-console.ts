@@ -5,7 +5,7 @@ import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymen
 
 export type AdminConsoleStrings = Record<string, string>;
 
-const ADMIN_TAB_IDS = ['overview', 'pending', 'newMembers', 'members', 'auditLog'] as const;
+const ADMIN_TAB_IDS = ['overview', 'pending', 'members', 'auditLog'] as const;
 export type AdminTabId = (typeof ADMIN_TAB_IDS)[number];
 
 function isAdminTabId(s: string): s is AdminTabId {
@@ -327,7 +327,6 @@ export function initAdminConsole(
 	const overviewMount = el<HTMLElement>('#admin-overview-mount');
 	const auditBody = el<HTMLTableSectionElement>('#admin-audit-body');
 	const pendingBadge = el<HTMLElement>('#admin-pending-badge');
-	const newMembersBadge = el<HTMLElement>('#admin-new-members-badge');
 	statusElGlobal = el<HTMLElement>('#admin-status');
 	const tabs = document.querySelectorAll<HTMLButtonElement>('[data-admin-tab]');
 	const panels = document.querySelectorAll<HTMLElement>('[data-admin-panel]');
@@ -366,8 +365,6 @@ export function initAdminConsole(
 
 	let membersPage = 1;
 	let membersTotalPages = 1;
-	let newMembersPage = 1;
-	let newMembersTotalPages = 1;
 	let auditPage = 1;
 	let auditTotalPages = 1;
 	let membersSort = 'created_at_desc';
@@ -388,12 +385,6 @@ export function initAdminConsole(
 		if (!pendingBadge) return;
 		pendingBadge.textContent = count > 0 ? t(strings, 'adminPendingBadge', { count }) : '';
 		pendingBadge.hidden = count <= 0;
-	}
-
-	function setNewMembersBadge(count: number) {
-		if (!newMembersBadge) return;
-		newMembersBadge.textContent = count > 0 ? t(strings, 'adminNewMembersBadge', { count }) : '';
-		newMembersBadge.hidden = count <= 0;
 	}
 
 	function getMemberFilterYear(): number {
@@ -417,7 +408,7 @@ export function initAdminConsole(
 		const q = el<HTMLInputElement>('#admin-members-q')?.value?.trim() ?? '';
 		const membership = el<HTMLSelectElement>('#admin-members-scope')?.value ?? 'active';
 		const tier = el<HTMLSelectElement>('#admin-members-tier')?.value ?? 'all';
-		const memberStatus = el<HTMLSelectElement>('#admin-members-member-status')?.value ?? 'verified';
+		const memberStatus = el<HTMLSelectElement>('#admin-members-member-status')?.value ?? 'enrolled';
 
 		const params = new URLSearchParams({
 			page: String(membersPage),
@@ -427,22 +418,6 @@ export function initAdminConsole(
 			membership,
 			tier,
 			memberStatus,
-		});
-		if (q) params.set('q', q);
-		return params;
-	}
-
-	function buildNewMembersListParams(): URLSearchParams {
-		const q = el<HTMLInputElement>('#admin-members-q')?.value?.trim() ?? '';
-		/** Match overview `newMembersPending` count: any `members.status = new`, not directory scope (active for year). */
-		const params = new URLSearchParams({
-			page: String(newMembersPage),
-			limit: '25',
-			sort: membersSort,
-			year: String(getMemberFilterYear()),
-			membership: 'all',
-			tier: 'all',
-			memberStatus: 'new',
 		});
 		if (q) params.set('q', q);
 		return params;
@@ -490,8 +465,6 @@ export function initAdminConsole(
 			void loadMembers();
 		} else if (tab === 'pending') {
 			void loadPending();
-		} else if (tab === 'newMembers') {
-			void loadNewMembers();
 		} else if (tab === 'overview') {
 			void loadOverview();
 		} else if (tab === 'auditLog') {
@@ -511,7 +484,7 @@ export function initAdminConsole(
 		const nav = (e.target as HTMLElement).closest('[data-admin-kpi-nav]');
 		if (!nav) return;
 		const dest = nav.getAttribute('data-admin-kpi-nav');
-		if (dest === 'members' || dest === 'pending' || dest === 'newMembers') {
+		if (dest === 'members' || dest === 'pending') {
 			e.preventDefault();
 			showTab(dest, 'push');
 		}
@@ -578,14 +551,12 @@ export function initAdminConsole(
 	el<HTMLFormElement>('#admin-members-search')?.addEventListener('submit', (e) => {
 		e.preventDefault();
 		membersPage = 1;
-		newMembersPage = 1;
 		void loadMembers();
 	});
 
 	el<HTMLSelectElement>('#admin-members-sort')?.addEventListener('change', (e) => {
 		membersSort = (e.target as HTMLSelectElement).value;
 		membersPage = 1;
-		newMembersPage = 1;
 		void loadMembers();
 	});
 
@@ -595,19 +566,16 @@ export function initAdminConsole(
 	el<HTMLInputElement>('#admin-members-year')?.addEventListener('change', () => {
 		syncMembersScopeLabels();
 		membersPage = 1;
-		newMembersPage = 1;
 		void loadMembers();
 	});
 
 	el<HTMLSelectElement>('#admin-members-scope')?.addEventListener('change', () => {
 		membersPage = 1;
-		newMembersPage = 1;
 		void loadMembers();
 	});
 
 	el<HTMLSelectElement>('#admin-members-tier')?.addEventListener('change', () => {
 		membersPage = 1;
-		newMembersPage = 1;
 		void loadMembers();
 	});
 
@@ -657,19 +625,6 @@ export function initAdminConsole(
 		if (membersPage < membersTotalPages) {
 			membersPage++;
 			void loadMembers();
-		}
-	});
-
-	el<HTMLButtonElement>('#admin-new-members-prev')?.addEventListener('click', () => {
-		if (newMembersPage > 1) {
-			newMembersPage--;
-			void loadNewMembers();
-		}
-	});
-	el<HTMLButtonElement>('#admin-new-members-next')?.addEventListener('click', () => {
-		if (newMembersPage < newMembersTotalPages) {
-			newMembersPage++;
-			void loadNewMembers();
 		}
 	});
 
@@ -780,12 +735,11 @@ export function initAdminConsole(
 		return ` data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}"`;
 	}
 
-	/** Tab badges (pending / new members) normally come from `loadOverview`; call this when opening a non-overview tab first (e.g. deep link). */
+	/** Tab badge (pending) normally comes from `loadOverview`; call when opening a non-overview tab first (e.g. deep link). */
 	async function loadActivityTabBadges() {
 		const { ok, data } = await fetchJson<{
 			counts?: {
 				pendingMemberships: number;
-				newMembersPending?: number;
 			};
 			error?: string;
 		}>('/api/admin/activity');
@@ -793,14 +747,13 @@ export function initAdminConsole(
 		const c = data.counts;
 		if (!c) return;
 		setPendingBadge(c.pendingMemberships);
-		setNewMembersBadge(typeof c.newMembersPending === 'number' ? c.newMembersPending : 0);
 	}
 
 	async function loadOverview() {
 		if (!overviewMount) return;
 		overviewMount.innerHTML = `<p class="adminHint">${t(strings, 'adminLoading')}</p>`;
 		const { ok, data } = await fetchJson<{
-			recentVerifiedMembers?: Array<{
+			recentEnrolledMembers?: Array<{
 				member: {
 					id: string;
 					created_at: string;
@@ -838,7 +791,6 @@ export function initAdminConsole(
 			counts?: {
 				pendingMemberships: number;
 				activeForYear: number;
-				newMembersPending?: number;
 				membershipYear: number;
 			};
 			error?: string;
@@ -850,10 +802,9 @@ export function initAdminConsole(
 		const c = data.counts;
 		if (c) {
 			setPendingBadge(c.pendingMemberships);
-			setNewMembersBadge(typeof c.newMembersPending === 'number' ? c.newMembersPending : 0);
 		}
 
-		const verifiedRows = (data.recentVerifiedMembers ?? [])
+		const enrolledRows = (data.recentEnrolledMembers ?? [])
 			.map(({ member: m, tier }) => {
 				const when = m.created_at ? formatAdminLocaleDate(m.created_at) : '—';
 				return `<tr${memberRowOpenAttrs(m)}>
@@ -887,7 +838,6 @@ export function initAdminConsole(
 			})
 			.join('');
 
-		const nNew = typeof c?.newMembersPending === 'number' ? c.newMembersPending : 0;
 		const kpi =
 			c ?
 				`<div class="adminKpiRow" role="region">
@@ -895,8 +845,6 @@ export function initAdminConsole(
 					aria-label="${escapeHtml(t(strings, 'adminOverviewKpiAriaMembers', { count: c.activeForYear, year: c.membershipYear }))}"><span class="adminKpiValue">${c.activeForYear}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountActive', { year: c.membershipYear }))}</span></button>
 				<button type="button" class="adminKpi adminKpi--pending" data-admin-kpi-nav="pending"
 					aria-label="${escapeHtml(t(strings, 'adminOverviewKpiAriaPending', { count: c.pendingMemberships }))}"><span class="adminKpiValue">${c.pendingMemberships}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountPending'))}</span></button>
-				<button type="button" class="adminKpi adminKpi--newMembers" data-admin-kpi-nav="newMembers"
-					aria-label="${escapeHtml(t(strings, 'adminOverviewKpiAriaNewMembers', { count: nNew }))}"><span class="adminKpiValue">${nNew}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountNewMembers'))}</span></button>
 			</div>`
 			:	'';
 
@@ -904,7 +852,7 @@ export function initAdminConsole(
 			${kpi}
 			<section class="adminOverviewSection">
 			<h3 class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewRecentTitle'))}</h3>
-			<h4 class="adminOverviewSubheading">${escapeHtml(t(strings, 'adminOverviewRecentVerifiedSubtitle'))}</h4>
+			<h4 class="adminOverviewSubheading">${escapeHtml(t(strings, 'adminOverviewRecentEnrolledSubtitle'))}</h4>
 			<div class="tableWrap"><table class="adminTable"><thead><tr>
 				<th>${escapeHtml(t(strings, 'adminTablePrimaryName'))}</th>
 				<th>${escapeHtml(t(strings, 'adminTablePrimaryEmail'))}</th>
@@ -914,7 +862,7 @@ export function initAdminConsole(
 				<th>${escapeHtml(t(strings, 'adminTableLakeStreet'))}</th>
 				<th>${escapeHtml(t(strings, 'adminTableTier'))}</th>
 				<th>${escapeHtml(t(strings, 'adminTableCreated'))}</th>
-			</tr></thead><tbody>${verifiedRows || `<tr><td colspan="8">—</td></tr>`}</tbody></table></div>
+			</tr></thead><tbody>${enrolledRows || `<tr><td colspan="8">—</td></tr>`}</tbody></table></div>
 			<h4 class="adminOverviewSubheading">${escapeHtml(t(strings, 'adminOverviewRecentActiveSubtitle'))}</h4>
 			<div class="tableWrap"><table class="adminTable"><thead><tr>
 				<th>${escapeHtml(t(strings, 'adminTablePrimaryName'))}</th>
@@ -1063,65 +1011,6 @@ export function initAdminConsole(
 		const pageInfo = el('#admin-members-pageinfo');
 		if (pageInfo) {
 			pageInfo.textContent = t(strings, 'adminPageOf', { page: membersPage, total: membersTotalPages });
-		}
-
-		body.innerHTML = data.members
-			.map((m) => {
-				const primaryNameTd = `<td class="adminMemberNameCell">${escapeHtml(primaryName(m))}</td>`;
-				const primaryEmailTd = `<td>${escapeHtml(m.primary_email ?? '—')}</td>`;
-				const secondaryNameTd = `<td class="adminMemberNameCell">${escapeHtml(secondaryName(m))}</td>`;
-				const secondaryEmailTd = `<td>${escapeHtml(m.secondary_email ?? '—')}</td>`;
-				const lakeCivicTd = `<td>${escapeHtml(m.lake_civic_number ?? '—')}</td>`;
-				const lakeStreetTd = `<td>${escapeHtml(m.lake_street_name ?? '—')}</td>`;
-				const rawTier = m.membership_tier_for_year;
-				let tierCell = '';
-				if (rawTier === 'voting') tierCell = tierLabels.voting;
-				else if (rawTier === 'associate') tierCell = tierLabels.associate;
-				else if (rawTier) tierCell = rawTier;
-				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;
-				const rowLabel = `${t(strings, 'adminMemberOpen')}: ${primaryName(m)}`;
-				return `<tr data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}">
-          ${primaryNameTd}
-          ${primaryEmailTd}
-          ${secondaryNameTd}
-          ${secondaryEmailTd}
-          ${lakeCivicTd}
-          ${lakeStreetTd}
-          <td>${escapeHtml(tierCell)}</td>
-          <td>${escapeHtml(formatAdminLocaleDate(m.created_at))}</td>
-        </tr>`;
-			})
-			.join('');
-		wireMembersTableRows(body);
-	}
-
-	async function loadNewMembers() {
-		const body = el<HTMLTableSectionElement>('#admin-new-members-body');
-		if (!body) return;
-		body.innerHTML = `<tr><td colspan="8">${t(strings, 'adminLoading')}</td></tr>`;
-		const params = buildNewMembersListParams();
-		const { ok, data } = await fetchJson<{
-			members?: MemberRow[];
-			total?: number;
-			page?: number;
-			limit?: number;
-			error?: string;
-		}>(`/api/admin/members?${params}`);
-		if (!ok || !data.members) {
-			body.innerHTML = `<tr><td colspan="8">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
-			return;
-		}
-		const total = data.total ?? 0;
-		const limit = data.limit ?? 25;
-		newMembersTotalPages = Math.max(1, Math.ceil(total / limit));
-		const pageInfo = el('#admin-new-members-pageinfo');
-		if (pageInfo) {
-			pageInfo.textContent = t(strings, 'adminPageOf', { page: newMembersPage, total: newMembersTotalPages });
-		}
-
-		if (data.members.length === 0) {
-			body.innerHTML = `<tr><td colspan="8">${t(strings, 'adminNewMembersEmpty')}</td></tr>`;
-			return;
 		}
 
 		body.innerHTML = data.members

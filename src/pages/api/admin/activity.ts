@@ -4,7 +4,7 @@ import { getMembershipCalendarYear } from '../../../lib/members/membershipYear';
 import { requireAdminSession } from '../../../lib/admin/session';
 import { createSupabaseServiceRoleClient } from '../../../lib/supabase/service';
 
-const LIMIT_VERIFIED_RECENT = 15;
+const LIMIT_ENROLLED_RECENT = 15;
 const LIMIT_ACTIVE_RECENT = 15;
 
 type MemberNameRow = {
@@ -43,28 +43,21 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 	const service = createSupabaseServiceRoleClient();
 	const year = getMembershipCalendarYear();
 
-	const [
-		pendingRes,
-		activeRes,
-		newMembersCountRes,
-		verifiedRecentRes,
-		activeRecentRes,
-	] = await Promise.all([
+	const [pendingRes, activeRes, enrolledRecentRes, activeRecentRes] = await Promise.all([
 		service.from('memberships').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
 		service
 			.from('memberships')
 			.select('id', { count: 'exact', head: true })
 			.eq('year', year)
 			.eq('status', 'active'),
-		service.from('members').select('id', { count: 'exact', head: true }).eq('status', 'new'),
 		service
 			.from('members')
 			.select(
 				'id, created_at, first_name, last_name, secondary_first_name, secondary_last_name, primary_email, secondary_email, lake_civic_number, lake_street_name',
 			)
-			.eq('status', 'verified')
+			.eq('status', 'enrolled')
 			.order('created_at', { ascending: false })
-			.limit(LIMIT_VERIFIED_RECENT),
+			.limit(LIMIT_ENROLLED_RECENT),
 		service
 			.from('memberships')
 			.select('id, created_at, activated_at, year, tier, member_id')
@@ -75,11 +68,7 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 	]);
 
 	const err =
-		pendingRes.error ||
-		activeRes.error ||
-		newMembersCountRes.error ||
-		verifiedRecentRes.error ||
-		activeRecentRes.error;
+		pendingRes.error || activeRes.error || enrolledRecentRes.error || activeRecentRes.error;
 	if (err) {
 		return new Response(JSON.stringify({ error: 'query_failed', detail: err.message }), {
 			status: 500,
@@ -87,15 +76,15 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 		});
 	}
 
-	const verifiedMembers = (verifiedRecentRes.data ?? []) as MemberNameRow[];
-	const verifiedIds = verifiedMembers.map((m) => m.id);
+	const enrolledMembers = (enrolledRecentRes.data ?? []) as MemberNameRow[];
+	const enrolledIds = enrolledMembers.map((m) => m.id);
 
 	let tierByMemberId = new Map<string, string | null>();
-	if (verifiedIds.length > 0) {
+	if (enrolledIds.length > 0) {
 		const { data: msForYear, error: msErr } = await service
 			.from('memberships')
 			.select('member_id, tier, status, created_at')
-			.in('member_id', verifiedIds)
+			.in('member_id', enrolledIds)
 			.eq('year', year);
 		if (msErr) {
 			return new Response(JSON.stringify({ error: 'query_failed', detail: msErr.message }), {
@@ -103,12 +92,12 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 				headers: { 'Content-Type': 'application/json' },
 			});
 		}
-		for (const id of verifiedIds) {
+		for (const id of enrolledIds) {
 			tierByMemberId.set(id, tierForMembershipYear(msForYear ?? [], id));
 		}
 	}
 
-	const recentVerifiedMembers = verifiedMembers.map((m) => ({
+	const recentEnrolledMembers = enrolledMembers.map((m) => ({
 		member: m,
 		tier: tierByMemberId.get(m.id) ?? null,
 		eventAt: m.created_at ?? '',
@@ -146,12 +135,11 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 
 	return new Response(
 		JSON.stringify({
-			recentVerifiedMembers,
+			recentEnrolledMembers,
 			recentActiveMemberships,
 			counts: {
 				pendingMemberships: pendingRes.count ?? 0,
 				activeForYear: activeRes.count ?? 0,
-				newMembersPending: newMembersCountRes.count ?? 0,
 				membershipYear: year,
 			},
 		}),
