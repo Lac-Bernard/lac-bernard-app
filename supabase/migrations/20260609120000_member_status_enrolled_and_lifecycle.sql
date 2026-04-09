@@ -1,9 +1,14 @@
 -- Member directory status: new → enrolled (auto on first membership activation), disabled unchanged.
 -- Replaces verified with enrolled; transition new → enrolled when a membership becomes active.
 
-update public.members set status = 'enrolled' where status = 'verified';
-
+-- Drop the old CHECK first: it only allows verified, not enrolled, so updates to enrolled would fail (SQLSTATE 23514).
 alter table public.members drop constraint if exists members_status_check;
+
+-- Normalize legacy values, then add the new CHECK (verified/active → enrolled; inactive → disabled).
+update public.members set status = 'enrolled' where status in ('verified', 'active');
+update public.members set status = 'disabled' where status = 'inactive';
+update public.members set status = 'enrolled' where status not in ('new', 'enrolled', 'disabled');
+
 alter table public.members
   add constraint members_status_check check (status in ('new', 'enrolled', 'disabled'));
 
