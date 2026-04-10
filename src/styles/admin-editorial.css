@@ -1,0 +1,70 @@
+/**
+ * Shared editorial admin surface: typography (Plus Jakarta Sans 400/500), warm neutrals,
+ * forest accent, hairline borders, light motion. Import once per admin view root `.adminPage`.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&display=swap');
+
+.adminPage {
+	--admin-radius: 12px;
+	--admin-radius-md: 10px;
+	--admin-radius-sm: 8px;
+	--admin-bg: #f9f8f6;
+	--admin-surface: #ffffff;
+	--admin-surface-muted: #f1efe8;
+	--admin-border: rgba(45, 42, 38, 0.14);
+	--admin-text: #1c1917;
+	--admin-muted: #57534e;
+	--admin-accent: #2d6a5d;
+	--admin-accent-hover: #245549;
+	--admin-accent-soft: rgba(45, 106, 93, 0.14);
+	--admin-status-pending: rgba(200, 150, 70, 0.45);
+	--admin-status-active: rgba(80, 150, 110, 0.4);
+	--admin-status-disabled: rgba(120, 120, 120, 0.28);
+	--admin-font: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+	font-family: var(--admin-font);
+	font-size: 15px;
+	line-height: 1.45;
+	font-weight: 400;
+	color: var(--admin-text);
+	background: var(--admin-bg);
+}
+
+.adminConsole {
+	max-width: 1100px;
+	width: 100%;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.adminConsole {
+		animation: adminShellIn 240ms ease-out both;
+	}
+}
+
+@keyframes adminShellIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.adminPage .adminShell {
+	background: var(--admin-surface);
+	border: 0.5px solid var(--admin-border);
+	border-radius: var(--admin-radius);
+	box-shadow: none;
+	overflow: hidden;
+	min-width: 0;
+	max-width: 100%;
+}
+
+.adminPage .adminTab[aria-selected='true'] {
+	font-weight: 500;
+}
+
+.adminPage .adminTabBadge {
+	font-weight: 500;
+}

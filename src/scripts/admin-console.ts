@@ -1,6 +1,7 @@
 /** Client-side admin console (membership admin page). */
 
 import { formatAdminLocaleDate, formatAdminLocaleDateTime } from '../lib/admin/formatLocaleDate';
+import { formatAdminRelativeAgo, type AdminRelativeStrings } from '../lib/admin/formatRelativeAgo';
 import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymentSplit';
 
 export type AdminConsoleStrings = Record<string, string>;
@@ -65,6 +66,17 @@ type MembershipEmbed = {
 /** Trash icon for pending row remove (stroke uses `currentColor`) */
 const ADMIN_PENDING_TRASH_ICON =
 	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>';
+
+/** Non-Stripe: banknote / manual payment */
+const ADMIN_TIMELINE_ICON_CASH =
+	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 7a3 3 0 013-3h10a3 3 0 013 3v10a3 3 0 01-3 3H7a3 3 0 01-3-3V7zm3-1a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V7a1 1 0 00-1-1H7zm5 2.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"/></svg>';
+/** Stripe: credit card */
+const ADMIN_TIMELINE_ICON_CARD =
+	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M4 7a2 2 0 012-2h12a2 2 0 012 2v2H4V7zm16 4v7a2 2 0 01-2 2H6a2 2 0 01-2-2v-7h16zM6 16h4v1H6v-1z"/></svg>';
+const ADMIN_TIMELINE_ICON_PROFILE =
+	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+const ADMIN_TIMELINE_ICON_PENDING =
+	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 3h6a2 2 0 012 2v1h1a2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2h1V5a2 2 0 012-2zm0 2v1h6V5H9zm-2 4v11h12V9H7zm2 3h8v2H9v-2zm0 4h5v2H9v-2z"/></svg>';
 
 function formatPersonName(first: string | null | undefined, last: string | null | undefined): string {
 	const f = (first ?? '').trim();
@@ -717,20 +729,67 @@ export function initAdminConsole(
 
 	function overviewTierLabel(raw: string | null | undefined): string {
 		if (raw == null || raw === '') return '—';
-		if (raw === 'voting') return tierLabels.voting;
+		if (raw === 'voting' || raw === 'general') return tierLabels.voting;
 		if (raw === 'associate') return tierLabels.associate;
 		return raw;
 	}
 
-	function memberRowOpenAttrs(mem: {
-		id: string;
+	function hasSecondaryNameParts(m: {
+		secondary_first_name?: string | null;
+		secondary_last_name?: string | null;
+	}): boolean {
+		return (m.secondary_first_name ?? '').trim().length > 0 || (m.secondary_last_name ?? '').trim().length > 0;
+	}
+
+	function timelineMemberNameLine(m: {
 		first_name: string | null;
 		last_name: string;
 		secondary_first_name?: string | null;
 		secondary_last_name?: string | null;
 	}): string {
+		const p = primaryName(m);
+		if (!hasSecondaryNameParts(m)) return p;
+		const s = formatPersonName(m.secondary_first_name ?? null, m.secondary_last_name ?? null);
+		if (!s || s === '—') return p;
+		return `${p} & ${s}`;
+	}
+
+	function timelineLakeLineForTier(
+		tierRaw: string | null | undefined,
+		civic: string | null | undefined,
+		street: string | null | undefined,
+	): string {
+		const t = (tierRaw ?? '').trim();
+		const c = (civic ?? '').trim();
+		const s = (street ?? '').trim();
+		if (t === 'associate') {
+			if (c && s) return `${c} ${s}`;
+			return '';
+		}
+		if (!c && !s) return '—';
+		if (c && s) return `${c} ${s}`;
+		return '—';
+	}
+
+	function timelineProfileAddressLine(civic: string | null | undefined, street: string | null | undefined): string | null {
+		const c = (civic ?? '').trim();
+		const s = (street ?? '').trim();
+		if (!c && !s) return null;
+		return [c, s].filter(Boolean).join(' ');
+	}
+
+	function memberRowOpenAttrs(
+		mem: {
+			id: string;
+			first_name: string | null;
+			last_name: string;
+			secondary_first_name?: string | null;
+			secondary_last_name?: string | null;
+		},
+		displayName?: string,
+	): string {
 		const href = `${adminMembersBase}/${encodeURIComponent(mem.id)}`;
-		const name = primaryName(mem);
+		const name = displayName ?? primaryName(mem);
 		const rowLabel = `${t(strings, 'adminMemberOpen')}: ${name}`;
 		return ` data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}"`;
 	}
@@ -752,46 +811,69 @@ export function initAdminConsole(
 	async function loadOverview() {
 		if (!overviewMount) return;
 		overviewMount.innerHTML = `<p class="adminHint">${t(strings, 'adminLoading')}</p>`;
-		const { ok, data } = await fetchJson<{
-			recentEnrolledMembers?: Array<{
-				member: {
-					id: string;
-					created_at: string;
-					first_name: string | null;
-					last_name: string;
-					secondary_first_name?: string | null;
-					secondary_last_name?: string | null;
-					primary_email?: string | null;
-					secondary_email?: string | null;
-					lake_civic_number?: string | null;
-					lake_street_name?: string | null;
-				};
-				tier: string | null;
-				eventAt: string;
-			}>;
-			recentActiveMemberships?: Array<{
-				membership: {
+		type ActivityTimelineItem =
+			| {
+					kind: 'payment';
+					occurredAt: string;
+					memberId: string;
+					paymentId: number;
+					membershipYear: number;
+					tier: string;
+					membershipAmount: number | null;
+					donationAmount: number | null;
+					method: string | null;
+					amount: number | null;
+					member: {
+						id: string;
+						first_name: string | null;
+						last_name: string;
+						secondary_first_name?: string | null;
+						secondary_last_name?: string | null;
+						lake_civic_number?: string | null;
+						lake_street_name?: string | null;
+					};
+			  }
+			| {
+					kind: 'profile_created';
+					occurredAt: string;
+					memberId: string;
+					member: {
+						id: string;
+						first_name: string | null;
+						last_name: string;
+						secondary_first_name?: string | null;
+						secondary_last_name?: string | null;
+						lake_civic_number?: string | null;
+						lake_street_name?: string | null;
+					};
+			  }
+			| {
+					kind: 'membership_pending';
+					occurredAt: string;
+					memberId: string;
+					membershipId: string;
 					year: number;
 					tier: string;
-					created_at: string;
-					activated_at: string | null;
-				};
-				member: {
-					id: string;
-					first_name: string | null;
-					last_name: string;
-					secondary_first_name?: string | null;
-					secondary_last_name?: string | null;
-					primary_email?: string | null;
-					secondary_email?: string | null;
-					lake_civic_number?: string | null;
-					lake_street_name?: string | null;
-				} | null;
-			}>;
+					expectedMembershipCents: number | null;
+					sumMembershipPaid: number;
+					member: {
+						id: string;
+						first_name: string | null;
+						last_name: string;
+						secondary_first_name?: string | null;
+						secondary_last_name?: string | null;
+						lake_civic_number?: string | null;
+						lake_street_name?: string | null;
+					};
+			  };
+
+		const { ok, data } = await fetchJson<{
+			timeline?: ActivityTimelineItem[];
 			counts?: {
 				pendingMemberships: number;
 				activeForYear: number;
 				membershipYear: number;
+				membersCreatedLastSevenDays: number;
 			};
 			error?: string;
 		}>('/api/admin/activity');
@@ -804,81 +886,126 @@ export function initAdminConsole(
 			setPendingBadge(c.pendingMemberships);
 		}
 
-		const enrolledRows = (data.recentEnrolledMembers ?? [])
-			.map(({ member: m, tier }) => {
-				const when = m.created_at ? formatAdminLocaleDate(m.created_at) : '—';
-				return `<tr${memberRowOpenAttrs(m)}>
-					<td class="adminMemberNameCell">${escapeHtml(primaryName(m))}</td>
-					<td>${escapeHtml(m.primary_email ?? '—')}</td>
-					<td class="adminMemberNameCell">${escapeHtml(secondaryName(m))}</td>
-					<td>${escapeHtml(m.secondary_email ?? '—')}</td>
-					<td>${escapeHtml(m.lake_civic_number ?? '—')}</td>
-					<td>${escapeHtml(m.lake_street_name ?? '—')}</td>
-					<td>${escapeHtml(overviewTierLabel(tier))}</td>
-					<td>${escapeHtml(when)}</td>
-				</tr>`;
-			})
-			.join('');
+		const relativeStrings: AdminRelativeStrings = {
+			justNow: t(strings, 'adminRelativeJustNow'),
+			minAgo: t(strings, 'adminRelativeMinAgo'),
+			hrAgo: t(strings, 'adminRelativeHrAgo'),
+			hrsAgo: t(strings, 'adminRelativeHrsAgo'),
+			yesterday: t(strings, 'adminRelativeYesterday'),
+			daysAgo: t(strings, 'adminRelativeDaysAgo'),
+			weeksAgo: t(strings, 'adminRelativeWeeksAgo'),
+		};
 
-		const activeRows = (data.recentActiveMemberships ?? [])
-			.filter((row): row is typeof row & { member: NonNullable<(typeof row)['member']> } => row.member != null)
-			.map(({ membership: ms, member: m }) => {
-				const whenRaw = ms.activated_at ?? ms.created_at;
-				const when = whenRaw ? formatAdminLocaleDate(whenRaw) : '—';
-				return `<tr${memberRowOpenAttrs(m)}>
-					<td class="adminMemberNameCell">${escapeHtml(primaryName(m))}</td>
-					<td>${escapeHtml(m.primary_email ?? '—')}</td>
-					<td class="adminMemberNameCell">${escapeHtml(secondaryName(m))}</td>
-					<td>${escapeHtml(m.secondary_email ?? '—')}</td>
-					<td>${escapeHtml(m.lake_civic_number ?? '—')}</td>
-					<td>${escapeHtml(m.lake_street_name ?? '—')}</td>
-					<td>${escapeHtml(overviewTierLabel(ms.tier))}</td>
-					<td>${escapeHtml(when)}</td>
-				</tr>`;
-			})
-			.join('');
+		function buildTimelineRow(item: ActivityTimelineItem): string {
+			const m = item.member;
+			const nameLine = timelineMemberNameLine(m);
+			const whenTitle = formatAdminLocaleDateTime(item.occurredAt, numberLocale);
+			const rel = formatAdminRelativeAgo(item.occurredAt, relativeStrings);
+			let rowVariant: 'cash' | 'card' | 'profile' | 'pending' = 'pending';
+			let eventLabel = '';
+			let iconWrap = '';
+			let line2 = '';
+
+			if (item.kind === 'payment') {
+				const isStripe = (item.method ?? '').trim() === 'stripe';
+				if (isStripe) {
+					rowVariant = 'card';
+					eventLabel = t(strings, 'adminTimelineLabelCardPayment');
+					iconWrap = `<span class="adminTimelineIconWrap adminTimelineIconWrap--card">${ADMIN_TIMELINE_ICON_CARD}</span>`;
+				} else {
+					rowVariant = 'cash';
+					eventLabel = t(strings, 'adminTimelineLabelPaymentRecorded');
+					iconWrap = `<span class="adminTimelineIconWrap adminTimelineIconWrap--cash">${ADMIN_TIMELINE_ICON_CASH}</span>`;
+				}
+				const parts: string[] = [];
+				parts.push(overviewTierLabel(item.tier));
+				const lake = timelineLakeLineForTier(item.tier, m.lake_civic_number, m.lake_street_name);
+				if (lake) parts.push(lake);
+				const duesNum =
+					item.membershipAmount != null && Number.isFinite(Number(item.membershipAmount)) ?
+						Number(item.membershipAmount)
+					: item.amount != null && Number.isFinite(Number(item.amount)) ?
+						Number(item.amount)
+					:	null;
+				if (duesNum != null && Math.abs(duesNum) > 0.001) {
+					parts.push(`${t(strings, 'adminTableDuesPortion')} ${fmtCad(duesNum)}`);
+				}
+				const don = item.donationAmount ?? 0;
+				if (don > 0.001) {
+					parts.push(`${t(strings, 'adminTableDonationPortion')} ${fmtCad(don)}`);
+				}
+				parts.push(methodLabel(strings, item.method));
+				line2 = parts.join(' · ');
+			} else if (item.kind === 'profile_created') {
+				rowVariant = 'profile';
+				eventLabel = t(strings, 'adminTimelineLabelProfileCreated');
+				iconWrap = `<span class="adminTimelineIconWrap adminTimelineIconWrap--profile">${ADMIN_TIMELINE_ICON_PROFILE}</span>`;
+				const addr = timelineProfileAddressLine(m.lake_civic_number, m.lake_street_name);
+				if (addr) line2 = addr;
+			} else {
+				rowVariant = 'pending';
+				eventLabel = t(strings, 'adminTimelineLabelMembershipPending');
+				iconWrap = `<span class="adminTimelineIconWrap adminTimelineIconWrap--pending">${ADMIN_TIMELINE_ICON_PENDING}</span>`;
+				const parts: string[] = [];
+				parts.push(overviewTierLabel(item.tier));
+				const lake = timelineLakeLineForTier(item.tier, m.lake_civic_number, m.lake_street_name);
+				if (lake) parts.push(lake);
+				parts.push(
+					`${t(strings, 'adminTableExpectedFee')} ${formatExpectedMembershipFee(item.expectedMembershipCents, numberLocale)}`,
+				);
+				if (item.sumMembershipPaid > 0.001) {
+					parts.push(t(strings, 'adminTimelinePendingPaidPortion', { amount: fmtCad(item.sumMembershipPaid) }));
+				}
+				line2 = parts.join(' · ');
+			}
+
+			const headTitle = `${eventLabel} — ${nameLine}`;
+			const line2Html = line2 ? `<div class="adminTimelineLine2">${escapeHtml(line2)}</div>` : '';
+			return `<li class="adminTimelineRow adminTimelineRow--${rowVariant}"${memberRowOpenAttrs(m, headTitle)}>
+				${iconWrap}
+				<div class="adminTimelineBody">
+					<div class="adminTimelineHead">
+						<span class="adminTimelineEventLabel">${escapeHtml(eventLabel)}</span>
+						<span class="adminTimelineSep" aria-hidden="true"> — </span>
+						<span class="adminTimelineName">${escapeHtml(nameLine)}</span>
+					</div>
+					${line2Html}
+				</div>
+				<time class="adminTimelineWhen" datetime="${escapeHtml(item.occurredAt)}" title="${escapeHtml(whenTitle)}">${escapeHtml(rel)}</time>
+			</li>`;
+		}
+
+		const items = data.timeline ?? [];
+		const timelineList =
+			items.length === 0 ?
+				`<p class="adminTimelineEmpty">${escapeHtml(t(strings, 'adminTimelineEmpty'))}</p>`
+			:	`<ul class="adminTimeline" role="list">${items.map(buildTimelineRow).join('')}</ul>`;
 
 		const kpi =
 			c ?
-				`<div class="adminKpiRow" role="region">
+				`<div class="adminKpiSection" role="region">
+				<div class="adminKpiYearRow">
+					<span class="adminKpiYearLabel">${escapeHtml(t(strings, 'adminKpiCurrentYearLabel'))}</span>
+					<span class="adminKpiYearNumber">${c.membershipYear}</span>
+				</div>
+				<div class="adminKpiRow adminKpiRow--three">
 				<button type="button" class="adminKpi adminKpi--activeYear" data-admin-kpi-nav="members"
-					aria-label="${escapeHtml(t(strings, 'adminOverviewKpiAriaMembers', { count: c.activeForYear, year: c.membershipYear }))}"><span class="adminKpiValue">${c.activeForYear}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountActive', { year: c.membershipYear }))}</span></button>
+					aria-label="${escapeHtml(t(strings, 'adminOverviewKpiAriaMembers', { count: c.activeForYear, year: c.membershipYear }))}"><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminKpiActiveMembershipsLabel'))}</span><span class="adminKpiValue">${c.activeForYear}</span></button>
 				<button type="button" class="adminKpi adminKpi--pending" data-admin-kpi-nav="pending"
-					aria-label="${escapeHtml(t(strings, 'adminOverviewKpiAriaPending', { count: c.pendingMemberships }))}"><span class="adminKpiValue">${c.pendingMemberships}</span><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminOverviewCountPending'))}</span></button>
-			</div>`
+					aria-label="${escapeHtml(t(strings, 'adminOverviewKpiAriaPending', { count: c.pendingMemberships }))}"><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminKpiPendingPaymentsLabel'))}</span><span class="adminKpiValue">${c.pendingMemberships}</span></button>
+				<div class="adminKpi adminKpi--yesterday"
+					aria-label="${escapeHtml(t(strings, 'adminKpiAriaNewMembersLast7Days', { count: c.membersCreatedLastSevenDays }))}"><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminKpiNewMembersLast7DaysLabel'))}</span><span class="adminKpiValue">${c.membersCreatedLastSevenDays}</span></div>
+			</div></div>`
 			:	'';
 
 		overviewMount.innerHTML = `
 			${kpi}
-			<section class="adminOverviewSection">
-			<h3 class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewRecentTitle'))}</h3>
-			<h4 class="adminOverviewSubheading">${escapeHtml(t(strings, 'adminOverviewRecentEnrolledSubtitle'))}</h4>
-			<div class="tableWrap"><table class="adminTable"><thead><tr>
-				<th>${escapeHtml(t(strings, 'adminTablePrimaryName'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTablePrimaryEmail'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableSecondaryName'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableSecondaryEmail'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableLakeCivic'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableLakeStreet'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableTier'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableCreated'))}</th>
-			</tr></thead><tbody>${enrolledRows || `<tr><td colspan="8">—</td></tr>`}</tbody></table></div>
-			<h4 class="adminOverviewSubheading">${escapeHtml(t(strings, 'adminOverviewRecentActiveSubtitle'))}</h4>
-			<div class="tableWrap"><table class="adminTable"><thead><tr>
-				<th>${escapeHtml(t(strings, 'adminTablePrimaryName'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTablePrimaryEmail'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableSecondaryName'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableSecondaryEmail'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableLakeCivic'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableLakeStreet'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableTier'))}</th>
-				<th>${escapeHtml(t(strings, 'adminTableCreated'))}</th>
-			</tr></thead><tbody>${activeRows || `<tr><td colspan="8">—</td></tr>`}</tbody></table></div>
+			<section class="adminOverviewSection" aria-labelledby="admin-activity-heading">
+			<h3 id="admin-activity-heading" class="adminOverviewHeading">${escapeHtml(t(strings, 'adminOverviewActivityTitle'))}</h3>
+			${timelineList}
 			</section>
 		`;
-		overviewMount.querySelectorAll<HTMLTableSectionElement>('.adminOverviewSection tbody').forEach((tbody) => {
-			wireMembersTableRows(tbody);
-		});
+		wireMembersTableRows(overviewMount);
 	}
 
 	async function loadPending() {
@@ -970,17 +1097,17 @@ export function initAdminConsole(
 	}
 
 	function wireMembersTableRows(body: HTMLElement) {
-		body.querySelectorAll<HTMLTableRowElement>('tr[data-admin-member-href]').forEach((tr) => {
+		body.querySelectorAll<HTMLElement>('[data-admin-member-href]').forEach((row) => {
 			const go = () => {
-				const href = tr.dataset.adminMemberHref;
+				const href = row.dataset.adminMemberHref;
 				if (href) window.location.assign(href);
 			};
-			tr.addEventListener('click', (e) => {
+			row.addEventListener('click', (e) => {
 				const tgt = e.target as HTMLElement;
 				if (tgt.closest('a, button')) return;
 				go();
 			});
-			tr.addEventListener('keydown', (e) => {
+			row.addEventListener('keydown', (e) => {
 				if (e.key === 'Enter' || e.key === ' ') {
 					e.preventDefault();
 					go();
