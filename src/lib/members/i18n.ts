@@ -109,6 +109,7 @@ export const memberCopy: Record<
 		adminKpiNewMembersLast7DaysLabel: string;
 		adminKpiAriaNewMembersLast7Days: string;
 		adminTimelineEmpty: string;
+		adminTimelineLoadMore: string;
 		/** Timeline: non-Stripe payment */
 		adminTimelineLabelPaymentRecorded: string;
 		/** Timeline: Stripe card payment */
@@ -512,6 +513,7 @@ export const memberCopy: Record<
 		adminKpiAriaNewMembersLast7Days:
 			'{{count}} member profiles created in the last 7 days. Informational.',
 		adminTimelineEmpty: 'No recent activity.',
+		adminTimelineLoadMore: 'Load more',
 		adminTimelineLabelPaymentRecorded: 'Payment recorded',
 		adminTimelineLabelCardPayment: 'Card payment',
 		adminTimelineLabelProfileCreated: 'New member profile created',
@@ -920,6 +922,7 @@ export const memberCopy: Record<
 		adminKpiAriaNewMembersLast7Days:
 			'{{count}} fiches membres créées au cours des 7 derniers jours. Information seulement.',
 		adminTimelineEmpty: 'Aucune activité récente.',
+		adminTimelineLoadMore: 'Charger plus',
 		adminTimelineLabelPaymentRecorded: 'Paiement enregistré',
 		adminTimelineLabelCardPayment: 'Paiement par carte',
 		adminTimelineLabelProfileCreated: 'Nouvelle fiche membre créée',

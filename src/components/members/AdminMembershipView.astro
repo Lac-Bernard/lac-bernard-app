@@ -102,6 +102,7 @@ const adminKeys = [
 	'adminKpiNewMembersLast7DaysLabel',
 	'adminKpiAriaNewMembersLast7Days',
 	'adminTimelineEmpty',
+	'adminTimelineLoadMore',
 	'adminTimelinePendingPaidPortion',
 	'adminTimelineLabelPaymentRecorded',
 	'adminTimelineLabelCardPayment',
@@ -1073,6 +1074,26 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
     margin: 0;
     font-size: 0.9rem;
     color: var(--muted);
+  }
+
+  .adminOverviewMount :global(.adminTimelineWrap) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .adminOverviewMount :global(.adminTimelineFooter) {
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 0.15rem;
+  }
+
+  .adminOverviewMount :global(#admin-timeline-more) {
+    min-width: 8.5rem;
+  }
+
+  .adminOverviewMount :global(#admin-timeline-more[hidden]) {
+    display: none !important;
   }
 
   .adminOverviewMount :global(.adminOverviewSection) {
