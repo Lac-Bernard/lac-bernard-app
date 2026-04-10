@@ -102,11 +102,32 @@ export const memberCopy: Record<
 		adminOverviewRecentTitle: string;
 		adminOverviewRecentEnrolledSubtitle: string;
 		adminOverviewRecentActiveSubtitle: string;
+		adminOverviewActivityTitle: string;
+		adminKpiCurrentYearLabel: string;
+		adminKpiActiveMembershipsLabel: string;
+		adminKpiPendingPaymentsLabel: string;
+		adminKpiNewMembersLast7DaysLabel: string;
+		adminKpiAriaNewMembersLast7Days: string;
+		adminTimelineEmpty: string;
+		/** Timeline: non-Stripe payment */
+		adminTimelineLabelPaymentRecorded: string;
+		/** Timeline: Stripe card payment */
+		adminTimelineLabelCardPayment: string;
+		adminTimelineLabelProfileCreated: string;
+		adminTimelineLabelMembershipPending: string;
+		adminTimelinePendingPaidPortion: string;
 		adminOverviewColWhen: string;
 		adminOverviewCountPending: string;
 		adminOverviewCountActive: string;
 		adminOverviewKpiAriaMembers: string;
 		adminOverviewKpiAriaPending: string;
+		adminRelativeJustNow: string;
+		adminRelativeMinAgo: string;
+		adminRelativeHrAgo: string;
+		adminRelativeHrsAgo: string;
+		adminRelativeYesterday: string;
+		adminRelativeDaysAgo: string;
+		adminRelativeWeeksAgo: string;
 		adminTableAmount: string;
 		adminTableDuesPortion: string;
 		adminTableDonationPortion: string;
@@ -483,11 +504,31 @@ export const memberCopy: Record<
 		adminOverviewRecentTitle: 'Recent members',
 		adminOverviewRecentEnrolledSubtitle: 'Recently added enrolled profiles',
 		adminOverviewRecentActiveSubtitle: 'Recent active memberships',
+		adminOverviewActivityTitle: 'Activity',
+		adminKpiCurrentYearLabel: 'Current year',
+		adminKpiActiveMembershipsLabel: 'Active memberships',
+		adminKpiPendingPaymentsLabel: 'Pending payments',
+		adminKpiNewMembersLast7DaysLabel: 'New members (last 7 days)',
+		adminKpiAriaNewMembersLast7Days:
+			'{{count}} member profiles created in the last 7 days. Informational.',
+		adminTimelineEmpty: 'No recent activity.',
+		adminTimelineLabelPaymentRecorded: 'Payment recorded',
+		adminTimelineLabelCardPayment: 'Card payment',
+		adminTimelineLabelProfileCreated: 'New member profile created',
+		adminTimelineLabelMembershipPending: 'Membership pending',
+		adminTimelinePendingPaidPortion: 'Paid {{amount}}',
 		adminOverviewColWhen: 'When',
 		adminOverviewCountPending: 'Pending memberships',
 		adminOverviewCountActive: 'Active memberships ({{year}})',
 		adminOverviewKpiAriaMembers: '{{count}} active memberships for {{year}}. Open members directory.',
 		adminOverviewKpiAriaPending: '{{count}} pending memberships. Open pending tab.',
+		adminRelativeJustNow: 'Just now',
+		adminRelativeMinAgo: '{{n}} min ago',
+		adminRelativeHrAgo: '{{n}} hr ago',
+		adminRelativeHrsAgo: '{{n}} hrs ago',
+		adminRelativeYesterday: 'Yesterday',
+		adminRelativeDaysAgo: '{{n}} days ago',
+		adminRelativeWeeksAgo: '{{n}} weeks ago',
 		adminTableAmount: 'Total',
 		adminTableDuesPortion: 'Dues',
 		adminTableDonationPortion: 'Donation',
@@ -871,12 +912,32 @@ export const memberCopy: Record<
 		adminOverviewRecentTitle: 'Membres récents',
 		adminOverviewRecentEnrolledSubtitle: 'Profils inscrits ajoutés récemment',
 		adminOverviewRecentActiveSubtitle: 'Adhésions actives récentes',
+		adminOverviewActivityTitle: 'Activité récente',
+		adminKpiCurrentYearLabel: 'Année en cours',
+		adminKpiActiveMembershipsLabel: 'Adhésions actives',
+		adminKpiPendingPaymentsLabel: 'Paiements en attente',
+		adminKpiNewMembersLast7DaysLabel: 'Nouveaux membres (7 derniers jours)',
+		adminKpiAriaNewMembersLast7Days:
+			'{{count}} fiches membres créées au cours des 7 derniers jours. Information seulement.',
+		adminTimelineEmpty: 'Aucune activité récente.',
+		adminTimelineLabelPaymentRecorded: 'Paiement enregistré',
+		adminTimelineLabelCardPayment: 'Paiement par carte',
+		adminTimelineLabelProfileCreated: 'Nouvelle fiche membre créée',
+		adminTimelineLabelMembershipPending: 'Adhésion en attente',
+		adminTimelinePendingPaidPortion: 'Payé {{amount}}',
 		adminOverviewColWhen: 'Date',
 		adminOverviewCountPending: 'Adhésions en attente',
 		adminOverviewCountActive: 'Adhésions actives ({{year}})',
 		adminOverviewKpiAriaMembers:
 			'{{count}} adhésions actives pour {{year}}. Ouvrir le répertoire des membres.',
 		adminOverviewKpiAriaPending: '{{count}} adhésions en attente. Ouvrir l’onglet En attente.',
+		adminRelativeJustNow: 'À l’instant',
+		adminRelativeMinAgo: 'Il y a {{n}} min',
+		adminRelativeHrAgo: 'Il y a {{n}} h',
+		adminRelativeHrsAgo: 'Il y a {{n}} h',
+		adminRelativeYesterday: 'Hier',
+		adminRelativeDaysAgo: 'Il y a {{n}} jours',
+		adminRelativeWeeksAgo: 'Il y a {{n}} sem.',
 		adminTableAmount: 'Total',
 		adminTableDuesPortion: 'Cotisation',
 		adminTableDonationPortion: 'Don',

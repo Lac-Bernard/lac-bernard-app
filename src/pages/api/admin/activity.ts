@@ -2,39 +2,59 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { getMembershipCalendarYear } from '../../../lib/members/membershipYear';
 import { requireAdminSession } from '../../../lib/admin/session';
+import { membershipCentsForTier } from '../../../lib/membership/stripeCheckout';
 import { createSupabaseServiceRoleClient } from '../../../lib/supabase/service';
 
-const LIMIT_ENROLLED_RECENT = 15;
-const LIMIT_ACTIVE_RECENT = 15;
+const LIMIT_SOURCE = 30;
+const TIMELINE_CAP = 48;
 
-type MemberNameRow = {
+type MemberFields = {
 	id: string;
 	first_name: string | null;
 	last_name: string;
 	secondary_first_name?: string | null;
 	secondary_last_name?: string | null;
-	primary_email?: string | null;
-	secondary_email?: string | null;
 	lake_civic_number?: string | null;
 	lake_street_name?: string | null;
-	created_at?: string;
 };
 
-/** Pick display tier for filter year: prefer active row, then pending, then newest. */
-function tierForMembershipYear(
-	rows: Array<{ member_id: string; tier: string; status: string; created_at: string }>,
-	memberId: string,
-): string | null {
-	const forMember = rows.filter((r) => r.member_id === memberId);
-	if (forMember.length === 0) return null;
-	const rank = (s: string) => (s === 'active' ? 0 : s === 'pending' ? 1 : 2);
-	forMember.sort((a, b) => {
-		const d = rank(a.status) - rank(b.status);
-		if (d !== 0) return d;
-		return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-	});
-	return forMember[0]?.tier ?? null;
-}
+type TimelinePayment = {
+	kind: 'payment';
+	occurredAt: string;
+	memberId: string;
+	paymentId: number;
+	membershipYear: number;
+	tier: string;
+	membershipAmount: number | null;
+	donationAmount: number | null;
+	method: string | null;
+	amount: number | null;
+	member: MemberFields;
+};
+
+type TimelineProfile = {
+	kind: 'profile_created';
+	occurredAt: string;
+	memberId: string;
+	member: MemberFields;
+};
+
+type TimelinePending = {
+	kind: 'membership_pending';
+	occurredAt: string;
+	memberId: string;
+	membershipId: string;
+	year: number;
+	tier: string;
+	expectedMembershipCents: number | null;
+	sumMembershipPaid: number;
+	member: MemberFields;
+};
+
+export type AdminActivityTimelineItem = TimelinePayment | TimelineProfile | TimelinePending;
+
+/** Rolling window from now (timestamptz), matches intuitive “last 7 days”. */
+const MEMBER_COUNT_LOOKBACK_MS = 7 * 24 * 60 * 60 * 1000;
 
 export const GET: APIRoute = async ({ request, cookies }) => {
 	const auth = await requireAdminSession(request, cookies);
@@ -42,8 +62,9 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 
 	const service = createSupabaseServiceRoleClient();
 	const year = getMembershipCalendarYear();
+	const membersSince = new Date(Date.now() - MEMBER_COUNT_LOOKBACK_MS).toISOString();
 
-	const [pendingRes, activeRes, enrolledRecentRes, activeRecentRes] = await Promise.all([
+	const [pendingRes, activeRes, payRes, profilesRes, pendingMsRes, members7dRes] = await Promise.all([
 		service.from('memberships').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
 		service
 			.from('memberships')
@@ -51,24 +72,57 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 			.eq('year', year)
 			.eq('status', 'active'),
 		service
+			.from('payments')
+			.select(
+				`
+          id,
+          created_at,
+          membership_amount,
+          donation_amount,
+          method,
+          amount,
+          memberships!inner (
+            id,
+            year,
+            tier,
+            member_id,
+            members!inner (
+              id,
+              first_name,
+              last_name,
+              secondary_first_name,
+              secondary_last_name,
+              lake_civic_number,
+              lake_street_name
+            )
+          )
+        `,
+			)
+			.order('created_at', { ascending: false })
+			.limit(LIMIT_SOURCE),
+		service
 			.from('members')
 			.select(
-				'id, created_at, first_name, last_name, secondary_first_name, secondary_last_name, primary_email, secondary_email, lake_civic_number, lake_street_name',
+				'id, created_at, first_name, last_name, secondary_first_name, secondary_last_name, lake_civic_number, lake_street_name',
 			)
-			.eq('status', 'enrolled')
 			.order('created_at', { ascending: false })
-			.limit(LIMIT_ENROLLED_RECENT),
+			.limit(LIMIT_SOURCE),
 		service
 			.from('memberships')
-			.select('id, created_at, activated_at, year, tier, member_id')
-			.eq('status', 'active')
-			.order('activated_at', { ascending: false, nullsFirst: false })
+			.select('id, created_at, member_id, year, tier, status')
+			.eq('status', 'pending')
 			.order('created_at', { ascending: false })
-			.limit(LIMIT_ACTIVE_RECENT),
+			.limit(LIMIT_SOURCE),
+		service.from('members').select('id', { count: 'exact', head: true }).gte('created_at', membersSince),
 	]);
 
 	const err =
-		pendingRes.error || activeRes.error || enrolledRecentRes.error || activeRecentRes.error;
+		pendingRes.error ||
+		activeRes.error ||
+		payRes.error ||
+		profilesRes.error ||
+		pendingMsRes.error ||
+		members7dRes.error;
 	if (err) {
 		return new Response(JSON.stringify({ error: 'query_failed', detail: err.message }), {
 			status: 500,
@@ -76,71 +130,156 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 		});
 	}
 
-	const enrolledMembers = (enrolledRecentRes.data ?? []) as MemberNameRow[];
-	const enrolledIds = enrolledMembers.map((m) => m.id);
+	const membersCreatedLastSevenDays = Math.max(0, Math.floor(Number(members7dRes.count ?? 0)) || 0);
 
-	let tierByMemberId = new Map<string, string | null>();
-	if (enrolledIds.length > 0) {
-		const { data: msForYear, error: msErr } = await service
-			.from('memberships')
-			.select('member_id, tier, status, created_at')
-			.in('member_id', enrolledIds)
-			.eq('year', year);
-		if (msErr) {
-			return new Response(JSON.stringify({ error: 'query_failed', detail: msErr.message }), {
+	type PayEmbed = {
+		year: number;
+		tier: string;
+		member_id: string;
+		members: MemberFields | MemberFields[] | null;
+	};
+
+	const paymentRows = (payRes.data ?? []) as Array<{
+		id: number;
+		created_at: string;
+		membership_amount: number | null;
+		donation_amount: number | null;
+		method: string | null;
+		amount: number | null;
+		memberships: PayEmbed | PayEmbed[] | null;
+	}>;
+
+	function pickMember(embed: PayEmbed): MemberFields | null {
+		const raw = embed.members;
+		const m = Array.isArray(raw) ? raw[0] : raw;
+		return m ?? null;
+	}
+
+	const timelinePayments: TimelinePayment[] = paymentRows
+		.map((r) => {
+			const msRaw = r.memberships;
+			const ms = Array.isArray(msRaw) ? msRaw[0] : msRaw;
+			if (!ms) return null;
+			const m = pickMember(ms);
+			if (!m) return null;
+			return {
+				kind: 'payment' as const,
+				occurredAt: r.created_at,
+				memberId: m.id,
+				paymentId: r.id,
+				membershipYear: ms.year,
+				tier: ms.tier,
+				membershipAmount: r.membership_amount,
+				donationAmount: r.donation_amount,
+				method: r.method,
+				amount: r.amount,
+				member: m,
+			};
+		})
+		.filter((x): x is TimelinePayment => x != null);
+
+	const profileRows = (profilesRes.data ?? []) as Array<
+		MemberFields & { created_at: string }
+	>;
+	const timelineProfiles: TimelineProfile[] = profileRows.map((m) => ({
+		kind: 'profile_created' as const,
+		occurredAt: m.created_at,
+		memberId: m.id,
+		member: {
+			id: m.id,
+			first_name: m.first_name,
+			last_name: m.last_name,
+			secondary_first_name: m.secondary_first_name,
+			secondary_last_name: m.secondary_last_name,
+			lake_civic_number: m.lake_civic_number,
+			lake_street_name: m.lake_street_name,
+		},
+	}));
+
+	const pendRows = (pendingMsRes.data ?? []) as Array<{
+		id: string;
+		created_at: string;
+		member_id: string;
+		year: number;
+		tier: string;
+	}>;
+
+	const pendIds = pendRows.map((r) => r.id);
+	let paidByMembership = new Map<string, number>();
+	if (pendIds.length > 0) {
+		const { data: payRows, error: payErr } = await service
+			.from('payments')
+			.select('membership_id, membership_amount')
+			.in('membership_id', pendIds);
+		if (payErr) {
+			return new Response(JSON.stringify({ error: 'query_failed', detail: payErr.message }), {
 				status: 500,
 				headers: { 'Content-Type': 'application/json' },
 			});
 		}
-		for (const id of enrolledIds) {
-			tierByMemberId.set(id, tierForMembershipYear(msForYear ?? [], id));
+		for (const pr of payRows ?? []) {
+			const mid = pr.membership_id as string;
+			const raw = pr.membership_amount;
+			const n = typeof raw === 'number' ? raw : parseFloat(String(raw ?? 0));
+			const add = Number.isFinite(n) ? n : 0;
+			paidByMembership.set(mid, (paidByMembership.get(mid) ?? 0) + add);
 		}
 	}
 
-	const recentEnrolledMembers = enrolledMembers.map((m) => ({
-		member: m,
-		tier: tierByMemberId.get(m.id) ?? null,
-		eventAt: m.created_at ?? '',
-	}));
-
-	const activeMsRows = activeRecentRes.data ?? [];
-	const activeMemberIds = [...new Set(activeMsRows.map((r) => r.member_id))];
-	let memById = new Map<string, MemberNameRow>();
-	if (activeMemberIds.length > 0) {
+	const pendMemberIds = [...new Set(pendRows.map((r) => r.member_id))];
+	let memById = new Map<string, MemberFields>();
+	if (pendMemberIds.length > 0) {
 		const { data: mems, error: memErr } = await service
 			.from('members')
 			.select(
-				'id, first_name, last_name, secondary_first_name, secondary_last_name, primary_email, secondary_email, lake_civic_number, lake_street_name',
+				'id, first_name, last_name, secondary_first_name, secondary_last_name, lake_civic_number, lake_street_name',
 			)
-			.in('id', activeMemberIds);
+			.in('id', pendMemberIds);
 		if (memErr) {
 			return new Response(JSON.stringify({ error: 'query_failed', detail: memErr.message }), {
 				status: 500,
 				headers: { 'Content-Type': 'application/json' },
 			});
 		}
-		memById = new Map((mems ?? []).map((m) => [m.id, m as MemberNameRow]));
+		memById = new Map(
+			(mems ?? []).map((m) => [
+				m.id,
+				m as MemberFields,
+			]),
+		);
 	}
 
-	const recentActiveMemberships = activeMsRows.map((ms) => ({
-		membership: {
-			id: ms.id,
-			year: ms.year,
-			tier: ms.tier,
-			created_at: ms.created_at,
-			activated_at: ms.activated_at,
-		},
-		member: memById.get(ms.member_id) ?? null,
-	}));
+	const timelinePending: TimelinePending[] = pendRows
+		.map((row) => {
+			const member = memById.get(row.member_id);
+			if (!member) return null;
+			return {
+				kind: 'membership_pending' as const,
+				occurredAt: row.created_at,
+				memberId: member.id,
+				membershipId: row.id,
+				year: row.year,
+				tier: row.tier,
+				expectedMembershipCents: membershipCentsForTier(row.tier),
+				sumMembershipPaid: paidByMembership.get(row.id) ?? 0,
+				member,
+			};
+		})
+		.filter((x): x is TimelinePending => x != null);
+
+	const merged: AdminActivityTimelineItem[] = [...timelinePayments, ...timelineProfiles, ...timelinePending].sort(
+		(a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime(),
+	);
+	const timeline = merged.slice(0, TIMELINE_CAP);
 
 	return new Response(
 		JSON.stringify({
-			recentEnrolledMembers,
-			recentActiveMemberships,
+			timeline,
 			counts: {
 				pendingMemberships: pendingRes.count ?? 0,
 				activeForYear: activeRes.count ?? 0,
 				membershipYear: year,
+				membersCreatedLastSevenDays,
 			},
 		}),
 		{ status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } },

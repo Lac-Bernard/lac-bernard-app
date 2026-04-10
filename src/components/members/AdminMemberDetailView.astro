@@ -1,4 +1,5 @@
 ---
+import '../../styles/admin-editorial.css';
 import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
 import MemberSessionHeroMeta from './MemberSessionHeroMeta.astro';
 import { memberCopy, memberPaths, type MemberLocale } from '../../lib/members/i18n';
@@ -341,18 +342,6 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   }
 
   .adminPage {
-    --admin-radius: 12px;
-    --admin-radius-md: 10px;
-    --admin-radius-sm: 8px;
-    --admin-border: var(--border);
-    --admin-surface: #fff;
-    --admin-surface-muted: var(--panel);
-    --admin-accent: rgba(28, 95, 118, 0.98);
-    --admin-accent-hover: rgba(22, 78, 98, 1);
-    --admin-accent-soft: rgba(72, 196, 255, 0.16);
-    --admin-text: var(--text);
-    --admin-font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    font-family: var(--admin-font);
     font-size: 0.875rem;
     line-height: 1.5;
     padding: 28px 0 40px;
@@ -367,9 +356,9 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminShell {
     background: var(--admin-surface);
-    border: 1px solid var(--admin-border);
+    border: 0.5px solid var(--admin-border);
     border-radius: var(--admin-radius);
-    box-shadow: var(--shadow);
+    box-shadow: none;
     overflow: hidden;
     min-width: 0;
     max-width: 100%;
@@ -416,7 +405,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminSubheading {
     font-size: 0.9375rem;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: -0.02em;
     margin: 0 0 1rem;
     padding-bottom: 0.5rem;
@@ -450,14 +439,14 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     align-items: center;
     gap: 0.55rem 0.75rem;
     margin: 0;
-    font-weight: 600;
+    font-weight: 500;
     font-size: 0.8125rem;
     color: var(--admin-text);
   }
 
   .adminDetailMembershipList :global(.adminDetailYearToolbarText) {
     color: var(--muted);
-    font-weight: 600;
+    font-weight: 500;
     font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
@@ -486,7 +475,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminDetailMembershipList :global(.adminDetailPaymentSummaryKicker) {
     font-size: 0.7rem;
-    font-weight: 700;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.08em;
     color: var(--muted);
@@ -494,12 +483,12 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminDetailMembershipList :global(.adminDetailSummaryRow--balanceDue > span:first-child) {
     color: rgba(120, 55, 0, 0.92);
-    font-weight: 600;
+    font-weight: 500;
   }
 
   .adminDetailMembershipList :global(.adminDetailSummaryValue--due) {
     color: rgba(150, 65, 0, 0.98) !important;
-    font-weight: 800 !important;
+    font-weight: 500 !important;
   }
 
   .adminDetailMembershipList :global(.adminDetailDuesPaidHint) {
@@ -510,7 +499,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     padding: 0.4rem 0.65rem;
     border-radius: 6px;
     font-size: 0.75rem;
-    font-weight: 600;
+    font-weight: 500;
     color: rgba(18, 75, 50, 0.95);
     background: rgba(34, 120, 80, 0.09);
     border: 1px solid rgba(34, 120, 80, 0.22);
@@ -554,19 +543,19 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminDetailMembershipList :global(.adminDetailSummaryRow--total > span:first-child) {
     color: var(--admin-text);
-    font-weight: 700;
+    font-weight: 500;
   }
 
   .adminDetailMembershipList :global(.adminDetailSummaryValue) {
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     text-align: right;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--admin-text);
   }
 
   .adminDetailMembershipList :global(.adminDetailSummaryRow--total .adminDetailSummaryValue) {
-    font-weight: 700;
+    font-weight: 500;
     font-size: 0.9375rem;
   }
 
@@ -580,7 +569,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   }
 
   .adminDetailMembershipList :global(.adminDetailDonationNoteLabel) {
-    font-weight: 700;
+    font-weight: 500;
     color: var(--admin-text);
     margin-right: 0.35rem;
   }
@@ -588,10 +577,10 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   .adminDetailMembershipList :global(.adminDetailMembershipCard) {
     margin: 0;
     padding: 0;
-    border: 1px solid var(--admin-border);
+    border: 0.5px solid var(--admin-border);
     border-radius: var(--admin-radius-md);
     background: var(--admin-surface);
-    box-shadow: 0 1px 3px rgba(15, 25, 35, 0.045);
+    box-shadow: none;
     overflow: hidden;
     min-width: 0;
   }
@@ -621,7 +610,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminDetailMembershipList :global(.adminDetailIdentityLabel) {
     font-size: 0.68rem;
-    font-weight: 700;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.07em;
     color: var(--muted);
@@ -629,7 +618,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminDetailMembershipList :global(.adminDetailIdentityValue--tier) {
     font-size: 1.2rem;
-    font-weight: 800;
+    font-weight: 500;
     letter-spacing: -0.03em;
     line-height: 1.15;
     color: var(--admin-text);
@@ -638,7 +627,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   .adminDetailMembershipList :global(.adminDetailBadge--statusEmphasis) {
     padding: 0.35rem 0.75rem;
     font-size: 0.8rem;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: 0.02em;
   }
 
@@ -647,7 +636,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     padding: 0.2rem 0.55rem;
     border-radius: 999px;
     font-size: 0.72rem;
-    font-weight: 700;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     line-height: 1.25;
@@ -660,7 +649,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     color: var(--admin-text);
     text-transform: none;
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: 0;
   }
 
@@ -711,7 +700,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   .adminDetailMembershipList :global(.adminDetailPaymentsTitle) {
     margin: 0;
     font-size: 0.8125rem;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: -0.015em;
     color: var(--admin-text);
   }
@@ -846,7 +835,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     padding: 0;
     margin: 0 0 0.5rem;
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
@@ -906,9 +895,9 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     min-width: 7rem;
     max-width: 9.5rem;
     padding: 0.45rem 0.7rem;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 1.25;
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+    box-shadow: none;
     cursor: pointer;
     vertical-align: middle;
   }
@@ -949,7 +938,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminDetailMembershipList :global(.adminTable th) {
     font-size: 0.72rem;
-    font-weight: 700;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--muted);
@@ -965,10 +954,10 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminDialog {
     padding: 0;
-    border: none;
+    border: 0.5px solid var(--admin-border);
     border-radius: var(--admin-radius);
     max-width: min(440px, calc(100vw - 2rem));
-    box-shadow: var(--shadow);
+    box-shadow: none;
     background: var(--admin-surface);
   }
 
@@ -984,14 +973,14 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   .adminPaymentForm h3 {
     margin: 0 0 1.1rem;
     font-size: 1rem;
-    font-weight: 700;
+    font-weight: 500;
   }
 
   .adminPaymentForm label {
     display: block;
     margin-bottom: 0.9rem;
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     color: var(--muted);
@@ -1047,7 +1036,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     padding: 0.4rem 0.85rem;
     font: inherit;
     font-size: 0.8125rem;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 1.2;
     border-radius: 8px;
     border: 1px solid transparent;
@@ -1112,7 +1101,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   .adminPage :global(.adminBtn--table) {
     padding: 0.28rem 0.5rem;
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: 500;
     white-space: nowrap;
   }
 
@@ -1202,7 +1191,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     padding: 0.6rem 0.55rem;
     border-bottom: 2px solid rgba(0, 0, 0, 0.08);
     background: var(--admin-surface-muted);
-    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+    box-shadow: none;
   }
 
   .adminDetailMembershipList
@@ -1212,7 +1201,8 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminDetailMembershipList
     :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments tbody tr:hover td) {
-    background: rgba(72, 196, 255, 0.06);
+    background: rgba(45, 106, 93, 0.07);
+    transition: background-color 120ms ease;
   }
 
   .adminDetailMembershipList

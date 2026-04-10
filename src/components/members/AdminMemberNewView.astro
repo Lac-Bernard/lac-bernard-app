@@ -1,4 +1,5 @@
 ---
+import '../../styles/admin-editorial.css';
 import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
 import MemberSessionHeroMeta from './MemberSessionHeroMeta.astro';
 import { memberCopy, memberPaths, type MemberLocale } from '../../lib/members/i18n';
@@ -238,15 +239,6 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   }
 
   .adminPage {
-    --admin-radius: 12px;
-    --admin-radius-sm: 8px;
-    --admin-border: var(--border);
-    --admin-surface: #fff;
-    --admin-surface-muted: var(--panel);
-    --admin-accent: rgba(28, 95, 118, 0.98);
-    --admin-text: var(--text);
-    --admin-font: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    font-family: var(--admin-font);
     font-size: 0.875rem;
     line-height: 1.5;
     padding: 28px 0 40px;
@@ -261,9 +253,9 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminShell {
     background: var(--admin-surface);
-    border: 1px solid var(--admin-border);
+    border: 0.5px solid var(--admin-border);
     border-radius: var(--admin-radius);
-    box-shadow: var(--shadow);
+    box-shadow: none;
     overflow: hidden;
     min-width: 0;
     max-width: 100%;
@@ -314,7 +306,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminSubheading {
     font-size: 0.9375rem;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: -0.02em;
     margin: 0 0 1rem;
     padding-bottom: 0.5rem;
@@ -365,7 +357,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     padding: 0;
     margin: 0 0 0.5rem;
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
@@ -401,7 +393,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   .adminCheckbox--lead {
     margin: 0 0 0.5rem;
     padding: 0 0.15rem;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   .adminNotes {
@@ -443,7 +435,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
   .adminRadioGroupLabel {
     font-size: 0.6875rem;
-    font-weight: 700;
+    font-weight: 500;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--muted);
@@ -471,7 +463,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     padding: 0.45rem 1rem;
     font: inherit;
     font-size: 0.8125rem;
-    font-weight: 600;
+    font-weight: 500;
     border-radius: 8px;
     cursor: pointer;
     border: 1px solid transparent;
