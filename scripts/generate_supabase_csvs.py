@@ -7,6 +7,9 @@ Name columns: Last Name → last_name; Other LName → secondary_last_name (not 
 First Name is split on the first `` & ``, `` / ``, or `` and `` into first_name / secondary_first_name.
 
 Imports align with the current schema (tier fees, payment split, membership status):
+  members.status is one of new | enrolled | disabled (CHECK on public.members).
+  Inactive? == inactive -> disabled; else new if no membership rows or only unpaid (pending)
+  rows; enrolled when at least one imported year is paid (active membership backfill).
   payments.amount = membership_amount + donation_amount; donation_amount is 0 for these rows.
   Tier fees: voting $75, associate $25 (same as membership_tier_fee_amount / Stripe checkout).
   Payment/membership created_at and payment date: Jan 1 (America/Toronto) of
@@ -186,6 +189,27 @@ def import_payment_notes(membership_year: int, current_year: int) -> str:
     if membership_year > current_year:
         return f"{base} Prepaid for membership year {membership_year}."
     return base
+
+
+def member_directory_status(
+    inactive_cell: object, mem_details: list[tuple[int, str, bool, object]]
+) -> str:
+    """
+    Map spreadsheet row to public.members.status.
+
+    - Sheet inactive -> disabled (historical dues rows may still be inserted; trigger
+      memberships_on_active_enroll_member only promotes new -> enrolled, never touches disabled).
+    - No parseable membership years -> new (profile-only / unparseable tier cells).
+    - At least one paid year -> enrolled (directory-ready; legacy backfill).
+    - Only unpaid (pending) membership rows -> new until activated (aligned with self-serve flow).
+    """
+    if str(inactive_cell or "").strip().lower() == "inactive":
+        return "disabled"
+    if not mem_details:
+        return "new"
+    if any(is_paid for _, _, is_paid, _ in mem_details):
+        return "enrolled"
+    return "new"
 
 
 def parse_year_joined_cell(raw) -> int | None:
@@ -452,7 +476,7 @@ def main() -> None:
         _email_raw = str(row["E-mail address"]).strip() if pd.notna(row["E-mail address"]) else ""
         primary_email = _email_raw if _email_raw else None
 
-        status = "disabled" if str(row.get("Inactive?", "")).strip().lower() == "inactive" else "enrolled"
+        status = member_directory_status(row.get("Inactive?"), mem_details)
 
         fn_primary, fn_secondary = parse_first_name_cell(row.get("First Name"))
 
