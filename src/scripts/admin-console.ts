@@ -41,6 +41,63 @@ type MemberRow = {
 	user_id: string | null;
 };
 
+/** Timeline row from GET /api/admin/activity (client shape). */
+type ActivityApiTimelineItem =
+	| {
+			kind: 'payment';
+			occurredAt: string;
+			memberId: string;
+			paymentId: number;
+			membershipYear: number;
+			tier: string;
+			membershipAmount: number | null;
+			donationAmount: number | null;
+			method: string | null;
+			amount: number | null;
+			member: {
+				id: string;
+				first_name: string | null;
+				last_name: string;
+				secondary_first_name?: string | null;
+				secondary_last_name?: string | null;
+				lake_civic_number?: string | null;
+				lake_street_name?: string | null;
+			};
+	  }
+	| {
+			kind: 'profile_created';
+			occurredAt: string;
+			memberId: string;
+			member: {
+				id: string;
+				first_name: string | null;
+				last_name: string;
+				secondary_first_name?: string | null;
+				secondary_last_name?: string | null;
+				lake_civic_number?: string | null;
+				lake_street_name?: string | null;
+			};
+	  }
+	| {
+			kind: 'membership_pending';
+			occurredAt: string;
+			memberId: string;
+			membershipId: string;
+			year: number;
+			tier: string;
+			expectedMembershipCents: number | null;
+			sumMembershipPaid: number;
+			member: {
+				id: string;
+				first_name: string | null;
+				last_name: string;
+				secondary_first_name?: string | null;
+				secondary_last_name?: string | null;
+				lake_civic_number?: string | null;
+				lake_street_name?: string | null;
+			};
+	  };
+
 type MembershipEmbed = {
 	id: string;
 	created_at: string;
@@ -381,6 +438,11 @@ export function initAdminConsole(
 	let auditTotalPages = 1;
 	let membersSort = 'created_at_desc';
 
+	const ACTIVITY_TIMELINE_LIMIT = 20;
+	let activityTimelineNextBefore: string | null = null;
+	let renderActivityTimelineRow: ((item: ActivityApiTimelineItem) => string) | null = null;
+	let activityTimelineLoadingMore = false;
+
 	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
 		setStatusGlobal(strings, msg, kind);
 	}
@@ -493,13 +555,37 @@ export function initAdminConsole(
 	});
 
 	overviewMount?.addEventListener('click', (e) => {
-		const nav = (e.target as HTMLElement).closest('[data-admin-kpi-nav]');
-		if (!nav) return;
-		const dest = nav.getAttribute('data-admin-kpi-nav');
-		if (dest === 'members' || dest === 'pending') {
+		const moreBtn = (e.target as HTMLElement).closest('#admin-timeline-more');
+		if (moreBtn) {
 			e.preventDefault();
-			showTab(dest, 'push');
+			void loadMoreActivityTimeline();
+			return;
 		}
+		const nav = (e.target as HTMLElement).closest('[data-admin-kpi-nav]');
+		if (nav) {
+			const dest = nav.getAttribute('data-admin-kpi-nav');
+			if (dest === 'members' || dest === 'pending') {
+				e.preventDefault();
+				showTab(dest, 'push');
+			}
+			return;
+		}
+		const t = e.target as HTMLElement;
+		if (t.closest('a, button')) return;
+		const li = t.closest<HTMLElement>('li.adminTimelineRow[data-admin-member-href]');
+		if (!li) return;
+		const href = li.dataset.adminMemberHref;
+		if (href) window.location.assign(href);
+	});
+
+	overviewMount?.addEventListener('keydown', (e) => {
+		if (e.key !== 'Enter' && e.key !== ' ') return;
+		const li = (e.target as HTMLElement).closest<HTMLElement>('li.adminTimelineRow[data-admin-member-href]');
+		if (!li || !overviewMount?.contains(li)) return;
+		if ((e.target as HTMLElement).closest('a, button')) return;
+		e.preventDefault();
+		const href = li.dataset.adminMemberHref;
+		if (href) window.location.assign(href);
 	});
 
 	el<HTMLInputElement>('#admin-payment-amount')?.addEventListener('input', updatePaymentPreviewConsole);
@@ -808,75 +894,68 @@ export function initAdminConsole(
 		setPendingBadge(c.pendingMemberships);
 	}
 
+	function updateActivityTimelineMoreButton(pagination?: { hasMore: boolean; nextBefore: string | null } | null) {
+		const show = Boolean(pagination?.hasMore && pagination?.nextBefore);
+		activityTimelineNextBefore = show ? pagination?.nextBefore ?? null : null;
+		const btn = el<HTMLButtonElement>('#admin-timeline-more');
+		if (btn) btn.hidden = !show;
+	}
+
+	async function loadMoreActivityTimeline() {
+		if (!overviewMount || !renderActivityTimelineRow || activityTimelineLoadingMore) return;
+		if (!activityTimelineNextBefore) return;
+		activityTimelineLoadingMore = true;
+		const btn = el<HTMLButtonElement>('#admin-timeline-more');
+		if (btn) {
+			btn.disabled = true;
+			btn.setAttribute('aria-busy', 'true');
+		}
+		try {
+			const qs = new URLSearchParams();
+			qs.set('limit', String(ACTIVITY_TIMELINE_LIMIT));
+			qs.set('before', activityTimelineNextBefore);
+			const { ok, data } = await fetchJson<{
+				timeline?: ActivityApiTimelineItem[];
+				pagination?: { limit: number; hasMore: boolean; nextBefore: string | null };
+				error?: string;
+			}>(`/api/admin/activity?${qs.toString()}`);
+			if (!ok || !data.timeline) {
+				setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
+				return;
+			}
+			const ul = el<HTMLUListElement>('#admin-timeline-list');
+			if (!ul) return;
+			ul.insertAdjacentHTML('beforeend', data.timeline.map((item) => renderActivityTimelineRow!(item)).join(''));
+			updateActivityTimelineMoreButton(data.pagination ?? null);
+		} finally {
+			activityTimelineLoadingMore = false;
+			if (btn) {
+				btn.disabled = false;
+				btn.removeAttribute('aria-busy');
+			}
+		}
+	}
+
 	async function loadOverview() {
 		if (!overviewMount) return;
 		overviewMount.innerHTML = `<p class="adminHint">${t(strings, 'adminLoading')}</p>`;
-		type ActivityTimelineItem =
-			| {
-					kind: 'payment';
-					occurredAt: string;
-					memberId: string;
-					paymentId: number;
-					membershipYear: number;
-					tier: string;
-					membershipAmount: number | null;
-					donationAmount: number | null;
-					method: string | null;
-					amount: number | null;
-					member: {
-						id: string;
-						first_name: string | null;
-						last_name: string;
-						secondary_first_name?: string | null;
-						secondary_last_name?: string | null;
-						lake_civic_number?: string | null;
-						lake_street_name?: string | null;
-					};
-			  }
-			| {
-					kind: 'profile_created';
-					occurredAt: string;
-					memberId: string;
-					member: {
-						id: string;
-						first_name: string | null;
-						last_name: string;
-						secondary_first_name?: string | null;
-						secondary_last_name?: string | null;
-						lake_civic_number?: string | null;
-						lake_street_name?: string | null;
-					};
-			  }
-			| {
-					kind: 'membership_pending';
-					occurredAt: string;
-					memberId: string;
-					membershipId: string;
-					year: number;
-					tier: string;
-					expectedMembershipCents: number | null;
-					sumMembershipPaid: number;
-					member: {
-						id: string;
-						first_name: string | null;
-						last_name: string;
-						secondary_first_name?: string | null;
-						secondary_last_name?: string | null;
-						lake_civic_number?: string | null;
-						lake_street_name?: string | null;
-					};
-			  };
+		activityTimelineNextBefore = null;
+		renderActivityTimelineRow = null;
+
+		const qs = new URLSearchParams();
+		qs.set('limit', String(ACTIVITY_TIMELINE_LIMIT));
 
 		const { ok, data } = await fetchJson<{
-			timeline?: ActivityTimelineItem[];
+			timeline?: ActivityApiTimelineItem[];
 			counts?: {
 				pendingMemberships: number;
 				activeForYear: number;
 				membershipYear: number;
 				membersCreatedLastSevenDays: number;
 			};
+			pagination?: { limit: number; hasMore: boolean; nextBefore: string | null };
 			error?: string;
-		}>('/api/admin/activity');
+		}>(`/api/admin/activity?${qs.toString()}`);
 		if (!ok) {
 			overviewMount.innerHTML = `<p class="adminHint">${data?.error ?? t(strings, 'adminErrorGeneric')}</p>`;
 			return;
@@ -896,7 +975,7 @@ export function initAdminConsole(
 			weeksAgo: t(strings, 'adminRelativeWeeksAgo'),
 		};
 
-		function buildTimelineRow(item: ActivityTimelineItem): string {
+		function buildTimelineRow(item: ActivityApiTimelineItem): string {
 			const m = item.member;
 			const nameLine = timelineMemberNameLine(m);
 			const whenTitle = formatAdminLocaleDateTime(item.occurredAt, numberLocale);
@@ -975,11 +1054,21 @@ export function initAdminConsole(
 			</li>`;
 		}
 
+		renderActivityTimelineRow = buildTimelineRow;
+
 		const items = data.timeline ?? [];
-		const timelineList =
+		const pagination = data.pagination ?? null;
+
+		const timelineInner =
 			items.length === 0 ?
 				`<p class="adminTimelineEmpty">${escapeHtml(t(strings, 'adminTimelineEmpty'))}</p>`
-			:	`<ul class="adminTimeline" role="list">${items.map(buildTimelineRow).join('')}</ul>`;
+			:	`<ul id="admin-timeline-list" class="adminTimeline" role="list">${items.map(buildTimelineRow).join('')}</ul>`;
+
+		const loadMoreBtn = `<div class="adminTimelineFooter">
+			<button type="button" id="admin-timeline-more" class="adminBtn adminBtn--outline" hidden aria-busy="false">${escapeHtml(t(strings, 'adminTimelineLoadMore'))}</button>
+		</div>`;
+
+		const timelineList = `<div class="adminTimelineWrap">${timelineInner}${items.length > 0 ? loadMoreBtn : ''}</div>`;
 
 		const kpi =
 			c ?
@@ -1005,7 +1094,7 @@ export function initAdminConsole(
 			${timelineList}
 			</section>
 		`;
-		wireMembersTableRows(overviewMount);
+		updateActivityTimelineMoreButton(pagination);
 	}
 
 	async function loadPending() {

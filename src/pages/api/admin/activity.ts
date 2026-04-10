@@ -5,8 +5,13 @@ import { requireAdminSession } from '../../../lib/admin/session';
 import { membershipCentsForTier } from '../../../lib/membership/stripeCheckout';
 import { createSupabaseServiceRoleClient } from '../../../lib/supabase/service';
 
-const LIMIT_SOURCE = 30;
-const TIMELINE_CAP = 48;
+/** Default page size for merged activity timeline. */
+const DEFAULT_TIMELINE_LIMIT = 20;
+const MAX_TIMELINE_LIMIT = 50;
+/** Rows to pull per source when merging (buffer so cross-stream ordering can fill a page). */
+function perSourceFetchLimit(pageLimit: number): number {
+	return Math.min(120, Math.max(45, pageLimit * 4));
+}
 
 type MemberFields = {
 	id: string;
@@ -56,13 +61,29 @@ export type AdminActivityTimelineItem = TimelinePayment | TimelineProfile | Time
 /** Rolling window from now (timestamptz), matches intuitive “last 7 days”. */
 const MEMBER_COUNT_LOOKBACK_MS = 7 * 24 * 60 * 60 * 1000;
 
-export const GET: APIRoute = async ({ request, cookies }) => {
+function parseTimelineLimit(raw: string | null): number {
+	const n = Math.floor(Number.parseInt(raw ?? '', 10));
+	if (!Number.isFinite(n) || n < 1) return DEFAULT_TIMELINE_LIMIT;
+	return Math.min(MAX_TIMELINE_LIMIT, n);
+}
+
+export const GET: APIRoute = async ({ request, cookies, url }) => {
 	const auth = await requireAdminSession(request, cookies);
 	if (!auth.ok) return auth.response;
 
 	const service = createSupabaseServiceRoleClient();
 	const year = getMembershipCalendarYear();
 	const membersSince = new Date(Date.now() - MEMBER_COUNT_LOOKBACK_MS).toISOString();
+
+	const searchParams = url.searchParams;
+	const pageLimit = parseTimelineLimit(searchParams.get('limit'));
+	const perSource = perSourceFetchLimit(pageLimit);
+	const beforeRaw = searchParams.get('before')?.trim();
+	let beforeIso: string | null = null;
+	if (beforeRaw) {
+		const d = new Date(beforeRaw);
+		if (!Number.isNaN(d.getTime())) beforeIso = d.toISOString();
+	}
 
 	const [pendingRes, activeRes, payRes, profilesRes, pendingMsRes, members7dRes] = await Promise.all([
 		service.from('memberships').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
@@ -71,10 +92,11 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 			.select('id', { count: 'exact', head: true })
 			.eq('year', year)
 			.eq('status', 'active'),
-		service
-			.from('payments')
-			.select(
-				`
+		(() => {
+			let q = service
+				.from('payments')
+				.select(
+					`
           id,
           created_at,
           membership_amount,
@@ -97,22 +119,33 @@ export const GET: APIRoute = async ({ request, cookies }) => {
             )
           )
         `,
-			)
-			.order('created_at', { ascending: false })
-			.limit(LIMIT_SOURCE),
-		service
-			.from('members')
-			.select(
-				'id, created_at, first_name, last_name, secondary_first_name, secondary_last_name, lake_civic_number, lake_street_name',
-			)
-			.order('created_at', { ascending: false })
-			.limit(LIMIT_SOURCE),
-		service
-			.from('memberships')
-			.select('id, created_at, member_id, year, tier, status')
-			.eq('status', 'pending')
-			.order('created_at', { ascending: false })
-			.limit(LIMIT_SOURCE),
+				)
+				.order('created_at', { ascending: false })
+				.limit(perSource);
+			if (beforeIso) q = q.lt('created_at', beforeIso);
+			return q;
+		})(),
+		(() => {
+			let q = service
+				.from('members')
+				.select(
+					'id, created_at, first_name, last_name, secondary_first_name, secondary_last_name, lake_civic_number, lake_street_name',
+				)
+				.order('created_at', { ascending: false })
+				.limit(perSource);
+			if (beforeIso) q = q.lt('created_at', beforeIso);
+			return q;
+		})(),
+		(() => {
+			let q = service
+				.from('memberships')
+				.select('id, created_at, member_id, year, tier, status')
+				.eq('status', 'pending')
+				.order('created_at', { ascending: false })
+				.limit(perSource);
+			if (beforeIso) q = q.lt('created_at', beforeIso);
+			return q;
+		})(),
 		service.from('members').select('id', { count: 'exact', head: true }).gte('created_at', membersSince),
 	]);
 
@@ -270,7 +303,16 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 	const merged: AdminActivityTimelineItem[] = [...timelinePayments, ...timelineProfiles, ...timelinePending].sort(
 		(a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime(),
 	);
-	const timeline = merged.slice(0, TIMELINE_CAP);
+	const timeline = merged.slice(0, pageLimit);
+
+	const payN = paymentRows.length;
+	const profN = profileRows.length;
+	const pendN = pendRows.length;
+	const surplus = merged.length > pageLimit;
+	const anySourceFull = payN >= perSource || profN >= perSource || pendN >= perSource;
+	const hasMore = surplus || (timeline.length === pageLimit && anySourceFull);
+	const nextBefore =
+		hasMore && timeline.length > 0 ? timeline[timeline.length - 1]?.occurredAt ?? null : null;
 
 	return new Response(
 		JSON.stringify({
@@ -280,6 +322,11 @@ export const GET: APIRoute = async ({ request, cookies }) => {
 				activeForYear: activeRes.count ?? 0,
 				membershipYear: year,
 				membersCreatedLastSevenDays,
+			},
+			pagination: {
+				limit: pageLimit,
+				hasMore,
+				nextBefore,
 			},
 		}),
 		{ status: 200, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } },
