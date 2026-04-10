@@ -70,6 +70,14 @@ export function formatAdminRelativeAgo(
 		return applyTemplate(strings.minAgo, Math.max(1, diffMin));
 	}
 
+	// Prefer wall-clock hours for <24h even when that spans a Toronto midnight
+	// (e.g. 11:55 PM → 1:05 AM should be “1 hr ago”, not “Yesterday”).
+	const diffHr = Math.floor(diffMs / (60 * 60_000));
+	if (diffHr < 24) {
+		if (diffHr <= 1) return applyTemplate(strings.hrAgo, 1);
+		return applyTemplate(strings.hrsAgo, diffHr);
+	}
+
 	const nowT = torontoYmdParts(now);
 	const occT = torontoYmdParts(occurred);
 	const yestT = previousCalendarDay(nowT.y, nowT.mo, nowT.day);
@@ -77,12 +85,6 @@ export function formatAdminRelativeAgo(
 		occT.y === yestT.y && occT.mo === yestT.mo && occT.day === yestT.day;
 	if (isYesterday) {
 		return strings.yesterday;
-	}
-
-	const diffHr = Math.floor(diffMs / (60 * 60_000));
-	if (diffHr < 24) {
-		if (diffHr <= 1) return applyTemplate(strings.hrAgo, 1);
-		return applyTemplate(strings.hrsAgo, diffHr);
 	}
 
 	const diffDays = Math.floor(diffMs / (24 * 60 * 60_000));

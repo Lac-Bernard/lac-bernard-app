@@ -99,9 +99,6 @@ export const memberCopy: Record<
 		/** `<h1>` placeholder on member detail until the member record loads */
 		adminMemberPageTitleLoading: string;
 		adminMethodStripe: string;
-		adminOverviewRecentTitle: string;
-		adminOverviewRecentEnrolledSubtitle: string;
-		adminOverviewRecentActiveSubtitle: string;
 		adminOverviewActivityTitle: string;
 		adminKpiCurrentYearLabel: string;
 		adminKpiActiveMembershipsLabel: string;
@@ -117,7 +114,6 @@ export const memberCopy: Record<
 		adminTimelineLabelProfileCreated: string;
 		adminTimelineLabelMembershipPending: string;
 		adminTimelinePendingPaidPortion: string;
-		adminOverviewColWhen: string;
 		adminOverviewCountPending: string;
 		adminOverviewCountActive: string;
 		adminOverviewKpiAriaMembers: string;
@@ -502,9 +498,6 @@ export const memberCopy: Record<
 		adminBreadcrumbAria: 'Breadcrumb',
 		adminMemberPageTitleLoading: 'Member',
 		adminMethodStripe: 'Card (Stripe)',
-		adminOverviewRecentTitle: 'Recent members',
-		adminOverviewRecentEnrolledSubtitle: 'Recently added enrolled profiles',
-		adminOverviewRecentActiveSubtitle: 'Recent active memberships',
 		adminOverviewActivityTitle: 'Activity',
 		adminKpiCurrentYearLabel: 'Current year',
 		adminKpiActiveMembershipsLabel: 'Active memberships',
@@ -519,7 +512,6 @@ export const memberCopy: Record<
 		adminTimelineLabelProfileCreated: 'New member profile created',
 		adminTimelineLabelMembershipPending: 'Membership pending',
 		adminTimelinePendingPaidPortion: 'Paid {{amount}}',
-		adminOverviewColWhen: 'When',
 		adminOverviewCountPending: 'Pending memberships',
 		adminOverviewCountActive: 'Active memberships ({{year}})',
 		adminOverviewKpiAriaMembers: '{{count}} active memberships for {{year}}. Open members directory.',
@@ -911,9 +903,6 @@ export const memberCopy: Record<
 		adminBreadcrumbAria: 'Fil d’Ariane',
 		adminMemberPageTitleLoading: 'Membre',
 		adminMethodStripe: 'Carte (Stripe)',
-		adminOverviewRecentTitle: 'Membres récents',
-		adminOverviewRecentEnrolledSubtitle: 'Profils inscrits ajoutés récemment',
-		adminOverviewRecentActiveSubtitle: 'Adhésions actives récentes',
 		adminOverviewActivityTitle: 'Activité récente',
 		adminKpiCurrentYearLabel: 'Année en cours',
 		adminKpiActiveMembershipsLabel: 'Adhésions actives',
@@ -928,7 +917,6 @@ export const memberCopy: Record<
 		adminTimelineLabelProfileCreated: 'Nouvelle fiche membre créée',
 		adminTimelineLabelMembershipPending: 'Adhésion en attente',
 		adminTimelinePendingPaidPortion: 'Payé {{amount}}',
-		adminOverviewColWhen: 'Date',
 		adminOverviewCountPending: 'Adhésions en attente',
 		adminOverviewCountActive: 'Adhésions actives ({{year}})',
 		adminOverviewKpiAriaMembers:
