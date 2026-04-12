@@ -16,6 +16,7 @@
     "dev:grant-admin": "ALLOW_GRANT_ADMIN_DEV=1 node scripts/grant-admin-dev.mjs",
     "db:import-members-csv": "bash scripts/run-membership-import.sh",
     "db:import-members-csv:local": "bash scripts/run-membership-import.sh --local",
+    "db:sync-prod-to-local": "bash scripts/sync-prod-db-to-local.sh",
     "docs:google-docs": "node scripts/docs-to-google-docs-html.mjs"
   },
   "dependencies": {
