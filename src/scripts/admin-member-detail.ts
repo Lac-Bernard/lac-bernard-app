@@ -341,12 +341,9 @@ export function initAdminMemberDetail(
 				Math.round(Math.max(0, bd.expectedFee - bd.membershipSubtotal) * 100) / 100
 			:	0;
 
-		const feeLine =
+		const tierScheduleMeta =
 			bd.expectedFee != null ?
-				`<div class="adminDetailSummaryRow">
-					<span>${escapeHtml(t(strings, 'adminDetailStandardFee', { tier }))}</span>
-					<span class="adminDetailSummaryValue">${escapeHtml(fmtMoney(bd.expectedFee))}</span>
-				</div>`
+				`<p class="adminDetailTierSchedule">${escapeHtml(t(strings, 'adminDetailTierScheduleDues', { amount: fmtMoney(bd.expectedFee) }))}</p>`
 			:	'';
 
 		const balanceRow =
@@ -378,7 +375,6 @@ export function initAdminMemberDetail(
 			<div class="adminDetailPaymentSummaryTitleRow">
 				<span class="adminDetailPaymentSummaryKicker">${escapeHtml(t(strings, 'adminDetailPaymentSummaryTitle'))}</span>
 			</div>
-			${feeLine}
 			<div class="adminDetailSummaryRow">
 				<span>${escapeHtml(t(strings, 'adminDetailAmountMembership'))}</span>
 				<span class="adminDetailSummaryValue">${escapeHtml(fmtMoney(bd.membershipSubtotal))}</span>
@@ -388,9 +384,17 @@ export function initAdminMemberDetail(
 				<span class="adminDetailSummaryValue">${escapeHtml(fmtMoney(bd.donationSubtotal))}</span>
 			</div>
 			${balanceRow}
-			<div class="adminDetailSummaryRow adminDetailSummaryRow--total">
-				<span>${escapeHtml(t(strings, 'adminDetailAmountTotal'))}</span>
+			<div class="adminDetailSummaryRow">
+				<span>${escapeHtml(t(strings, 'adminDetailGrossCollected'))}</span>
 				<span class="adminDetailSummaryValue">${escapeHtml(fmtMoney(bd.totalPaid))}</span>
+			</div>
+			<div class="adminDetailSummaryRow adminDetailSummaryRow--stripeFees">
+				<span>${escapeHtml(t(strings, 'adminDetailStripeFeesWithheld'))}</span>
+				<span class="adminDetailSummaryValue">${escapeHtml(fmtMoney(bd.stripeFeesTotal))}</span>
+			</div>
+			<div class="adminDetailSummaryRow adminDetailSummaryRow--total">
+				<span>${escapeHtml(t(strings, 'adminDetailNetToAssociation'))}</span>
+				<span class="adminDetailSummaryValue">${escapeHtml(fmtMoney(bd.netAfterStripeFees))}</span>
 			</div>
 			${duesPaidHint}
 			${donationNoteBlock}
@@ -472,6 +476,7 @@ export function initAdminMemberDetail(
 					</div>
 					${futureBadge}
 				</div>
+				${tierScheduleMeta}
 			</header>
 			${paymentsBlock}
 		</article>`;
