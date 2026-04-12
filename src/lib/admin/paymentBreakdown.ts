@@ -22,6 +22,8 @@ export type PaymentSplitInput = {
 	notes: string | null;
 	membership_amount?: number | null;
 	donation_amount?: number | null;
+	/** Stripe processing fee in CAD when recorded */
+	stripe_fee_cad?: number | null;
 };
 
 /** Split one payment into membership vs donation portions (best effort). Prefer stored columns when present. */
@@ -81,21 +83,37 @@ export function sumYearPaymentBreakdown(
 	membershipSubtotal: number;
 	donationSubtotal: number;
 	expectedFee: number | null;
+	/** Sum of `stripe_fee_cad` on payment rows (0 if none recorded). */
+	stripeFeesTotal: number;
+	/** Gross charged minus Stripe fees (dues + donations split; net cash after processor). */
+	netAfterStripeFees: number;
 } {
 	let totalPaid = 0;
 	let membershipSubtotal = 0;
 	let donationSubtotal = 0;
+	let stripeFeesTotal = 0;
 	for (const p of payments) {
 		const amt = p.amount ?? 0;
 		totalPaid += amt;
 		const { membership, donation } = perPaymentMembershipDonation(p, tier);
 		membershipSubtotal += membership;
 		donationSubtotal += donation;
+		const sf = p.stripe_fee_cad;
+		if (sf != null && Number.isFinite(Number(sf))) {
+			stripeFeesTotal += Number(sf);
+		}
 	}
+	totalPaid = Math.round(totalPaid * 100) / 100;
+	membershipSubtotal = Math.round(membershipSubtotal * 100) / 100;
+	donationSubtotal = Math.round(donationSubtotal * 100) / 100;
+	stripeFeesTotal = Math.round(stripeFeesTotal * 100) / 100;
+	const netAfterStripeFees = Math.round((totalPaid - stripeFeesTotal) * 100) / 100;
 	return {
-		totalPaid: Math.round(totalPaid * 100) / 100,
-		membershipSubtotal: Math.round(membershipSubtotal * 100) / 100,
-		donationSubtotal: Math.round(donationSubtotal * 100) / 100,
+		totalPaid,
+		membershipSubtotal,
+		donationSubtotal,
 		expectedFee: expectedMembershipFeeDollars(tier),
+		stripeFeesTotal,
+		netAfterStripeFees,
 	};
 }

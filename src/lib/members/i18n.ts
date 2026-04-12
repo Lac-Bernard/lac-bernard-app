@@ -141,9 +141,15 @@ export const memberCopy: Record<
 		adminDetailFutureBadge: string;
 		adminDetailMembershipYearPicker: string;
 		adminDetailStandardFee: string;
+		/** Card header: list price for this membership type (not a payment line) */
+		adminDetailTierScheduleDues: string;
 		adminDetailAmountMembership: string;
 		adminDetailAmountDonation: string;
 		adminDetailAmountTotal: string;
+		/** Payment summary: sum of payment amounts before processor fees */
+		adminDetailGrossCollected: string;
+		adminDetailStripeFeesWithheld: string;
+		adminDetailNetToAssociation: string;
 		adminDetailPaymentSummaryTitle: string;
 		adminDetailBalanceDue: string;
 		adminDetailDuesPaidInFull: string;
@@ -593,9 +599,13 @@ export const memberCopy: Record<
 		adminDetailFutureBadge: 'Future / prepaid',
 		adminDetailMembershipYearPicker: 'Membership year',
 		adminDetailStandardFee: 'Standard fee ({{tier}})',
+		adminDetailTierScheduleDues: 'Scheduled annual dues: {{amount}}',
 		adminDetailAmountMembership: 'Membership',
 		adminDetailAmountDonation: 'Donation',
 		adminDetailAmountTotal: 'Total paid',
+		adminDetailGrossCollected: 'Gross collected',
+		adminDetailStripeFeesWithheld: 'Stripe fees (withheld)',
+		adminDetailNetToAssociation: 'Net to association',
 		adminDetailPaymentSummaryTitle: 'Summary',
 		adminDetailBalanceDue: 'Balance due (dues)',
 		adminDetailDuesPaidInFull: 'Annual dues fully paid',
@@ -1055,9 +1065,13 @@ export const memberCopy: Record<
 		adminDetailFutureBadge: 'Futur / payé d’avance',
 		adminDetailMembershipYearPicker: 'Année d’adhésion',
 		adminDetailStandardFee: 'Cotisation de base ({{tier}})',
+		adminDetailTierScheduleDues: 'Cotisation annuelle prévue : {{amount}}',
 		adminDetailAmountMembership: 'Adhésion',
 		adminDetailAmountDonation: 'Don',
 		adminDetailAmountTotal: 'Total payé',
+		adminDetailGrossCollected: 'Total encaissé (brut)',
+		adminDetailStripeFeesWithheld: 'Frais Stripe (retenus)',
+		adminDetailNetToAssociation: 'Net pour l’association',
 		adminDetailPaymentSummaryTitle: 'Sommaire',
 		adminDetailBalanceDue: 'Solde dû (cotisation)',
 		adminDetailDuesPaidInFull: 'Cotisation annuelle entièrement payée',

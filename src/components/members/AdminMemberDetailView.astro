@@ -74,10 +74,13 @@ const adminKeys = [
 	'adminDetailPaymentsEmpty',
 	'adminDetailFutureBadge',
 	'adminDetailMembershipYearPicker',
-	'adminDetailStandardFee',
+	'adminDetailTierScheduleDues',
 	'adminDetailAmountMembership',
 	'adminDetailAmountDonation',
 	'adminDetailAmountTotal',
+	'adminDetailGrossCollected',
+	'adminDetailStripeFeesWithheld',
+	'adminDetailNetToAssociation',
 	'adminDetailPaymentSummaryTitle',
 	'adminDetailBalanceDue',
 	'adminDetailDuesPaidInFull',
@@ -482,6 +485,17 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     color: var(--muted);
   }
 
+  /* List price for this tier — lives in the card header, not in the payment summary */
+  .adminDetailMembershipList :global(.adminDetailTierSchedule) {
+    margin: 0.55rem 0 0;
+    padding: 0;
+    max-width: 28rem;
+    font-size: 0.78rem;
+    line-height: 1.4;
+    color: var(--muted);
+    font-weight: 400;
+  }
+
   .adminDetailMembershipList :global(.adminDetailSummaryRow--balanceDue > span:first-child) {
     color: rgba(120, 55, 0, 0.92);
     font-weight: 500;
@@ -524,7 +538,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     border-bottom: 1px solid rgba(0, 0, 0, 0.055);
   }
 
-  .adminDetailMembershipList :global(.adminDetailSummaryRow:has(+ .adminDetailSummaryRow--total)) {
+  .adminDetailMembershipList :global(.adminDetailSummaryRow--stripeFees:has(+ .adminDetailSummaryRow--total)) {
     border-bottom: none;
     padding-bottom: 0.2rem;
   }
