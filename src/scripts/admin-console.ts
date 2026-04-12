@@ -35,6 +35,7 @@ type ActivityApiTimelineItem =
 			donationAmount: number | null;
 			method: string | null;
 			amount: number | null;
+			stripeFeeCad?: number | null;
 			member: {
 				id: string;
 				first_name: string | null;
@@ -605,6 +606,13 @@ export function initAdminConsole(
 				const don = item.donationAmount ?? 0;
 				if (don > 0.001) {
 					parts.push(`${t(strings, 'adminTableDonationPortion')} ${fmtCad(don)}`);
+				}
+				const fee =
+					item.stripeFeeCad != null && Number.isFinite(Number(item.stripeFeeCad)) ?
+						Number(item.stripeFeeCad)
+					:	null;
+				if (isStripe && fee != null && fee > 0.0005) {
+					parts.push(t(strings, 'adminTimelineStripeFee', { amount: fmtCad(fee) }));
 				}
 				parts.push(methodLabel(strings, item.method));
 				line2 = parts.join(' · ');

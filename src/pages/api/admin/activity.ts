@@ -34,6 +34,8 @@ type TimelinePayment = {
 	donationAmount: number | null;
 	method: string | null;
 	amount: number | null;
+	/** Stripe processing fee in CAD when known */
+	stripeFeeCad: number | null;
 	member: MemberFields;
 };
 
@@ -104,6 +106,7 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
           donation_amount,
           method,
           amount,
+          stripe_fee_cad,
           memberships!inner (
             id,
             year,
@@ -185,6 +188,7 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 		donation_amount: number | null;
 		method: string | null;
 		amount: number | null;
+		stripe_fee_cad: number | null;
 		memberships: PayEmbed | PayEmbed[] | null;
 	}>;
 
@@ -212,6 +216,10 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 				donationAmount: r.donation_amount,
 				method: r.method,
 				amount: r.amount,
+				stripeFeeCad:
+					r.stripe_fee_cad != null && Number.isFinite(Number(r.stripe_fee_cad)) ?
+						Number(r.stripe_fee_cad)
+					:	null,
 				member: m,
 			};
 		})

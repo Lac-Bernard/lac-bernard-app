@@ -25,6 +25,8 @@ export type MemberPaymentRow = {
 	/** Admin or system notes on the payment row (shown to the member when present). */
 	notes: string | null;
 	payment_id: string | null;
+	/** Stripe processing fee in CAD (null if not Stripe or not recorded). */
+	stripe_fee_cad: number | null;
 	created_at: string;
 };
 
@@ -86,7 +88,7 @@ export async function loadMemberAccountData(
 		const { data: payRows, error: pErr } = await supabase
 			.from('payments')
 			.select(
-				'id, date, method, amount, membership_amount, donation_amount, donation_note, notes, payment_id, created_at',
+				'id, date, method, amount, membership_amount, donation_amount, donation_note, notes, payment_id, stripe_fee_cad, created_at',
 			)
 			.eq('membership_id', thisYear.id);
 
@@ -101,6 +103,7 @@ export async function loadMemberAccountData(
 				donation_note: r.donation_note,
 				notes: r.notes,
 				payment_id: r.payment_id,
+				stripe_fee_cad: r.stripe_fee_cad != null ? Number(r.stripe_fee_cad) : null,
 				created_at: r.created_at,
 			}));
 			rows.sort((a, b) => {

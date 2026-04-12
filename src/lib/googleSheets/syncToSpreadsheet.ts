@@ -54,6 +54,8 @@ type PaymentRow = {
 	membership_amount: number | string;
 	donation_amount: number | string;
 	donation_note: string | null;
+	stripe_fee_cad: number | string | null;
+	stripe_balance_transaction_id: string | null;
 };
 
 const MEMBER_COLUMNS: (keyof MemberRow)[] = [
@@ -101,6 +103,8 @@ const PAYMENT_COLUMNS: (keyof PaymentRow)[] = [
 	'membership_amount',
 	'donation_amount',
 	'donation_note',
+	'stripe_fee_cad',
+	'stripe_balance_transaction_id',
 ];
 
 type SyncResult = {
