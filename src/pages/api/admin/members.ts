@@ -3,6 +3,7 @@ import type { APIRoute } from 'astro';
 import { insertAdminAudit } from '../../../lib/admin/audit';
 import { adminPatchToRow, parseAdminMemberPatch } from '../../../lib/admin/memberUpdate';
 import { parseAdminMemberListFilters } from '../../../lib/admin/memberListFilters';
+import { parseAdminMemberIndexParams } from '../../../lib/admin/memberIndexParams';
 import { requireAdminSession } from '../../../lib/admin/session';
 import { createSupabaseServiceRoleClient } from '../../../lib/supabase/service';
 
@@ -13,13 +14,73 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 	if (!auth.ok) return auth.response;
 
 	const searchParams = url.searchParams;
-	const { year, membership, tier, memberStatus, q } = parseAdminMemberListFilters(searchParams);
-	const sort = searchParams.get('sort') ?? 'created_at_desc';
 	const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10) || 1);
 	const limit = Math.min(MAX_LIMIT, Math.max(1, parseInt(searchParams.get('limit') ?? '25', 10) || 25));
+	const offset = (page - 1) * limit;
 
 	const service = createSupabaseServiceRoleClient();
-	const offset = (page - 1) * limit;
+
+	if (searchParams.has('view')) {
+		const ix = parseAdminMemberIndexParams(searchParams);
+		const { data: rpcData, error: rpcError } = await service.rpc('admin_member_index', {
+			p_view: ix.view,
+			p_year: ix.year,
+			p_lapsed_since: ix.lapsedSince,
+			p_include_disabled: ix.includeDisabled,
+			p_q: ix.q || null,
+			p_sort: ix.sort,
+			p_limit: limit,
+			p_offset: offset,
+		});
+
+		if (rpcError) {
+			return new Response(JSON.stringify({ error: 'query_failed', detail: rpcError.message }), {
+				status: 500,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+
+		const payload = rpcData as {
+			members?: unknown[];
+			total?: number;
+			counts?: Record<string, number>;
+			email_opt_in_count?: number | null;
+			search_disabled_matches?: number;
+			error?: string;
+		} | null;
+
+		if (payload?.error) {
+			return new Response(JSON.stringify({ error: payload.error }), {
+				status: 400,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+
+		const members = Array.isArray(payload?.members) ? payload!.members : [];
+		const total = typeof payload?.total === 'number' ? payload!.total : 0;
+
+		// counts.pending must stay aligned with GET /api/admin/activity counts.pendingMemberships (admin_pending_membership_count + admin_member_index pending_f).
+		return new Response(
+			JSON.stringify({
+				members,
+				total,
+				page,
+				limit,
+				index: {
+					view: ix.view,
+					year: ix.year,
+					lapsedSince: ix.lapsedSince,
+					counts: payload?.counts ?? {},
+					emailOptInCount: payload?.email_opt_in_count ?? null,
+					searchDisabledMatches: typeof payload?.search_disabled_matches === 'number' ? payload.search_disabled_matches : 0,
+				},
+			}),
+			{ status: 200, headers: { 'Content-Type': 'application/json' } },
+		);
+	}
+
+	const { year, membership, tier, memberStatus, q } = parseAdminMemberListFilters(searchParams);
+	const sort = searchParams.get('sort') ?? 'created_at_desc';
 
 	const { data: rpcData, error: rpcError } = await service.rpc('admin_members_page', {
 		p_year: year,

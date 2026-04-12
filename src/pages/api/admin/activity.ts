@@ -85,8 +85,9 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 		if (!Number.isNaN(d.getTime())) beforeIso = d.toISOString();
 	}
 
-	const [pendingRes, activeRes, payRes, profilesRes, pendingMsRes, members7dRes] = await Promise.all([
-		service.from('memberships').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+	/** Pending tab badge + KPI: must match member index pill (`counts.pending` / `admin_member_index` pending_f / `admin_pending_membership_count`). */
+	const [pendingRpc, activeRes, payRes, profilesRes, pendingMsRes, members7dRes] = await Promise.all([
+		service.rpc('admin_pending_membership_count', { p_year: year }),
 		service
 			.from('memberships')
 			.select('id', { count: 'exact', head: true })
@@ -150,7 +151,7 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 	]);
 
 	const err =
-		pendingRes.error ||
+		pendingRpc.error ||
 		activeRes.error ||
 		payRes.error ||
 		profilesRes.error ||
@@ -164,6 +165,11 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 	}
 
 	const membersCreatedLastSevenDays = Math.max(0, Math.floor(Number(members7dRes.count ?? 0)) || 0);
+
+	const pendingMemberships =
+		typeof pendingRpc.data === 'number' && Number.isFinite(pendingRpc.data) ?
+			Math.max(0, Math.floor(pendingRpc.data))
+		:	0;
 
 	type PayEmbed = {
 		year: number;
@@ -318,7 +324,7 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 		JSON.stringify({
 			timeline,
 			counts: {
-				pendingMemberships: pendingRes.count ?? 0,
+				pendingMemberships,
 				activeForYear: activeRes.count ?? 0,
 				membershipYear: year,
 				membersCreatedLastSevenDays,
