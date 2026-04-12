@@ -26,6 +26,14 @@ if (!isAppAdmin(user)) {
 
 flushCookies();
 const email = user.email ?? '';
+
+const u = Astro.url;
+if (u.searchParams.get('tab') === 'pending') {
+	const next = new URL(u);
+	next.searchParams.set('tab', 'members');
+	next.searchParams.set('view', 'pending');
+	return Astro.redirect(`${next.pathname}${next.search}${next.hash}`);
+}
 ---
 
 <AdminMembershipView locale="en" email={email} />

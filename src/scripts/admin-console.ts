@@ -1,12 +1,13 @@
 /** Client-side admin console (membership admin page). */
 
+import { escapeHtml } from '../lib/admin/escapeHtml';
 import { formatAdminLocaleDate, formatAdminLocaleDateTime } from '../lib/admin/formatLocaleDate';
 import { formatAdminRelativeAgo, type AdminRelativeStrings } from '../lib/admin/formatRelativeAgo';
-import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymentSplit';
+import { initAdminMemberIndex } from './admin-member-index';
 
 export type AdminConsoleStrings = Record<string, string>;
 
-const ADMIN_TAB_IDS = ['overview', 'pending', 'members', 'auditLog'] as const;
+const ADMIN_TAB_IDS = ['overview', 'members', 'auditLog'] as const;
 export type AdminTabId = (typeof ADMIN_TAB_IDS)[number];
 
 function isAdminTabId(s: string): s is AdminTabId {
@@ -16,30 +17,10 @@ function isAdminTabId(s: string): s is AdminTabId {
 /** Valid tab id from `?tab=` on the membership admin page; invalid or missing → overview. */
 export function parseAdminTabQueryParam(tabParam: string | null | undefined): AdminTabId {
 	const v = tabParam?.trim() ?? '';
+	if (v === 'pending') return 'members';
 	if (v && isAdminTabId(v)) return v;
 	return 'overview';
 }
-
-type MemberRow = {
-	id: string;
-	created_at: string;
-	/** voting | associate from memberships for the admin filter year; null if no row for that year */
-	membership_tier_for_year: string | null;
-	first_name: string | null;
-	last_name: string;
-	secondary_first_name?: string | null;
-	secondary_last_name?: string | null;
-	primary_email: string | null;
-	secondary_email: string | null;
-	primary_phone: string | null;
-	secondary_phone: string | null;
-	lake_civic_number: string | null;
-	lake_street_name: string | null;
-	email_opt_in: boolean;
-	notes: string | null;
-	status: string;
-	user_id: string | null;
-};
 
 /** Timeline row from GET /api/admin/activity (client shape). */
 type ActivityApiTimelineItem =
@@ -97,32 +78,6 @@ type ActivityApiTimelineItem =
 				lake_street_name?: string | null;
 			};
 	  };
-
-type MembershipEmbed = {
-	id: string;
-	created_at: string;
-	member_id: string;
-	year: number;
-	tier: string;
-	status: string;
-	/** Standard membership fee for tier (cents); null if tier is unknown */
-	expected_membership_cents?: number | null;
-	/** Sum of membership_amount already recorded toward this membership year */
-	sum_membership_paid?: number;
-	members: null | {
-		id: string;
-		first_name: string | null;
-		last_name: string;
-		secondary_first_name: string | null;
-		secondary_last_name: string | null;
-		primary_email: string | null;
-		secondary_email: string | null;
-	};
-};
-
-/** Trash icon for pending row remove (stroke uses `currentColor`) */
-const ADMIN_PENDING_TRASH_ICON =
-	'<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>';
 
 /** Non-Stripe: banknote / manual payment */
 const ADMIN_TIMELINE_ICON_CASH =
@@ -200,173 +155,6 @@ function setStatusGlobal(strings: AdminConsoleStrings, msg: string, kind: 'neutr
 	statusElGlobal.dataset.success = kind === 'success' ? '1' : '';
 }
 
-type ExportEmailsJson = { emails?: string; error?: string; detail?: string };
-
-function showEmailExportEmptyDialog(strings: AdminConsoleStrings): void {
-	const dlg = document.createElement('dialog');
-	dlg.className = 'adminEmailExportDialog';
-
-	const title = document.createElement('p');
-	title.className = 'adminEmailExportDialog__title';
-	title.textContent = t(strings, 'adminExportEmailsEmpty');
-
-	const closeBtn = document.createElement('button');
-	closeBtn.type = 'button';
-	closeBtn.className = 'adminBtn adminBtn--solid';
-	closeBtn.textContent = t(strings, 'adminCopyEmailsDialogClose');
-
-	const cleanup = () => {
-		dlg.close();
-		dlg.remove();
-	};
-
-	closeBtn.addEventListener('click', cleanup);
-	dlg.addEventListener('cancel', (e) => {
-		e.preventDefault();
-		cleanup();
-	});
-
-	const actions = document.createElement('div');
-	actions.className = 'adminEmailExportDialog__actions';
-	actions.append(closeBtn);
-	dlg.append(title, actions);
-	const host = document.querySelector('.adminConsole') ?? document.querySelector('.adminPage') ?? document.body;
-	host.appendChild(dlg);
-	dlg.showModal();
-}
-
-function copyPlainTextToClipboard(strings: AdminConsoleStrings, text: string): void {
-	if (!text.length) {
-		showEmailExportEmptyDialog(strings);
-		return;
-	}
-
-	const ta = document.createElement('textarea');
-	ta.value = text;
-	ta.setAttribute('readonly', '');
-	ta.setAttribute('aria-hidden', 'true');
-	ta.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;margin:0;border:0;padding:0;';
-	document.body.appendChild(ta);
-	ta.focus();
-	ta.select();
-	ta.setSelectionRange(0, text.length);
-
-	let synced = false;
-	try {
-		synced = document.execCommand('copy');
-	} catch {
-		synced = false;
-	}
-	document.body.removeChild(ta);
-
-	if (synced) {
-		setStatusGlobal(strings, t(strings, 'adminExportEmailsCopied'), 'success');
-		return;
-	}
-
-	void navigator.clipboard.writeText(text).then(
-		() => {
-			setStatusGlobal(strings, t(strings, 'adminExportEmailsCopied'), 'success');
-		},
-		() => {
-			showEmailExportFallbackDialog(strings, text);
-		},
-	);
-}
-
-function showEmailExportFallbackDialog(strings: AdminConsoleStrings, text: string): void {
-	const dlg = document.createElement('dialog');
-	dlg.className = 'adminEmailExportDialog';
-
-	const title = document.createElement('p');
-	title.className = 'adminEmailExportDialog__title';
-	title.textContent = t(strings, 'adminCopyEmailsFallbackPrompt');
-
-	const ta = document.createElement('textarea');
-	ta.readOnly = true;
-	ta.className = 'adminEmailExportDialog__textarea adminInput';
-	ta.value = text;
-	ta.rows = 10;
-	ta.setAttribute('spellcheck', 'false');
-
-	const actions = document.createElement('div');
-	actions.className = 'adminEmailExportDialog__actions';
-
-	const copyBtn = document.createElement('button');
-	copyBtn.type = 'button';
-	copyBtn.className = 'adminBtn adminBtn--solid';
-	copyBtn.textContent = t(strings, 'adminCopyEmailsDialogCopy');
-
-	const closeBtn = document.createElement('button');
-	closeBtn.type = 'button';
-	closeBtn.className = 'adminBtn adminBtn--ghost';
-	closeBtn.textContent = t(strings, 'adminCopyEmailsDialogClose');
-
-	const cleanup = () => {
-		dlg.close();
-		dlg.remove();
-	};
-
-	copyBtn.addEventListener('click', () => {
-		ta.focus();
-		ta.select();
-		void navigator.clipboard.writeText(text).then(
-			() => {
-				setStatusGlobal(strings, t(strings, 'adminExportEmailsCopied'), 'success');
-				cleanup();
-			},
-			() => {
-				try {
-					if (document.execCommand('copy')) {
-						setStatusGlobal(strings, t(strings, 'adminExportEmailsCopied'), 'success');
-						cleanup();
-					}
-				} catch {
-					/* keep dialog open */
-				}
-			},
-		);
-	});
-
-	closeBtn.addEventListener('click', cleanup);
-	dlg.addEventListener('cancel', (e) => {
-		e.preventDefault();
-		cleanup();
-	});
-
-	actions.append(copyBtn, closeBtn);
-	dlg.append(title, ta, actions);
-	const host = document.querySelector('.adminConsole') ?? document.querySelector('.adminPage') ?? document.body;
-	host.appendChild(dlg);
-	dlg.showModal();
-	requestAnimationFrame(() => {
-		ta.focus();
-		ta.select();
-	});
-}
-
-async function copyEmailsFromApi(strings: AdminConsoleStrings, urlWithQuery: string) {
-	setStatusGlobal(strings, t(strings, 'adminLoading'));
-	try {
-		const res = await fetch(urlWithQuery, { credentials: 'include' });
-		let data: ExportEmailsJson;
-		try {
-			data = (await res.json()) as ExportEmailsJson;
-		} catch {
-			setStatusGlobal(strings, t(strings, 'adminErrorGeneric'), 'error');
-			return;
-		}
-		if (!res.ok || data?.error) {
-			setStatusGlobal(strings, String(data?.detail ?? data?.error ?? t(strings, 'adminErrorGeneric')), 'error');
-			return;
-		}
-		const text = typeof data.emails === 'string' ? data.emails : '';
-		copyPlainTextToClipboard(strings, text);
-	} catch {
-		setStatusGlobal(strings, t(strings, 'adminErrorGeneric'), 'error');
-	}
-}
-
 function methodLabel(strings: AdminConsoleStrings, m: string | null): string {
 	if (!m) return '—';
 	if (m === 'stripe') return t(strings, 'adminMethodStripe');
@@ -390,53 +178,18 @@ export function initAdminConsole(
 	numberLocale: string = 'en-CA',
 	locale: 'en' | 'fr' = 'en',
 ) {
-	const pendingBody = el<HTMLTableSectionElement>('#admin-pending-body');
-	const paymentDialog = el<HTMLDialogElement>('#admin-payment-dialog');
-	const paymentMembershipId = el<HTMLInputElement>('#admin-payment-membership-id');
 	const overviewMount = el<HTMLElement>('#admin-overview-mount');
 	const auditBody = el<HTMLTableSectionElement>('#admin-audit-body');
 	const pendingBadge = el<HTMLElement>('#admin-pending-badge');
 	statusElGlobal = el<HTMLElement>('#admin-status');
 	const tabs = document.querySelectorAll<HTMLButtonElement>('[data-admin-tab]');
 	const panels = document.querySelectorAll<HTMLElement>('[data-admin-panel]');
-	const paymentSubmitBtn = el<HTMLButtonElement>('#admin-payment-submit');
 
 	const fmtCad = (n: number) =>
 		new Intl.NumberFormat(numberLocale, { style: 'currency', currency: 'CAD' }).format(n);
 
-	function updatePaymentPreviewConsole() {
-		const preview = el<HTMLElement>('#admin-payment-split-preview');
-		const amtInput = el<HTMLInputElement>('#admin-payment-amount');
-		if (!preview || !amtInput) return;
-		const tier = el<HTMLInputElement>('#admin-payment-tier')?.value ?? 'voting';
-		const status = el<HTMLInputElement>('#admin-payment-status')?.value ?? 'pending';
-		const sumPaidRaw = el<HTMLInputElement>('#admin-payment-sum-paid')?.value ?? '0';
-		const sumPaid = roundMoney(parseFloat(sumPaidRaw) || 0);
-		const raw = parseFloat(String(amtInput.value ?? ''));
-		if (!Number.isFinite(raw) || raw <= 0) {
-			preview.hidden = true;
-			preview.textContent = '';
-			return;
-		}
-		const split = computeManualPaymentSplit({
-			amount: roundMoney(raw),
-			tier,
-			membershipStatus: status,
-			sumMembershipPaid: sumPaid,
-		});
-		preview.hidden = false;
-		preview.innerHTML = `${escapeHtml(
-			t(strings, 'adminPaymentPreviewMembership', { amount: fmtCad(split.membershipAmount) }),
-		)}<br />${escapeHtml(
-			t(strings, 'adminPaymentPreviewDonation', { amount: fmtCad(split.donationAmount) }),
-		)}`;
-	}
-
-	let membersPage = 1;
-	let membersTotalPages = 1;
 	let auditPage = 1;
 	let auditTotalPages = 1;
-	let membersSort = 'created_at_desc';
 
 	const ACTIVITY_TIMELINE_LIMIT = 20;
 	let activityTimelineNextBefore: string | null = null;
@@ -447,74 +200,46 @@ export function initAdminConsole(
 		setStatusGlobal(strings, msg, kind);
 	}
 
-	function setPaymentSubmitLoading(loading: boolean) {
-		const form = el<HTMLFormElement>('#admin-payment-form');
-		if (form) form.setAttribute('aria-busy', loading ? 'true' : 'false');
-		if (!paymentSubmitBtn) return;
-		paymentSubmitBtn.classList.toggle('is-loading', loading);
-		paymentSubmitBtn.toggleAttribute('disabled', loading);
-	}
-
+	/** Must match `counts.pending` from member index + `admin_pending_membership_count` (current year, non-disabled). */
 	function setPendingBadge(count: number) {
 		if (!pendingBadge) return;
 		pendingBadge.textContent = count > 0 ? t(strings, 'adminPendingBadge', { count }) : '';
 		pendingBadge.hidden = count <= 0;
 	}
 
-	function getMemberFilterYear(): number {
-		const raw = el<HTMLInputElement>('#admin-members-year')?.value?.trim() ?? '';
-		const n = parseInt(raw, 10);
-		return Number.isFinite(n) ? n : defaultMembershipYear;
+	function currentHistoryUrl(): string {
+		return `${window.location.pathname}${window.location.search}${window.location.hash}`;
 	}
 
-	/** Keep "Active for {year}" / "Did not renew for {year}" in sync with the membership year field */
-	function syncMembersScopeLabels() {
-		const scope = el<HTMLSelectElement>('#admin-members-scope');
-		if (!scope) return;
-		const y = String(getMemberFilterYear());
-		const optActive = scope.querySelector<HTMLOptionElement>('option[value="active"]');
-		const optNot = scope.querySelector<HTMLOptionElement>('option[value="not_active"]');
-		if (optActive) optActive.textContent = t(strings, 'adminScopeActive', { year: y });
-		if (optNot) optNot.textContent = t(strings, 'adminScopeNotRenewed', { year: y });
-	}
-
-	function buildMembersListParams(): URLSearchParams {
-		const q = el<HTMLInputElement>('#admin-members-q')?.value?.trim() ?? '';
-		const membership = el<HTMLSelectElement>('#admin-members-scope')?.value ?? 'active';
-		const tier = el<HTMLSelectElement>('#admin-members-tier')?.value ?? 'all';
-		const memberStatus = el<HTMLSelectElement>('#admin-members-member-status')?.value ?? 'enrolled';
-
-		const params = new URLSearchParams({
-			page: String(membersPage),
-			limit: '25',
-			sort: membersSort,
-			year: String(getMemberFilterYear()),
-			membership,
-			tier,
-			memberStatus,
-		});
-		if (q) params.set('q', q);
-		return params;
-	}
-
-	function buildMembersExportQueryParams(): URLSearchParams {
-		const p = buildMembersListParams();
-		p.delete('page');
-		p.delete('limit');
-		p.delete('sort');
-		p.set('locale', locale);
-		return p;
-	}
+	const memberIndex = initAdminMemberIndex(
+		strings,
+		tierLabels,
+		defaultMembershipYear,
+		adminMembersBase,
+		locale,
+		(msg, kind) => setStatusGlobal(strings, msg, kind ?? 'neutral'),
+		currentHistoryUrl,
+		(url) => history.pushState({}, '', url),
+		(counts) => {
+			const n = counts.pending;
+			if (typeof n === 'number') setPendingBadge(n);
+		},
+	);
 
 	function adminTabHistoryUrl(tab: AdminTabId): string {
 		const u = new URL(window.location.href);
-		if (tab === 'overview') u.searchParams.delete('tab');
-		else u.searchParams.set('tab', tab);
+		if (tab === 'overview') {
+			u.searchParams.delete('tab');
+			u.searchParams.delete('view');
+			u.searchParams.delete('lapsedSince');
+			u.searchParams.delete('q');
+			u.searchParams.delete('sort');
+			u.searchParams.delete('page');
+			u.searchParams.delete('includeDisabled');
+		} else {
+			u.searchParams.set('tab', tab);
+		}
 		return `${u.pathname}${u.search}${u.hash}`;
-	}
-
-	function currentHistoryUrl(): string {
-		return `${window.location.pathname}${window.location.search}${window.location.hash}`;
 	}
 
 	function showTab(name: string, historyMode: 'none' | 'push' = 'push') {
@@ -536,9 +261,7 @@ export function initAdminConsole(
 		}
 
 		if (tab === 'members') {
-			void loadMembers();
-		} else if (tab === 'pending') {
-			void loadPending();
+			memberIndex.onMembersTabShown();
 		} else if (tab === 'overview') {
 			void loadOverview();
 		} else if (tab === 'auditLog') {
@@ -564,9 +287,17 @@ export function initAdminConsole(
 		const nav = (e.target as HTMLElement).closest('[data-admin-kpi-nav]');
 		if (nav) {
 			const dest = nav.getAttribute('data-admin-kpi-nav');
-			if (dest === 'members' || dest === 'pending') {
+			const kpiView = nav.getAttribute('data-admin-kpi-view');
+			if (dest === 'members') {
 				e.preventDefault();
-				showTab(dest, 'push');
+				const u = new URL(window.location.href);
+				u.searchParams.set('tab', 'members');
+				if (kpiView) u.searchParams.set('view', kpiView);
+				else if (!u.searchParams.get('view')) u.searchParams.set('view', 'mailing');
+				history.pushState({}, '', `${u.pathname}${u.search}${u.hash}`);
+				showTab('members', 'none');
+				memberIndex.readUrlState();
+				memberIndex.onMembersTabShown();
 			}
 			return;
 		}
@@ -586,144 +317,6 @@ export function initAdminConsole(
 		e.preventDefault();
 		const href = li.dataset.adminMemberHref;
 		if (href) window.location.assign(href);
-	});
-
-	el<HTMLInputElement>('#admin-payment-amount')?.addEventListener('input', updatePaymentPreviewConsole);
-
-	paymentDialog?.addEventListener('close', () => {
-		const preview = el<HTMLElement>('#admin-payment-split-preview');
-		if (preview) {
-			preview.hidden = true;
-			preview.textContent = '';
-		}
-	});
-
-	el<HTMLFormElement>('#admin-payment-form')?.addEventListener('submit', async (e) => {
-		e.preventDefault();
-		if (paymentSubmitBtn?.disabled) return;
-		const form = e.target as HTMLFormElement;
-		const fd = new FormData(form);
-		const amount = parseFloat(String(fd.get('amount') ?? ''));
-		const method = String(fd.get('method') ?? '');
-		const date = String(fd.get('date') ?? '').trim();
-		const notes = String(fd.get('notes') ?? '').trim();
-		const reference = String(fd.get('reference') ?? '').trim();
-		const mid = paymentMembershipId?.value;
-		if (!mid) return;
-		if (!Number.isFinite(amount) || amount <= 0) {
-			setStatus(t(strings, 'adminErrorGeneric'), 'error');
-			return;
-		}
-		setPaymentSubmitLoading(true);
-		setStatus(t(strings, 'adminLoading'));
-		try {
-			const { ok, data } = await fetchJson<{ error?: string }>(
-				`/api/admin/memberships/${encodeURIComponent(mid)}/record-payment`,
-				{
-					method: 'POST',
-					body: JSON.stringify({
-						amount,
-						method,
-						date: date || undefined,
-						notes: notes || undefined,
-						...(reference ? { reference } : {}),
-					}),
-				},
-			);
-			if (!ok) {
-				setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
-				return;
-			}
-			paymentDialog?.close();
-			form.reset();
-			setStatus(t(strings, 'adminPaymentSaved'), 'success');
-			await loadPending();
-			void loadOverview();
-		} finally {
-			setPaymentSubmitLoading(false);
-		}
-	});
-
-	el<HTMLButtonElement>('#admin-payment-cancel')?.addEventListener('click', () => paymentDialog?.close());
-
-	el<HTMLFormElement>('#admin-members-search')?.addEventListener('submit', (e) => {
-		e.preventDefault();
-		membersPage = 1;
-		void loadMembers();
-	});
-
-	el<HTMLSelectElement>('#admin-members-sort')?.addEventListener('change', (e) => {
-		membersSort = (e.target as HTMLSelectElement).value;
-		membersPage = 1;
-		void loadMembers();
-	});
-
-	el<HTMLInputElement>('#admin-members-year')?.addEventListener('input', () => {
-		syncMembersScopeLabels();
-	});
-	el<HTMLInputElement>('#admin-members-year')?.addEventListener('change', () => {
-		syncMembersScopeLabels();
-		membersPage = 1;
-		void loadMembers();
-	});
-
-	el<HTMLSelectElement>('#admin-members-scope')?.addEventListener('change', () => {
-		membersPage = 1;
-		void loadMembers();
-	});
-
-	el<HTMLSelectElement>('#admin-members-tier')?.addEventListener('change', () => {
-		membersPage = 1;
-		void loadMembers();
-	});
-
-	el<HTMLSelectElement>('#admin-members-member-status')?.addEventListener('change', () => {
-		membersPage = 1;
-		void loadMembers();
-	});
-
-	el<HTMLButtonElement>('#admin-export-emails-members')?.addEventListener('click', () => {
-		void copyEmailsFromApi(strings, `/api/admin/member-emails-export?${buildMembersExportQueryParams()}`);
-	});
-
-	el<HTMLButtonElement>('#admin-export-members-csv')?.addEventListener('click', () => {
-		void (async () => {
-			setStatusGlobal(strings, t(strings, 'adminLoading'));
-			try {
-				const res = await fetch(`/api/admin/members-csv?${buildMembersExportQueryParams()}`, {
-					credentials: 'include',
-				});
-				if (!res.ok) {
-					setStatusGlobal(strings, t(strings, 'adminErrorGeneric'), 'error');
-					return;
-				}
-				const blob = await res.blob();
-				const y = String(getMemberFilterYear());
-				const safeY = y.replace(/[^\d]/g, '') || 'export';
-				const a = document.createElement('a');
-				a.href = URL.createObjectURL(blob);
-				a.download = `lac-bernard-members-${safeY}.csv`;
-				a.rel = 'noopener';
-				a.click();
-				queueMicrotask(() => URL.revokeObjectURL(a.href));
-				setStatusGlobal(strings, t(strings, 'adminExportMembersCsvSuccess'), 'success');
-			} catch {
-				setStatusGlobal(strings, t(strings, 'adminErrorGeneric'), 'error');
-			}
-		})();
-	});
-
-	el<HTMLButtonElement>('#admin-members-prev')?.addEventListener('click', () => {
-		if (membersPage > 1) {
-			membersPage--;
-			void loadMembers();
-		}
-	});
-	el<HTMLButtonElement>('#admin-members-next')?.addEventListener('click', () => {
-		if (membersPage < membersTotalPages) {
-			membersPage++;
-			void loadMembers();
-		}
 	});
 
 	el<HTMLButtonElement>('#admin-audit-prev')?.addEventListener('click', () => {
@@ -1080,7 +673,7 @@ export function initAdminConsole(
 				<div class="adminKpiRow adminKpiRow--three">
 				<button type="button" class="adminKpi adminKpi--activeYear" data-admin-kpi-nav="members"
 					aria-label="${escapeHtml(t(strings, 'adminOverviewKpiAriaMembers', { count: c.activeForYear, year: c.membershipYear }))}"><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminKpiActiveMembershipsLabel'))}</span><span class="adminKpiValue">${c.activeForYear}</span></button>
-				<button type="button" class="adminKpi adminKpi--pending" data-admin-kpi-nav="pending"
+				<button type="button" class="adminKpi adminKpi--pending" data-admin-kpi-nav="members" data-admin-kpi-view="pending"
 					aria-label="${escapeHtml(t(strings, 'adminOverviewKpiAriaPending', { count: c.pendingMemberships }))}"><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminKpiPendingPaymentsLabel'))}</span><span class="adminKpiValue">${c.pendingMemberships}</span></button>
 				<div class="adminKpi adminKpi--yesterday"
 					aria-label="${escapeHtml(t(strings, 'adminKpiAriaNewMembersLast7Days', { count: c.membersCreatedLastSevenDays }))}"><span class="adminKpiLabel">${escapeHtml(t(strings, 'adminKpiNewMembersLast7DaysLabel'))}</span><span class="adminKpiValue">${c.membersCreatedLastSevenDays}</span></div>
@@ -1097,187 +690,17 @@ export function initAdminConsole(
 		updateActivityTimelineMoreButton(pagination);
 	}
 
-	async function loadPending() {
-		if (!pendingBody) return;
-		pendingBody.innerHTML = `<tr><td colspan="7">${t(strings, 'adminLoading')}</td></tr>`;
-		const { ok, data } = await fetchJson<{
-			memberships?: MembershipEmbed[];
-			total?: number;
-			error?: string;
-		}>('/api/admin/memberships?status=pending&limit=100');
-		if (!ok || !data.memberships) {
-			pendingBody.innerHTML = `<tr><td colspan="7">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
-			setPendingBadge(0);
-			return;
-		}
-		const rows = data.memberships;
-		setPendingBadge(typeof data.total === 'number' ? data.total : rows.length);
-		if (rows.length === 0) {
-			pendingBody.innerHTML = `<tr><td colspan="7">${t(strings, 'adminPendingEmpty')}</td></tr>`;
-			return;
-		}
-		pendingBody.innerHTML = rows
-			.map((m) => {
-				const mem = m.members;
-				const nameTd = mem ? `<td class="adminMemberNameCell">${escapeHtml(primaryName(mem))}</td>` : `<td>—</td>`;
-				const email = mem?.primary_email ?? '—';
-				const tier =
-					m.tier === 'voting' ? tierLabels.voting : m.tier === 'associate' ? tierLabels.associate : m.tier;
-				const expected = formatExpectedMembershipFee(m.expected_membership_cents, numberLocale);
-				const sumPaid =
-					typeof m.sum_membership_paid === 'number' && Number.isFinite(m.sum_membership_paid) ?
-						m.sum_membership_paid
-					:	0;
-				const rowOpen = mem ? memberRowOpenAttrs(mem) : '';
-				return `<tr${rowOpen}>
-          ${nameTd}
-          <td>${escapeHtml(email)}</td>
-          <td>${m.year}</td>
-          <td>${escapeHtml(tier)}</td>
-          <td>${escapeHtml(m.status)}</td>
-          <td>${escapeHtml(expected)}</td>
-          <td class="adminPendingActions"><button type="button" class="adminBtn adminBtn--outline" data-open-payment data-membership-id="${escapeHtml(m.id)}" data-tier="${escapeHtml(m.tier)}" data-status="${escapeHtml(m.status)}" data-sum-paid="${String(sumPaid)}">${t(strings, 'adminRecordPaymentBtn')}</button><button type="button" class="adminPendingTrash" data-cancel-pending data-membership-id="${escapeHtml(m.id)}" aria-label="${escapeHtml(t(strings, 'adminCancelPendingAriaLabel'))}">${ADMIN_PENDING_TRASH_ICON}</button></td>
-        </tr>`;
-			})
-			.join('');
-		pendingBody.querySelectorAll<HTMLButtonElement>('[data-open-payment]').forEach((b) => {
-			b.addEventListener('click', () => {
-				const id = b.dataset.membershipId;
-				if (id && paymentMembershipId && paymentDialog) {
-					paymentMembershipId.value = id;
-					const tierEl = el<HTMLInputElement>('#admin-payment-tier');
-					const statusEl = el<HTMLInputElement>('#admin-payment-status');
-					const sumEl = el<HTMLInputElement>('#admin-payment-sum-paid');
-					if (tierEl) tierEl.value = b.dataset.tier ?? 'voting';
-					if (statusEl) statusEl.value = b.dataset.status ?? 'pending';
-					if (sumEl) sumEl.value = b.dataset.sumPaid ?? '0';
-					paymentDialog.showModal();
-					queueMicrotask(() => {
-						updatePaymentPreviewConsole();
-						el<HTMLInputElement>('#admin-payment-amount')?.focus();
-					});
-				}
-			});
-		});
-		pendingBody.querySelectorAll<HTMLButtonElement>('[data-cancel-pending]').forEach((b) => {
-			b.addEventListener('click', async () => {
-				const id = b.dataset.membershipId;
-				if (!id) return;
-				if (!confirm(t(strings, 'adminCancelPendingConfirm'))) return;
-				setStatus(t(strings, 'adminLoading'));
-				const { ok, data } = await fetchJson<{ error?: string }>(
-					`/api/admin/memberships/${encodeURIComponent(id)}/cancel-pending`,
-					{ method: 'POST', body: '{}' },
-				);
-				if (!ok) {
-					const code = data?.error;
-					setStatus(
-						code === 'not_pending' ? t(strings, 'adminCancelPendingErrorNotPending') : t(strings, 'adminErrorGeneric'),
-						'error',
-					);
-					return;
-				}
-				setStatus(t(strings, 'adminCancelPendingSuccess'), 'success');
-				await loadPending();
-				void loadOverview();
-			});
-		});
-		wireMembersTableRows(pendingBody);
-	}
-
-	function wireMembersTableRows(body: HTMLElement) {
-		body.querySelectorAll<HTMLElement>('[data-admin-member-href]').forEach((row) => {
-			const go = () => {
-				const href = row.dataset.adminMemberHref;
-				if (href) window.location.assign(href);
-			};
-			row.addEventListener('click', (e) => {
-				const tgt = e.target as HTMLElement;
-				if (tgt.closest('a, button')) return;
-				go();
-			});
-			row.addEventListener('keydown', (e) => {
-				if (e.key === 'Enter' || e.key === ' ') {
-					e.preventDefault();
-					go();
-				}
-			});
-		});
-	}
-
-	async function loadMembers() {
-		const body = el<HTMLTableSectionElement>('#admin-members-body');
-		if (!body) return;
-		body.innerHTML = `<tr><td colspan="8">${t(strings, 'adminLoading')}</td></tr>`;
-		const params = buildMembersListParams();
-		const { ok, data } = await fetchJson<{
-			members?: MemberRow[];
-			total?: number;
-			page?: number;
-			limit?: number;
-			error?: string;
-		}>(`/api/admin/members?${params}`);
-		if (!ok || !data.members) {
-			body.innerHTML = `<tr><td colspan="8">${data?.error ?? t(strings, 'adminErrorGeneric')}</td></tr>`;
-			return;
-		}
-		const total = data.total ?? 0;
-		const limit = data.limit ?? 25;
-		membersTotalPages = Math.max(1, Math.ceil(total / limit));
-		const pageInfo = el('#admin-members-pageinfo');
-		if (pageInfo) {
-			pageInfo.textContent = t(strings, 'adminPageOf', { page: membersPage, total: membersTotalPages });
-		}
-
-		body.innerHTML = data.members
-			.map((m) => {
-				const primaryNameTd = `<td class="adminMemberNameCell">${escapeHtml(primaryName(m))}</td>`;
-				const primaryEmailTd = `<td>${escapeHtml(m.primary_email ?? '—')}</td>`;
-				const secondaryNameTd = `<td class="adminMemberNameCell">${escapeHtml(secondaryName(m))}</td>`;
-				const secondaryEmailTd = `<td>${escapeHtml(m.secondary_email ?? '—')}</td>`;
-				const lakeCivicTd = `<td>${escapeHtml(m.lake_civic_number ?? '—')}</td>`;
-				const lakeStreetTd = `<td>${escapeHtml(m.lake_street_name ?? '—')}</td>`;
-				const rawTier = m.membership_tier_for_year;
-				let tierCell = '';
-				if (rawTier === 'voting') tierCell = tierLabels.voting;
-				else if (rawTier === 'associate') tierCell = tierLabels.associate;
-				else if (rawTier) tierCell = rawTier;
-				const href = `${adminMembersBase}/${encodeURIComponent(m.id)}`;
-				const rowLabel = `${t(strings, 'adminMemberOpen')}: ${primaryName(m)}`;
-				return `<tr data-admin-member-href="${escapeHtml(href)}" tabindex="0" role="link" aria-label="${escapeHtml(rowLabel)}">
-          ${primaryNameTd}
-          ${primaryEmailTd}
-          ${secondaryNameTd}
-          ${secondaryEmailTd}
-          ${lakeCivicTd}
-          ${lakeStreetTd}
-          <td>${escapeHtml(tierCell)}</td>
-          <td>${escapeHtml(formatAdminLocaleDate(m.created_at))}</td>
-        </tr>`;
-			})
-			.join('');
-		wireMembersTableRows(body);
-	}
-
 	const spInit = new URLSearchParams(window.location.search);
 	const rawTabParam = spInit.get('tab');
-	if (rawTabParam !== null && rawTabParam !== '' && !isAdminTabId(rawTabParam)) {
+	const tabNormalized = rawTabParam === 'pending' ? 'members' : rawTabParam;
+	if (tabNormalized !== null && tabNormalized !== '' && !isAdminTabId(tabNormalized)) {
 		history.replaceState(null, '', adminTabHistoryUrl('overview'));
 	}
 
-	syncMembersScopeLabels();
 	const initialTab = parseAdminTabQueryParam(new URLSearchParams(window.location.search).get('tab'));
 	showTab(initialTab, 'none');
 	if (initialTab !== 'overview') {
 		void loadActivityTabBadges();
 	}
-}
-
-function escapeHtml(s: string): string {
-	return s
-		.replace(/&/g, '&amp;')
-		.replace(/</g, '&lt;')
-		.replace(/>/g, '&gt;')
-		.replace(/"/g, '&quot;');
 }
 

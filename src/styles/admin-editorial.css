@@ -1,8 +1,8 @@
 /**
- * Shared editorial admin surface: typography (Plus Jakarta Sans 400/500), warm neutrals,
- * forest accent, hairline borders, light motion. Import once per admin view root `.adminPage`.
+ * Shared editorial admin surface: DM Sans 400/500, warm neutrals, forest accent,
+ * hairline borders, light motion. Import once per admin view root `.adminPage`.
  */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap');
 
 .adminPage {
 	--admin-radius: 12px;
@@ -11,16 +11,19 @@
 	--admin-bg: #f9f8f6;
 	--admin-surface: #ffffff;
 	--admin-surface-muted: #f1efe8;
-	--admin-border: rgba(45, 42, 38, 0.14);
+	--admin-border: #d3d1c7;
 	--admin-text: #1c1917;
 	--admin-muted: #57534e;
-	--admin-accent: #2d6a5d;
-	--admin-accent-hover: #245549;
-	--admin-accent-soft: rgba(45, 106, 93, 0.14);
+	--admin-accent: #2d4a2d;
+	--admin-accent-hover: #243d24;
+	--admin-accent-soft: rgba(45, 74, 45, 0.14);
+	--admin-table-header-muted: #b4b2a9;
+	--admin-row-hover: #f5f4f0;
+	--admin-email-primary: #3a6b5a;
 	--admin-status-pending: rgba(200, 150, 70, 0.45);
 	--admin-status-active: rgba(80, 150, 110, 0.4);
 	--admin-status-disabled: rgba(120, 120, 120, 0.28);
-	--admin-font: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--admin-font: 'DM Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
 	font-family: var(--admin-font);
 	font-size: 15px;
 	line-height: 1.45;

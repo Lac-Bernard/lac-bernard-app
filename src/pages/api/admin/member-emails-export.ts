@@ -1,6 +1,12 @@
 export const prerender = false;
 import type { APIRoute } from 'astro';
 import { parseAdminMemberListFilters } from '../../../lib/admin/memberListFilters';
+import {
+	buildMemberIndexEmailLines,
+	resolveEmailScopeForExport,
+	type MemberIndexEmailRow,
+} from '../../../lib/admin/memberIndexEmailLines';
+import { parseAdminMemberIndexParams } from '../../../lib/admin/memberIndexParams';
 import { requireAdminSession } from '../../../lib/admin/session';
 import { formatMemberPrimaryName, formatSecondaryPersonName } from '../../../lib/members/memberDisplayName';
 import { createSupabaseServiceRoleClient } from '../../../lib/supabase/service';
@@ -35,25 +41,76 @@ function quoteDisplayNameForAddress(name: string): string {
 	return /[",<>@]/.test(n) ? `"${n.replace(/(["\\])/g, '\\$1')}"` : n;
 }
 
-/** `Display Name <email@>` or bare email if no display name. */
-function formatNamedMailbox(displayName: string, email: string): string {
+/** Legacy: `Display Name <email@>` or bare email if no display name. */
+function formatNamedMailboxLegacy(displayName: string, email: string): string {
 	const e = email.trim();
 	if (!e) return '';
 	const q = quoteDisplayNameForAddress(displayName);
 	return q ? `${q} <${e}>` : e;
 }
 
-/** Mail-client-friendly address list for the current members filters. Success: { emails: string } */
+type IndexPayload = {
+	members?: MemberIndexEmailRow[];
+	error?: string;
+};
+
+/** Mail-client-friendly address list. Success: { lines, lineCount } for member index; legacy { emails } comma-separated. */
 export const GET: APIRoute = async ({ request, cookies, url }) => {
 	try {
 		const auth = await requireAdminSession(request, cookies);
 		if (!auth.ok) return auth.response;
 
-		const { year, membership, tier, memberStatus, q } = parseAdminMemberListFilters(url.searchParams);
 		const service = createSupabaseServiceRoleClient();
+		const pageSize = 500;
+
+		if (url.searchParams.has('view')) {
+			const ix = parseAdminMemberIndexParams(url.searchParams);
+			const scope = resolveEmailScopeForExport(ix.view, url.searchParams.get('emailScope'));
+			const allRows: MemberIndexEmailRow[] = [];
+			let offset = 0;
+
+			for (;;) {
+				const { data, error } = await service.rpc('admin_member_index', {
+					p_view: ix.view,
+					p_year: ix.year,
+					p_lapsed_since: ix.lapsedSince,
+					p_include_disabled: ix.includeDisabled,
+					p_q: ix.q || null,
+					p_sort: ix.sort,
+					p_limit: pageSize,
+					p_offset: offset,
+				});
+
+				if (error) {
+					return json({ error: 'export_failed', detail: error.message }, 500);
+				}
+
+				const payload = (data ?? null) as IndexPayload | null;
+				if (payload?.error) {
+					return json({ error: 'export_failed', detail: payload.error }, 400);
+				}
+
+				const members = Array.isArray(payload?.members) ? payload.members : [];
+				for (const m of members) {
+					allRows.push(m as MemberIndexEmailRow);
+				}
+
+				if (members.length < pageSize) break;
+				offset += members.length;
+			}
+
+			const linesArr = buildMemberIndexEmailLines(allRows, scope);
+			const lines = linesArr.join('\n');
+			return json({
+				lines,
+				lineCount: linesArr.length,
+				emailScope: scope,
+			});
+		}
+
+		const { year, membership, tier, memberStatus, q } = parseAdminMemberListFilters(url.searchParams);
 		const seen = new Set<string>();
 		const mailboxes: string[] = [];
-		const pageSize = 500;
 		let offset = 0;
 
 		for (;;) {
@@ -86,7 +143,7 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 				if (!seen.has(primaryKey)) {
 					seen.add(primaryKey);
 					const primaryName = formatMemberPrimaryName(member);
-					const mailbox = formatNamedMailbox(primaryName, primaryEmail);
+					const mailbox = formatNamedMailboxLegacy(primaryName, primaryEmail);
 					if (mailbox) mailboxes.push(mailbox);
 				}
 
@@ -97,7 +154,7 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 				if (seen.has(secondaryKey)) continue;
 				seen.add(secondaryKey);
 				const secondaryName = formatSecondaryPersonName(member);
-				const secondaryMailbox = formatNamedMailbox(secondaryName, secondaryEmail);
+				const secondaryMailbox = formatNamedMailboxLegacy(secondaryName, secondaryEmail);
 				if (secondaryMailbox) mailboxes.push(secondaryMailbox);
 			}
 

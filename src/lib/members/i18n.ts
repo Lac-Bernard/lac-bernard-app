@@ -150,6 +150,8 @@ export const memberCopy: Record<
 		adminDetailDonationNoteLabel: string;
 		adminTablePaymentRef: string;
 		adminTableName: string;
+		/** Member index: combined primary name + email column header */
+		adminTableColMember: string;
 		adminTablePrimaryName: string;
 		adminTableEmail: string;
 		adminTablePrimaryEmail: string;
@@ -256,7 +258,57 @@ export const memberCopy: Record<
 		adminExportMembersCsv: string;
 		adminExportMembersCsvHint: string;
 		adminExportMembersCsvSuccess: string;
-		adminCsvColMemberName: string;
+		adminMemberIndexSearchPlaceholder: string;
+		adminSortNameDesc: string;
+		adminSortCreatedAsc: string;
+		adminIncludeDisabled: string;
+		adminLapsedSinceInline: string;
+		/** Plain-language note: {{lapsedSince}}, {{currentYear}} */
+		adminLapsedSinceNote: string;
+		adminViewVoting: string;
+		adminViewMailing: string;
+		adminViewPending: string;
+		adminViewLapsed: string;
+		adminViewIncomplete: string;
+		adminViewAll: string;
+		adminMemberIndexMetaVoting: string;
+		adminMemberIndexMetaMailing: string;
+		/** Shown under view pills when "mailing" (active members) view is selected; {{year}} = membership year */
+		adminMemberIndexViewDescMailing: string;
+		adminMemberIndexMetaPending: string;
+		adminMemberIndexMetaLapsed: string;
+		adminMemberIndexMetaIncomplete: string;
+		adminMemberIndexMetaAll: string;
+		adminMemberIndexMetaSearch: string;
+		adminMemberIndexEmailOptInAppend: string;
+		adminCopyEmailListOptIn: string;
+		adminExportCsvRows: string;
+		adminEmailListModalTitle: string;
+		adminEmailModalClose: string;
+		adminEmailModalSublineOptIn: string;
+		adminEmailModalSublineAll: string;
+		adminTableColSecondary: string;
+		adminTableColLake: string;
+		adminTableColSince: string;
+		adminTableColLastActive: string;
+		adminStatusMemberEnrolledLabel: string;
+		adminStatusBadgePending: string;
+		adminStatusBadgeNew: string;
+		adminStatusBadgeDisabled: string;
+		adminEmptyVoting: string;
+		adminEmptyMailing: string;
+		adminEmptyPending: string;
+		adminEmptyLapsed: string;
+		adminEmptyIncomplete: string;
+		adminEmptyAll: string;
+		adminSearchNoResults: string;
+		adminSearchTryDisabled: string;
+		adminSearchTryDisabledLink: string;
+		adminEmailOptOutDotAria: string;
+		adminRowOpenChevronAria: string;
+		adminCsvColMemberStatus: string;
+		adminCsvColSince: string;
+		adminCsvColLastActive: string;
 		adminCsvColMemberEmail: string;
 		adminCsvColSecondaryName: string;
 		adminCsvColSecondaryEmail: string;
@@ -473,7 +525,7 @@ export const memberCopy: Record<
 		adminHeroAria: 'Administration',
 		adminHero: 'Administration',
 		adminBody:
-			'Review activity, pending payments, and the member directory; open a member to see full history, record manual payments, and grant admin access.',
+			'Review activity and the member directory; open a member to see full history, record manual payments, and grant admin access.',
 		adminNavPending: 'Pending payments',
 		adminNavOverview: 'Overview',
 		adminNavMembers: 'Members',
@@ -515,7 +567,7 @@ export const memberCopy: Record<
 		adminOverviewCountPending: 'Pending memberships',
 		adminOverviewCountActive: 'Active memberships ({{year}})',
 		adminOverviewKpiAriaMembers: '{{count}} active memberships for {{year}}. Open members directory.',
-		adminOverviewKpiAriaPending: '{{count}} pending memberships. Open pending tab.',
+		adminOverviewKpiAriaPending: '{{count}} pending memberships. Open members, pending payments view.',
 		adminRelativeJustNow: 'Just now',
 		adminRelativeMinAgo: '{{n}} min ago',
 		adminRelativeHrAgo: '{{n}} hr ago',
@@ -549,6 +601,7 @@ export const memberCopy: Record<
 		adminDetailDonationNoteLabel: 'Donation note',
 		adminTablePaymentRef: 'Reference',
 		adminTableName: 'Name',
+		adminTableColMember: 'Member',
 		adminTablePrimaryName: 'Primary name',
 		adminTableEmail: 'Email',
 		adminTablePrimaryEmail: 'Primary email',
@@ -658,6 +711,58 @@ export const memberCopy: Record<
 		adminExportMembersCsv: 'Export CSV',
 		adminExportMembersCsvHint: 'Download a CSV for the same filters as this table (UTF-8).',
 		adminExportMembersCsvSuccess: 'Member list downloaded.',
+		adminMemberIndexSearchPlaceholder: 'Search by name or email…',
+		adminSortNameDesc: 'Name Z–A',
+		adminSortCreatedAsc: 'Oldest first',
+		adminIncludeDisabled: 'Include disabled members',
+		adminLapsedSinceInline: 'Lapsed since',
+		adminLapsedSinceNote:
+			'— members active in {{lapsedSince}} or later with no {{currentYear}} membership.',
+		adminViewVoting: 'Voting members',
+		adminViewMailing: 'Active members',
+		adminViewPending: 'Pending payment',
+		adminViewLapsed: 'Lapsed',
+		adminViewIncomplete: 'Incomplete signups',
+		adminViewAll: 'All members',
+		adminMemberIndexMetaVoting: '{{count}} voting members',
+		adminMemberIndexMetaMailing: '{{count}} active members',
+		adminMemberIndexViewDescMailing:
+			'All members with an active membership for {{year}} — voting and associate.',
+		adminMemberIndexMetaPending: '{{count}} pending memberships',
+		adminMemberIndexMetaLapsed: '{{count}} lapsed members',
+		adminMemberIndexMetaIncomplete: '{{count}} incomplete signups',
+		adminMemberIndexMetaAll: '{{count}} members',
+		adminMemberIndexMetaSearch: '{{count}} results across all members',
+		adminMemberIndexEmailOptInAppend: ' · {{count}} opted in to email',
+		adminCopyEmailListOptIn: 'Copy email list (opted in)',
+		adminExportCsvRows: 'Export CSV · {{count}} rows',
+		adminEmailListModalTitle: 'Email list — {{view}}',
+		adminEmailModalClose: 'Close',
+		adminEmailModalSublineOptIn: '{{optedIn}} opted-in addresses from {{total}} active members',
+		adminEmailModalSublineAll: '{{total}} addresses — all members in this view regardless of opt-in preference',
+		adminTableColSecondary: 'Secondary',
+		adminTableColLake: 'Lake address',
+		adminTableColSince: 'Since',
+		adminTableColLastActive: 'Last active',
+		adminStatusMemberEnrolledLabel: 'Enrolled',
+		adminStatusBadgePending: 'pending',
+		adminStatusBadgeNew: 'new',
+		adminStatusBadgeDisabled: 'disabled',
+		adminEmptyVoting: 'No active voting members for {{year}} yet.',
+		adminEmptyMailing: 'No active members for {{year}} yet.',
+		adminEmptyPending: 'No pending payments — all clear.',
+		adminEmptyLapsed: 'No members lapsed since {{year}}. Everyone who was active then has renewed.',
+		adminEmptyIncomplete:
+			'No incomplete signups — everyone who created a profile has completed a membership.',
+		adminEmptyAll: 'No member records found.',
+		adminSearchNoResults: 'No members match “{{query}}”.',
+		adminSearchTryDisabled: 'No results — ',
+		adminSearchTryDisabledLink: 'try including disabled members',
+		adminEmailOptOutDotAria: 'Not opted in to association email',
+		adminRowOpenChevronAria: 'Open member',
+		adminCsvColMemberStatus: 'Status',
+		adminCsvColSince: 'Since',
+		adminCsvColLastActive: 'Last active',
 		adminCsvColMemberName: 'Member name',
 		adminCsvColMemberEmail: 'Member email',
 		adminCsvColSecondaryName: 'Secondary name',
@@ -878,7 +983,7 @@ export const memberCopy: Record<
 		adminHeroAria: 'Administration',
 		adminHero: 'Administration',
 		adminBody:
-			'Consultez l’activité, les paiements en attente et le répertoire; ouvrez un membre pour l’historique complet, enregistrer un paiement manuel ou attribuer le rôle administrateur.',
+			'Consultez l’activité et le répertoire; ouvrez un membre pour l’historique complet, enregistrer un paiement manuel ou attribuer le rôle administrateur.',
 		adminNavPending: 'Paiements en attente',
 		adminNavOverview: 'Aperçu',
 		adminNavMembers: 'Membres',
@@ -921,7 +1026,8 @@ export const memberCopy: Record<
 		adminOverviewCountActive: 'Adhésions actives ({{year}})',
 		adminOverviewKpiAriaMembers:
 			'{{count}} adhésions actives pour {{year}}. Ouvrir le répertoire des membres.',
-		adminOverviewKpiAriaPending: '{{count}} adhésions en attente. Ouvrir l’onglet En attente.',
+		adminOverviewKpiAriaPending:
+			'{{count}} adhésions en attente. Ouvrir Membres, vue Paiements en attente.',
 		adminRelativeJustNow: 'À l’instant',
 		adminRelativeMinAgo: 'Il y a {{n}} min',
 		adminRelativeHrAgo: 'Il y a {{n}} h',
@@ -955,6 +1061,7 @@ export const memberCopy: Record<
 		adminDetailDonationNoteLabel: 'Note du don',
 		adminTablePaymentRef: 'Référence',
 		adminTableName: 'Nom',
+		adminTableColMember: 'Membre',
 		adminTablePrimaryName: 'Nom principal',
 		adminTableEmail: 'Courriel',
 		adminTablePrimaryEmail: 'Courriel principal',
@@ -1065,6 +1172,60 @@ export const memberCopy: Record<
 		adminExportMembersCsv: 'Exporter CSV',
 		adminExportMembersCsvHint: 'Télécharger un CSV selon les mêmes filtres que ce tableau (UTF-8).',
 		adminExportMembersCsvSuccess: 'Liste des membres téléchargée.',
+		adminMemberIndexSearchPlaceholder: 'Rechercher par nom ou courriel…',
+		adminSortNameDesc: 'Nom Z à A',
+		adminSortCreatedAsc: 'Plus anciens en premier',
+		adminIncludeDisabled: 'Inclure les membres désactivés',
+		adminLapsedSinceInline: 'Inactifs depuis',
+		adminLapsedSinceNote:
+			'— membres actifs en {{lapsedSince}} ou après sans adhésion {{currentYear}}.',
+		adminViewVoting: 'Membres votants',
+		adminViewMailing: 'Membres actifs',
+		adminViewPending: 'Paiement en attente',
+		adminViewLapsed: 'Inactifs',
+		adminViewIncomplete: 'Inscriptions incomplètes',
+		adminViewAll: 'Tous les membres',
+		adminMemberIndexMetaVoting: '{{count}} membres votants',
+		adminMemberIndexMetaMailing: '{{count}} membres actifs',
+		adminMemberIndexViewDescMailing:
+			'Tous les membres ayant une adhésion active pour {{year}} — votants et associés.',
+		adminMemberIndexMetaPending: '{{count}} adhésions en attente',
+		adminMemberIndexMetaLapsed: '{{count}} membres inactifs',
+		adminMemberIndexMetaIncomplete: '{{count}} inscriptions incomplètes',
+		adminMemberIndexMetaAll: '{{count}} membres',
+		adminMemberIndexMetaSearch: '{{count}} résultats parmi tous les membres',
+		adminMemberIndexEmailOptInAppend: ' · {{count}} inscrits aux courriels',
+		adminCopyEmailListOptIn: 'Copier la liste de courriels (inscrits)',
+		adminExportCsvRows: 'Exporter CSV · {{count}} lignes',
+		adminEmailListModalTitle: 'Liste de courriels — {{view}}',
+		adminEmailModalClose: 'Fermer',
+		adminEmailModalSublineOptIn: '{{optedIn}} adresses inscrites sur {{total}} membres actifs',
+		adminEmailModalSublineAll:
+			'{{total}} adresses — tous les membres de cette vue, peu importe l’inscription aux courriels',
+		adminTableColSecondary: 'Secondaire',
+		adminTableColLake: 'Adresse au lac',
+		adminTableColSince: 'Depuis',
+		adminTableColLastActive: 'Dernière activité',
+		adminStatusMemberEnrolledLabel: 'Inscrit',
+		adminStatusBadgePending: 'en attente',
+		adminStatusBadgeNew: 'nouveau',
+		adminStatusBadgeDisabled: 'désactivé',
+		adminEmptyVoting: 'Aucun membre votant actif pour {{year}} pour l’instant.',
+		adminEmptyMailing: 'Aucun membre actif pour {{year}} pour l’instant.',
+		adminEmptyPending: 'Aucun paiement en attente — tout est en ordre.',
+		adminEmptyLapsed:
+			'Aucun membre inactif depuis {{year}}. Tous ceux qui étaient actifs alors se sont réinscrits.',
+		adminEmptyIncomplete:
+			'Aucune inscription incomplète — toute personne ayant créé un profil a complété une adhésion.',
+		adminEmptyAll: 'Aucun membre dans le dossier.',
+		adminSearchNoResults: 'Aucun membre ne correspond à « {{query}} ».',
+		adminSearchTryDisabled: 'Aucun résultat — ',
+		adminSearchTryDisabledLink: 'essayez d’inclure les membres désactivés',
+		adminEmailOptOutDotAria: 'Non inscrit aux courriels de l’association',
+		adminRowOpenChevronAria: 'Ouvrir le membre',
+		adminCsvColMemberStatus: 'Statut',
+		adminCsvColSince: 'Depuis',
+		adminCsvColLastActive: 'Dernière activité',
 		adminCsvColMemberName: 'Nom du membre',
 		adminCsvColMemberEmail: 'Courriel du membre',
 		adminCsvColSecondaryName: 'Nom secondaire',

@@ -16,10 +16,6 @@ const t = memberCopy[locale];
 const paths = memberPaths[locale];
 const initialAdminTab = parseAdminTabQueryParam(Astro.url.searchParams.get('tab'));
 const defaultMembershipYear = getMembershipCalendarYear();
-
-const y = String(defaultMembershipYear);
-const scopeActiveLabel = t.adminScopeActive.replace(/\{\{year\}\}/g, y);
-const scopeNotRenewedLabel = t.adminScopeNotRenewed.replace(/\{\{year\}\}/g, y);
 const numberLocale = locale === 'fr' ? 'fr-CA' : 'en-CA';
 
 const adminKeys = [
@@ -34,6 +30,7 @@ const adminKeys = [
 	'adminAuditColMetadata',
 	'adminAuditEmpty',
 	'adminTableName',
+	'adminTableColMember',
 	'adminTableEmail',
 	'adminTableYear',
 	'adminTableTier',
@@ -134,6 +131,51 @@ const adminKeys = [
 	'adminTableSecondaryEmail',
 	'adminTableLakeCivic',
 	'adminTableLakeStreet',
+	'adminMemberIndexSearchPlaceholder',
+	'adminSortNameDesc',
+	'adminSortCreatedAsc',
+	'adminIncludeDisabled',
+	'adminLapsedSinceInline',
+	'adminLapsedSinceNote',
+	'adminViewVoting',
+	'adminViewMailing',
+	'adminViewPending',
+	'adminViewLapsed',
+	'adminViewIncomplete',
+	'adminViewAll',
+	'adminMemberIndexMetaVoting',
+	'adminMemberIndexMetaMailing',
+	'adminMemberIndexViewDescMailing',
+	'adminMemberIndexMetaPending',
+	'adminMemberIndexMetaLapsed',
+	'adminMemberIndexMetaIncomplete',
+	'adminMemberIndexMetaAll',
+	'adminMemberIndexMetaSearch',
+	'adminMemberIndexEmailOptInAppend',
+	'adminCopyEmailListOptIn',
+	'adminExportCsvRows',
+	'adminEmailListModalTitle',
+	'adminEmailModalClose',
+	'adminEmailModalSublineOptIn',
+	'adminEmailModalSublineAll',
+	'adminTableColSecondary',
+	'adminTableColLake',
+	'adminTableColSince',
+	'adminTableColLastActive',
+	'adminStatusBadgeDisabled',
+	'adminEmptyVoting',
+	'adminEmptyMailing',
+	'adminEmptyPending',
+	'adminEmptyLapsed',
+	'adminEmptyIncomplete',
+	'adminEmptyAll',
+	'adminSearchNoResults',
+	'adminSearchTryDisabled',
+	'adminSearchTryDisabledLink',
+	'adminEmailOptOutDotAria',
+	'adminRowOpenChevronAria',
+	'adminPaymentReferenceVisibleHint',
+	'adminPaymentNotesVisibleHint',
 ] as const;
 
 const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
@@ -168,11 +210,10 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
         <div class="adminTabBar">
           <div class="adminTabs" role="tablist" aria-label="Admin">
             <button type="button" class="adminTab" role="tab" data-admin-tab="overview" aria-selected={initialAdminTab === 'overview' ? 'true' : 'false'}>{t.adminNavOverview}</button>
-            <button type="button" class="adminTab" role="tab" data-admin-tab="pending" aria-selected={initialAdminTab === 'pending' ? 'true' : 'false'}>
-              {t.adminNavPending}
-              <span id="admin-pending-badge" class="adminTabBadge" hidden></span>
+            <button type="button" class="adminTab" role="tab" data-admin-tab="members" aria-selected={initialAdminTab === 'members' ? 'true' : 'false'}>
+              {t.adminNavMembers}
+              <span id="admin-pending-badge" class="adminTabBadge adminTabBadge--pending" hidden></span>
             </button>
-            <button type="button" class="adminTab" role="tab" data-admin-tab="members" aria-selected={initialAdminTab === 'members' ? 'true' : 'false'}>{t.adminNavMembers}</button>
             <button type="button" class="adminTab" role="tab" data-admin-tab="auditLog" aria-selected={initialAdminTab === 'auditLog' ? 'true' : 'false'}>{t.adminNavAuditLog}</button>
           </div>
         </div>
@@ -183,116 +224,67 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
           <div id="admin-overview-mount" class="adminOverviewMount"></div>
         </div>
 
-        <div data-admin-panel="pending" class="adminPanel adminCard" hidden={initialAdminTab !== 'pending'}>
-          <div class="tableWrap">
-            <table class="adminTable">
-              <thead>
-                <tr>
-                  <th>{t.adminTableName}</th>
-                  <th>{t.adminTableEmail}</th>
-                  <th>{t.adminTableYear}</th>
-                  <th>{t.adminTableTier}</th>
-                  <th>{t.adminTableStatus}</th>
-                  <th>{t.adminTableExpectedFee}</th>
-                  <th>{t.adminTableActions}</th>
-                </tr>
-              </thead>
-              <tbody id="admin-pending-body"></tbody>
-            </table>
+        <div data-admin-panel="members" class="adminPanel adminCard adminMemberIndexPanel" hidden={initialAdminTab !== 'members'}>
+          <div id="admin-member-view-pills" class="adminMemberIndexPills"></div>
+          <p id="admin-member-view-desc" class="adminMemberIndexViewDesc" hidden></p>
+          <div id="admin-member-lapsed-row" class="adminMemberIndexLapsedRow">
+            <span class="adminMemberIndexLapsedPrefix">{t.adminLapsedSinceInline}</span>
+            <select id="admin-member-lapsed-since" class="adminMemberIndexLapsedSelect" aria-label={t.adminLapsedSinceInline}></select>
+            <span id="admin-member-lapsed-note-text" class="adminMemberIndexLapsedNote"></span>
           </div>
-        </div>
-
-        <div data-admin-panel="members" class="adminPanel adminCard" hidden={initialAdminTab !== 'members'}>
-          <form id="admin-members-search" class="adminMembersFilter">
-            <div class="adminMembersFilter__fields">
-              <label class="adminField adminField--search">
-                <span class="adminField__label">{t.adminSearchLabel}</span>
-                <input type="search" id="admin-members-q" name="q" class="adminInput" autocomplete="off" />
-              </label>
-              <label class="adminField">
-                <span class="adminField__label">{t.adminSortLabel}</span>
-                <select id="admin-members-sort" class="adminInput">
-                  <option value="created_at_desc">{t.adminSortCreatedDesc}</option>
-                  <option value="last_name_asc">{t.adminSortNameAsc}</option>
-                </select>
-              </label>
-              <label class="adminField">
-                <span class="adminField__label">{t.adminScopeLabel}</span>
-                <select id="admin-members-scope" name="membership" class="adminInput">
-                  <option value="all">{t.adminScopeEveryone}</option>
-                  <option value="has_membership_history">{t.adminScopeHasHistory}</option>
-                  <option value="active" selected>{scopeActiveLabel}</option>
-                  <option value="not_active">{scopeNotRenewedLabel}</option>
-                </select>
-              </label>
-              <label class="adminField">
-                <span class="adminField__label">{t.adminMembershipYearLabel}</span>
-                <input
-                  type="number"
-                  id="admin-members-year"
-                  name="year"
-                  class="adminInput adminInput--year"
-                  min="2000"
-                  max="2100"
-                  step="1"
-                  value={defaultMembershipYear}
-                />
-              </label>
-              <label class="adminField">
-                <span class="adminField__label">{t.adminFilterTierLabel}</span>
-                <select id="admin-members-tier" name="tier" class="adminInput">
-                  <option value="all">{t.adminFilterTierAll}</option>
-                  <option value="voting">{t.adminFilterTierGeneral}</option>
-                  <option value="associate">{t.adminFilterTierAssociate}</option>
-                </select>
-              </label>
-              <label class="adminField">
-                <span class="adminField__label">{t.adminMemberStatusFilterLabel}</span>
-                <select id="admin-members-member-status" name="memberStatus" class="adminInput">
-                  <option value="enrolled">{t.adminMemberStatusFilterEnrolled}</option>
-                  <option value="new">{t.adminMemberStatusFilterNew}</option>
-                  <option value="disabled">{t.adminMemberStatusFilterDisabled}</option>
-                  <option value="all">{t.adminMemberStatusFilterAll}</option>
-                </select>
-              </label>
-            </div>
-            <div class="adminMembersFilter__actions">
-              <button type="submit" class="adminBtn adminBtn--solid">{t.adminFilterApply}</button>
-              <div class="adminMembersFilter__exports">
-                <button type="button" class="adminBtn adminBtn--outline" id="admin-export-emails-members">
-                  {t.adminExportEmails}
-                </button>
-                <button type="button" class="adminBtn adminBtn--outline" id="admin-export-members-csv">
-                  {t.adminExportMembersCsv}
-                </button>
+          <div class="adminMemberIndexControls">
+            <div class="adminMemberIndexSearchRow">
+              <div class="adminMemberIndexSearchWrap">
+                <span class="adminMemberIndexSearchIcon" aria-hidden="true">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </span>
+                <input type="search" id="admin-member-index-q" class="adminInput adminMemberIndexSearchInput" placeholder={t.adminMemberIndexSearchPlaceholder} autocomplete="off" />
               </div>
+              <label class="adminMemberIndexSortLabel">
+                <span class="adminField__label">{t.adminSortLabel}</span>
+                <select id="admin-member-index-sort" class="adminInput">
+                  <option value="last_name_asc">{t.adminSortNameAsc}</option>
+                  <option value="last_name_desc">{t.adminSortNameDesc}</option>
+                  <option value="created_at_desc">{t.adminSortCreatedDesc}</option>
+                  <option value="created_at_asc">{t.adminSortCreatedAsc}</option>
+                </select>
+              </label>
             </div>
-            <div class="adminMembersFilter__hints">
-              <p class="adminHint">{t.adminExportEmailsHint}</p>
-              <p class="adminHint">{t.adminExportMembersCsvHint}</p>
+            <label class="adminMemberIndexIncludeDisabled">
+              <input type="checkbox" id="admin-member-index-include-disabled" />
+              {t.adminIncludeDisabled}
+            </label>
+          </div>
+          <p id="admin-member-search-disabled-nudge" class="adminMemberIndexDisabledNudge" hidden></p>
+          <div class="adminMemberIndexMeta">
+            <p class="adminMemberIndexMetaLeft">
+              <span id="admin-member-meta-left"></span>
+              <span id="admin-member-meta-optin" class="adminMemberIndexMetaOptIn" hidden></span>
+            </p>
+            <div class="adminMemberIndexMetaActions">
+              <button type="button" class="adminBtn adminBtn--outline" id="admin-member-copy-emails">{t.adminExportEmails}</button>
+              <button type="button" class="adminBtn adminBtn--solid" id="admin-member-export-csv">{t.adminExportMembersCsv}</button>
             </div>
-          </form>
-          <div class="tableWrap">
-            <table class="adminTable adminTable--members">
+          </div>
+          <div id="admin-member-index-empty" class="adminMemberIndexEmpty" hidden></div>
+          <div id="admin-member-index-table-wrap" class="tableWrap adminMemberIndexTableWrap">
+            <table class="adminTable adminMemberIndexTable">
               <thead>
                 <tr>
-                  <th>{t.adminTablePrimaryName}</th>
-                  <th>{t.adminTablePrimaryEmail}</th>
-                  <th>{t.adminTableSecondaryName}</th>
-                  <th>{t.adminTableSecondaryEmail}</th>
-                  <th>{t.adminTableLakeCivic}</th>
-                  <th>{t.adminTableLakeStreet}</th>
-                  <th>{t.adminTableTier}</th>
-                  <th>{t.adminTableCreated}</th>
+                  <th style="width:25%">{t.adminTableColMember}</th>
+                  <th style="width:18%">{t.adminTableColSecondary}</th>
+                  <th style="width:25%">{t.adminTableColLake}</th>
+                  <th style="width:12%">{t.adminTableTier}</th>
+                  <th id="admin-member-index-since-th" style="width:10%">{t.adminTableColSince}</th>
                 </tr>
               </thead>
-              <tbody id="admin-members-body"></tbody>
+              <tbody id="admin-member-index-body"></tbody>
             </table>
           </div>
           <div class="adminPager">
-            <button type="button" class="adminBtn adminBtn--ghost" id="admin-members-prev">{t.adminPrevPage}</button>
-            <span id="admin-members-pageinfo"></span>
-            <button type="button" class="adminBtn adminBtn--ghost" id="admin-members-next">{t.adminNextPage}</button>
+            <button type="button" class="adminBtn adminBtn--ghost" id="admin-member-prev">{t.adminPrevPage}</button>
+            <span id="admin-member-pageinfo"></span>
+            <button type="button" class="adminBtn adminBtn--ghost" id="admin-member-next">{t.adminNextPage}</button>
           </div>
         </div>
 
@@ -320,50 +312,6 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
       </div>
     </div>
 
-    <dialog id="admin-payment-dialog" class="adminDialog">
-      <form id="admin-payment-form" class="adminPaymentForm" aria-busy="false">
-        <h3>{t.adminPaymentHeading}</h3>
-        <input type="hidden" id="admin-payment-membership-id" value="" />
-        <input type="hidden" id="admin-payment-tier" value="" />
-        <input type="hidden" id="admin-payment-status" value="" />
-        <input type="hidden" id="admin-payment-sum-paid" value="" />
-        <label>
-          {t.adminAmountLabel}
-          <input id="admin-payment-amount" type="number" name="amount" min="0.01" step="0.01" required class="adminInput" />
-        </label>
-        <p id="admin-payment-split-preview" class="adminPaymentSplitPreview" hidden aria-live="polite"></p>
-        <label>
-          {t.adminMethodLabel}
-          <select name="method" required class="adminInput">
-            <option value="e-transfer">{t.adminMethodEtransfer}</option>
-            <option value="cheque">{t.adminMethodCheque}</option>
-            <option value="cash">{t.adminMethodCash}</option>
-            <option value="unknown">{t.adminMethodUnknown}</option>
-          </select>
-        </label>
-        <label>
-          {t.adminDateLabel}
-          <input type="date" name="date" class="adminInput" />
-        </label>
-        <label>
-          {t.adminPaymentReferenceLabel}
-          <input type="text" name="reference" class="adminInput" autocomplete="off" maxlength="512" />
-          <p class="adminHint adminPaymentFieldHint">{t.adminPaymentReferenceVisibleHint}</p>
-        </label>
-        <label>
-          {t.adminNotesLabel}
-          <input type="text" name="notes" class="adminInput" />
-          <p class="adminHint adminPaymentFieldHint">{t.adminPaymentNotesVisibleHint}</p>
-        </label>
-        <div class="adminDialogActions">
-          <button type="submit" class="adminBtn adminBtn--solid adminBtn--submit" id="admin-payment-submit" value="default">
-            <span class="adminBtnSpinner" aria-hidden="true"></span>
-            <span class="adminBtnLabel">{t.adminSubmitPaymentBtn}</span>
-          </button>
-          <button type="button" class="adminBtn adminBtn--ghost" id="admin-payment-cancel">{t.checkoutModalCancel}</button>
-        </div>
-      </form>
-    </dialog>
   </section>
 </MemberAppLayout>
 
@@ -472,8 +420,11 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
     font-weight: 500;
     vertical-align: middle;
     border-radius: 999px;
-    background: rgba(176, 120, 0, 0.2);
-    color: rgba(90, 60, 0, 0.95);
+  }
+
+  .adminTabBadge--pending {
+    background: #faeeda;
+    color: #854f0b;
   }
 
   .adminStatus {
@@ -1403,5 +1354,439 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
     to {
       transform: rotate(360deg);
     }
+  }
+
+  /* Member index (named views) */
+  .adminMemberIndexPanel {
+    padding-top: 1.1rem;
+  }
+
+  /* Pills are rendered via innerHTML; scoped selectors would not match — use :global */
+  :global(.adminMemberIndexPills) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0 0 0.85rem;
+  }
+
+  .adminMemberIndexViewDesc {
+    margin: 0 0 0.65rem;
+    max-width: 44rem;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: var(--admin-muted);
+  }
+
+  .adminMemberIndexViewDesc[hidden] {
+    display: none !important;
+  }
+
+  :global(.adminMemberIndexPills--searchActive) {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  :global(button.adminMemberIndexPill) {
+    margin: 0;
+    padding: 0.38rem 0.75rem;
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 999px !important;
+    border: 0.5px solid var(--admin-border);
+    background: var(--admin-surface-muted);
+    color: var(--admin-muted);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  }
+
+  :global(button.adminMemberIndexPill:hover) {
+    background: var(--admin-row-hover, #f5f4f0);
+  }
+
+  :global(button.adminMemberIndexPill.adminMemberIndexPill--active) {
+    border-radius: 999px !important;
+    background: var(--admin-accent);
+    border-color: var(--admin-accent);
+    color: #fff;
+  }
+
+  :global(button.adminMemberIndexPill.adminMemberIndexPill--pendingAlert:not(.adminMemberIndexPill--active)) {
+    border-radius: 999px !important;
+    background: #faeeda;
+    border-color: rgba(133, 79, 11, 0.35);
+    color: #854f0b;
+  }
+
+  :global(.adminMemberIndexPill__count) {
+    font-variant-numeric: tabular-nums;
+    opacity: 0.92;
+  }
+
+  .adminMemberIndexLapsedRow {
+    display: none;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    margin: 0 0 1rem;
+    font-size: 12px;
+    line-height: 1.35;
+    color: #888780;
+  }
+
+  .adminMemberIndexLapsedRow--visible {
+    display: flex;
+  }
+
+  .adminMemberIndexLapsedPrefix {
+    flex: 0 0 auto;
+  }
+
+  .adminMemberIndexLapsedSelect {
+    min-width: 4.5rem;
+    max-width: 8rem;
+    margin: 0;
+    padding: 3px 7px;
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.2;
+    color: inherit;
+    background: transparent;
+    border: 0.5px solid #d3d1c7;
+    border-radius: 6px;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .adminMemberIndexLapsedNote {
+    flex: 1 1 12rem;
+    min-width: 0;
+    color: inherit;
+  }
+
+  .adminMemberIndexControls {
+    margin-bottom: 0;
+  }
+
+  .adminMemberIndexSearchRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    align-items: flex-end;
+    margin-bottom: 8px;
+  }
+
+  .adminMemberIndexSearchWrap {
+    position: relative;
+    flex: 1 1 14rem;
+    min-width: 0;
+  }
+
+  .adminMemberIndexSearchIcon {
+    position: absolute;
+    left: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--admin-muted);
+    display: flex;
+    pointer-events: none;
+  }
+
+  .adminMemberIndexSearchInput {
+    width: 100%;
+    max-width: none;
+    padding-left: 2.25rem;
+  }
+
+  .adminMemberIndexSortLabel .adminField__label {
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+
+  .adminMemberIndexSortLabel .adminInput {
+    max-width: 12rem;
+  }
+
+  .adminMemberIndexIncludeDisabled {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0 0 8px;
+    font-size: 0.8125rem;
+    color: var(--admin-muted);
+    cursor: pointer;
+  }
+
+  .adminMemberIndexDisabledNudge {
+    margin: 0 0 8px;
+    font-size: 0.8125rem;
+    color: var(--admin-muted);
+  }
+
+  .adminMemberIndexMeta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.65rem 1rem;
+    margin: 0 0 0.75rem;
+    font-size: 0.875rem;
+  }
+
+  .adminMemberIndexMetaLeft {
+    margin: 0;
+    color: var(--admin-text);
+  }
+
+  .adminMemberIndexMetaOptIn {
+    color: var(--admin-muted);
+    font-size: 0.8125rem;
+  }
+
+  .adminMemberIndexMetaActions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .adminMemberIndexEmpty {
+    text-align: center;
+    font-size: 13px;
+    color: #b4b2a9;
+    margin: 0 0 1rem;
+    padding: 1.25rem 0.5rem;
+  }
+
+  .adminMemberIndexEmpty p {
+    margin: 0;
+  }
+
+  .adminMemberIndexTableWrap {
+    border-radius: 12px;
+  }
+
+  /* Dim only tbody during fetch (class on #admin-member-index-table-wrap). No opacity transition: WebKit can leave tbody at a mid-transition opacity until a repaint (e.g. hover). */
+  .adminPage :global(.adminMemberIndexTableWrap--membersLoading .adminMemberIndexTable tbody) {
+    opacity: 0.4;
+  }
+
+  .adminMemberIndexTable {
+    table-layout: fixed;
+    font-size: 0.8125rem;
+  }
+
+  .adminPage :global(.adminMemberIndexTable th) {
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--admin-table-header-muted, #b4b2a9);
+    background: var(--admin-surface-muted);
+  }
+
+  .adminPage :global(.adminMemberIndexTable tbody tr) {
+    transition: background-color 120ms ease;
+  }
+
+  .adminPage :global(.adminMemberIndexTable tbody tr:hover) {
+    background: var(--admin-row-hover, #f5f4f0);
+  }
+
+  .adminPage :global(.adminMemberIndexRow--disabled) {
+    opacity: 0.45;
+  }
+
+  .adminPage :global(.adminMemberIndexColMember) {
+    max-width: 0;
+    overflow: hidden;
+    vertical-align: top;
+  }
+
+  .adminPage :global(.adminMemberIndexMemberStack) {
+    min-width: 0;
+  }
+
+  .adminPage :global(.adminMemberIndexMemberName),
+  .adminPage :global(.adminMemberIndexMemberEmail) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  .adminPage :global(.adminMemberIndexMemberName) {
+    font-size: 13px;
+    font-weight: 500;
+    color: #2c2c2a;
+  }
+
+  .adminPage :global(.adminMemberIndexMemberEmail) {
+    font-size: 11px;
+  }
+
+  .adminPage :global(.adminMemberIndexDisabledBadge) {
+    font-size: 0.72rem;
+    font-style: italic;
+    font-weight: 400;
+    color: var(--admin-muted);
+    margin-left: 0.25rem;
+  }
+
+  .adminPage :global(.adminMemberIndexEmailAddr) {
+    color: var(--admin-email-primary, #3a6b5a);
+  }
+
+  .adminPage :global(.adminMemberIndexEmailOptOutDot) {
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    margin-right: 0.35rem;
+    border-radius: 50%;
+    background: #a8a59c;
+    vertical-align: middle;
+  }
+
+  .adminPage :global(.adminMemberIndexEmDash) {
+    color: var(--admin-muted);
+  }
+
+  .adminPage :global(.adminMemberIndexColSecondary) {
+    max-width: 0;
+    overflow: hidden;
+    vertical-align: top;
+  }
+
+  .adminPage :global(.adminMemberIndexSecondaryStack) {
+    min-width: 0;
+  }
+
+  .adminPage :global(.adminMemberIndexSecondaryName),
+  .adminPage :global(.adminMemberIndexSecondaryEmail) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  .adminPage :global(.adminMemberIndexSecondaryName) {
+    font-size: 13px;
+    color: #5f5e5a;
+  }
+
+  .adminPage :global(.adminMemberIndexSecondaryEmail) {
+    font-size: 11px;
+    color: #b4b2a9;
+  }
+
+  .adminPage :global(.adminMemberIndexSecondaryEmpty) {
+    color: var(--admin-muted);
+    font-size: 0.8125rem;
+  }
+
+  .adminPage :global(.adminMemberIndexColLake) {
+    color: var(--admin-muted);
+    font-size: 0.8125rem;
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .adminPage :global(.adminMemberIndexTierBadge--voting) {
+    display: inline-block;
+    padding: 0.12rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    background: #e4ece4;
+    color: #2d4a2d;
+  }
+
+  .adminPage :global(.adminMemberIndexTierBadge--associate) {
+    display: inline-block;
+    padding: 0.12rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 500;
+    background: #f1efe8;
+    color: #888780;
+    border: 0.5px solid var(--admin-border);
+  }
+
+  .adminPage :global(.adminMemberIndexTierBadge--empty) {
+    color: var(--admin-muted);
+  }
+
+  .adminPage :global(.adminMemberIndexColSince) {
+    position: relative;
+    padding-right: 1.25rem;
+    font-size: 12px;
+    color: #a8a59c;
+  }
+
+  .adminPage :global(.adminMemberIndexSinceText) {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .adminPage :global(.adminMemberIndexRowChevron) {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    color: var(--admin-muted);
+    font-size: 1rem;
+    transition: opacity 120ms ease;
+  }
+
+  .adminPage :global(.adminMemberIndexRow:hover .adminMemberIndexRowChevron) {
+    opacity: 0.55;
+  }
+
+  :global(.adminMemberIndexModal) {
+    padding: 1.25rem 1.35rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    max-width: min(520px, calc(100vw - 2rem));
+    background: var(--admin-surface);
+    border: 0.5px solid var(--admin-border);
+    font-family: var(--admin-font);
+  }
+
+  :global(.adminMemberIndexModal::backdrop) {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  :global(.adminMemberIndexModal__title) {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--admin-text);
+  }
+
+  :global(.adminMemberIndexModal__sub) {
+    margin: 0 0 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--admin-muted);
+    line-height: 1.45;
+  }
+
+  :global(.adminMemberIndexModal__textarea) {
+    display: block;
+    width: 100%;
+    min-height: 10rem;
+    margin: 0 0 1rem;
+    padding: 0.6rem 0.65rem;
+    font-family: ui-monospace, monospace;
+    font-size: 0.8rem;
+    line-height: 1.45;
+    border: 0.5px solid var(--admin-border);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--admin-text);
+    resize: vertical;
+    box-sizing: border-box;
   }
 </style>
