@@ -5,6 +5,12 @@ import { adminPatchToRow, parseAdminMemberPatch } from '../../../../lib/admin/me
 import { requireAdminSession } from '../../../../lib/admin/session';
 import { createSupabaseServiceRoleClient } from '../../../../lib/supabase/service';
 
+function valuesEqual(a: unknown, b: unknown): boolean {
+	if (a === b) return true;
+	if (a == null && b == null) return true;
+	return JSON.stringify(a) === JSON.stringify(b);
+}
+
 export const GET: APIRoute = async ({ request, cookies, params }) => {
 	const auth = await requireAdminSession(request, cookies);
 	if (!auth.ok) return auth.response;
@@ -70,6 +76,14 @@ export const PATCH: APIRoute = async ({ request, cookies, params }) => {
 	}
 
 	const service = createSupabaseServiceRoleClient();
+	const { data: existing, error: exErr } = await service.from('members').select('*').eq('id', id).maybeSingle();
+	if (exErr || !existing) {
+		return new Response(JSON.stringify({ error: 'not_found' }), {
+			status: 404,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
+
 	const row = adminPatchToRow(parsed.value);
 
 	const { data: updated, error } = await service.from('members').update(row).eq('id', id).select('id').maybeSingle();
@@ -87,12 +101,20 @@ export const PATCH: APIRoute = async ({ request, cookies, params }) => {
 		});
 	}
 
+	const fields_changed: string[] = [];
+	const ex = existing as Record<string, unknown>;
+	for (const k of Object.keys(row)) {
+		if (!valuesEqual(ex[k], row[k])) {
+			fields_changed.push(k);
+		}
+	}
+
 	await insertAdminAudit(service, {
 		actorUserId: auth.user.id,
-		action: 'member_update',
+		action: 'update_member',
 		entityType: 'member',
 		entityId: id,
-		metadata: { fields: Object.keys(row) },
+		metadata: { fields_changed },
 	});
 
 	return new Response(JSON.stringify({ ok: true }), {

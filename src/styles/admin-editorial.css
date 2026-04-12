@@ -71,3 +71,140 @@
 .adminPage .adminTabBadge {
 	font-weight: 500;
 }
+
+/* Beat `.section.alt` from theme.css so admin pages use warm admin background + DM Sans */
+.section.adminPage.alt {
+	background: var(--admin-bg);
+	border-top-color: var(--admin-border);
+	border-bottom-color: var(--admin-border);
+}
+
+/**
+ * Shared admin buttons — used on admin shell (members tab) and standalone member
+ * admin routes (detail / new / edit). Keep in sync with AdminMembershipView.astro.
+ */
+.adminPage .adminBtn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	margin: 0;
+	padding: 0.45rem 0.95rem;
+	font: inherit;
+	font-size: 0.88rem;
+	font-weight: 500;
+	line-height: 1.2;
+	border-radius: 8px;
+	border: 1px solid transparent;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		color 0.15s ease,
+		border-color 0.15s ease,
+		box-shadow 0.15s ease;
+}
+
+.adminPage .adminBtn:focus-visible {
+	outline: none;
+	box-shadow: 0 0 0 3px var(--admin-accent-soft);
+}
+
+.adminPage .adminBtn--solid {
+	background: var(--admin-accent);
+	color: #fff;
+	border-color: var(--admin-accent);
+}
+
+.adminPage .adminBtn--solid:hover {
+	background: var(--admin-accent-hover);
+	border-color: var(--admin-accent-hover);
+}
+
+.adminPage .adminBtn--outline {
+	background: #fff;
+	color: var(--admin-accent);
+	border-color: rgba(28, 95, 118, 0.35);
+	text-decoration: none;
+}
+
+.adminPage .adminBtn--outline:hover {
+	background: rgba(72, 196, 255, 0.1);
+	border-color: rgba(28, 95, 118, 0.55);
+}
+
+.adminPage .adminBtn--ghost {
+	background: transparent;
+	color: var(--muted);
+	border-color: var(--admin-border);
+}
+
+.adminPage .adminBtn--ghost:hover {
+	color: var(--admin-text);
+	background: rgba(0, 0, 0, 0.04);
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.adminPage .adminBtn--dangerOutline {
+	border-color: #f0a09a;
+	color: #a32d2d;
+	background: #fff;
+}
+
+.adminPage .adminBtn--dangerOutline:hover {
+	background: #fcebeb;
+	border-color: #e08078;
+}
+
+.adminPage .adminBtn--small {
+	font-size: 12px;
+	padding: 0.35rem 0.65rem;
+}
+
+.adminPage .adminBtn--link {
+	padding: 0.35rem 0.5rem;
+	font-size: 0.88rem;
+	font-weight: 500;
+	color: var(--muted);
+	background: transparent;
+	border: none;
+	text-decoration: underline;
+	text-underline-offset: 0.2em;
+}
+
+.adminPage .adminBtn--link:hover {
+	color: var(--admin-text);
+}
+
+.adminPage .adminBtn--submit {
+	gap: 0.55rem;
+}
+
+.adminPage .adminBtnSpinner {
+	display: none;
+	width: 1.05rem;
+	height: 1.05rem;
+	flex-shrink: 0;
+	border: 2px solid rgba(255, 255, 255, 0.35);
+	border-top-color: currentColor;
+	border-radius: 50%;
+	box-sizing: border-box;
+}
+
+.adminPage .adminBtn--submit.is-loading .adminBtnSpinner {
+	display: inline-block;
+	animation: adminBtnSpin 0.65s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.adminPage .adminBtn--submit.is-loading .adminBtnSpinner {
+		animation: none;
+		border-color: rgba(255, 255, 255, 0.5);
+		border-top-color: rgba(255, 255, 255, 0.85);
+	}
+}
+
+@keyframes adminBtnSpin {
+	to {
+		transform: rotate(360deg);
+	}
+}

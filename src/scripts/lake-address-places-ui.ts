@@ -454,7 +454,18 @@ export function initLakeAddressPlacesUi(o: LakeAddressPlacesInit): void {
 		o.placeIdInput.value = o.initialPlaceId;
 		o.formattedInput.value = o.initialFormatted ?? '';
 		o.sourceInput.value = 'places';
-		showPlacesSummary(o.initialCivic, o.initialStreet, o.initialFormatted ?? '');
+		o.manualSection.hidden = true;
+		o.searchSection.hidden = false;
+		if (o.summaryEl) {
+			o.summaryEl.textContent = '';
+			o.summaryEl.hidden = true;
+		}
+		o.searchInput.value = (o.initialFormatted ?? '').trim();
+		o.suggestionsEl.innerHTML = '';
+		lastSuggestions = [];
+		setSuggestionsOpen(false);
+		setPlacesPickConfirmed(false);
+		syncManualToggleVisibility();
 	} else if (hasAddr) {
 		o.civicHidden.value = o.initialCivic;
 		o.streetHidden.value = o.initialStreet;

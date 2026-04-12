@@ -1,17 +1,21 @@
 ---
 import '../../styles/admin-editorial.css';
+import '../../styles/admin-member-pages.css';
 import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
 import MemberSessionHeroMeta from './MemberSessionHeroMeta.astro';
 import { memberCopy, memberPaths, type MemberLocale } from '../../lib/members/i18n';
+import { mergeMemberUiStrings } from '../../lib/members/adminMemberUiCopy';
 import { getMembershipCalendarYear } from '../../lib/members/membershipYear';
 
 interface Props {
 	locale: MemberLocale;
 	email: string;
 	memberId: string;
+	/** SSR: member display name for `<title>` and workspace hero (matches identity strip). */
+	memberPageTitle: string;
 }
 
-const { locale, email, memberId } = Astro.props;
+const { locale, email, memberId, memberPageTitle } = Astro.props;
 const t = memberCopy[locale];
 const paths = memberPaths[locale];
 const calendarYear = getMembershipCalendarYear();
@@ -105,19 +109,23 @@ const adminKeys = [
 	'profileSecondaryEmail',
 	'profileErrorFirstName',
 	'profileErrorLastName',
+	'profilePrimaryPhone',
+	'profileSectionLake',
 ] as const;
 
-const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
+const baseAdminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
+const adminStrings = mergeMemberUiStrings(locale, baseAdminStrings);
 
 const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
 const adminMembersTabHref = `${paths.admin}?tab=members`;
+const editProfileUrl = `${paths.adminMembers}/${memberId}/edit`;
 ---
 
 <MemberAppLayout
   lang={locale}
-  title={t.adminDetailTitle}
+  title={memberPageTitle}
   description={t.adminDescription}
-  heroTitle={t.adminMemberPageTitleLoading}
+  heroTitle={memberPageTitle}
   alignHeroWithAdmin
 >
   <nav slot="hero-breadcrumb" class="memberWorkspaceBreadcrumb" aria-label={t.adminBreadcrumbAria}>
@@ -138,107 +146,51 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     variant="adminWorkspace"
   />
   <section class="section alt adminPage adminPageMemberDetail">
-    <div class="container adminConsole">
-      <div class="adminShell">
-        <p id="admin-detail-status" class="adminStatus" aria-live="polite"></p>
+    <div class="container adminConsole adminMemberPageNarrow">
+      <p class="adminDetailBack">
+        <a href={adminMembersTabHref} class="adminDetailBackLink">{adminStrings.adminMemberDetailBack}</a>
+      </p>
+      <p id="admin-detail-status" class="adminStatus" aria-live="polite"></p>
 
-        <div class="adminPanel adminCard adminPanel--profile">
-          <form id="admin-member-detail-form" class="adminMemberForm" aria-busy="false">
-            <div class="adminProfileSections">
-              <fieldset class="adminProfileSection">
-                <legend class="adminProfileLegend">{t.profileSectionPrimaryMember}</legend>
-                <div class="adminFormGrid">
-                  <label>{t.profileFirstName} * <input type="text" id="admin-field-first_name" name="first_name" class="adminInput" required /></label>
-                  <label>{t.profileLastName} * <input type="text" id="admin-field-last_name" name="last_name" class="adminInput" required /></label>
-                  <label>{t.adminPrimaryEmailLabel} <input type="email" id="admin-field-primary_email" name="primary_email" class="adminInput" /></label>
-                  <label>{t.profilePrimaryPhone} <input type="text" id="admin-field-primary_phone" name="primary_phone" class="adminInput" /></label>
-                </div>
-              </fieldset>
-
-              <div class="adminProfileSection">
-                <p class="adminSectionHelp">{t.adminSecondaryContactHelp}</p>
-                <div id="admin-detail-secondary-contact-fields" class="adminFormGrid">
-                  <label>{t.adminSecondaryFirstNameLabel} <input type="text" id="admin-field-secondary_first_name" name="secondary_first_name" class="adminInput" /></label>
-                  <label>{t.adminSecondaryLastNameLabel} <input type="text" id="admin-field-secondary_last_name" name="secondary_last_name" class="adminInput" /></label>
-                  <label>{t.adminSecondaryEmailLabel} <input type="email" id="admin-field-secondary_email" name="secondary_email" class="adminInput" /></label>
-                  <label>{t.adminSecondaryPhoneLabel} <input type="text" id="admin-field-secondary_phone" name="secondary_phone" class="adminInput" /></label>
-                </div>
-              </div>
-
-              <fieldset class="adminProfileSection">
-                <legend class="adminProfileLegend">{t.profileSectionLake}</legend>
-                <p class="adminSectionHelp">{t.profileLakeHelp}</p>
-                <div class="adminFormGrid">
-                  <label>{t.profileLakeCivic} <input type="text" id="admin-field-lake_civic_number" name="lake_civic_number" class="adminInput" /></label>
-                  <label>{t.profileLakeStreet} <input type="text" id="admin-field-lake_street_name" name="lake_street_name" class="adminInput" /></label>
-                </div>
-              </fieldset>
-
-              <div class="adminFormGrid">
-                <label class="adminCheckbox"><input type="checkbox" id="admin-field-email_opt_in" name="email_opt_in" /> {t.profileEmailOptIn}</label>
-                <label>
-                  {t.adminStatusMemberLabel}
-                  <select id="admin-field-status" name="status" class="adminInput" title={t.adminStatusMemberFieldTitle}>
-                    <option value="new">{t.adminStatusMemberOptionNew}</option>
-                    <option value="enrolled">{t.adminStatusMemberOptionEnrolled}</option>
-                    <option value="disabled">{t.adminStatusMemberOptionDisabled}</option>
-                  </select>
-                </label>
-                <label>{t.adminUserIdLabel} <input type="text" id="admin-field-user_id" name="user_id" class="adminInput" /></label>
-                <label class="adminNotes">{t.adminNotesFieldLabel} <textarea id="admin-field-notes" name="notes" class="adminInput" rows="3"></textarea></label>
-              </div>
-            </div>
-            <div class="adminFormActions">
-              <button type="submit" class="adminBtn adminBtn--solid adminBtn--submit" id="admin-member-save">
-                <span class="adminBtnSpinner" aria-hidden="true"></span>
-                <span class="adminBtnLabel">{t.adminSaveMemberBtn}</span>
-              </button>
-              <button type="button" class="adminBtn adminBtn--ghost" id="admin-promote-btn" title={t.adminPromoteAdminTitle}>
-                {t.adminPromoteBtn}
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <div class="adminPanel adminCard">
-          <h2 class="adminSubheading">{t.adminDetailSectionMemberships}</h2>
-          <div id="admin-detail-memberships-mount" class="adminDetailMembershipList"></div>
-        </div>
-      </div>
+      <div id="admin-detail-main"></div>
     </div>
 
-    <dialog id="admin-payment-dialog" class="adminDialog">
+    <dialog id="admin-payment-dialog" class="adminDialog adminPaymentDialogV2">
       <form id="admin-payment-form" class="adminPaymentForm" aria-busy="false">
-        <h3>{t.adminPaymentHeading}</h3>
+        <h3 id="admin-payment-dialog-title">{adminStrings.adminRecordPaymentTitle}</h3>
+        <p id="admin-payment-dialog-subtitle" class="adminPaymentDialogSub"></p>
         <input type="hidden" id="admin-payment-membership-id" value="" />
+        <div class="adminMemberGrid2">
+          <label>
+            <span class="adminMemberFieldLabel">{t.adminAmountLabel}</span>
+            <input id="admin-payment-amount" type="number" name="amount" min="0" step="0.01" required class="adminMemberInput" />
+          </label>
+          <label>
+            <span class="adminMemberFieldLabel">{t.adminMethodLabel}</span>
+            <select name="method" required class="adminMemberSelect">
+              <option value="e-transfer">{t.adminMethodEtransfer}</option>
+              <option value="cheque">{t.adminMethodCheque}</option>
+              <option value="cash">{t.adminMethodCash}</option>
+              <option value="other">{adminStrings.adminMethodOther}</option>
+            </select>
+          </label>
+        </div>
+        <div class="adminMemberGrid2">
+          <label>
+            <span class="adminMemberFieldLabel">{t.adminDateLabel}</span>
+            <input type="date" name="date" class="adminMemberInput" />
+          </label>
+          <label>
+            <span class="adminMemberFieldLabel">{adminStrings.adminDonationPortionLabel}</span>
+            <input type="number" name="donation_portion" class="adminMemberInput" min="0" step="0.01" />
+            <span class="adminMemberHint">{adminStrings.adminDonationPortionHint}</span>
+          </label>
+        </div>
         <label>
-          {t.adminAmountLabel}
-          <input id="admin-payment-amount" type="number" name="amount" min="0.01" step="0.01" required class="adminInput" />
+          <span class="adminMemberFieldLabel">{adminStrings.adminPaymentRefNotesLabel}</span>
+          <input type="text" name="reference" class="adminMemberInput" autocomplete="off" maxlength="512" placeholder={adminStrings.adminPaymentRefNotesPlaceholder} />
         </label>
         <p id="admin-payment-split-preview" class="adminPaymentSplitPreview" hidden aria-live="polite"></p>
-        <label>
-          {t.adminMethodLabel}
-          <select name="method" required class="adminInput">
-            <option value="e-transfer">{t.adminMethodEtransfer}</option>
-            <option value="cheque">{t.adminMethodCheque}</option>
-            <option value="cash">{t.adminMethodCash}</option>
-            <option value="unknown">{t.adminMethodUnknown}</option>
-          </select>
-        </label>
-        <label>
-          {t.adminDateLabel}
-          <input type="date" name="date" class="adminInput" />
-        </label>
-        <label>
-          {t.adminPaymentReferenceLabel}
-          <input type="text" name="reference" class="adminInput" autocomplete="off" maxlength="512" />
-          <p class="adminHint adminPaymentFieldHint">{t.adminPaymentReferenceVisibleHint}</p>
-        </label>
-        <label>
-          {t.adminNotesLabel}
-          <input type="text" name="notes" class="adminInput" />
-          <p class="adminHint adminPaymentFieldHint">{t.adminPaymentNotesVisibleHint}</p>
-        </label>
         <div class="adminDialogActions">
           <button type="submit" class="adminBtn adminBtn--solid adminBtn--submit" id="admin-payment-submit" value="default">
             <span class="adminBtnSpinner" aria-hidden="true"></span>
@@ -251,7 +203,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
 
     <dialog id="admin-add-membership-dialog" class="adminDialog">
       <form id="admin-add-membership-form" class="adminPaymentForm" aria-busy="false">
-        <h3>{t.adminAddMembershipDialogTitle}</h3>
+        <h3>{adminStrings.adminModalAddMembershipTitle}</h3>
         <label>
           {t.adminMembershipYearLabel}
           <input
@@ -284,27 +236,35 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
           </label>
         </div>
         <div id="admin-add-ms-paid" class="adminAddMsPaid" hidden>
+          <div class="adminMemberGrid2">
+            <label>
+              <span class="adminMemberFieldLabel">{t.adminAmountLabel}</span>
+              <input type="number" name="payment_amount" min="0" step="0.01" class="adminMemberInput" />
+            </label>
+            <label>
+              <span class="adminMemberFieldLabel">{t.adminMethodLabel}</span>
+              <select name="payment_method" class="adminMemberSelect">
+                <option value="e-transfer">{t.adminMethodEtransfer}</option>
+                <option value="cheque">{t.adminMethodCheque}</option>
+                <option value="cash">{t.adminMethodCash}</option>
+                <option value="other">{adminStrings.adminMethodOther}</option>
+              </select>
+            </label>
+          </div>
+          <div class="adminMemberGrid2">
+            <label>
+              <span class="adminMemberFieldLabel">{t.adminDateLabel}</span>
+              <input type="date" name="payment_date" class="adminMemberInput" />
+            </label>
+            <label>
+              <span class="adminMemberFieldLabel">{adminStrings.adminDonationPortionLabel}</span>
+              <input type="number" name="payment_donation_portion" class="adminMemberInput" min="0" step="0.01" />
+              <span class="adminMemberHint">{adminStrings.adminDonationPortionHint}</span>
+            </label>
+          </div>
           <label>
-            {t.adminAmountLabel}
-            <input type="number" name="payment_amount" min="0" step="0.01" class="adminInput" />
-          </label>
-          <label>
-            {t.adminMethodLabel}
-            <select name="payment_method" class="adminInput">
-              <option value="cash">{t.adminMethodCash}</option>
-              <option value="e-transfer">{t.adminMethodEtransfer}</option>
-              <option value="cheque">{t.adminMethodCheque}</option>
-              <option value="unknown">{t.adminMethodUnknown}</option>
-            </select>
-          </label>
-          <label>
-            {t.adminDateLabel}
-            <input type="date" name="payment_date" class="adminInput" />
-          </label>
-          <label>
-            {t.adminNotesLabel}
-            <input type="text" name="payment_notes" class="adminInput" />
-            <p class="adminHint adminPaymentFieldHint">{t.adminPaymentNotesVisibleHint}</p>
+            <span class="adminMemberFieldLabel">{adminStrings.adminPaymentRefNotesLabel}</span>
+            <input type="text" name="payment_reference" class="adminMemberInput" placeholder={adminStrings.adminPaymentRefNotesPlaceholder} />
           </label>
         </div>
         <div class="adminDialogActions">
@@ -319,995 +279,292 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   </section>
 </MemberAppLayout>
 
-<script type="application/json" id="admin-member-detail-data" set:html={JSON.stringify({ adminStrings, tierLabels, memberId, calendarYear, numberLocale })}></script>
+<script
+  type="application/json"
+  id="admin-member-detail-data"
+  set:html={JSON.stringify({ adminStrings, tierLabels, memberId, calendarYear, numberLocale, editProfileUrl })}
+></script>
 <script>
-  import { initAdminMemberDetail } from '../../scripts/admin-member-detail';
+  import { initAdminMemberDetailV2 } from '../../scripts/admin-member-detail-v2';
   const el = document.getElementById('admin-member-detail-data');
   const raw = el?.textContent;
   if (raw) {
-    const { adminStrings, tierLabels, memberId, calendarYear, numberLocale } = JSON.parse(raw) as {
+    const { adminStrings, tierLabels, memberId, calendarYear, numberLocale, editProfileUrl } = JSON.parse(raw) as {
       adminStrings: Record<string, string>;
       tierLabels: { voting: string; associate: string };
       memberId: string;
       calendarYear: number;
       numberLocale: string;
+      editProfileUrl: string;
     };
-    initAdminMemberDetail(adminStrings, tierLabels, memberId, calendarYear, numberLocale);
+    initAdminMemberDetailV2(adminStrings, tierLabels, memberId, calendarYear, numberLocale, editProfileUrl);
   }
 </script>
 
-<style>
+<style is:global>
+  /* Client-rendered rows in #admin-detail-main must not rely on Astro-scoped attrs */
   .adminPageMemberDetail.adminPage {
     padding: 1.15rem 0 2.75rem;
   }
-
-  .adminPage {
-    font-size: 0.875rem;
-    line-height: 1.5;
-    padding: 28px 0 40px;
-  }
-
-  .adminConsole {
-    max-width: 1100px;
-    width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
-  }
-
-  .adminShell {
-    background: var(--admin-surface);
-    border: 0.5px solid var(--admin-border);
-    border-radius: var(--admin-radius);
-    box-shadow: none;
-    overflow: hidden;
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .adminStatus {
-    margin: 0;
-    padding: 0.45rem 1.15rem;
-    font-size: 0.8125rem;
-    line-height: 1.45;
-    border-bottom: 1px solid var(--admin-border);
-    background: rgba(72, 196, 255, 0.08);
-    color: var(--admin-text);
-  }
-
-  .adminStatus[data-error='1'] {
-    background: rgba(176, 0, 32, 0.08);
-    color: #8a1024;
-  }
-
-  .adminStatus[data-success='1'] {
-    background: rgba(34, 120, 80, 0.1);
-    color: rgba(18, 75, 50, 0.95);
-  }
-
-  .adminStatus:empty {
-    display: none;
-    padding: 0;
-    border: none;
-  }
-
-  .adminPanel {
-    padding: 1.2rem 1.35rem 1.35rem;
-    min-width: 0;
-  }
-
-  .adminPanel--profile {
-    padding-top: 1.15rem;
-  }
-
-  .adminPanel + .adminPanel {
-    border-top: 1px solid var(--admin-border);
-  }
-
-  .adminSubheading {
-    font-size: 0.9375rem;
-    font-weight: 500;
-    letter-spacing: -0.02em;
+  .adminPageMemberDetail .adminDetailBack {
     margin: 0 0 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--admin-border);
-    color: var(--admin-text);
   }
-
-  .adminDetailMembershipList {
-    display: block;
-  }
-
-  .adminDetailMembershipList > *:not(:first-child) {
-    margin-top: 1rem;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailYearToolbar) {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 1rem;
-    margin: 0 0 1.1rem;
-    padding: 0.65rem 0.85rem;
-    border-radius: var(--admin-radius-sm);
-    border: 1px solid var(--admin-border);
-    background: var(--admin-surface-muted);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailYearToolbarLabel) {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.55rem 0.75rem;
-    margin: 0;
-    font-weight: 500;
-    font-size: 0.8125rem;
-    color: var(--admin-text);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailYearToolbarText) {
-    color: var(--muted);
-    font-weight: 500;
-    font-size: 0.78rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailYearPanel) {
-    min-width: 0;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentSummary) {
-    margin: 0;
-    padding: 0.85rem 1rem 0.95rem 1rem;
-    border-radius: var(--admin-radius-sm);
-    border: 1px solid var(--admin-border);
-    border-left: 3px solid rgba(28, 95, 118, 0.55);
-    background: var(--admin-surface-muted);
-    font-size: 0.8125rem;
-    line-height: 1.4;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentSummaryTitleRow) {
-    margin: 0 0 0.6rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentSummaryKicker) {
-    font-size: 0.7rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailSummaryRow--balanceDue > span:first-child) {
-    color: rgba(120, 55, 0, 0.92);
-    font-weight: 500;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailSummaryValue--due) {
-    color: rgba(150, 65, 0, 0.98) !important;
-    font-weight: 500 !important;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailDuesPaidHint) {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.45rem;
-    margin: 0.7rem 0 0;
-    padding: 0.4rem 0.65rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: rgba(18, 75, 50, 0.95);
-    background: rgba(34, 120, 80, 0.09);
-    border: 1px solid rgba(34, 120, 80, 0.22);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailDuesPaidHint::before) {
-    content: '';
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    background: rgba(34, 120, 80, 0.85);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailSummaryRow) {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(5.25rem, max-content);
-    column-gap: 1.25rem;
-    align-items: baseline;
-    padding: 0.38rem 0;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.055);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailSummaryRow:has(+ .adminDetailSummaryRow--total)) {
-    border-bottom: none;
-    padding-bottom: 0.2rem;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailSummaryRow > span:first-child) {
-    color: var(--muted);
-    font-weight: 500;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailSummaryRow--total) {
-    margin-top: 0.2rem;
-    padding-top: 0.55rem;
-    padding-bottom: 0.15rem;
-    border-bottom: none;
-    border-top: 1px solid var(--admin-border);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailSummaryRow--total > span:first-child) {
-    color: var(--admin-text);
-    font-weight: 500;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailSummaryValue) {
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-    text-align: right;
-    font-weight: 500;
-    color: var(--admin-text);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailSummaryRow--total .adminDetailSummaryValue) {
-    font-weight: 500;
-    font-size: 0.9375rem;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailDonationNoteLine) {
-    margin: 0.65rem 0 0;
-    padding-top: 0.55rem;
-    border-top: 1px dashed rgba(0, 0, 0, 0.1);
-    font-size: 0.78rem;
-    color: var(--muted);
-    line-height: 1.45;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailDonationNoteLabel) {
-    font-weight: 500;
-    color: var(--admin-text);
-    margin-right: 0.35rem;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailMembershipCard) {
-    margin: 0;
-    padding: 0;
-    border: 0.5px solid var(--admin-border);
-    border-radius: var(--admin-radius-md);
-    background: var(--admin-surface);
-    box-shadow: none;
-    overflow: hidden;
-    min-width: 0;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailMembershipHead) {
-    margin: 0;
-    padding: 1rem 1.1rem 0.95rem;
-    border-bottom: 1px solid var(--admin-border);
-    background: rgba(0, 0, 0, 0.015);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailMembershipIdentity) {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1.25rem 1.5rem;
-    min-width: 0;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailIdentityBlock) {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.35rem;
-    min-width: 0;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailIdentityLabel) {
-    font-size: 0.68rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.07em;
-    color: var(--muted);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailIdentityValue--tier) {
-    font-size: 1.2rem;
-    font-weight: 500;
-    letter-spacing: -0.03em;
-    line-height: 1.15;
-    color: var(--admin-text);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailBadge--statusEmphasis) {
-    padding: 0.35rem 0.75rem;
-    font-size: 0.8rem;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailBadge) {
-    display: inline-block;
-    padding: 0.2rem 0.55rem;
-    border-radius: 999px;
-    font-size: 0.72rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    line-height: 1.25;
-    border: 1px solid transparent;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailBadge--tier) {
-    background: rgba(255, 255, 255, 0.65);
-    border-color: var(--admin-border);
-    color: var(--admin-text);
-    text-transform: none;
-    font-size: 0.8rem;
-    font-weight: 500;
-    letter-spacing: 0;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailBadge--future) {
-    background: rgba(72, 196, 255, 0.14);
-    border-color: rgba(28, 95, 118, 0.22);
-    color: var(--admin-accent);
-    text-transform: none;
-    font-size: 0.72rem;
-    letter-spacing: 0.02em;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailBadge--status.adminDetailBadge--active) {
-    background: rgba(34, 120, 80, 0.12);
-    border-color: rgba(34, 120, 80, 0.28);
-    color: rgba(18, 75, 50, 0.95);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailBadge--status.adminDetailBadge--pending) {
-    background: rgba(200, 130, 0, 0.12);
-    border-color: rgba(180, 110, 0, 0.28);
-    color: rgba(90, 55, 0, 0.95);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailBadge--status.adminDetailBadge--neutral) {
-    background: rgba(0, 0, 0, 0.04);
-    border-color: var(--admin-border);
-    color: var(--muted);
-    text-transform: none;
-    font-size: 0.78rem;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsSection) {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    margin: 0;
-    min-width: 0;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsSectionHead) {
-    margin: 0;
-    padding: 0.65rem 1.1rem 0.55rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    background: var(--admin-surface);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsTitle) {
-    margin: 0;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    letter-spacing: -0.015em;
-    color: var(--admin-text);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsBody) {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    min-width: 0;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailRecordPaymentRow) {
-    padding: 0.65rem 1.1rem 0.75rem;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    background: var(--admin-surface);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentSummaryReceipt) {
-    padding: 0.75rem 1.1rem 1rem;
-    border-top: none;
-    background: var(--admin-surface-muted);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentSummaryReceipt .adminDetailPaymentSummary) {
-    margin: 0;
-    border: 1px solid var(--admin-border);
-    border-left: 3px solid rgba(28, 95, 118, 0.45);
-    background: var(--admin-surface);
-    box-shadow: none;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsEmpty) {
-    margin: 0;
-    padding: 0.75rem 1.1rem;
-    font-size: 0.8125rem;
-    font-style: italic;
-    color: var(--muted);
-    line-height: 1.45;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-    background: var(--admin-surface);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsEmpty--inSection) {
-    margin: 0;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap) {
-    margin-top: 0;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsTableBleed.tableWrap) {
-    width: 100%;
-    max-width: none;
-    margin: 0;
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
-    border-top: none;
-    border-bottom: 1px solid var(--admin-border);
-  }
-
-  .adminDetailMembershipList :global(.adminTable--payments th:nth-child(6)),
-  .adminDetailMembershipList :global(.adminTable--payments td:nth-child(6)) {
-    max-width: min(28rem, 42vw);
-  }
-
-  .adminDetailMembershipList :global(.adminDetailTdLong) {
-    vertical-align: top;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments td.adminDetailTdLong) {
-    vertical-align: top;
-    padding-top: 0.6rem;
-    padding-bottom: 0.6rem;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailCellLong) {
-    display: block;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-    font-size: 0.78rem;
-    line-height: 1.5;
-    max-width: 100%;
-    box-sizing: border-box;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailCellEmpty) {
-    color: var(--muted);
-    font-style: italic;
-  }
-
-  .adminMemberForm {
-    margin-top: 0;
-    font-size: 0.875rem;
-  }
-
-  .adminMemberForm label:not(.adminCheckbox) {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--muted);
-    letter-spacing: 0.01em;
-  }
-
-  .adminFormGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
-    gap: 0.9rem 1.2rem;
-    padding: 0.9rem 1.05rem;
-    background: var(--admin-surface-muted);
-    border: 1px solid var(--admin-border);
-    border-radius: var(--admin-radius-sm);
-  }
-
-  .adminProfileSections {
-    display: block;
-  }
-
-  .adminProfileSections > *:not(:first-child) {
-    margin-top: 1.2rem;
-  }
-
-  .adminProfileSection {
-    margin: 0;
-    padding: 0;
-    border: none;
-  }
-
-  .adminProfileLegend {
-    padding: 0;
-    margin: 0 0 0.5rem;
-    font-size: 0.6875rem;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .adminSectionHelp {
-    margin: 0 0 0.65rem;
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    color: var(--muted);
-  }
-
-  .adminCheckbox {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: flex-start;
-    gap: 0.55rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    line-height: 1.4;
-    color: var(--admin-text);
-    cursor: pointer;
-  }
-
-  .adminNotes {
-    grid-column: 1 / -1;
-  }
-
-  .adminFormActions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.65rem;
-    margin-top: 1.25rem;
-    padding-top: 1.1rem;
-    border-top: 1px solid var(--admin-border);
-  }
-
-  .adminInput {
-    display: block;
-    width: 100%;
-    min-width: 0;
-    max-width: 340px;
-    margin: 0;
-    padding: 0.45rem 0.65rem;
-    font: inherit;
-    font-size: 0.8125rem;
-    color: var(--admin-text);
-    background: #fff;
-    border: 1px solid var(--admin-border);
-    border-radius: 8px;
-  }
-
-  .adminInput.adminInput--yearSelect {
-    display: inline-block;
-    width: auto;
-    min-width: 7rem;
-    max-width: 9.5rem;
-    padding: 0.45rem 0.7rem;
-    font-weight: 500;
-    line-height: 1.25;
-    box-shadow: none;
-    cursor: pointer;
-    vertical-align: middle;
-  }
-
-  .adminInput.adminInput--yearSelect:hover {
-    border-color: rgba(28, 95, 118, 0.35);
-  }
-
-  .adminInput.adminInput--yearSelect:focus {
-    outline: 2px solid rgba(72, 196, 255, 0.45);
-    outline-offset: 1px;
-  }
-
-  .adminDetailMembershipList :global(.tableWrap) {
-    overflow-x: auto;
-    width: 100%;
-    max-width: 100%;
-    min-width: 0;
-    margin: 0.5rem 0 0;
-    box-sizing: border-box;
-    border-radius: var(--admin-radius-sm);
-    border: 1px solid var(--admin-border);
-  }
-
-  .adminDetailMembershipList :global(.adminTable) {
-    width: 100%;
-    min-width: 480px;
-    border-collapse: collapse;
-    font-size: 0.8125rem;
-  }
-
-  .adminDetailMembershipList :global(.adminTable th),
-  .adminDetailMembershipList :global(.adminTable td) {
-    padding: 0.55rem 0.85rem;
-    text-align: left;
-    border-bottom: 1px solid var(--admin-border);
-  }
-
-  .adminDetailMembershipList :global(.adminTable th) {
-    font-size: 0.72rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    background: var(--admin-surface-muted);
-  }
-
-  .adminPaymentSplitPreview {
-    margin: 0.35rem 0 0;
-    font-size: 0.8125rem;
-    color: var(--muted);
-    line-height: 1.4;
-  }
-
-  .adminDialog {
-    padding: 0;
-    border: 0.5px solid var(--admin-border);
-    border-radius: var(--admin-radius);
-    max-width: min(440px, calc(100vw - 2rem));
-    box-shadow: none;
-    background: var(--admin-surface);
-  }
-
-  .adminDialog::backdrop {
-    background: rgba(15, 25, 35, 0.45);
-    backdrop-filter: blur(2px);
-  }
-
-  .adminPaymentForm {
-    padding: 1.35rem 1.5rem 1.5rem;
-  }
-
-  .adminPaymentForm h3 {
-    margin: 0 0 1.1rem;
-    font-size: 1rem;
-    font-weight: 500;
-  }
-
-  .adminPaymentForm label {
-    display: block;
-    margin-bottom: 0.9rem;
-    font-size: 0.8rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--muted);
-  }
-
-  .adminDialogActions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-    margin-top: 1.25rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--admin-border);
-  }
-
-  .adminAddMsRadios {
-    margin-bottom: 0.75rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
-  }
-
-  .adminRadioRow {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--admin-text);
-    cursor: pointer;
-    text-transform: none;
-    letter-spacing: normal;
-  }
-
-  .adminAddMsPaid label {
-    display: block;
-    margin-bottom: 0.9rem;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailNoMsWrap) {
-    padding: 0.35rem 0 0;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailAddMsActions) {
-    margin: 0.5rem 0 0;
-  }
-
-  .adminPage :global(.adminBtn) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    margin: 0;
-    padding: 0.4rem 0.85rem;
-    font: inherit;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    line-height: 1.2;
-    border-radius: 8px;
-    border: 1px solid transparent;
-    cursor: pointer;
-  }
-
-  .adminPage :global(.adminBtn:focus-visible) {
-    outline: none;
-    box-shadow: 0 0 0 3px var(--admin-accent-soft);
-  }
-
-  .adminPage :global(.adminBtn--solid) {
-    background: var(--admin-accent);
-    color: #fff;
-    border-color: var(--admin-accent);
-  }
-
-  .adminPage :global(.adminBtn--solid:hover) {
-    background: var(--admin-accent-hover);
-    border-color: var(--admin-accent-hover);
-  }
-
-  .adminPage :global(.adminBtn--outline) {
-    background: #fff;
-    color: var(--admin-accent);
-    border-color: rgba(28, 95, 118, 0.35);
+  .adminPageMemberDetail .adminDetailBackLink {
+    font-size: 13px;
+    color: #888780;
     text-decoration: none;
   }
-
-  .adminPage :global(.adminBtn--outline:hover) {
-    background: rgba(72, 196, 255, 0.1);
-    border-color: rgba(28, 95, 118, 0.55);
-  }
-
-  .adminPage :global(.adminBtn--ghost) {
-    background: transparent;
-    color: var(--muted);
-    border-color: var(--admin-border);
-  }
-
-  .adminPage :global(.adminBtn--link) {
-    padding: 0.35rem 0.5rem;
-    font-size: 0.88rem;
-    font-weight: 500;
-    color: var(--muted);
-    background: transparent;
-    border: none;
+  .adminPageMemberDetail .adminDetailBackLink:hover {
     text-decoration: underline;
   }
-
-  .adminPage :global(.adminBtn--danger) {
-    color: #9a1a2e;
-    border-color: rgba(176, 32, 48, 0.35);
-    background: rgba(176, 32, 48, 0.06);
+  .adminPageMemberDetail .adminDetailIdentity {
+    padding-bottom: 1.75rem;
+    margin-bottom: 2rem;
+    border-bottom: 0.5px solid var(--admin-border);
   }
-
-  .adminPage :global(.adminBtn--danger:hover) {
-    background: rgba(176, 32, 48, 0.12);
-    border-color: rgba(176, 32, 48, 0.45);
+  .adminPageMemberDetail .adminDetailIdentityTop {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
   }
-
-  .adminPage :global(.adminBtn--table) {
-    padding: 0.28rem 0.5rem;
-    font-size: 0.72rem;
+  .adminPageMemberDetail .adminDetailName {
+    margin: 0;
+    font-size: 24px;
     font-weight: 500;
-    white-space: nowrap;
   }
-
-  .adminPage :global(.adminBtn--submit) {
-    gap: 0.55rem;
+  .adminPageMemberDetail .adminDetailSince {
+    margin: 0.35rem 0 0;
+    font-size: 12px;
+    color: #b4b2a9;
   }
-
-  .adminPage :global(.adminBtnSpinner) {
-    display: none;
-    width: 1.05rem;
-    height: 1.05rem;
-    flex-shrink: 0;
-    border: 2px solid rgba(255, 255, 255, 0.35);
-    border-top-color: currentColor;
-    border-radius: 50%;
-    box-sizing: border-box;
+  .adminPageMemberDetail .adminDetailDisabledBanner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: #854f0b;
+    background: #faeeda;
+    border-radius: 8px;
   }
-
-  .adminPage :global(.adminBtn--submit.is-loading .adminBtnSpinner) {
+  .adminPageMemberDetail .adminDetailFieldsRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2.5rem;
+    margin-top: 1.25rem;
+  }
+  .adminPageMemberDetail .adminDetailField {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 12rem;
+  }
+  .adminPageMemberDetail .adminDetailFieldLabel {
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #b4b2a9;
+  }
+  .adminPageMemberDetail .adminDetailEmailLink {
+    color: #3a6b5a;
+    text-decoration: none;
+  }
+  .adminPageMemberDetail .adminDetailEmailLink:hover {
+    text-decoration: underline;
+  }
+  .adminPageMemberDetail .adminDetailMuted,
+  .adminPageMemberDetail .adminDetailMutedSmall {
+    color: #888780;
+  }
+  .adminPageMemberDetail .adminDetailMutedSmall {
+    font-size: 11px;
+  }
+  .adminPageMemberDetail .adminDetailSection {
+    margin-bottom: 2rem;
+  }
+  .adminPageMemberDetail .adminDetailMsCard {
+    border: 0.5px solid var(--admin-border);
+    border-radius: 12px;
+    background: #fff;
+    overflow: hidden;
+  }
+  .adminPageMemberDetail .adminDetailMsCard--dashed {
+    border-style: dashed;
+    padding: 1.25rem;
+    text-align: center;
+  }
+  .adminPageMemberDetail   .adminDetailMsHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #f1efe8;
+    border-bottom: 0.5px solid var(--admin-border);
+    font-weight: 500;
+  }
+  .adminPageMemberDetail .adminDetailMsHeadMain {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+  .adminPageMemberDetail .adminDetailMsHeadYear {
+    font-weight: 500;
+  }
+  .adminPageMemberDetail .adminDetailMsBody {
+    padding: 1rem;
+  }
+  .adminPageMemberDetail .adminTierBadge {
     display: inline-block;
-    animation: adminBtnSpin 0.65s linear infinite;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .adminPage :global(.adminBtn--submit.is-loading .adminBtnSpinner) {
-      animation: none;
-      border-color: rgba(255, 255, 255, 0.5);
-      border-top-color: rgba(255, 255, 255, 0.85);
-    }
+  .adminPageMemberDetail .adminTierBadge--voting {
+    background: #e4ece4;
+    color: #2d4a2d;
   }
-
-  @keyframes adminBtnSpin {
-    to {
-      transform: rotate(360deg);
-    }
+  .adminPageMemberDetail .adminTierBadge--associate {
+    background: #f1efe8;
+    color: #888780;
+    border: 0.5px solid #d3d1c7;
   }
-
-  .adminDetailMembershipList :global(.adminDetailTdActions) {
-    vertical-align: middle;
+  .adminPageMemberDetail   .adminPendingPill {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    background: #faeeda;
+    color: #854f0b;
+  }
+  .adminPageMemberDetail .adminPendingPill--header {
+    margin-left: auto;
+  }
+  .adminPageMemberDetail .adminDetailPayRow {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 0.75rem;
+    align-items: start;
+    padding: 0.65rem 0;
+    border-bottom: 0.5px solid #f1efe8;
+    transition: background 120ms;
+  }
+  .adminPageMemberDetail .adminDetailPayRow:hover {
+    background: #f5f4f0;
+  }
+  .adminPageMemberDetail .adminDetailPayRow:last-child {
+    border-bottom: none;
+  }
+  .adminPageMemberDetail .adminDetailPayAmt {
+    font-weight: 500;
     text-align: right;
-    width: 5.5rem;
   }
-
-  .adminDetailMembershipList :global(.adminDetailThActions) {
-    text-align: right;
-    width: 5.5rem;
+  .adminPageMemberDetail .adminDetailPayDel {
+    border: none;
+    background: transparent;
+    color: #d3d1c7;
+    cursor: pointer;
+    font-size: 1.1rem;
+    line-height: 1;
+    padding: 0.15rem 0.35rem;
+    border-radius: 6px;
   }
-
-  .adminHint {
-    font-size: 0.8125rem;
-    color: var(--muted);
-    margin: 0;
+  .adminPageMemberDetail .adminDetailPayDel:hover {
+    color: #a32d2d;
+    background: #fcebeb;
   }
-
-  .adminPaymentForm .adminPaymentFieldHint {
-    margin-top: 0.35rem;
-    text-transform: none;
-    letter-spacing: normal;
-    font-weight: 400;
-    line-height: 1.4;
+  .adminPageMemberDetail .adminDetailPaySummary {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.35rem 1rem;
+    align-items: baseline;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 0.5px solid var(--admin-border);
   }
-
-  /* Payments table: full width of card; Stripe ids wrap (injected — :global) */
-  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap.tableWrap) {
-    max-width: 100%;
+  .adminPageMemberDetail .adminDetailFullBtn {
     width: 100%;
-    min-width: 0;
-    box-sizing: border-box;
+    margin-top: 1rem;
+    justify-content: center;
   }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsBody .tableWrap.adminDetailPaymentsTableWrap) {
-    margin: 0;
+  .adminPageMemberDetail .adminDetailRowBtns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 1rem;
   }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments) {
-    min-width: 0 !important;
-    max-width: 100%;
-    width: 100%;
-    table-layout: fixed;
-    font-size: 0.8125rem;
+  .adminPageMemberDetail .adminDetailAccordion {
+    border: 0.5px solid var(--admin-border);
+    border-radius: 12px;
+    background: #fff;
+    margin-bottom: 0.5rem;
   }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments thead th) {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-    padding: 0.6rem 0.55rem;
-    border-bottom: 2px solid rgba(0, 0, 0, 0.08);
-    background: var(--admin-surface-muted);
-    box-shadow: none;
+  .adminPageMemberDetail .adminDetailAccordionSum {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.65rem 1rem;
+    cursor: pointer;
+    list-style: none;
   }
-
-  .adminDetailMembershipList
-    :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments tbody tr:nth-child(even) td) {
-    background: rgba(248, 250, 252, 0.85);
+  .adminPageMemberDetail .adminDetailAccordionSum::-webkit-details-marker {
+    display: none;
   }
-
-  .adminDetailMembershipList
-    :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments tbody tr:hover td) {
-    background: rgba(45, 106, 93, 0.07);
-    transition: background-color 120ms ease;
+  .adminPageMemberDetail .adminDetailChev {
+    margin-left: auto;
+    transition: transform 120ms;
+    color: #888780;
   }
-
-  .adminDetailMembershipList
-    :global(
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(1),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(1)
-    ) {
-    width: 9%;
+  .adminPageMemberDetail details[open] .adminDetailChev {
+    transform: rotate(90deg);
   }
-
-  .adminDetailMembershipList
-    :global(
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(2),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(2)
-    ) {
-    width: 9%;
+  .adminPageMemberDetail .adminDetailAccordionBody {
+    padding: 0 1rem 1rem;
+    border-top: 0.5px solid #f1efe8;
   }
-
-  .adminDetailMembershipList
-    :global(
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(3),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(3)
-    ) {
-    width: 8%;
+  .adminPageMemberDetail .adminDetailPayRow--compact {
+    grid-template-columns: 1fr 1fr auto;
+    font-size: 13px;
   }
-
-  .adminDetailMembershipList
-    :global(
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(4),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(4)
-    ) {
-    width: 7%;
+  .adminPageMemberDetail .adminDetailSection--admin {
+    padding-top: 1.5rem;
+    border-top: 0.5px solid var(--admin-border);
   }
-
-  .adminDetailMembershipList
-    :global(
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(5),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(5)
-    ) {
-    width: 7%;
+  .adminPageMemberDetail .adminDetailAdminLabel {
+    color: #d3d1c7;
   }
-
-  .adminDetailMembershipList
-    :global(
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(6),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(6)
-    ) {
-    width: 22%;
+  .adminPageMemberDetail .adminDetailAdminBtns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0.5rem 0;
   }
-
-  .adminDetailMembershipList
-    :global(
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(7),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(7)
-    ) {
-    width: 18%;
+  .adminPageMemberDetail .adminPaymentDialogSub {
+    margin: 0 0 1rem;
+    font-size: 13px;
+    color: #888780;
   }
-
-  .adminDetailMembershipList
-    :global(
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(8),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(8)
-    ) {
-    width: 12%;
+  .adminPageMemberDetail .adminDialog.adminPaymentDialogV2::backdrop {
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: none;
   }
-
-  .adminDetailMembershipList
-    :global(
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th,
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td
-    ) {
-    padding: 0.55rem 0.55rem;
-    vertical-align: middle;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments th) {
-    font-size: 0.68rem;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments td) {
-    min-width: 0;
-  }
-
-  .adminDetailMembershipList
-    :global(.adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(1)) {
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-
-  .adminDetailMembershipList
-    :global(
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(3),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(4),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(5),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(3),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(4),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(5)
-    ) {
-    font-variant-numeric: tabular-nums;
-    text-align: right;
-  }
-
-  .adminDetailMembershipList :global(.adminDetailPaymentsTableWrap .adminDetailCellLong) {
-    font-family: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
-    font-size: 0.7rem;
-    word-break: break-all;
+  .adminPageMemberDetail .adminDialog.adminPaymentDialogV2 {
+    background: #f9f8f6;
+    border: 0.5px solid var(--admin-border);
+    border-radius: 12px;
+    max-width: min(480px, calc(100vw - 2rem));
   }
 </style>

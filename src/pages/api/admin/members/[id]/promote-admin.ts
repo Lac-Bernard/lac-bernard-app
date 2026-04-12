@@ -59,7 +59,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 
 	await insertAdminAudit(service, {
 		actorUserId: auth.user.id,
-		action: 'promote_admin',
+		action: 'grant_admin',
 		entityType: 'member',
 		entityId: memberId,
 		metadata: { target_user_id: member.user_id },

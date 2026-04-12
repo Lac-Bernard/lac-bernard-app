@@ -1,11 +1,10 @@
 export const prerender = false;
 import type { APIRoute } from 'astro';
-import { computeManualPaymentSplit, roundMoney } from '../../../../../lib/admin/manualPaymentSplit';
+import { roundMoney } from '../../../../../lib/admin/manualPaymentSplit';
+import { computeRecordPaymentSplit } from '../../../../../lib/admin/recordPaymentSplit';
 import { insertAdminAudit } from '../../../../../lib/admin/audit';
 import { requireAdminSession } from '../../../../../lib/admin/session';
 import { createSupabaseServiceRoleClient } from '../../../../../lib/supabase/service';
-
-const METHODS = new Set(['e-transfer', 'cheque', 'cash', 'unknown']);
 
 export const POST: APIRoute = async ({ request, cookies, params }) => {
 	const auth = await requireAdminSession(request, cookies);
@@ -19,7 +18,14 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 		});
 	}
 
-	let body: { amount?: unknown; method?: unknown; date?: unknown; notes?: unknown; reference?: unknown };
+	let body: {
+		amount?: unknown;
+		method?: unknown;
+		date?: unknown;
+		notes?: unknown;
+		reference?: unknown;
+		donation_portion?: unknown;
+	};
 	try {
 		body = (await request.json()) as typeof body;
 	} catch {
@@ -30,13 +36,15 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 	}
 
 	const amount = typeof body.amount === 'number' ? body.amount : parseFloat(String(body.amount ?? ''));
-	const method = typeof body.method === 'string' ? body.method.trim() : '';
-	if (!METHODS.has(method)) {
+	let method = typeof body.method === 'string' ? body.method.trim().toLowerCase() : '';
+	if (method === 'other') method = 'unknown';
+	if (!['e-transfer', 'cheque', 'cash', 'unknown'].includes(method)) {
 		return new Response(JSON.stringify({ error: 'invalid_method' }), {
 			status: 400,
 			headers: { 'Content-Type': 'application/json' },
 		});
 	}
+
 	if (Number.isNaN(amount) || amount <= 0) {
 		return new Response(JSON.stringify({ error: 'invalid_amount' }), {
 			status: 400,
@@ -70,11 +78,17 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 		reference = r || null;
 	}
 
+	let donationPortion: number | null = null;
+	if (body.donation_portion !== undefined && body.donation_portion !== null && body.donation_portion !== '') {
+		const dp = typeof body.donation_portion === 'number' ? body.donation_portion : parseFloat(String(body.donation_portion));
+		if (!Number.isNaN(dp)) donationPortion = dp;
+	}
+
 	const service = createSupabaseServiceRoleClient();
 
 	const { data: msRow, error: msErr } = await service
 		.from('memberships')
-		.select('tier, status')
+		.select('tier, status, member_id')
 		.eq('id', membershipId)
 		.maybeSingle();
 
@@ -110,12 +124,24 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 	}, 0);
 
 	const amt = roundMoney(amount);
-	const split = computeManualPaymentSplit({
+	const split = computeRecordPaymentSplit({
 		amount: amt,
 		tier: String(msRow.tier ?? ''),
 		membershipStatus: String(msRow.status ?? ''),
 		sumMembershipPaid: roundMoney(sumMembershipPaid),
+		donationPortion,
 	});
+
+	if (!split.ok) {
+		const err =
+			split.error === 'membership_overpay' ? 'membership_overpay'
+			: split.error === 'dues_only_when_pending' ? 'dues_only_when_pending'
+			: 'invalid_split';
+		return new Response(JSON.stringify({ error: err }), {
+			status: 400,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
 
 	const totalSplit = roundMoney(split.membershipAmount + split.donationAmount);
 	if (Math.abs(totalSplit - amt) > 0.001) {
@@ -157,18 +183,19 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 		});
 	}
 
+	const auditDate = paymentDate ?? new Date().toISOString().slice(0, 10);
+
 	await insertAdminAudit(service, {
 		actorUserId: auth.user.id,
-		action: 'record_manual_payment',
-		entityType: 'membership',
-		entityId: membershipId,
+		action: 'record_payment',
+		entityType: 'payment',
+		entityId: result.payment_id != null ? String(result.payment_id) : undefined,
 		metadata: {
+			member_id: msRow.member_id,
+			membership_id: membershipId,
 			amount: roundMoney(amount),
-			membership_amount: split.membershipAmount,
-			donation_amount: split.donationAmount,
 			method,
-			payment_id: result.payment_id,
-			...(reference ? { reference } : {}),
+			date: auditDate ?? undefined,
 		},
 	});
 

@@ -1,0 +1,347 @@
+/**
+ * Admin add/edit/detail member pages — aligns with admin-editorial tokens.
+ * Import alongside admin-editorial.css on `.adminPage` roots.
+ */
+
+.adminMemberPageNarrow {
+	max-width: 720px;
+	margin: 0 auto;
+}
+
+.adminMemberPageTitle {
+	font-size: 24px;
+	font-weight: 500;
+	margin: 0 0 0.25rem;
+	color: var(--admin-text);
+}
+
+.adminMemberPageSub {
+	margin: 0;
+	font-size: 14px;
+	color: #888780;
+}
+
+.adminMemberSectionLabel {
+	display: block;
+	margin: 0 0 0.5rem;
+	font-size: 10.5px;
+	font-weight: 500;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #b4b2a9;
+}
+
+.adminMemberCard {
+	background: #fff;
+	border: 0.5px solid var(--admin-border);
+	border-radius: 12px;
+	padding: 24px;
+	margin-bottom: 1.25rem;
+}
+
+.adminMemberCardTitle {
+	margin: 0 0 1.25rem;
+	font-size: 15px;
+	font-weight: 500;
+	color: var(--admin-text);
+}
+
+.adminMemberFieldLabel {
+	display: block;
+	margin-bottom: 0.35rem;
+	font-size: 10.5px;
+	font-weight: 500;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #b4b2a9;
+}
+
+.adminMemberInput,
+.adminMemberSelect,
+.adminMemberTextarea {
+	width: 100%;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 8px 10px;
+	font-family: var(--admin-font);
+	font-size: 13px;
+	font-weight: 400;
+	color: var(--admin-text);
+	background: #fff;
+	border: 0.5px solid #d3d1c7;
+	border-radius: 8px;
+}
+
+.adminMemberInput:focus,
+.adminMemberSelect:focus,
+.adminMemberTextarea:focus {
+	outline: none;
+	border-color: #888780;
+}
+
+.adminMemberGrid2 {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.75rem 1rem;
+}
+
+.adminMemberGrid3 {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.75rem 1rem;
+}
+
+@media (max-width: 640px) {
+	.adminMemberGrid2,
+	.adminMemberGrid3 {
+		grid-template-columns: 1fr;
+	}
+}
+
+.adminMemberGridManualLake {
+	display: grid;
+	grid-template-columns: 30% 70%;
+	gap: 0.75rem 1rem;
+}
+
+@media (max-width: 640px) {
+	.adminMemberGridManualLake {
+		grid-template-columns: 1fr;
+	}
+}
+
+.adminMemberHint {
+	margin: 0.35rem 0 0;
+	font-size: 11px;
+	color: #888780;
+	line-height: 1.4;
+}
+
+.adminMemberToggleLink {
+	margin: 0.5rem 0 0;
+	padding: 0;
+	font: inherit;
+	font-size: 11px;
+	color: #888780;
+	text-decoration: underline;
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.adminMemberLakeConfirm {
+	margin: 0.35rem 0 0;
+	font-size: 12px;
+	color: #5f5e5a;
+}
+
+.adminMemberSectionNote {
+	margin: 0 0 0.75rem;
+	font-size: 13px;
+	color: #888780;
+	line-height: 1.45;
+}
+
+.adminMemberFieldGroup {
+	margin-bottom: 1rem;
+}
+
+.adminMemberFieldGroup:last-child {
+	margin-bottom: 0;
+}
+
+.adminMemberCheckboxRow {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.5rem;
+	font-size: 13px;
+	color: var(--admin-text);
+	cursor: pointer;
+}
+
+.adminMemberRadioRow {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.5rem;
+	font-size: 13px;
+	color: var(--admin-text);
+	cursor: pointer;
+}
+
+.adminMemberRadioRow input[type='radio'] {
+	flex-shrink: 0;
+	width: 1rem;
+	height: 1rem;
+	margin: 0.1rem 0 0;
+	accent-color: var(--admin-accent);
+}
+
+.adminMemberWarn {
+	margin: 0.5rem 0 0;
+	padding: 8px 10px;
+	font-size: 12px;
+	color: #854f0b;
+	background: #faeeda;
+	border-radius: 8px;
+	border: 0.5px solid #d3d1c7;
+}
+
+.adminMemberFormActions {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 1rem;
+	margin-top: 0.5rem;
+}
+
+.adminMemberBtnPrimary {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.35rem;
+	min-height: 2.25rem;
+	padding: 0.5rem 1.1rem;
+	font: inherit;
+	font-size: 14px;
+	font-weight: 500;
+	color: #fff;
+	background: var(--admin-accent);
+	border: 0.5px solid var(--admin-accent);
+	border-radius: 8px;
+	cursor: pointer;
+}
+
+.adminMemberBtnPrimary:hover {
+	background: var(--admin-accent-hover);
+	border-color: var(--admin-accent-hover);
+}
+
+.adminMemberBtnPrimary:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.adminMemberLinkCancel {
+	font-size: 14px;
+	font-weight: 500;
+	color: #888780;
+	text-decoration: underline;
+	background: none;
+	border: none;
+	cursor: pointer;
+	padding: 0.25rem 0;
+}
+
+.adminMemberSpinner {
+	display: none;
+	width: 1rem;
+	height: 1rem;
+	border: 2px solid rgba(255, 255, 255, 0.35);
+	border-top-color: currentColor;
+	border-radius: 50%;
+	animation: adminMemberSpin 0.65s linear infinite;
+}
+
+.adminMemberBtnPrimary.is-loading .adminMemberSpinner {
+	display: inline-block;
+}
+
+@keyframes adminMemberSpin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.adminMemberStatus {
+	margin: 0 0 1rem;
+	padding: 0.5rem 0.75rem;
+	font-size: 13px;
+	border-radius: 8px;
+	border: 0.5px solid var(--admin-border);
+}
+
+.adminMemberStatus[data-kind='error'] {
+	color: #8a1024;
+	background: #fcebeb;
+	border-color: #f0a09a;
+}
+
+.adminMemberStatus[data-kind='success'] {
+	color: rgba(18, 75, 50, 0.95);
+	background: #e4ece4;
+	border-color: #c5d4c5;
+}
+
+.adminMemberStatus:empty {
+	display: none;
+}
+
+/* Lake Places combobox (shared with member profile behaviour) */
+.adminMemberPage .lakeAddressSearchSection {
+	display: block;
+}
+
+.adminMemberPage .lakeAddressComboboxBlock {
+	display: block;
+}
+
+.adminMemberPage .lakeAddressComboboxBlock[hidden] {
+	display: none;
+}
+
+.adminMemberPage .lakeAddressSearchWrap {
+	position: relative;
+	z-index: 1;
+}
+
+.adminMemberPage .lakeAddressSearchWrap.lakeAddressSearchWrap--open {
+	z-index: 5;
+}
+
+.adminMemberPage .lakeAddressSuggestList {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: calc(100% + 6px);
+	z-index: 10;
+	margin: 0;
+	padding: 0.35rem 0;
+	list-style: none;
+	border-radius: 8px;
+	border: 0.5px solid #d3d1c7;
+	background: #fff;
+	max-height: min(14rem, 60vh);
+	overflow: auto;
+	box-sizing: border-box;
+	box-shadow: none;
+}
+
+.adminMemberPage .lakeAddressSuggestList :global(.lakeAddressSuggestOption) {
+	display: flex;
+	align-items: center;
+	min-height: 2.75rem;
+	padding: 0.5rem 0.9rem;
+	margin: 0;
+	font-size: 13px;
+	line-height: 1.4;
+	color: var(--admin-text);
+	cursor: pointer;
+	border-radius: 6px;
+	transition: background-color 120ms ease;
+}
+
+.adminMemberPage .lakeAddressSuggestList :global(.lakeAddressSuggestOption:hover),
+.adminMemberPage .lakeAddressSuggestList :global(.lakeAddressSuggestOption.lakeAddressSuggestOption--active) {
+	background: var(--admin-row-hover);
+}
+
+.adminMemberPage .lakeAddressSuggestList :global(.lakeAddressSuggestHint) {
+	padding: 0.65rem 0.9rem;
+	font-size: 12px;
+	line-height: 1.45;
+	color: #888780;
+}
+
+.adminMemberPage .lakeAddressManualSection[hidden] {
+	display: none !important;
+}

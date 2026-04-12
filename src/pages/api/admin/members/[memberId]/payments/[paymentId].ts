@@ -47,6 +47,13 @@ export const DELETE: APIRoute = async ({ request, cookies, params }) => {
 		});
 	}
 
+	if (pay.method === 'stripe') {
+		return new Response(JSON.stringify({ error: 'stripe_not_deletable' }), {
+			status: 409,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
+
 	const { data: ms, error: msErr } = await service
 		.from('memberships')
 		.select('id, member_id')

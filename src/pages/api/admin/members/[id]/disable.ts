@@ -4,15 +4,12 @@ import { insertAdminAudit } from '../../../../../lib/admin/audit';
 import { requireAdminSession } from '../../../../../lib/admin/session';
 import { createSupabaseServiceRoleClient } from '../../../../../lib/supabase/service';
 
-/**
- * Deletes a pending membership row (admin cleanup). Member must create a new pending row after sign-in.
- */
 export const POST: APIRoute = async ({ request, cookies, params }) => {
 	const auth = await requireAdminSession(request, cookies);
 	if (!auth.ok) return auth.response;
 
-	const membershipId = params.id;
-	if (!membershipId) {
+	const id = params.id;
+	if (!id) {
 		return new Response(JSON.stringify({ error: 'missing_id' }), {
 			status: 400,
 			headers: { 'Content-Type': 'application/json' },
@@ -20,38 +17,24 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 	}
 
 	const service = createSupabaseServiceRoleClient();
-
-	const { data: existing, error: fetchErr } = await service
-		.from('memberships')
-		.select('id, status, member_id, year, tier')
-		.eq('id', membershipId)
-		.maybeSingle();
-
-	if (fetchErr) {
-		return new Response(JSON.stringify({ error: 'lookup_failed', detail: fetchErr.message }), {
-			status: 500,
-			headers: { 'Content-Type': 'application/json' },
-		});
-	}
-
-	if (!existing) {
+	const { data: existing, error: exErr } = await service.from('members').select('id, status').eq('id', id).maybeSingle();
+	if (exErr || !existing) {
 		return new Response(JSON.stringify({ error: 'not_found' }), {
 			status: 404,
 			headers: { 'Content-Type': 'application/json' },
 		});
 	}
 
-	if (existing.status !== 'pending') {
-		return new Response(JSON.stringify({ error: 'not_pending' }), {
+	if (existing.status === 'disabled') {
+		return new Response(JSON.stringify({ error: 'already_disabled' }), {
 			status: 409,
 			headers: { 'Content-Type': 'application/json' },
 		});
 	}
 
-	const { error: delErr } = await service.from('memberships').delete().eq('id', membershipId);
-
-	if (delErr) {
-		return new Response(JSON.stringify({ error: 'delete_failed', detail: delErr.message }), {
+	const { error } = await service.from('members').update({ status: 'disabled' }).eq('id', id);
+	if (error) {
+		return new Response(JSON.stringify({ error: 'update_failed' }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' },
 		});
@@ -59,14 +42,10 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 
 	await insertAdminAudit(service, {
 		actorUserId: auth.user.id,
-		action: 'cancel_membership',
-		entityType: 'membership',
-		entityId: membershipId,
-		metadata: {
-			member_id: existing.member_id,
-			year: existing.year,
-			tier: existing.tier,
-		},
+		action: 'disable_member',
+		entityType: 'member',
+		entityId: id,
+		metadata: {},
 	});
 
 	return new Response(JSON.stringify({ ok: true }), {

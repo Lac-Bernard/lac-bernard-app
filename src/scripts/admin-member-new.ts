@@ -1,6 +1,5 @@
-/** Client-side admin "add member" page. */
+/** Client-side admin "add member" page (redesigned form). */
 
-import { MANUAL_PAYMENT_METHODS, isValidManualPaymentAmount } from '../lib/admin/manualPaymentClient';
 import type { AdminConsoleStrings } from './admin-console';
 
 function el<T extends HTMLElement>(sel: string): T | null {
@@ -26,28 +25,33 @@ async function fetchJson<T>(url: string, init?: RequestInit): Promise<{ ok: bool
 	return { ok: res.ok, data: data as T, status: res.status };
 }
 
+function todayIsoDate(): string {
+	return new Date().toISOString().slice(0, 10);
+}
+
 export function initAdminMemberNew(
 	strings: AdminConsoleStrings,
 	adminMemberDetailBase: string,
 	calendarYear: number,
+	priorYear: number,
 ) {
 	const statusEl = el<HTMLElement>('#admin-new-member-status');
 	const form = el<HTMLFormElement>('#admin-new-member-form');
 	const submitBtn = el<HTMLButtonElement>('#admin-new-member-submit');
 	const createMembership = el<HTMLInputElement>('#admin-new-member-create-membership');
 	const paidBlock = el<HTMLElement>('#admin-new-member-paid-fields');
+	const votingWarn = el<HTMLElement>('#admin-new-voting-lake-warn');
+	const tierSel = el<HTMLSelectElement>('#admin-new-membership-tier');
 
 	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
 		if (!statusEl) return;
 		if (!msg) {
 			statusEl.textContent = '';
-			statusEl.removeAttribute('data-error');
-			statusEl.removeAttribute('data-success');
+			statusEl.removeAttribute('data-kind');
 			return;
 		}
 		statusEl.textContent = msg;
-		statusEl.dataset.error = kind === 'error' ? '1' : '';
-		statusEl.dataset.success = kind === 'success' ? '1' : '';
+		statusEl.dataset.kind = kind === 'error' ? 'error' : kind === 'success' ? 'success' : '';
 	}
 
 	function setSubmitLoading(loading: boolean) {
@@ -57,7 +61,16 @@ export function initAdminMemberNew(
 		submitBtn.toggleAttribute('disabled', loading);
 	}
 
-	/** Toggle inner membership fields (not the “add membership” checkbox). When off, disable inputs so `required` does not block submit. */
+	function syncVotingWarning() {
+		if (!votingWarn || !tierSel) return;
+		const tier = tierSel.value;
+		const civic = el<HTMLInputElement>('#am-lake_civic_number')?.value?.trim() ?? '';
+		const street = el<HTMLInputElement>('#am-lake_street_name')?.value?.trim() ?? '';
+		const place = el<HTMLInputElement>('#am-lake_google_place_id')?.value?.trim() ?? '';
+		const hasLake = Boolean((civic && street) || place);
+		votingWarn.hidden = tier !== 'voting' || hasLake;
+	}
+
 	function syncMembershipFieldsVisibility() {
 		const wrap = el<HTMLElement>('#admin-new-member-membership-fields');
 		const on = createMembership?.checked ?? false;
@@ -82,25 +95,22 @@ export function initAdminMemberNew(
 				(node as HTMLInputElement).disabled = !showPaid;
 			});
 		}
+		const payDate = el<HTMLInputElement>('#admin-new-payment-date');
+		if (payDate && showPaid && !payDate.value) payDate.value = todayIsoDate();
+		syncVotingWarning();
 	}
 
 	createMembership?.addEventListener('change', syncMembershipFieldsVisibility);
-
 	form?.querySelectorAll('input[name="membership_initial"]').forEach((r) => {
 		r.addEventListener('change', syncMembershipFieldsVisibility);
 	});
+	tierSel?.addEventListener('change', syncVotingWarning);
+	form?.addEventListener('input', (e) => {
+		const t = e.target as HTMLElement;
+		if (t?.id?.startsWith?.('am-lake')) syncVotingWarning();
+	});
 
 	syncMembershipFieldsVisibility();
-
-	function createErrorMessage(code: string | undefined): string {
-		if (code === 'first_name_required') return t(strings, 'profileErrorFirstName');
-		if (code === 'last_name_required') return t(strings, 'profileErrorLastName');
-		if (code === 'no_lake_address') return t(strings, 'adminAddMemberErrorNoLake');
-		if (code === 'voting_address_taken') return t(strings, 'adminAddMemberErrorAddressTaken');
-		if (code === 'already_exists') return t(strings, 'adminAddMemberErrorDuplicateYear');
-		if (code === 'member_not_found' || code === 'not_found') return t(strings, 'adminAddMemberErrorMemberNotFound');
-		return t(strings, 'adminErrorGeneric');
-	}
 
 	form?.addEventListener('submit', async (e) => {
 		e.preventDefault();
@@ -116,75 +126,87 @@ export function initAdminMemberNew(
 			secondary_phone: fd.get('secondary_phone') || null,
 			lake_civic_number: fd.get('lake_civic_number') || null,
 			lake_street_name: fd.get('lake_street_name') || null,
+			lake_address_source: fd.get('lake_address_source') || null,
+			lake_google_place_id: fd.get('lake_google_place_id') || null,
+			lake_formatted_address: fd.get('lake_formatted_address') || null,
 			email_opt_in: fd.get('email_opt_in') === 'on',
 			notes: fd.get('notes') ?? null,
 			secondary_email: fd.get('secondary_email') || null,
 			primary_email: fd.get('primary_email') || null,
 		};
 
+		const addMs = fd.get('create_membership') === 'on';
+		let membership: Record<string, unknown> | undefined;
+		if (addMs) {
+			const tier = String(fd.get('membership_tier') ?? '');
+			const initial = String(fd.get('membership_initial') ?? '');
+			const year = parseInt(String(fd.get('membership_year') ?? calendarYear), 10);
+			membership = {
+				create: true,
+				year,
+				tier,
+				initial,
+			};
+			if (initial === 'active_with_payment') {
+				const amount = parseFloat(String(fd.get('payment_amount') ?? ''));
+				let method = String(fd.get('payment_method') ?? '').trim().toLowerCase();
+				if (method === 'other') method = 'unknown';
+				if (Number.isNaN(amount) || amount <= 0) {
+					setStatus(t(strings, 'adminErrorGeneric'), 'error');
+					return;
+				}
+				if (!['e-transfer', 'cheque', 'cash', 'unknown'].includes(method)) {
+					setStatus(t(strings, 'adminErrorGeneric'), 'error');
+					return;
+				}
+				const date = String(fd.get('payment_date') ?? '').trim() || todayIsoDate();
+				const reference = String(fd.get('payment_reference') ?? '').trim();
+				const donationRaw = String(fd.get('payment_donation_portion') ?? '').trim();
+				let donation_portion: number | undefined;
+				if (donationRaw !== '') {
+					const d = parseFloat(donationRaw);
+					if (!Number.isNaN(d)) donation_portion = d;
+				}
+				membership.payment = {
+					amount,
+					method,
+					date,
+					...(reference ? { reference } : {}),
+					...(donation_portion !== undefined ? { donation_portion } : {}),
+				};
+			}
+		}
+
 		setSubmitLoading(true);
-		setStatus(t(strings, 'adminLoading'));
+		setStatus(t(strings, 'adminLoading'), 'neutral');
 		try {
 			const { ok, data } = await fetchJson<{ member?: { id: string }; error?: string }>('/api/admin/members', {
 				method: 'POST',
-				body: JSON.stringify(body),
+				body: JSON.stringify({ ...body, ...(membership ? { membership } : {}) }),
 			});
 			if (!ok || !data.member?.id) {
-				setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
+				setStatus((data as { error?: string })?.error ?? t(strings, 'adminErrorGeneric'), 'error');
 				return;
 			}
 
 			const memberId = data.member.id;
-			const addMs = fd.get('create_membership') === 'on';
-			if (addMs) {
-				const tier = String(fd.get('membership_tier') ?? '');
-				const initial = String(fd.get('membership_initial') ?? '');
-				const year = parseInt(String(fd.get('membership_year') ?? calendarYear), 10);
-				let payment: Record<string, unknown> | undefined;
-				if (initial === 'active_with_payment') {
-					const amount = parseFloat(String(fd.get('payment_amount') ?? ''));
-					const method = String(fd.get('payment_method') ?? '').trim();
-					if (!isValidManualPaymentAmount(amount)) {
-						setStatus(t(strings, 'adminErrorGeneric'), 'error');
-						return;
-					}
-					if (!MANUAL_PAYMENT_METHODS.has(method)) {
-						setStatus(t(strings, 'adminErrorGeneric'), 'error');
-						return;
-					}
-					const date = String(fd.get('payment_date') ?? '').trim();
-					const notes = String(fd.get('payment_notes') ?? '').trim();
-					payment = {
-						amount,
-						method,
-						...(date ? { date } : {}),
-						...(notes ? { notes } : {}),
-					};
-				}
-				const msRes = await fetchJson<{ error?: string }>(
-					`/api/admin/members/${encodeURIComponent(memberId)}/memberships`,
-					{
-						method: 'POST',
-						body: JSON.stringify({
-							year,
-							tier,
-							initial,
-							...(payment ? { payment } : {}),
-						}),
-					},
-				);
-				if (!msRes.ok) {
-					const err = (msRes.data as { error?: string })?.error;
-					setStatus(createErrorMessage(err), 'error');
-					return;
-				}
-			}
-
 			setStatus('', 'success');
 			window.location.href = `${adminMemberDetailBase}/${encodeURIComponent(memberId)}`;
 		} finally {
-			// In the success case we leave the page; otherwise re-enable.
 			setSubmitLoading(false);
 		}
 	});
+
+	/** Populate year select options */
+	const yearSel = el<HTMLSelectElement>('#admin-new-membership-year');
+	if (yearSel) {
+		yearSel.innerHTML = '';
+		for (const y of [calendarYear, priorYear]) {
+			const opt = document.createElement('option');
+			opt.value = String(y);
+			opt.textContent = String(y);
+			if (y === calendarYear) opt.selected = true;
+			yearSel.appendChild(opt);
+		}
+	}
 }

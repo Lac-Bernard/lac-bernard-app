@@ -1,0 +1,368 @@
+---
+import '../../styles/admin-editorial.css';
+import '../../styles/admin-member-pages.css';
+import MemberAppLayout from '../../layouts/MemberAppLayout.astro';
+import MemberSessionHeroMeta from './MemberSessionHeroMeta.astro';
+import { memberCopy, memberPaths, type MemberLocale } from '../../lib/members/i18n';
+import { mergeMemberUiStrings } from '../../lib/members/adminMemberUiCopy';
+import { formatMemberPrimaryName } from '../../lib/members/memberDisplayName';
+
+interface Props {
+	locale: MemberLocale;
+	email: string;
+	memberId: string;
+	member: Record<string, unknown>;
+}
+
+const { locale, email, memberId, member } = Astro.props;
+const t = memberCopy[locale];
+const paths = memberPaths[locale];
+
+const v = (s: unknown) => (typeof s === 'string' ? s.trim() : '');
+const firstName = v(member.first_name);
+const lastName = v(member.last_name);
+const displayName = formatMemberPrimaryName({
+	first_name: firstName || null,
+	last_name: lastName || '—',
+});
+
+const secondaryFirstName = v(member.secondary_first_name);
+const secondaryLastName = v(member.secondary_last_name);
+const secondaryEmail = v(member.secondary_email);
+const primaryEmail = v(member.primary_email);
+const primaryPhone = v(member.primary_phone);
+const secondaryPhone = v(member.secondary_phone);
+const lakeCivic = v(member.lake_civic_number);
+const lakeStreet = v(member.lake_street_name);
+const lakeSource = typeof member.lake_address_source === 'string' ? member.lake_address_source : null;
+const lakePlaceId = v(member.lake_google_place_id);
+const lakeFormatted = v(member.lake_formatted_address);
+const emailOptIn = Boolean(member.email_opt_in);
+const notes = typeof member.notes === 'string' ? member.notes : '';
+
+const adminKeys = [
+	'adminLoading',
+	'adminErrorGeneric',
+	'adminBreadcrumbAria',
+	'adminPrimaryEmailLabel',
+	'adminSecondaryEmailLabel',
+	'adminSecondaryFirstNameLabel',
+	'adminSecondaryLastNameLabel',
+	'adminSecondaryPhoneLabel',
+	'profileFirstName',
+	'profileLastName',
+	'profilePrimaryPhone',
+	'profileLakeSearchLabel',
+	'profileLakeSearchPlaceholder',
+	'profileLakeCivic',
+	'profileLakeStreet',
+	'profileErrorFirstName',
+	'profileErrorLastName',
+	'profileLakeNoSuggestions',
+	'profileLakeBackToSearch',
+	'errorNetwork',
+] as const;
+
+const baseStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
+const adminStrings = mergeMemberUiStrings(locale, baseStrings);
+
+const adminMembersTabHref = `${paths.admin}?tab=members`;
+const detailUrl = `${paths.adminMembers}/${memberId}`;
+
+const lakePlacesStrings = {
+	manualLink: adminStrings.adminLakeManualLink,
+	noSuggestions: t.profileLakeNoSuggestions,
+	backToSearch: t.profileLakeBackToSearch,
+	placesUnavailable: t.errorNetwork,
+};
+
+const lakeProfileInitJson = JSON.stringify({
+	locale: locale === 'fr' ? 'fr' : 'en',
+	strings: lakePlacesStrings,
+	initialSource: lakeSource,
+	initialPlaceId: lakePlaceId,
+	initialFormatted: lakeFormatted,
+	initialCivic: lakeCivic,
+	initialStreet: lakeStreet,
+});
+---
+
+<MemberAppLayout
+  lang={locale}
+  title={`${displayName} · ${adminStrings.adminBreadcrumbEditProfile}`}
+  description={t.adminDescription}
+  heroTitle={displayName}
+  alignHeroWithAdmin
+>
+  <nav slot="hero-breadcrumb" class="memberWorkspaceBreadcrumb" aria-label={t.adminBreadcrumbAria}>
+    <div class="memberWorkspaceBreadcrumbList" role="list">
+      <div role="listitem" class="memberWorkspaceBreadcrumbItem">
+        <a href={paths.admin} class="memberWorkspaceBreadcrumbLink">{t.adminHero}</a>
+      </div>
+      <div role="listitem" class="memberWorkspaceBreadcrumbItem">
+        <a href={adminMembersTabHref} class="memberWorkspaceBreadcrumbLink">{t.adminNavMembers}</a>
+      </div>
+      <div role="listitem" class="memberWorkspaceBreadcrumbItem">
+        <a href={detailUrl} class="memberWorkspaceBreadcrumbLink">{displayName}</a>
+      </div>
+      <div role="listitem" class="memberWorkspaceBreadcrumbItem">
+        <span class="memberWorkspaceBreadcrumbCurrent">{adminStrings.adminBreadcrumbEditProfile}</span>
+      </div>
+    </div>
+  </nav>
+  <MemberSessionHeroMeta
+    slot="hero-meta"
+    locale={locale}
+    email={email}
+    signInRedirect={paths.signIn}
+    variant="adminWorkspace"
+  />
+  <section class="section alt adminPage">
+    <div class="container adminConsole adminMemberPageNarrow">
+      <p id="admin-edit-member-status" class="adminMemberStatus" aria-live="polite"></p>
+
+      <h1 class="adminMemberPageTitle">{displayName}</h1>
+      <p class="adminMemberPageSub">{adminStrings.adminEditSubtitle}</p>
+
+      <form id="admin-edit-member-form" class="adminMemberForm" aria-busy="false">
+        <div class="adminMemberCard">
+          <h2 class="adminMemberCardTitle">{adminStrings.adminProfileCardTitle}</h2>
+
+          <div class="adminMemberFieldGroup">
+            <span class="adminMemberSectionLabel">{adminStrings.adminPrimaryContactSection}</span>
+            <div class="adminMemberGrid3">
+              <label class="adminMemberField">
+                <span class="adminMemberFieldLabel">{t.profileFirstName} *</span>
+                <input type="text" name="first_name" id="ae-first_name" class="adminMemberInput" required value={firstName} />
+              </label>
+              <label class="adminMemberField">
+                <span class="adminMemberFieldLabel">{t.profileLastName} *</span>
+                <input type="text" name="last_name" id="ae-last_name" class="adminMemberInput" required value={lastName} />
+              </label>
+              <label class="adminMemberField">
+                <span class="adminMemberFieldLabel">{t.adminPrimaryEmailLabel}</span>
+                <input type="email" name="primary_email" id="ae-primary_email" class="adminMemberInput" value={primaryEmail} />
+              </label>
+            </div>
+            <label class="adminMemberField" style="margin-top:0.75rem;max-width:50%;">
+              <span class="adminMemberFieldLabel">{t.profilePrimaryPhone}</span>
+              <input type="text" name="primary_phone" id="ae-primary_phone" class="adminMemberInput" value={primaryPhone} />
+            </label>
+          </div>
+
+          <div class="adminMemberFieldGroup" style="margin-top:1.25rem;">
+            <span class="adminMemberSectionLabel">{adminStrings.adminSecondaryContactSection}</span>
+            <p class="adminMemberSectionNote">{adminStrings.adminSecondaryContactNote}</p>
+            <div class="adminMemberGrid3">
+              <label class="adminMemberField">
+                <span class="adminMemberFieldLabel">{t.adminSecondaryFirstNameLabel}</span>
+                <input type="text" name="secondary_first_name" id="ae-secondary_first_name" class="adminMemberInput" value={secondaryFirstName} />
+              </label>
+              <label class="adminMemberField">
+                <span class="adminMemberFieldLabel">{t.adminSecondaryLastNameLabel}</span>
+                <input type="text" name="secondary_last_name" id="ae-secondary_last_name" class="adminMemberInput" value={secondaryLastName} />
+              </label>
+              <label class="adminMemberField">
+                <span class="adminMemberFieldLabel">{t.adminSecondaryEmailLabel}</span>
+                <input type="email" name="secondary_email" id="ae-secondary_email" class="adminMemberInput" value={secondaryEmail} />
+              </label>
+            </div>
+            <label class="adminMemberField" style="margin-top:0.75rem;max-width:50%;">
+              <span class="adminMemberFieldLabel">{t.adminSecondaryPhoneLabel}</span>
+              <input type="text" name="secondary_phone" id="ae-secondary_phone" class="adminMemberInput" value={secondaryPhone} />
+            </label>
+          </div>
+
+          <div class="adminMemberFieldGroup" style="margin-top:1.25rem;">
+            <span class="adminMemberSectionLabel">{adminStrings.adminLakeAddressSection}</span>
+            <p class="adminMemberSectionNote">{adminStrings.adminLakeAddressVotingNote}</p>
+            <input type="hidden" name="lake_address_source" id="ae-lake_address_source" value={lakeSource ?? ''} />
+            <input type="hidden" name="lake_google_place_id" id="ae-lake_google_place_id" value={lakePlaceId} />
+            <input type="hidden" name="lake_formatted_address" id="ae-lake_formatted_address" value={lakeFormatted} />
+            <input type="hidden" name="lake_civic_number" id="ae-lake_civic_number" value={lakeCivic} />
+            <input type="hidden" name="lake_street_name" id="ae-lake_street_name" value={lakeStreet} />
+
+            <div id="ae-lake-search-section" class="lakeAddressSearchSection">
+              <div id="ae-lake-address-combobox-block" class="lakeAddressComboboxBlock">
+                <div>
+                  <label class="adminMemberFieldLabel" for="ae-lake-address-search">
+                    {t.profileLakeSearchLabel}
+                  </label>
+                  <div class="lakeAddressSearchWrap">
+                    <input
+                      class="adminMemberInput"
+                      id="ae-lake-address-search"
+                      type="text"
+                      autocomplete="off"
+                      placeholder={t.profileLakeSearchPlaceholder}
+                      role="combobox"
+                      aria-autocomplete="list"
+                      aria-controls="ae-lake-address-suggestions"
+                      aria-expanded="false"
+                    />
+                    <ul
+                      id="ae-lake-address-suggestions"
+                      class="lakeAddressSuggestList"
+                      hidden
+                      role="listbox"
+                      aria-label={t.profileLakeSearchLabel}
+                    >
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <p id="ae-lake-places-summary" class="adminMemberLakeConfirm" hidden role="status" aria-live="polite"></p>
+              <button type="button" class="adminMemberToggleLink" id="ae-lake-change-address" hidden>
+                {t.profileLakeBackToSearch}
+              </button>
+              <button type="button" class="adminMemberToggleLink" id="ae-lake-manual-toggle">
+                {adminStrings.adminLakeManualLink}
+              </button>
+            </div>
+
+            <div id="ae-lake-manual-section" class="lakeAddressManualSection" hidden>
+              <div class="adminMemberGridManualLake">
+                <label class="adminMemberField">
+                  <span class="adminMemberFieldLabel">{t.profileLakeCivic}</span>
+                  <input class="adminMemberInput" id="ae-lake_civic_visible" type="text" autocomplete="off" value={lakeCivic} />
+                </label>
+                <label class="adminMemberField">
+                  <span class="adminMemberFieldLabel">{t.profileLakeStreet}</span>
+                  <input class="adminMemberInput" id="ae-lake_street_visible" type="text" autocomplete="off" value={lakeStreet} />
+                </label>
+              </div>
+              <button type="button" class="adminMemberToggleLink" id="ae-lake-back-search">
+                {adminStrings.adminLakeSearchLink}
+              </button>
+            </div>
+          </div>
+
+          <div class="adminMemberFieldGroup" style="margin-top:1.25rem;">
+            <span class="adminMemberSectionLabel">{adminStrings.adminPreferencesSection}</span>
+            <label class="adminMemberCheckboxRow">
+              <input type="checkbox" name="email_opt_in" id="ae-email_opt_in" checked={emailOptIn ? true : undefined} />
+              <span>{adminStrings.adminEmailOptInAdmin}</span>
+            </label>
+            <label class="adminMemberField" style="margin-top:0.75rem;">
+              <span class="adminMemberFieldLabel">{adminStrings.adminInternalNotesLabel}</span>
+              <textarea name="notes" id="ae-notes" class="adminMemberTextarea" rows={3} placeholder={adminStrings.adminInternalNotesPlaceholder}>{notes}</textarea>
+            </label>
+          </div>
+        </div>
+
+        <div class="adminMemberFormActions">
+          <button type="submit" class="adminMemberBtnPrimary" id="admin-edit-member-submit">
+            <span class="adminMemberSpinner" aria-hidden="true"></span>
+            <span>{t.profileSaveSubmit}</span>
+          </button>
+          <a href={detailUrl} class="adminMemberLinkCancel">{adminStrings.adminCancelForm}</a>
+        </div>
+      </form>
+    </div>
+  </section>
+</MemberAppLayout>
+
+<script type="application/json" id="ae-lake-init" set:html={lakeProfileInitJson}></script>
+<script>
+  import { initLakeAddressPlacesUi } from '../../scripts/lake-address-places-ui';
+
+  const raw = document.getElementById('ae-lake-init')?.textContent;
+  if (raw) {
+    const cfg = JSON.parse(raw) as {
+      locale: 'en' | 'fr';
+      strings: Record<string, string>;
+      initialSource: string | null;
+      initialPlaceId: string;
+      initialFormatted: string;
+      initialCivic: string;
+      initialStreet: string;
+    };
+
+    const lakeSearch = document.getElementById('ae-lake-address-search');
+    const lakeSug = document.getElementById('ae-lake-address-suggestions');
+    const lakeSearchSection = document.getElementById('ae-lake-search-section');
+    const lakeManualSection = document.getElementById('ae-lake-manual-section');
+    const lakeSummary = document.getElementById('ae-lake-places-summary');
+    const lakeCivicH = document.getElementById('ae-lake_civic_number');
+    const lakeStreetH = document.getElementById('ae-lake_street_name');
+    const lakeSourceEl = document.getElementById('ae-lake_address_source');
+    const lakePlaceIdEl = document.getElementById('ae-lake_google_place_id');
+    const lakeFormattedEl = document.getElementById('ae-lake_formatted_address');
+    const lakeComboboxBlock = document.getElementById('ae-lake-address-combobox-block');
+    const lakeChangeAddressBtn = document.getElementById('ae-lake-change-address');
+    const lakeManualBtn = document.getElementById('ae-lake-manual-toggle');
+    const lakeBackBtn = document.getElementById('ae-lake-back-search');
+    const lakeCivicVis = document.getElementById('ae-lake_civic_visible');
+    const lakeStreetVis = document.getElementById('ae-lake_street_visible');
+
+    if (
+      lakeSearch instanceof HTMLInputElement &&
+      lakeSug instanceof HTMLUListElement &&
+      lakeSearchSection instanceof HTMLElement &&
+      lakeManualSection instanceof HTMLElement &&
+      lakeCivicH instanceof HTMLInputElement &&
+      lakeStreetH instanceof HTMLInputElement &&
+      lakeSourceEl instanceof HTMLInputElement &&
+      lakePlaceIdEl instanceof HTMLInputElement &&
+      lakeFormattedEl instanceof HTMLInputElement &&
+      lakeComboboxBlock instanceof HTMLElement &&
+      lakeChangeAddressBtn instanceof HTMLButtonElement &&
+      lakeManualBtn instanceof HTMLButtonElement &&
+      lakeBackBtn instanceof HTMLButtonElement &&
+      lakeCivicVis instanceof HTMLInputElement &&
+      lakeStreetVis instanceof HTMLInputElement
+    ) {
+      initLakeAddressPlacesUi({
+        locale: cfg.locale,
+        strings: cfg.strings,
+        comboboxBlock: lakeComboboxBlock,
+        changeAddressToggle: lakeChangeAddressBtn,
+        searchInput: lakeSearch,
+        suggestionsEl: lakeSug,
+        searchSection: lakeSearchSection,
+        manualSection: lakeManualSection,
+        summaryEl: lakeSummary,
+        civicHidden: lakeCivicH,
+        streetHidden: lakeStreetH,
+        sourceInput: lakeSourceEl,
+        placeIdInput: lakePlaceIdEl,
+        formattedInput: lakeFormattedEl,
+        manualToggle: lakeManualBtn,
+        backToggle: lakeBackBtn,
+        civicVisible: lakeCivicVis,
+        streetVisible: lakeStreetVis,
+        initialSource: cfg.initialSource,
+        initialPlaceId: cfg.initialPlaceId,
+        initialFormatted: cfg.initialFormatted,
+        initialCivic: cfg.initialCivic,
+        initialStreet: cfg.initialStreet,
+      });
+    }
+  }
+</script>
+
+<script
+  type="application/json"
+  id="admin-member-edit-data"
+  set:html={JSON.stringify({ adminStrings, memberId, detailBaseUrl: paths.adminMembers })}
+></script>
+<script>
+  import { initAdminMemberEdit } from '../../scripts/admin-member-edit';
+  const el = document.getElementById('admin-member-edit-data');
+  const raw = el?.textContent;
+  if (raw) {
+    const { adminStrings, memberId, detailBaseUrl } = JSON.parse(raw) as {
+      adminStrings: Record<string, string>;
+      memberId: string;
+      detailBaseUrl: string;
+    };
+    initAdminMemberEdit(adminStrings, memberId, detailBaseUrl);
+  }
+</script>
+
+<style>
+  .memberWorkspaceBreadcrumbCurrent {
+    color: var(--admin-text);
+    font-weight: 500;
+  }
+</style>

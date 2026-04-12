@@ -1,11 +1,11 @@
 export const prerender = false;
 import type { APIRoute } from 'astro';
+import { roundMoney } from '../../../../../lib/admin/manualPaymentSplit';
 import { insertAdminAudit } from '../../../../../lib/admin/audit';
 import { requireAdminSession } from '../../../../../lib/admin/session';
 import { createSupabaseServiceRoleClient } from '../../../../../lib/supabase/service';
 
 const TIERS = new Set(['voting', 'associate']);
-const METHODS = new Set(['e-transfer', 'cheque', 'cash', 'unknown']);
 
 export const POST: APIRoute = async ({ request, cookies, params }) => {
 	const auth = await requireAdminSession(request, cookies);
@@ -60,6 +60,8 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 	let pMethod: string | null = null;
 	let pPaymentDate: string | null = null;
 	let pNotes: string | null = null;
+	let pDonationPortion: number | null = null;
+	let pReference: string | null = null;
 
 	if (initial === 'active_with_payment') {
 		const pay = o.payment;
@@ -71,14 +73,15 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 		}
 		const p = pay as Record<string, unknown>;
 		const amount = typeof p.amount === 'number' ? p.amount : parseFloat(String(p.amount ?? ''));
-		const method = typeof p.method === 'string' ? p.method.trim() : '';
-		if (!METHODS.has(method)) {
+		let method = typeof p.method === 'string' ? p.method.trim().toLowerCase() : '';
+		if (method === 'other') method = 'unknown';
+		if (!['e-transfer', 'cheque', 'cash', 'unknown'].includes(method)) {
 			return new Response(JSON.stringify({ error: 'invalid_method' }), {
 				status: 400,
 				headers: { 'Content-Type': 'application/json' },
 			});
 		}
-		if (Number.isNaN(amount) || amount < 0) {
+		if (Number.isNaN(amount) || amount <= 0) {
 			return new Response(JSON.stringify({ error: 'invalid_amount' }), {
 				status: 400,
 				headers: { 'Content-Type': 'application/json' },
@@ -97,6 +100,14 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 			pPaymentDate = d;
 		}
 		pNotes = typeof p.notes === 'string' ? p.notes : null;
+		if (p.donation_portion !== undefined && p.donation_portion !== null && p.donation_portion !== '') {
+			const dp = typeof p.donation_portion === 'number' ? p.donation_portion : parseFloat(String(p.donation_portion));
+			if (!Number.isNaN(dp)) pDonationPortion = dp;
+		}
+		if (p.reference !== undefined && p.reference !== null && typeof p.reference === 'string') {
+			const r = p.reference.trim();
+			pReference = r.length > 512 ? r.slice(0, 512) : r || null;
+		}
 	}
 
 	const service = createSupabaseServiceRoleClient();
@@ -109,6 +120,8 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 		p_method: pMethod,
 		p_payment_date: pPaymentDate,
 		p_notes: pNotes,
+		p_donation_portion: pDonationPortion,
+		p_reference: pReference,
 	});
 
 	if (rpcError) {
@@ -137,11 +150,28 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 
 	await insertAdminAudit(service, {
 		actorUserId: auth.user.id,
-		action: 'membership_admin_create',
+		action: 'add_membership',
 		entityType: 'membership',
-		entityId: result.membership_id ?? null,
+		entityId: result.membership_id ?? undefined,
 		metadata: { member_id: memberId, year, tier, initial },
 	});
+
+	if (initial === 'active_with_payment' && result.payment_id != null) {
+		const auditDate = pPaymentDate ?? new Date().toISOString().slice(0, 10);
+		await insertAdminAudit(service, {
+			actorUserId: auth.user.id,
+			action: 'record_payment',
+			entityType: 'payment',
+			entityId: String(result.payment_id),
+			metadata: {
+				member_id: memberId,
+				membership_id: result.membership_id ?? undefined,
+				amount: roundMoney(pAmount ?? 0),
+				method: pMethod,
+				date: auditDate,
+			},
+		});
+	}
 
 	return new Response(
 		JSON.stringify({
