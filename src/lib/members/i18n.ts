@@ -113,6 +113,8 @@ export const memberCopy: Record<
 		adminTimelineLabelCardPayment: string;
 		adminTimelineLabelProfileCreated: string;
 		adminTimelineLabelMembershipPending: string;
+		/** Activity timeline: Stripe processing fee, e.g. "Stripe fee {{amount}}" */
+		adminTimelineStripeFee: string;
 		adminTimelinePendingPaidPortion: string;
 		adminOverviewCountPending: string;
 		adminOverviewCountActive: string;
@@ -126,6 +128,8 @@ export const memberCopy: Record<
 		adminRelativeDaysAgo: string;
 		adminRelativeWeeksAgo: string;
 		adminTableAmount: string;
+		/** Stripe processing fee (CAD) on a payment row */
+		adminTableStripeFee: string;
 		adminTableDuesPortion: string;
 		adminTableDonationPortion: string;
 		adminPaymentPreviewMembership: string;
@@ -563,6 +567,7 @@ export const memberCopy: Record<
 		adminTimelineLabelCardPayment: 'Card payment',
 		adminTimelineLabelProfileCreated: 'New member profile created',
 		adminTimelineLabelMembershipPending: 'Membership pending',
+		adminTimelineStripeFee: 'Stripe fee {{amount}}',
 		adminTimelinePendingPaidPortion: 'Paid {{amount}}',
 		adminOverviewCountPending: 'Pending memberships',
 		adminOverviewCountActive: 'Active memberships ({{year}})',
@@ -576,6 +581,7 @@ export const memberCopy: Record<
 		adminRelativeDaysAgo: '{{n}} days ago',
 		adminRelativeWeeksAgo: '{{n}} weeks ago',
 		adminTableAmount: 'Total',
+		adminTableStripeFee: 'Stripe fee',
 		adminTableDuesPortion: 'Dues',
 		adminTableDonationPortion: 'Donation',
 		adminPaymentPreviewMembership: 'Toward membership: {{amount}}',
@@ -1021,6 +1027,7 @@ export const memberCopy: Record<
 		adminTimelineLabelCardPayment: 'Paiement par carte',
 		adminTimelineLabelProfileCreated: 'Nouvelle fiche membre créée',
 		adminTimelineLabelMembershipPending: 'Adhésion en attente',
+		adminTimelineStripeFee: 'Frais Stripe {{amount}}',
 		adminTimelinePendingPaidPortion: 'Payé {{amount}}',
 		adminOverviewCountPending: 'Adhésions en attente',
 		adminOverviewCountActive: 'Adhésions actives ({{year}})',
@@ -1036,6 +1043,7 @@ export const memberCopy: Record<
 		adminRelativeDaysAgo: 'Il y a {{n}} jours',
 		adminRelativeWeeksAgo: 'Il y a {{n}} sem.',
 		adminTableAmount: 'Total',
+		adminTableStripeFee: 'Frais Stripe',
 		adminTableDuesPortion: 'Cotisation',
 		adminTableDonationPortion: 'Don',
 		adminPaymentPreviewMembership: 'Vers la cotisation : {{amount}}',

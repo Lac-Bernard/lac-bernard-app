@@ -1,5 +1,31 @@
-import type Stripe from 'stripe';
+import Stripe from 'stripe';
+import type { Stripe as StripeTypes } from 'stripe';
 import { createSupabaseServiceRoleClient } from '../supabase/service';
+import { getStripeSecretKey } from '../supabase/env';
+
+/** CAD dollars and balance txn id from an expanded PaymentIntent (best-effort). */
+function stripeFeeFromExpandedPaymentIntent(pi: StripeTypes.PaymentIntent): {
+	stripeFeeCad: number | null;
+	stripeBalanceTransactionId: string | null;
+} {
+	const charge = pi.latest_charge;
+	if (!charge || typeof charge === 'string') {
+		return { stripeFeeCad: null, stripeBalanceTransactionId: null };
+	}
+	const bt = charge.balance_transaction;
+	if (!bt || typeof bt === 'string') {
+		return { stripeFeeCad: null, stripeBalanceTransactionId: null };
+	}
+	if (bt.currency !== 'cad') {
+		console.error(
+			'Stripe checkout session: balance transaction unexpected currency',
+			bt.currency,
+		);
+		return { stripeFeeCad: null, stripeBalanceTransactionId: bt.id };
+	}
+	const stripeFeeCad = Math.round(bt.fee) / 100;
+	return { stripeFeeCad, stripeBalanceTransactionId: bt.id };
+}
 
 /**
  * Shared fulfillment for Stripe Checkout: idempotent payment row + activate membership.
@@ -12,7 +38,7 @@ export type FulfillCheckoutSessionOutcome =
 	| { code: 'rpc_declined'; result: unknown };
 
 export async function fulfillMembershipFromCheckoutSession(
-	session: Stripe.Checkout.Session,
+	session: StripeTypes.Checkout.Session,
 ): Promise<FulfillCheckoutSessionOutcome> {
 	if (session.mode !== 'payment') {
 		return { code: 'skip', reason: 'not_payment_mode' };
@@ -98,6 +124,23 @@ export async function fulfillMembershipFromCheckoutSession(
 		}
 	}
 
+	let stripeFeeCad: number | null = null;
+	let stripeBalanceTransactionId: string | null = null;
+	try {
+		const stripe = new Stripe(getStripeSecretKey());
+		const piExpanded = await stripe.paymentIntents.retrieve(paymentIntentId, {
+			expand: ['latest_charge.balance_transaction'],
+		});
+		const parsed = stripeFeeFromExpandedPaymentIntent(piExpanded);
+		stripeFeeCad = parsed.stripeFeeCad;
+		stripeBalanceTransactionId = parsed.stripeBalanceTransactionId;
+	} catch (e) {
+		console.warn(
+			'Stripe checkout session: could not load balance transaction for fee (continuing)',
+			e,
+		);
+	}
+
 	const { data: rpcResult, error: rpcError } = await service.rpc('record_stripe_payment', {
 		p_membership_id: membershipId,
 		p_amount: amountDollars,
@@ -106,6 +149,8 @@ export async function fulfillMembershipFromCheckoutSession(
 		p_stripe_payment_id: paymentIntentId,
 		p_notes: notes,
 		p_donation_note: donationNote.length > 0 ? donationNote : null,
+		p_stripe_fee_cad: stripeFeeCad,
+		p_stripe_balance_transaction_id: stripeBalanceTransactionId,
 	});
 
 	if (rpcError) {

@@ -64,6 +64,7 @@ const adminKeys = [
 	'membershipStatusActive',
 	'membershipStatusPending',
 	'adminTableAmount',
+	'adminTableStripeFee',
 	'adminTableDuesPortion',
 	'adminTableDonationPortion',
 	'adminPaymentPreviewMembership',
@@ -762,8 +763,8 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     border-bottom: 1px solid var(--admin-border);
   }
 
-  .adminDetailMembershipList :global(.adminTable--payments th:nth-child(6)),
-  .adminDetailMembershipList :global(.adminTable--payments td:nth-child(6)) {
+  .adminDetailMembershipList :global(.adminTable--payments th:nth-child(7)),
+  .adminDetailMembershipList :global(.adminTable--payments td:nth-child(7)) {
     max-width: min(28rem, 42vw);
   }
 
@@ -1250,7 +1251,7 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
       .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(6),
       .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(6)
     ) {
-    width: 22%;
+    width: 7%;
   }
 
   .adminDetailMembershipList
@@ -1258,13 +1259,21 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
       .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(7),
       .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(7)
     ) {
-    width: 18%;
+    width: 22%;
   }
 
   .adminDetailMembershipList
     :global(
       .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(8),
       .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(8)
+    ) {
+    width: 18%;
+  }
+
+  .adminDetailMembershipList
+    :global(
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(9),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(9)
     ) {
     width: 12%;
   }
@@ -1297,9 +1306,11 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
       .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(3),
       .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(4),
       .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(5),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments th:nth-child(6),
       .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(3),
       .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(4),
-      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(5)
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(5),
+      .adminDetailPaymentsTableWrap .adminTable.adminTable--payments td:nth-child(6)
     ) {
     font-variant-numeric: tabular-nums;
     text-align: right;

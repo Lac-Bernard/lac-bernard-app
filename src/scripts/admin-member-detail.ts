@@ -41,6 +41,7 @@ type PaymentRow = {
 	membership_amount?: number | null;
 	donation_amount?: number | null;
 	donation_note?: string | null;
+	stripe_fee_cad?: number | null;
 };
 
 type MembershipRow = {
@@ -398,10 +399,17 @@ export function initAdminMemberDetail(
 		const payRows = (ms.payments ?? [])
 			.map((p) => {
 				const { membership, donation } = perPaymentMembershipDonation(p, ms.tier);
+				const feeCell =
+					p.method === 'stripe' &&
+					p.stripe_fee_cad != null &&
+					Number.isFinite(Number(p.stripe_fee_cad)) ?
+						escapeHtml(fmtMoney(Number(p.stripe_fee_cad)))
+					:	'<span class="adminDetailCellEmpty">—</span>';
 				return `<tr>
 				<td>${escapeHtml(formatAdminLocaleDate(p.date ?? p.created_at))}</td>
 				<td>${escapeHtml(methodLabel(strings, p.method))}</td>
 				<td>${p.amount != null ? escapeHtml(fmtMoney(p.amount)) : '<span class="adminDetailCellEmpty">—</span>'}</td>
+				<td>${feeCell}</td>
 				<td>${escapeHtml(fmtMoney(membership))}</td>
 				<td>${escapeHtml(fmtMoney(donation))}</td>
 				<td class="adminDetailTdLong">${longCell(p.notes)}</td>
@@ -422,6 +430,7 @@ export function initAdminMemberDetail(
 					<th>${escapeHtml(t(strings, 'adminTablePaymentDate'))}</th>
 					<th>${escapeHtml(t(strings, 'adminMethodLabel'))}</th>
 					<th>${escapeHtml(t(strings, 'adminTableAmount'))}</th>
+					<th>${escapeHtml(t(strings, 'adminTableStripeFee'))}</th>
 					<th>${escapeHtml(t(strings, 'adminTableDuesPortion'))}</th>
 					<th>${escapeHtml(t(strings, 'adminTableDonationPortion'))}</th>
 					<th>${escapeHtml(t(strings, 'adminNotesLabel'))}</th>
