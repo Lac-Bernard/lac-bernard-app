@@ -107,6 +107,16 @@ const PAYMENT_COLUMNS: (keyof PaymentRow)[] = [
 	'stripe_balance_transaction_id',
 ];
 
+/** Appended after DB columns: computed net + membership context for finance. */
+const PAYMENT_SHEET_EXTRA_COLUMNS = [
+	'net_cad',
+	'membership_year',
+	'tier',
+	'member_id',
+	'member_name',
+	'member_primary_email',
+] as const;
+
 type SyncResult = {
 	members: number;
 	memberships: number;
@@ -119,6 +129,28 @@ function normalizeSheetValue(value: unknown): string | number | boolean {
 		return value;
 	}
 	return JSON.stringify(value);
+}
+
+function numericFromSheetSource(value: unknown): number | null {
+	if (value == null || value === '') return null;
+	const n = typeof value === 'number' ? value : parseFloat(String(value));
+	return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Cash to the association after Stripe: gross amount minus recorded Stripe fee.
+ * Non-Stripe: same as amount. Stripe with unknown fee: empty (do not sum as if fee were 0).
+ */
+function paymentNetCadForSheet(row: PaymentRow): number | '' {
+	const gross = numericFromSheetSource(row.amount);
+	if (gross == null) return '';
+	const method = (row.method ?? '').trim();
+	if (method !== 'stripe') {
+		return Math.round(gross * 100) / 100;
+	}
+	const fee = numericFromSheetSource(row.stripe_fee_cad);
+	if (fee == null) return '';
+	return Math.round((gross - fee) * 100) / 100;
 }
 
 function memberName(
@@ -261,12 +293,16 @@ function buildPaymentsValues(
 	memberMap: Map<string, MemberRow>,
 ): (string | number | boolean)[][] {
 	return [
-		[...PAYMENT_COLUMNS, 'member_name', 'member_primary_email'],
+		[...PAYMENT_COLUMNS, ...PAYMENT_SHEET_EXTRA_COLUMNS],
 		...rows.map((row) => {
 			const membership = membershipMap.get(row.membership_id) ?? null;
 			const member = membership ? memberMap.get(membership.member_id) ?? null : null;
 			return [
 				...PAYMENT_COLUMNS.map((column) => normalizeSheetValue(row[column])),
+				paymentNetCadForSheet(row),
+				membership ? membership.year : '',
+				membership ? normalizeSheetValue(membership.tier) : '',
+				membership ? normalizeSheetValue(membership.member_id) : '',
 				memberName(member),
 				normalizeSheetValue(member?.primary_email ?? ''),
 			];
