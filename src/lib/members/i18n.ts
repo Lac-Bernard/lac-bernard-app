@@ -222,6 +222,10 @@ export const memberCopy: Record<
 		adminAddMembershipSubmit: string;
 		adminAddMemberErrorNoLake: string;
 		adminAddMemberErrorAddressTaken: string;
+		adminUpgradeToVotingBtn: string;
+		adminUpgradeToVotingConfirm: string;
+		adminUpgradeToVotingSuccess: string;
+		adminUpgradeToVotingErrorNotAssociate: string;
 		adminAddMemberErrorDuplicateYear: string;
 		adminAddMemberErrorMemberNotFound: string;
 		adminLoading: string;
@@ -390,6 +394,8 @@ export const memberCopy: Record<
 		payOtherMethodsBtn: string;
 		statusPendingTitle: string;
 		statusPendingLead: string;
+		/** Pending card: show amount already credited toward annual dues (e.g. after tier upgrade) */
+		statusPendingDuesCredited: string;
 		cancelPending: string;
 		pendingCreateErrorUnauthorized: string;
 		pendingCreateErrorAlreadyActive: string;
@@ -419,6 +425,7 @@ export const memberCopy: Record<
 		checkoutStripeMisconfigured: string;
 		checkoutInvalidDonation: string;
 		checkoutInvalidDonationNote: string;
+		checkoutErrorNothingDue: string;
 		checkoutSuccessBanner: string;
 		checkoutCancelledBanner: string;
 		checkoutErrorBanner: string;
@@ -677,6 +684,11 @@ export const memberCopy: Record<
 			'Voting membership requires a lake civic number and street on this profile. Save the profile first, then try again.',
 		adminAddMemberErrorAddressTaken:
 			'Another member at this lake address already has a voting membership for this year.',
+		adminUpgradeToVotingBtn: 'Upgrade to voting membership',
+		adminUpgradeToVotingConfirm:
+			'Upgrade this membership to voting? Previous payments still count toward dues; the member will owe any balance.',
+		adminUpgradeToVotingSuccess: 'Membership upgraded to voting.',
+		adminUpgradeToVotingErrorNotAssociate: 'This row is not an associate membership (already voting or invalid).',
 		adminAddMemberErrorDuplicateYear: 'This member already has a membership for that year.',
 		adminAddMemberErrorMemberNotFound: 'Member not found.',
 		adminLoading: 'Loading…',
@@ -854,6 +866,7 @@ export const memberCopy: Record<
 		statusPendingTitle: 'Your {{year}} membership is pending payment',
 		statusPendingLead:
 			'Use one of the options below to pay. Your membership will become active when payment is confirmed (online or by an administrator).',
+		statusPendingDuesCredited: 'Already credited toward membership dues: {{amount}}.',
 		cancelPending: 'Cancel request',
 		pendingCreateErrorUnauthorized: 'You must be signed in. Refresh the page and try again.',
 		pendingCreateErrorAlreadyActive: 'You already have an active membership for this year.',
@@ -879,6 +892,8 @@ export const memberCopy: Record<
 		checkoutStripeMisconfigured: 'Online payment is not configured. Please use another payment method or try again later.',
 		checkoutInvalidDonation: 'Enter a valid donation amount (0 or more, up to 50,000).',
 		checkoutInvalidDonationNote: 'Keep the note to 500 characters or fewer.',
+		checkoutErrorNothingDue:
+			'No membership balance is due right now. If this looks wrong, contact the association.',
 		checkoutSuccessBanner:
 			'Thank you. Your payment went through and your membership is now active.',
 		checkoutCancelledBanner: 'Checkout was cancelled. You can try again when you are ready.',
@@ -1143,6 +1158,12 @@ export const memberCopy: Record<
 			'L’adhésion avec droit de vote exige un numéro civique et une rue au lac dans ce profil. Enregistrez le profil d’abord, puis réessayez.',
 		adminAddMemberErrorAddressTaken:
 			'Un autre membre à cette adresse au lac a déjà une adhésion avec droit de vote pour cette année.',
+		adminUpgradeToVotingBtn: 'Passer à l’adhésion avec droit de vote',
+		adminUpgradeToVotingConfirm:
+			'Passer cette adhésion au vote ? Les paiements antérieurs restent crédités; il restera à payer le solde.',
+		adminUpgradeToVotingSuccess: 'Adhésion passée au vote.',
+		adminUpgradeToVotingErrorNotAssociate:
+			'Cette ligne n’est pas une adhésion associée (déjà vote ou invalide).',
 		adminAddMemberErrorDuplicateYear: 'Ce membre a déjà une adhésion pour cette année.',
 		adminAddMemberErrorMemberNotFound: 'Membre introuvable.',
 		adminLoading: 'Chargement…',
@@ -1323,6 +1344,7 @@ export const memberCopy: Record<
 		statusPendingTitle: 'Votre adhésion {{year}} est en attente de paiement',
 		statusPendingLead:
 			'Utilisez l’une des options ci-dessous pour payer. Votre adhésion deviendra active lorsque le paiement sera confirmé (en ligne ou par un administrateur).',
+		statusPendingDuesCredited: 'Déjà crédité vers la cotisation : {{amount}}.',
 		cancelPending: 'Annuler la demande',
 		pendingCreateErrorUnauthorized: 'Vous devez être connecté. Actualisez la page et réessayez.',
 		pendingCreateErrorAlreadyActive: 'Vous avez déjà une adhésion active pour cette année.',
@@ -1349,6 +1371,8 @@ export const memberCopy: Record<
 			'Le paiement en ligne n’est pas configuré. Utilisez un autre mode de paiement ou réessayez plus tard.',
 		checkoutInvalidDonation: 'Entrez un montant de don valide (0 ou plus, jusqu’à 50 000).',
 		checkoutInvalidDonationNote: 'Limitez la note à 500 caractères ou moins.',
+		checkoutErrorNothingDue:
+			'Aucun solde de cotisation n’est dû pour le moment. En cas de doute, communiquez avec l’association.',
 		checkoutSuccessBanner:
 			'Merci. Votre paiement a été accepté et votre adhésion est maintenant active.',
 		checkoutCancelledBanner: 'Le paiement a été annulé. Vous pouvez réessayer quand vous voulez.',

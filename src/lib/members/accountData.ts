@@ -34,7 +34,7 @@ export type MemberAccountPayload = {
 	member: MemberProfile | null;
 	currentMemberships: MembershipRow[];
 	historicalMemberships: MembershipRow[];
-	/** Payments for the current calendar year membership when that membership is active; else []. */
+	/** Payments for the current calendar year membership when that membership is active or pending; else []. */
 	currentYearPayments: MemberPaymentRow[];
 };
 
@@ -84,7 +84,7 @@ export async function loadMemberAccountData(
 
 	const thisYear = mapped.find((m) => m.year === currentYear);
 	let currentYearPayments: MemberPaymentRow[] = [];
-	if (thisYear?.status === 'active') {
+	if (thisYear?.status === 'active' || thisYear?.status === 'pending') {
 		const { data: payRows, error: pErr } = await supabase
 			.from('payments')
 			.select(

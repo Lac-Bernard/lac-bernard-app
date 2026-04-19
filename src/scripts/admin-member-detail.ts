@@ -293,6 +293,33 @@ export function initAdminMemberDetail(
 		return t(strings, 'adminErrorGeneric');
 	}
 
+	function wireUpgradeToVotingButtons(root: ParentNode) {
+		root.querySelectorAll<HTMLButtonElement>('[data-upgrade-to-voting]').forEach((b) => {
+			b.addEventListener('click', async () => {
+				const id = b.dataset.membershipId;
+				if (!id) return;
+				if (!confirm(t(strings, 'adminUpgradeToVotingConfirm'))) return;
+				setStatus(t(strings, 'adminLoading'));
+				const { ok, data } = await fetchJson<{ error?: string }>(
+					`/api/admin/memberships/${encodeURIComponent(id)}/upgrade-to-voting`,
+					{ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' },
+				);
+				if (!ok) {
+					const code = data?.error;
+					const msg =
+						code === 'not_associate' ? t(strings, 'adminUpgradeToVotingErrorNotAssociate')
+						: code === 'voting_address_taken' ? t(strings, 'adminAddMemberErrorAddressTaken')
+						: code === 'no_lake_address' ? t(strings, 'adminAddMemberErrorNoLake')
+						: t(strings, 'adminErrorGeneric');
+					setStatus(msg, 'error');
+					return;
+				}
+				setStatus(t(strings, 'adminUpgradeToVotingSuccess'), 'success');
+				void load();
+			});
+		});
+	}
+
 	function wireAddMembershipButtons(root: ParentNode) {
 		root.querySelectorAll<HTMLButtonElement>('[data-open-add-membership]').forEach((b) => {
 			b.addEventListener('click', () => {
@@ -463,6 +490,13 @@ export function initAdminMemberDetail(
 				`<span class="adminDetailBadge adminDetailBadge--future">${escapeHtml(t(strings, 'adminDetailFutureBadge'))}</span>`
 			:	'';
 
+		const upgradeRow =
+			ms.tier === 'associate' ?
+				`<div class="adminDetailUpgradeRow">
+					<button type="button" class="adminBtn adminBtn--outline" data-upgrade-to-voting data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminUpgradeToVotingBtn'))}</button>
+				</div>`
+			:	'';
+
 		return `<article class="adminDetailMembershipCard" data-membership-id="${escapeHtml(ms.id)}">
 			<header class="adminDetailMembershipHead">
 				<div class="adminDetailMembershipIdentity">
@@ -477,6 +511,7 @@ export function initAdminMemberDetail(
 					${futureBadge}
 				</div>
 				${tierScheduleMeta}
+				${upgradeRow}
 			</header>
 			${paymentsBlock}
 		</article>`;
@@ -506,6 +541,7 @@ export function initAdminMemberDetail(
 		wirePaymentButtons(mount);
 		wireDeletePaymentButtons(mount);
 		wireAddMembershipButtons(mount);
+		wireUpgradeToVotingButtons(mount);
 	}
 
 	if (mount) {
@@ -519,6 +555,7 @@ export function initAdminMemberDetail(
 				wirePaymentButtons(panel);
 				wireDeletePaymentButtons(panel);
 				wireAddMembershipButtons(panel);
+				wireUpgradeToVotingButtons(panel);
 			}
 		});
 	}

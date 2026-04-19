@@ -128,10 +128,37 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		});
 	}
 
-	const membershipCents = membershipCentsForTier(ms.tier);
-	if (membershipCents === null) {
+	const fullTierCents = membershipCentsForTier(ms.tier);
+	if (fullTierCents === null) {
 		return new Response(JSON.stringify({ error: 'invalid_tier' }), {
 			status: 400,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
+
+	const { data: payRows, error: payErr } = await supabase
+		.from('payments')
+		.select('membership_amount')
+		.eq('membership_id', membershipId);
+
+	if (payErr) {
+		return new Response(JSON.stringify({ error: 'lookup_failed' }), {
+			status: 500,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
+
+	const paidTowardDues = (payRows ?? []).reduce((s, r) => {
+		const v = r.membership_amount;
+		const n = typeof v === 'number' ? v : parseFloat(String(v ?? 0));
+		return s + (Number.isFinite(n) ? n : 0);
+	}, 0);
+	const paidCents = Math.round(paidTowardDues * 100);
+	const membershipCents = Math.max(0, fullTierCents - paidCents);
+
+	if (membershipCents <= 0) {
+		return new Response(JSON.stringify({ error: 'nothing_due' }), {
+			status: 409,
 			headers: { 'Content-Type': 'application/json' },
 		});
 	}
@@ -165,7 +192,11 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 	const cancelUrl = `${origin}${accountPath}?checkout=cancelled`;
 
 	const tierLabel = membershipTierLabel(ms.tier, locale);
-	const membershipLineName = `${String(currentYear)} — ${tierLabel}`;
+	const balanceSuffix = locale === 'fr' ? '(solde à payer)' : '(balance due)';
+	const membershipLineName =
+		membershipCents < fullTierCents ?
+			`${String(currentYear)} — ${tierLabel} ${balanceSuffix}`
+		:	`${String(currentYear)} — ${tierLabel}`;
 
 	const lineItems: Stripe.Checkout.SessionCreateParams.LineItem[] = [
 		{
