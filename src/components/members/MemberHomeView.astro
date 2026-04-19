@@ -418,7 +418,7 @@ const hasSecondaryContactInfo = Boolean(
                       </div>
                     </div>
                     {showPendingDuesCredited && (
-                      <p class="pendingDuesCredited muted">{t.statusPendingDuesCredited.replace('{{amount}}', pendingDuesCreditedDisplay)}</p>
+                      <p class="pendingDuesCredited">{t.statusPendingDuesCredited.replace('{{amount}}', pendingDuesCreditedDisplay)}</p>
                     )}
                   </div>
 
@@ -1962,6 +1962,14 @@ const hasSecondaryContactInfo = Boolean(
     background: rgba(217, 119, 6, 0.14);
     color: rgba(146, 64, 14, 0.98);
     white-space: nowrap;
+  }
+
+  /* Match statusPendingLead body text (not .muted) */
+  .pendingDuesCredited {
+    margin: 0.55rem 0 0;
+    color: var(--text, rgba(0, 0, 0, 0.88));
+    font-size: 0.98rem;
+    line-height: 1.45;
   }
 
   .statusTitle {
