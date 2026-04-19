@@ -98,6 +98,10 @@ const adminKeys = [
 	'adminAddMemberInitialPaid',
 	'adminAddMemberErrorNoLake',
 	'adminAddMemberErrorAddressTaken',
+	'adminUpgradeToVotingBtn',
+	'adminUpgradeToVotingConfirm',
+	'adminUpgradeToVotingSuccess',
+	'adminUpgradeToVotingErrorNotAssociate',
 	'adminAddMemberErrorDuplicateYear',
 	'adminMembershipYearLabel',
 	'checkoutModalCancel',
@@ -605,6 +609,10 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     padding: 1rem 1.1rem 0.95rem;
     border-bottom: 1px solid var(--admin-border);
     background: rgba(0, 0, 0, 0.015);
+  }
+
+  .adminDetailMembershipList :global(.adminDetailUpgradeRow) {
+    margin-top: 0.85rem;
   }
 
   .adminDetailMembershipList :global(.adminDetailMembershipIdentity) {
