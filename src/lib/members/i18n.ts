@@ -68,6 +68,10 @@ export const memberCopy: Record<
 		signInLinkExpiredNotice: string;
 		/** Shown when auth callback fails for reasons other than an expired link (catch-all; e.g. private browsing or cookie-blocking extensions). */
 		signInAuthFailedNotice: string;
+		/** Shown when user attempts to access admin with a non-admin account; includes `{{account}}`. */
+		signInNotAdminNotice: string;
+		/** Fallback of `signInNotAdminNotice` when no account identifier is available. */
+		signInNotAdminNoticeNoAccount: string;
 		adminTitle: string;
 		adminDescription: string;
 		adminHeroAria: string;
@@ -537,6 +541,10 @@ export const memberCopy: Record<
 			'You followed a sign-in link that is no longer valid. That usually means we sent a newer link to your email, or this link expired. Use the latest email from us, or request a new sign-in link.',
 		signInAuthFailedNotice:
 			'That sign-in link could not finish signing you in. Private or incognito mode and cookie-blocking or privacy extensions often get in the way—try in a regular browser window, pause blockers if you use them, and try sending a new sign-in link.',
+		signInNotAdminNotice:
+			'You’re signed in as {{account}}, but this account doesn’t have admin access. To visit the admin area, please sign in with an admin account.',
+		signInNotAdminNoticeNoAccount:
+			'This account doesn’t have admin access. To visit the admin area, please sign in with an admin account.',
 		adminTitle: 'Admin | Lac Bernard Association',
 		adminDescription: 'Association administration — members and payments.',
 		adminHeroAria: 'Administration',
@@ -1009,6 +1017,10 @@ export const memberCopy: Record<
 			'Vous avez suivi un lien de connexion qui n’est plus valide. En général, cela signifie qu’un lien plus récent vous a été envoyé par courriel, ou que ce lien a expiré. Utilisez le dernier courriel de notre part, ou demandez un nouveau lien de connexion.',
 		signInAuthFailedNotice:
 			'Ce lien de connexion n’a pas abouti. La navigation privée ou une extension qui bloque les cookies ou le pistage s’en mêle souvent—essayez dans une fenêtre de navigation habituelle, mettez les bloqueurs en pause si vous en utilisez, et essayez d’envoyer un nouveau lien de connexion.',
+		signInNotAdminNotice:
+			'Vous êtes connecté avec {{account}}, mais ce compte n’a pas accès à l’administration. Pour accéder à l’espace d’administration, connectez-vous avec un compte administrateur.',
+		signInNotAdminNoticeNoAccount:
+			'Ce compte n’a pas accès à l’administration. Pour accéder à l’espace d’administration, connectez-vous avec un compte administrateur.',
 		adminTitle: 'Administration | Association du lac Bernard',
 		adminDescription: 'Administration de l’association — membres et paiements.',
 		adminHeroAria: 'Administration',
