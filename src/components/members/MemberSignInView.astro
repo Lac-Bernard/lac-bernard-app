@@ -92,6 +92,8 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     sendMagicLink: t.sendMagicLink,
     signInLinkExpiredNotice: t.signInLinkExpiredNotice,
     signInAuthFailedNotice: t.signInAuthFailedNotice,
+    signInNotAdminNotice: t.signInNotAdminNotice,
+    signInNotAdminNoticeNoAccount: t.signInNotAdminNoticeNoAccount,
   }}
 >
   /**
@@ -100,7 +102,7 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
    */
   function parseSigninErrorKindFromLocation() {
     const q = new URLSearchParams(window.location.search).get('signin_error');
-    if (q === 'link_expired' || q === 'auth_failed') {
+    if (q === 'link_expired' || q === 'auth_failed' || q === 'not_admin') {
       return q;
     }
 
@@ -147,15 +149,25 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
       return;
     }
 
-    el.textContent = kind === 'link_expired' ? signInLinkExpiredNotice : signInAuthFailedNotice;
+    if (kind === 'not_admin') {
+      const account = (new URLSearchParams(window.location.search).get('account') ?? '').trim();
+      el.textContent = account
+        ? signInNotAdminNotice.replace('{{account}}', account)
+        : signInNotAdminNoticeNoAccount;
+    } else {
+      el.textContent = kind === 'link_expired' ? signInLinkExpiredNotice : signInAuthFailedNotice;
+    }
     el.hidden = false;
     el.classList.remove('formMessage--error', 'formMessage--notice');
-    el.classList.add(kind === 'link_expired' ? 'formMessage--notice' : 'formMessage--error');
+    el.classList.add(kind === 'auth_failed' ? 'formMessage--error' : 'formMessage--notice');
     el.setAttribute('role', 'alert');
 
     const u = new URL(window.location.href);
     if (u.searchParams.has('signin_error')) {
       u.searchParams.delete('signin_error');
+    }
+    if (u.searchParams.has('account')) {
+      u.searchParams.delete('account');
     }
     if (u.hash && /error(=|_code)|otp_expired/i.test(u.hash)) {
       u.hash = '';

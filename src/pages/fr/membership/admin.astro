@@ -3,7 +3,6 @@ export const prerender = false;
 
 import AdminMembershipView from '../../../components/members/AdminMembershipView.astro';
 import { createSupabasePageClient } from '../../../lib/supabase/server';
-import { isAppAdmin } from '../../../lib/auth/admin';
 import { memberPaths } from '../../../lib/members/i18n';
 
 const paths = memberPaths.fr;
@@ -18,10 +17,6 @@ const {
 
 if (error || !user) {
 	return redirectWithCookies(`${paths.signIn}?next=${encodeURIComponent(paths.admin)}`);
-}
-
-if (!isAppAdmin(user)) {
-	return redirectWithCookies(paths.account);
 }
 
 flushCookies();
