@@ -1,5 +1,6 @@
 export const prerender = false;
 import type { APIContext, APIRoute } from 'astro';
+import { captureException } from '../../../lib/monitoring';
 import { syncSupabaseToGoogleSheets } from '../../../lib/googleSheets/syncToSpreadsheet';
 import { getCronSecret } from '../../../lib/supabase/env';
 
@@ -28,6 +29,7 @@ async function handleSync({ request }: APIContext): Promise<Response> {
 		});
 	} catch (error) {
 		console.error('Google Sheets sync failed:', error);
+		captureException(error);
 		return new Response(JSON.stringify({ error: 'sync_failed' }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' },

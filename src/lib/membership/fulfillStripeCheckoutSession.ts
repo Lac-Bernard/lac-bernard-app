@@ -1,5 +1,6 @@
 import Stripe from 'stripe';
 import type { Stripe as StripeTypes } from 'stripe';
+import { captureAlert, captureException } from '../monitoring';
 import { createSupabaseServiceRoleClient } from '../supabase/service';
 import { getStripeSecretKey } from '../supabase/env';
 
@@ -49,7 +50,9 @@ export async function fulfillMembershipFromCheckoutSession(
 	}
 
 	if (session.currency !== 'cad') {
-		console.error('Stripe checkout session: unexpected currency', session.currency);
+		const ctx = { sessionId: session.id, currency: session.currency };
+		console.error('Stripe checkout session: unexpected currency', ctx);
+		captureAlert('Stripe: unexpected currency on checkout session', ctx);
 		return { code: 'skip', reason: 'bad_currency' };
 	}
 
@@ -65,7 +68,9 @@ export async function fulfillMembershipFromCheckoutSession(
 		typeof membershipCentsRaw !== 'string' ||
 		typeof donationCentsRaw !== 'string'
 	) {
-		console.error('Stripe checkout session: missing metadata', metadata);
+		const ctx = { sessionId: session.id, metadata };
+		console.error('Stripe checkout session: missing metadata', ctx);
+		captureAlert('Stripe: checkout session missing required metadata — membership not activated', ctx);
 		return { code: 'skip', reason: 'missing_metadata' };
 	}
 
@@ -79,18 +84,18 @@ export async function fulfillMembershipFromCheckoutSession(
 	const expectedTotal = membershipCents + donationCents;
 	const amountTotal = session.amount_total ?? 0;
 	if (amountTotal !== expectedTotal) {
-		console.error('Stripe checkout session: amount mismatch', {
-			amountTotal,
-			expectedTotal,
-			sessionId: session.id,
-		});
+		const ctx = { amountTotal, expectedTotal, sessionId: session.id, memberId, membershipId };
+		console.error('Stripe checkout session: amount mismatch', ctx);
+		captureAlert('Stripe: checkout session amount mismatch — membership not activated', ctx);
 		return { code: 'skip', reason: 'amount_mismatch' };
 	}
 
 	const pi = session.payment_intent;
 	const paymentIntentId = typeof pi === 'string' ? pi : pi?.id;
 	if (!paymentIntentId) {
-		console.error('Stripe checkout session: missing payment_intent', session.id);
+		const ctx = { sessionId: session.id, memberId, membershipId };
+		console.error('Stripe checkout session: missing payment_intent', ctx);
+		captureAlert('Stripe: checkout session missing payment_intent — membership not activated', ctx);
 		return { code: 'skip', reason: 'missing_payment_intent' };
 	}
 
@@ -154,7 +159,9 @@ export async function fulfillMembershipFromCheckoutSession(
 	});
 
 	if (rpcError) {
+		const ctx = { sessionId: session.id, memberId, membershipId, paymentIntentId };
 		console.error('Stripe checkout session: record_stripe_payment failed', rpcError);
+		captureException(rpcError, ctx);
 		return { code: 'rpc_failed', message: rpcError.message };
 	}
 
@@ -165,7 +172,9 @@ export async function fulfillMembershipFromCheckoutSession(
 	} | null;
 
 	if (!result?.ok) {
+		const ctx = { sessionId: session.id, memberId, membershipId, paymentIntentId, result };
 		console.error('Stripe checkout session: record_stripe_payment declined', result);
+		captureAlert('Stripe: record_stripe_payment declined — membership may not be activated', ctx);
 		return { code: 'rpc_declined', result };
 	}
 
