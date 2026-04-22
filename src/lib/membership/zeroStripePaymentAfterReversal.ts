@@ -1,3 +1,4 @@
+import { captureAlert, captureException } from '../monitoring';
 import { createSupabaseServiceRoleClient } from '../supabase/service';
 
 export type ZeroStripePaymentResult =
@@ -23,6 +24,7 @@ export async function zeroStripePaymentAfterReversal(
 
 	if (error) {
 		console.error('zero_stripe_payment_after_reversal RPC failed', error);
+		captureException(error, { paymentIntentId: id });
 		return { ok: false, message: error.message };
 	}
 
@@ -34,6 +36,10 @@ export async function zeroStripePaymentAfterReversal(
 	} | null;
 
 	if (result?.ok === false) {
+		captureAlert('Stripe: reversal/dispute RPC declined — membership status may not reflect refund', {
+			paymentIntentId: id,
+			result,
+		});
 		return { ok: false, message: result.error ?? 'rpc_declined' };
 	}
 

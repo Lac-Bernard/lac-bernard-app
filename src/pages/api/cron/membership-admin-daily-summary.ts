@@ -4,6 +4,7 @@ export const prerender = false;
  * Auth: Authorization: Bearer CRON_SECRET (same as other cron routes).
  */
 import type { APIContext, APIRoute } from 'astro';
+import { captureException } from '../../../lib/monitoring';
 import {
 	buildMembershipAdminDailySummaryText,
 	parseAdminDailyMembershipSummary,
@@ -35,6 +36,7 @@ async function handleDailySummary({ request }: APIContext): Promise<Response> {
 
 	if (rpcErr) {
 		console.error('admin_daily_membership_summary RPC failed:', rpcErr.message);
+		captureException(rpcErr);
 		return new Response(JSON.stringify({ error: 'rpc_failed', detail: rpcErr.message }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' },
@@ -59,6 +61,7 @@ async function handleDailySummary({ request }: APIContext): Promise<Response> {
 		await sendMembershipAdminDailySummaryEmail(text, subject);
 	} catch (e) {
 		console.error('Membership admin daily summary email failed:', e);
+		captureException(e);
 		return new Response(JSON.stringify({ error: 'email_failed' }), {
 			status: 500,
 			headers: { 'Content-Type': 'application/json' },
