@@ -60,6 +60,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 	let pMethod: string | null = null;
 	let pPaymentDate: string | null = null;
 	let pNotes: string | null = null;
+	let pReference: string | null = null;
 
 	if (initial === 'active_with_payment') {
 		const pay = o.payment;
@@ -97,6 +98,17 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 			pPaymentDate = d;
 		}
 		pNotes = typeof p.notes === 'string' ? p.notes : null;
+
+		if (p.reference !== undefined && p.reference !== null && p.reference !== '') {
+			const r = typeof p.reference === 'string' ? p.reference.trim() : String(p.reference).trim();
+			if (r.length > 512) {
+				return new Response(JSON.stringify({ error: 'reference_too_long' }), {
+					status: 400,
+					headers: { 'Content-Type': 'application/json' },
+				});
+			}
+			pReference = r || null;
+		}
 	}
 
 	const service = createSupabaseServiceRoleClient();
@@ -109,6 +121,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 		p_method: pMethod,
 		p_payment_date: pPaymentDate,
 		p_notes: pNotes,
+		p_reference: pReference,
 	});
 
 	if (rpcError) {
