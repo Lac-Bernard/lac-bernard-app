@@ -74,6 +74,32 @@ function sortItems(items: ListItem[]): ListItem[] {
 	});
 }
 
+function createHighlightedNameNode(name: string, queryTrimmed: string): Node {
+	const q = queryTrimmed.trim();
+	if (!q) {
+		return document.createTextNode(name);
+	}
+	const nameLower = name.toLowerCase();
+	const qLower = q.toLowerCase();
+	const idx = nameLower.indexOf(qLower);
+	if (idx < 0) {
+		return document.createTextNode(name);
+	}
+
+	const frag = document.createDocumentFragment();
+	const before = name.slice(0, idx);
+	const match = name.slice(idx, idx + q.length);
+	const after = name.slice(idx + q.length);
+
+	if (before) frag.append(document.createTextNode(before));
+	const mark = document.createElement('mark');
+	mark.className = 'drive-folder-browser__match';
+	mark.textContent = match;
+	frag.append(mark);
+	if (after) frag.append(document.createTextNode(after));
+	return frag;
+}
+
 /** Matches first, then non-matches; within each group: folders first, then name. */
 function orderedItemsForQuery(items: ListItem[], queryTrimmed: string): {
 	ordered: ListItem[];
@@ -264,7 +290,7 @@ export function mountDriveFolderBrowser(root: HTMLElement): void {
 			icon.setAttribute('aria-hidden', 'true');
 			const label = document.createElement('span');
 			label.className = 'drive-folder-browser__name';
-			label.textContent = item.name;
+			label.replaceChildren(createHighlightedNameNode(item.name, queryTrimmed));
 			btn.append(icon, label);
 			btn.setAttribute('aria-label', `${isFolder ? t.folder : t.file}: ${item.name}`);
 
