@@ -6,7 +6,9 @@ const copy: Record<
 	Locale,
 	{
 		back: string;
-		openDrive: string;
+		searchLabel: string;
+		searchPlaceholder: string;
+		noMatches: string;
 		loading: string;
 		empty: string;
 		error: string;
@@ -19,7 +21,9 @@ const copy: Record<
 > = {
 	en: {
 		back: 'Back',
-		openDrive: 'Open in Google Drive',
+		searchLabel: 'Filter files in this folder',
+		searchPlaceholder: 'Search…',
+		noMatches: 'No names match your search.',
 		loading: 'Loading…',
 		empty: 'This folder is empty.',
 		error: 'Could not load this folder.',
@@ -31,7 +35,9 @@ const copy: Record<
 	},
 	fr: {
 		back: 'Retour',
-		openDrive: 'Ouvrir dans Google Drive',
+		searchLabel: 'Filtrer les fichiers dans ce dossier',
+		searchPlaceholder: 'Rechercher…',
+		noMatches: 'Aucun nom ne correspond à votre recherche.',
 		loading: 'Chargement…',
 		empty: 'Ce dossier est vide.',
 		error: 'Impossible de charger ce dossier.',
@@ -68,6 +74,23 @@ function sortItems(items: ListItem[]): ListItem[] {
 	});
 }
 
+/** Matches first, then non-matches; within each group: folders first, then name. */
+function orderedItemsForQuery(items: ListItem[], queryTrimmed: string): {
+	ordered: ListItem[];
+	matchingIds: ReadonlySet<string>;
+} {
+	const q = queryTrimmed.toLowerCase();
+	if (!q) {
+		return { ordered: sortItems(items), matchingIds: new Set(items.map((i) => i.id)) };
+	}
+	const matches = items.filter((i) => i.name.toLowerCase().includes(q));
+	const nonMatches = items.filter((i) => !i.name.toLowerCase().includes(q));
+	return {
+		ordered: [...sortItems(matches), ...sortItems(nonMatches)],
+		matchingIds: new Set(matches.map((i) => i.id)),
+	};
+}
+
 function itemsLabel(locale: Locale, count: number): string {
 	if (locale === 'fr') {
 		return count === 1 ? '1 élément' : `${count} éléments`;
@@ -84,12 +107,21 @@ export function mountDriveFolderBrowser(root: HTMLElement): void {
 		return;
 	}
 
-	const driveFolderUrl = `https://drive.google.com/drive/folders/${rootFolderId}`;
-
 	root.innerHTML = `
 		<header class="drive-folder-browser__toolbar">
 			<button type="button" class="drive-folder-browser__back" disabled>${t.back}</button>
-			<a class="drive-folder-browser__open-drive" href="${driveFolderUrl}" target="_blank" rel="noopener noreferrer">${t.openDrive}</a>
+			<div class="drive-folder-browser__search-wrap">
+				<label class="drive-folder-browser__search-label">
+					<span class="drive-folder-browser__sr-only">${t.searchLabel}</span>
+					<input
+						class="drive-folder-browser__search"
+						type="search"
+						autocomplete="off"
+						placeholder="${t.searchPlaceholder}"
+						aria-label="${t.searchLabel}"
+					/>
+				</label>
+			</div>
 		</header>
 		<nav class="drive-folder-browser__crumbs" aria-label="${t.breadcrumbNav}">
 			<ol class="drive-folder-browser__crumb-list"></ol>
@@ -108,7 +140,7 @@ export function mountDriveFolderBrowser(root: HTMLElement): void {
 	`;
 
 	const backBtn = root.querySelector<HTMLButtonElement>('.drive-folder-browser__back');
-	const openDriveEl = root.querySelector<HTMLAnchorElement>('.drive-folder-browser__open-drive');
+	const searchInput = root.querySelector<HTMLInputElement>('.drive-folder-browser__search');
 	const crumbListEl = root.querySelector<HTMLOListElement>('.drive-folder-browser__crumb-list');
 	const statusEl = root.querySelector<HTMLElement>('.drive-folder-browser__status');
 	const listEl = root.querySelector<HTMLUListElement>('.drive-folder-browser__list');
@@ -118,7 +150,7 @@ export function mountDriveFolderBrowser(root: HTMLElement): void {
 
 	if (
 		!backBtn ||
-		!openDriveEl ||
+		!searchInput ||
 		!crumbListEl ||
 		!statusEl ||
 		!listEl ||
@@ -128,6 +160,9 @@ export function mountDriveFolderBrowser(root: HTMLElement): void {
 	) {
 		return;
 	}
+
+	/** Latest loaded folder listing (cleared on navigation via loadFolder). */
+	let currentItems: ListItem[] = [];
 
 	const scrollHintThresholdPx = 6;
 
@@ -164,13 +199,6 @@ export function mountDriveFolderBrowser(root: HTMLElement): void {
 
 	const stack: Crumb[] = [{ id: rootFolderId, name: '…' }];
 
-	function syncOpenDriveHref(): void {
-		const tail = stack[stack.length - 1];
-		if (tail) {
-			openDriveEl.href = `https://drive.google.com/drive/folders/${tail.id}`;
-		}
-	}
-
 	function renderCrumbs(): void {
 		crumbListEl.innerHTML = '';
 		stack.forEach((crumb, index) => {
@@ -198,10 +226,69 @@ export function mountDriveFolderBrowser(root: HTMLElement): void {
 			}
 			crumbListEl.append(li);
 		});
-		syncOpenDriveHref();
+	}
+
+	function renderItemList(): void {
+		const queryTrimmed = searchInput.value.trim();
+		const hasFilter = queryTrimmed.length > 0;
+		const { ordered, matchingIds } = orderedItemsForQuery(currentItems, queryTrimmed);
+
+		listEl.innerHTML = '';
+
+		if (hasFilter && matchingIds.size === 0 && currentItems.length > 0) {
+			statusEl.textContent = t.noMatches;
+			statusEl.className = 'drive-folder-browser__status drive-folder-browser__status--filter-empty';
+		} else if (currentItems.length > 0) {
+			statusEl.textContent = '';
+			statusEl.className = 'drive-folder-browser__status';
+		}
+
+		for (const item of ordered) {
+			const isFolder = item.mimeType === FOLDER_MIME;
+			const filteredOut = hasFilter && !matchingIds.has(item.id);
+			const li = document.createElement('li');
+			li.className = [
+				isFolder ? 'drive-folder-browser__row drive-folder-browser__row--folder' : 'drive-folder-browser__row drive-folder-browser__row--file',
+				filteredOut ? 'drive-folder-browser__row--filtered-out' : '',
+			]
+				.filter(Boolean)
+				.join(' ');
+
+			const btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 'drive-folder-browser__row-btn';
+			const icon = document.createElement('span');
+			icon.className = isFolder
+				? 'drive-folder-browser__glyph drive-folder-browser__glyph--folder'
+				: 'drive-folder-browser__glyph drive-folder-browser__glyph--file';
+			icon.setAttribute('aria-hidden', 'true');
+			const label = document.createElement('span');
+			label.className = 'drive-folder-browser__name';
+			label.textContent = item.name;
+			btn.append(icon, label);
+			btn.setAttribute('aria-label', `${isFolder ? t.folder : t.file}: ${item.name}`);
+
+			btn.addEventListener('click', () => {
+				if (isFolder) {
+					stack.push({ id: item.id, name: item.name });
+					void loadFolder(item.id);
+				} else {
+					window.open(viewUrlForItem(item), '_blank', 'noopener,noreferrer');
+				}
+			});
+
+			li.append(btn);
+			listEl.append(li);
+		}
+		scheduleScrollHint();
 	}
 
 	async function loadFolder(folderId: string): Promise<void> {
+		// New folder: clear filter so results always match “this folder”.
+		searchInput.value = '';
+		searchInput.disabled = true;
+		currentItems = [];
+
 		root.setAttribute('aria-busy', 'true');
 		statusEl.textContent = '';
 		statusEl.className = 'drive-folder-browser__status';
@@ -222,15 +309,17 @@ export function mountDriveFolderBrowser(root: HTMLElement): void {
 
 			if (!res.ok) {
 				root.removeAttribute('aria-busy');
+				searchInput.disabled = false;
 				clearItemCountLoading();
 				itemCountEl.textContent = '';
+				currentItems = [];
 				statusEl.textContent = t.error;
 				statusEl.className = 'drive-folder-browser__status drive-folder-browser__status--error';
 				scrollWrap.classList.remove('drive-folder-browser__scroll-wrap--more-below');
 				return;
 			}
 
-			const items = sortItems(data.items ?? []);
+			currentItems = sortItems(data.items ?? []);
 			const tail = stack[stack.length - 1];
 			if (tail && tail.id === folderId && typeof data.folderName === 'string' && data.folderName.length > 0) {
 				tail.name = data.folderName;
@@ -238,61 +327,45 @@ export function mountDriveFolderBrowser(root: HTMLElement): void {
 			renderCrumbs();
 
 			root.removeAttribute('aria-busy');
+			searchInput.disabled = false;
 			clearItemCountLoading();
-			itemCountEl.textContent = itemsLabel(locale, items.length);
+			itemCountEl.textContent = itemsLabel(locale, currentItems.length);
 			statusEl.textContent = '';
 			statusEl.className = 'drive-folder-browser__status';
 
-			if (items.length === 0) {
+			if (currentItems.length === 0) {
 				statusEl.textContent = t.empty;
 				statusEl.className = 'drive-folder-browser__status drive-folder-browser__status--empty';
 				scheduleScrollHint();
 				return;
 			}
 
-			for (const item of items) {
-				const li = document.createElement('li');
-				const isFolder = item.mimeType === FOLDER_MIME;
-				li.className = isFolder
-					? 'drive-folder-browser__row drive-folder-browser__row--folder'
-					: 'drive-folder-browser__row drive-folder-browser__row--file';
-				const btn = document.createElement('button');
-				btn.type = 'button';
-				btn.className = 'drive-folder-browser__row-btn';
-				const icon = document.createElement('span');
-				icon.className = isFolder
-					? 'drive-folder-browser__glyph drive-folder-browser__glyph--folder'
-					: 'drive-folder-browser__glyph drive-folder-browser__glyph--file';
-				icon.setAttribute('aria-hidden', 'true');
-				const label = document.createElement('span');
-				label.className = 'drive-folder-browser__name';
-				label.textContent = item.name;
-				btn.append(icon, label);
-				btn.setAttribute('aria-label', `${isFolder ? t.folder : t.file}: ${item.name}`);
-
-				btn.addEventListener('click', () => {
-					if (isFolder) {
-						stack.push({ id: item.id, name: item.name });
-						void loadFolder(item.id);
-					} else {
-						window.open(viewUrlForItem(item), '_blank', 'noopener,noreferrer');
-					}
-				});
-
-				li.append(btn);
-				listEl.append(li);
-			}
+			renderItemList();
 			anchorFocusInPanel();
-			scheduleScrollHint();
 		} catch {
 			root.removeAttribute('aria-busy');
+			searchInput.disabled = false;
 			clearItemCountLoading();
 			itemCountEl.textContent = '';
+			currentItems = [];
 			statusEl.textContent = t.error;
 			statusEl.className = 'drive-folder-browser__status drive-folder-browser__status--error';
 			scrollWrap.classList.remove('drive-folder-browser__scroll-wrap--more-below');
 		}
 	}
+
+	searchInput.addEventListener('input', () => {
+		renderItemList();
+	});
+	searchInput.addEventListener('search', () => {
+		renderItemList();
+	});
+	searchInput.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape') {
+			searchInput.value = '';
+			renderItemList();
+		}
+	});
 
 	backBtn.addEventListener('click', () => {
 		if (stack.length <= 1) {

@@ -374,34 +374,64 @@
   outline-offset: 2px;
 }
 
-.drive-folder-browser__open-drive {
-  margin-left: auto;
+.drive-folder-browser__search-wrap {
+  flex: 1;
+  min-width: min(100%, 11rem);
+}
+
+.drive-folder-browser__search-label {
+  display: block;
+  margin: 0;
+}
+
+.drive-folder-browser__search {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 8px 12px 8px 36px;
+  font: inherit;
   font-size: 15px;
-  font-weight: 500;
-  color: #0066cc;
-  text-decoration: none;
-  padding: 6px 4px;
-  border-radius: 6px;
+  font-weight: 450;
+  line-height: 1.35;
+  color: var(--text);
+  background: #fff
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E")
+    10px center no-repeat;
+  background-size: 18px 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-.drive-folder-browser__open-drive:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+.drive-folder-browser__search::placeholder {
+  color: rgba(0, 0, 0, 0.38);
 }
 
-.drive-folder-browser__open-drive:focus-visible {
+.drive-folder-browser__search:hover {
+  border-color: rgba(72, 196, 255, 0.35);
+}
+
+.drive-folder-browser__search:focus {
+  outline: none;
+  border-color: rgba(72, 196, 255, 0.55);
+  box-shadow: 0 0 0 3px rgba(72, 196, 255, 0.18);
+}
+
+.drive-folder-browser__search:focus-visible {
   outline: 2px solid rgba(72, 196, 255, 0.55);
   outline-offset: 2px;
 }
 
-.prose .drive-folder-browser__open-drive,
-.prose a.drive-folder-browser__open-drive {
-  color: #0066cc !important;
-  text-decoration: none !important;
+.drive-folder-browser__search:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
-.prose .drive-folder-browser__open-drive:hover {
-  text-decoration: underline !important;
+/* Safari / WebKit search cancel button spacing */
+.drive-folder-browser__search::-webkit-search-cancel-button {
+  margin-inline-start: 6px;
 }
 
 .drive-folder-browser__crumbs {
@@ -495,6 +525,11 @@
   color: #b91c1c;
   font-weight: 500;
   padding-bottom: 12px;
+}
+
+.drive-folder-browser__status--filter-empty {
+  color: var(--muted);
+  font-weight: 500;
 }
 
 .drive-folder-browser__scroll-wrap {
@@ -660,6 +695,24 @@
 
 .drive-folder-browser__row:last-child {
   border-bottom: none;
+}
+
+.drive-folder-browser__row--filtered-out .drive-folder-browser__row-btn {
+  opacity: 0.6;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
+}
+
+.drive-folder-browser__row--filtered-out:focus-within .drive-folder-browser__row-btn,
+.drive-folder-browser__row--filtered-out .drive-folder-browser__row-btn:focus-visible {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drive-folder-browser__row--filtered-out .drive-folder-browser__row-btn {
+    transition: none;
+  }
 }
 
 .drive-folder-browser__row:nth-child(even) .drive-folder-browser__row-btn {
