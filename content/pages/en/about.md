@@ -21,7 +21,7 @@ The Association is governed by a **Board of Directors**, elected at the annual g
 
 ### Association Bylaws
 
-The Association is governed under the laws of the Province of Quebec through Association By-laws that were last updated in 2021. [Association Bylaws can be found here.](/en/about/bylaws)
+The Association is governed under the laws of the Province of Quebec through Association By-laws that were last updated in 2025. [Association Bylaws can be found here.](/en/about/bylaws)
 
 ### Recent Business Records
 

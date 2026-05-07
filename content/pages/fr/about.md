@@ -21,7 +21,7 @@ L'Association est gouvernée par un **conseil d'administration**, élu lors de l
 
 ### Règlements de l'Association
 
-L'Association est régie par les lois de la province de Québec par le biais des règlements de l'Association qui ont été mis à jour pour la dernière fois en 2021. [Les règlements de l'Association peuvent être consultés ici.](/fr/about/bylaws)
+L'Association est régie par les lois de la province de Québec par le biais des règlements de l'Association qui ont été mis à jour pour la dernière fois en 2025. [Les règlements de l'Association peuvent être consultés ici.](/fr/about/bylaws)
 
 ### Procès-verbaux récents
 
