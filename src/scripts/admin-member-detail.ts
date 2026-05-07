@@ -741,11 +741,13 @@ export function initAdminMemberDetail(
 				return;
 			}
 			const date = String(fd.get('payment_date') ?? '').trim();
+			const reference = String(fd.get('payment_reference') ?? '').trim();
 			const notes = String(fd.get('payment_notes') ?? '').trim();
 			payment = {
 				amount,
 				method,
 				...(date ? { date } : {}),
+				...(reference ? { reference } : {}),
 				...(notes ? { notes } : {}),
 			};
 		}

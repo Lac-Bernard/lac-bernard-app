@@ -41,6 +41,8 @@ const adminKeys = [
 	'adminMethodCash',
 	'adminMethodUnknown',
 	'adminDateLabel',
+	'adminPaymentReferenceLabel',
+	'adminPaymentReferenceVisibleHint',
 	'adminNotesLabel',
 	'checkoutModalCancel',
 	'profileSectionPrimaryMember',
@@ -191,6 +193,11 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
               <label>
                 {t.adminDateLabel}
                 <input type="date" name="payment_date" class="adminInput" />
+              </label>
+              <label>
+                {t.adminPaymentReferenceLabel}
+                <input type="text" name="payment_reference" class="adminInput" autocomplete="off" maxlength="512" />
+                <p class="adminHint adminPaymentFieldHint">{t.adminPaymentReferenceVisibleHint}</p>
               </label>
               <label>
                 {t.adminNotesLabel}

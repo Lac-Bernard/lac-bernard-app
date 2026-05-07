@@ -154,10 +154,12 @@ export function initAdminMemberNew(
 					}
 					const date = String(fd.get('payment_date') ?? '').trim();
 					const notes = String(fd.get('payment_notes') ?? '').trim();
+					const reference = String(fd.get('payment_reference') ?? '').trim();
 					payment = {
 						amount,
 						method,
 						...(date ? { date } : {}),
+						...(reference ? { reference } : {}),
 						...(notes ? { notes } : {}),
 					};
 				}
