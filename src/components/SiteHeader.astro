@@ -29,6 +29,9 @@ const alternatePath = langToggleUsesHome
 	? getLocalizedPath('/', alternateLang)
 	: getLocalizedPath(pathWithoutLocale, alternateLang);
 
+const merchShopUrl =
+	'https://www.myschoolclothing.com/collections/lac-bernard-lake-summer-merch';
+
 // Navigation labels
 const navLabels = {
 	en: {
@@ -38,6 +41,7 @@ const navLabels = {
 		environment: 'Environment',
 		community: 'Community',
 		history: 'History',
+		shop: 'Shop',
 		contact: 'Contact Us',
 	},
 	fr: {
@@ -47,6 +51,7 @@ const navLabels = {
 		environment: 'Environnement',
 		community: 'Communauté',
 		history: 'Histoire',
+		shop: 'Boutique',
 		contact: 'Contactez-nous',
 	},
 };
@@ -105,6 +110,8 @@ const activeSection = getActiveSection(currentPath);
       <a href={getLocalizedHref('/community', currentLang)} class={activeSection === 'community' ? 'navCta' : ''}>{labels.community}</a>
 
       <a href={getLocalizedHref('/history', currentLang)} class={activeSection === 'history' ? 'navCta' : ''}>{labels.history}</a>
+
+      <a href={merchShopUrl} target="_blank" rel="noopener noreferrer">{labels.shop}</a>
       
       <a href={getLocalizedHref('/contact', currentLang)} class={activeSection === 'contact' ? 'navCta' : ''}>{labels.contact}</a>
       
