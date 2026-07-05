@@ -1,7 +1,7 @@
 import { sanitizeAdminMemberSearch } from './membersSearch';
 import { getMembershipCalendarYear } from '../members/membershipYear';
 
-export type AdminMemberIndexView = 'voting' | 'mailing' | 'pending' | 'lapsed' | 'incomplete' | 'all';
+export type AdminMemberIndexView = 'voting' | 'associate' | 'mailing' | 'pending' | 'lapsed' | 'incomplete' | 'all';
 
 export type AdminMemberIndexSort = 'last_name_asc' | 'last_name_desc' | 'created_at_desc' | 'created_at_asc';
 
@@ -20,6 +20,7 @@ export type AdminMemberIndexParams = {
 function isView(s: string): s is AdminMemberIndexView {
 	return (
 		s === 'voting' ||
+		s === 'associate' ||
 		s === 'mailing' ||
 		s === 'pending' ||
 		s === 'lapsed' ||

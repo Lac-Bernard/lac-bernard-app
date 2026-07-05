@@ -2,7 +2,7 @@
 
 import { escapeHtml } from '../lib/admin/escapeHtml';
 
-export type MemberIndexView = 'voting' | 'mailing' | 'pending' | 'lapsed' | 'incomplete' | 'all';
+export type MemberIndexView = 'voting' | 'associate' | 'mailing' | 'pending' | 'lapsed' | 'incomplete' | 'all';
 
 type AdminStrings = Record<string, string>;
 
@@ -120,6 +120,8 @@ function viewLabel(strings: AdminStrings, view: MemberIndexView): string {
 	switch (view) {
 		case 'voting':
 			return t(strings, 'adminViewVoting');
+		case 'associate':
+			return t(strings, 'adminViewAssociate');
 		case 'mailing':
 			return t(strings, 'adminViewMailing');
 		case 'pending':
@@ -189,6 +191,7 @@ export function initAdminMemberIndex(
 		const v = (sp.get('view') ?? 'mailing').trim().toLowerCase();
 		if (
 			v === 'voting' ||
+			v === 'associate' ||
 			v === 'mailing' ||
 			v === 'pending' ||
 			v === 'lapsed' ||
@@ -266,7 +269,7 @@ export function initAdminMemberIndex(
 	function renderPills() {
 		if (!pillsRoot) return;
 		updateMailingViewDescription();
-		const views: MemberIndexView[] = ['voting', 'mailing', 'pending', 'lapsed', 'incomplete', 'all'];
+		const views: MemberIndexView[] = ['voting', 'associate', 'mailing', 'pending', 'lapsed', 'incomplete', 'all'];
 		const q = searchInput?.value.trim() ?? '';
 		const searchActive = q.length > 0;
 		pillsRoot.classList.toggle('adminMemberIndexPills--searchActive', searchActive);
@@ -313,6 +316,8 @@ export function initAdminMemberIndex(
 		switch (currentView) {
 			case 'voting':
 				return escapeHtml(t(strings, 'adminMemberIndexMetaVoting', { count: total }));
+			case 'associate':
+				return escapeHtml(t(strings, 'adminMemberIndexMetaAssociate', { count: total }));
 			case 'mailing':
 				return escapeHtml(t(strings, 'adminMemberIndexMetaMailing', { count: total }));
 			case 'pending':
@@ -367,6 +372,9 @@ export function initAdminMemberIndex(
 			switch (currentView) {
 				case 'voting':
 					msg = t(strings, 'adminEmptyVoting', { year: y });
+					break;
+				case 'associate':
+					msg = t(strings, 'adminEmptyAssociate', { year: y });
 					break;
 				case 'mailing':
 					msg = t(strings, 'adminEmptyMailing', { year: y });

@@ -284,12 +284,14 @@ export const memberCopy: Record<
 		/** Plain-language note: {{lapsedSince}}, {{currentYear}} */
 		adminLapsedSinceNote: string;
 		adminViewVoting: string;
+		adminViewAssociate: string;
 		adminViewMailing: string;
 		adminViewPending: string;
 		adminViewLapsed: string;
 		adminViewIncomplete: string;
 		adminViewAll: string;
 		adminMemberIndexMetaVoting: string;
+		adminMemberIndexMetaAssociate: string;
 		adminMemberIndexMetaMailing: string;
 		/** Shown under view pills when "mailing" (active members) view is selected; {{year}} = membership year */
 		adminMemberIndexViewDescMailing: string;
@@ -314,6 +316,7 @@ export const memberCopy: Record<
 		adminStatusBadgeNew: string;
 		adminStatusBadgeDisabled: string;
 		adminEmptyVoting: string;
+		adminEmptyAssociate: string;
 		adminEmptyMailing: string;
 		adminEmptyPending: string;
 		adminEmptyLapsed: string;
@@ -755,12 +758,14 @@ export const memberCopy: Record<
 		adminLapsedSinceNote:
 			'— members active in {{lapsedSince}} or later with no {{currentYear}} membership.',
 		adminViewVoting: 'Voting members',
+		adminViewAssociate: 'Associate members',
 		adminViewMailing: 'Active members',
 		adminViewPending: 'Pending payment',
 		adminViewLapsed: 'Lapsed',
 		adminViewIncomplete: 'Incomplete signups',
 		adminViewAll: 'All members',
 		adminMemberIndexMetaVoting: '{{count}} voting members',
+		adminMemberIndexMetaAssociate: '{{count}} associate members',
 		adminMemberIndexMetaMailing: '{{count}} active members',
 		adminMemberIndexViewDescMailing:
 			'All members with an active membership for {{year}} — voting and associate.',
@@ -785,6 +790,7 @@ export const memberCopy: Record<
 		adminStatusBadgeNew: 'new',
 		adminStatusBadgeDisabled: 'disabled',
 		adminEmptyVoting: 'No active voting members for {{year}} yet.',
+		adminEmptyAssociate: 'No active associate members for {{year}} yet.',
 		adminEmptyMailing: 'No active members for {{year}} yet.',
 		adminEmptyPending: 'No pending payments — all clear.',
 		adminEmptyLapsed: 'No members lapsed since {{year}}. Everyone who was active then has renewed.',
@@ -1235,12 +1241,14 @@ export const memberCopy: Record<
 		adminLapsedSinceNote:
 			'— membres actifs en {{lapsedSince}} ou après sans adhésion {{currentYear}}.',
 		adminViewVoting: 'Membres votants',
+		adminViewAssociate: 'Membres associés',
 		adminViewMailing: 'Membres actifs',
 		adminViewPending: 'Paiement en attente',
 		adminViewLapsed: 'Inactifs',
 		adminViewIncomplete: 'Inscriptions incomplètes',
 		adminViewAll: 'Tous les membres',
 		adminMemberIndexMetaVoting: '{{count}} membres votants',
+		adminMemberIndexMetaAssociate: '{{count}} membres associés',
 		adminMemberIndexMetaMailing: '{{count}} membres actifs',
 		adminMemberIndexViewDescMailing:
 			'Tous les membres ayant une adhésion active pour {{year}} — votants et associés.',
@@ -1266,6 +1274,7 @@ export const memberCopy: Record<
 		adminStatusBadgeNew: 'nouveau',
 		adminStatusBadgeDisabled: 'désactivé',
 		adminEmptyVoting: 'Aucun membre votant actif pour {{year}} pour l’instant.',
+		adminEmptyAssociate: 'Aucun membre associé actif pour {{year}} pour l’instant.',
 		adminEmptyMailing: 'Aucun membre actif pour {{year}} pour l’instant.',
 		adminEmptyPending: 'Aucun paiement en attente — tout est en ordre.',
 		adminEmptyLapsed:
