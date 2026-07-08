@@ -51,6 +51,7 @@ type MembershipRow = {
 	year: number;
 	tier: string;
 	status: string;
+	complimentary: boolean;
 	payments: PaymentRow[];
 };
 
@@ -350,11 +351,13 @@ export function initAdminMemberDetail(
 
 		const tier = tierLabelFor(ms);
 		const statusLabel =
-			ms.status === 'active'
-				? t(strings, 'membershipStatusActive')
-				: ms.status === 'pending'
-					? t(strings, 'membershipStatusPending')
-					: ms.status;
+			ms.complimentary
+				? t(strings, 'membershipStatusComplimentary')
+				: ms.status === 'active'
+					? t(strings, 'membershipStatusActive')
+					: ms.status === 'pending'
+						? t(strings, 'membershipStatusPending')
+						: ms.status;
 		const statusBadgeClass =
 			ms.status === 'active'
 				? 'adminDetailBadge adminDetailBadge--status adminDetailBadge--active'
@@ -374,7 +377,7 @@ export function initAdminMemberDetail(
 			:	'';
 
 		const balanceRow =
-			bd.expectedFee != null && remainingDues > 0 ?
+			!ms.complimentary && bd.expectedFee != null && remainingDues > 0 ?
 				`<div class="adminDetailSummaryRow adminDetailSummaryRow--balanceDue">
 					<span>${escapeHtml(t(strings, 'adminDetailBalanceDue'))}</span>
 					<span class="adminDetailSummaryValue adminDetailSummaryValue--due">${escapeHtml(fmtMoney(remainingDues))}</span>
@@ -382,7 +385,9 @@ export function initAdminMemberDetail(
 			:	'';
 
 		const duesPaidHint =
-			bd.expectedFee != null && remainingDues <= 0 && bd.membershipSubtotal + 0.001 >= (bd.expectedFee ?? 0) ?
+			ms.complimentary ?
+				`<p class="adminDetailDuesPaidHint">${escapeHtml(t(strings, 'adminDetailComplimentaryHint'))}</p>`
+			: bd.expectedFee != null && remainingDues <= 0 && bd.membershipSubtotal + 0.001 >= (bd.expectedFee ?? 0) ?
 				`<p class="adminDetailDuesPaidHint">${escapeHtml(t(strings, 'adminDetailDuesPaidInFull'))}</p>`
 			:	'';
 
@@ -451,7 +456,7 @@ export function initAdminMemberDetail(
 			.join('');
 
 		const recordBtn =
-			ms.status === 'pending' || ms.status === 'active' ?
+			!ms.complimentary && (ms.status === 'pending' || ms.status === 'active') ?
 				`<button type="button" class="adminBtn adminBtn--solid" data-open-payment data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminRecordPaymentBtn'))}</button>`
 			:	'';
 

@@ -157,6 +157,7 @@ export const memberCopy: Record<
 		adminDetailPaymentSummaryTitle: string;
 		adminDetailBalanceDue: string;
 		adminDetailDuesPaidInFull: string;
+		adminDetailComplimentaryHint: string;
 		adminDeletePaymentBtn: string;
 		adminDeletePaymentConfirm: string;
 		adminPaymentDeleted: string;
@@ -221,6 +222,7 @@ export const memberCopy: Record<
 		adminAddMemberSubmit: string;
 		adminAddMemberInitialPending: string;
 		adminAddMemberInitialPaid: string;
+		adminAddMemberInitialComplimentary: string;
 		adminAddMembershipOpen: string;
 		adminAddMembershipDialogTitle: string;
 		adminAddMembershipSubmit: string;
@@ -343,6 +345,7 @@ export const memberCopy: Record<
 		membershipTableStatus: string;
 		membershipStatusActive: string;
 		membershipStatusPending: string;
+		membershipStatusComplimentary: string;
 		tierGeneral: string;
 		tierAssociate: string;
 		tierGeneralExplainer: string;
@@ -627,6 +630,7 @@ export const memberCopy: Record<
 		adminDetailPaymentSummaryTitle: 'Summary',
 		adminDetailBalanceDue: 'Balance due (dues)',
 		adminDetailDuesPaidInFull: 'Annual dues fully paid',
+		adminDetailComplimentaryHint: 'Complimentary membership — no payment required',
 		adminDeletePaymentBtn: 'Remove',
 		adminDeletePaymentConfirm:
 			'Delete this payment? Membership status will be recalculated from remaining payments. This cannot be undone.',
@@ -688,6 +692,7 @@ export const memberCopy: Record<
 		adminAddMemberSubmit: 'Create member',
 		adminAddMemberInitialPending: 'Pending payment',
 		adminAddMemberInitialPaid: 'Record payment now (cash, e-Transfer, etc.)',
+		adminAddMemberInitialComplimentary: 'Complimentary (no payment collected)',
 		adminAddMembershipOpen: 'Add membership',
 		adminAddMembershipDialogTitle: 'Add membership',
 		adminAddMembershipSubmit: 'Add membership',
@@ -819,6 +824,7 @@ export const memberCopy: Record<
 		membershipTableStatus: 'Status',
 		membershipStatusActive: 'Active',
 		membershipStatusPending: 'Pending payment',
+		membershipStatusComplimentary: 'Complimentary',
 		tierGeneral: 'Voting',
 		tierAssociate: 'Associate',
 		tierGeneralExplainer:
@@ -1108,6 +1114,7 @@ export const memberCopy: Record<
 		adminDetailPaymentSummaryTitle: 'Sommaire',
 		adminDetailBalanceDue: 'Solde dû (cotisation)',
 		adminDetailDuesPaidInFull: 'Cotisation annuelle entièrement payée',
+		adminDetailComplimentaryHint: 'Adhésion offerte — aucun paiement requis',
 		adminDeletePaymentBtn: 'Retirer',
 		adminDeletePaymentConfirm:
 			'Supprimer ce paiement? Le statut d’adhésion sera recalculé selon les paiements restants. Action irréversible.',
@@ -1169,6 +1176,7 @@ export const memberCopy: Record<
 		adminAddMemberSubmit: 'Créer le membre',
 		adminAddMemberInitialPending: 'En attente de paiement',
 		adminAddMemberInitialPaid: 'Enregistrer le paiement maintenant (comptant, virement, etc.)',
+		adminAddMemberInitialComplimentary: 'Offerte (aucun paiement perçu)',
 		adminAddMembershipOpen: 'Ajouter une adhésion',
 		adminAddMembershipDialogTitle: 'Ajouter une adhésion',
 		adminAddMembershipSubmit: 'Ajouter',
@@ -1304,6 +1312,7 @@ export const memberCopy: Record<
 		membershipTableStatus: 'Statut',
 		membershipStatusActive: 'Active',
 		membershipStatusPending: 'En attente de paiement',
+		membershipStatusComplimentary: 'Offerte',
 		tierGeneral: 'Votant',
 		tierAssociate: 'Associée',
 		tierGeneralExplainer:
