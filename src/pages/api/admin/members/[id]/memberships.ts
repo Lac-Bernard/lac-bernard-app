@@ -47,14 +47,17 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 			headers: { 'Content-Type': 'application/json' },
 		});
 	}
-	if (initial !== 'pending' && initial !== 'active_with_payment') {
+	if (initial !== 'pending' && initial !== 'active_with_payment' && initial !== 'complimentary') {
 		return new Response(JSON.stringify({ error: 'invalid_initial' }), {
 			status: 400,
 			headers: { 'Content-Type': 'application/json' },
 		});
 	}
 
-	const pOutcome = initial === 'pending' ? 'pending' : 'record_payment';
+	const pOutcome =
+		initial === 'pending' ? 'pending'
+		: initial === 'complimentary' ? 'complimentary'
+		: 'record_payment';
 
 	let pAmount: number | null = null;
 	let pMethod: string | null = null;
