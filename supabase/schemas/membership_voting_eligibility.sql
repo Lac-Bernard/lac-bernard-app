@@ -62,6 +62,6 @@ end;
 $function$;
 
 revoke all on function public.membership_voting_eligibility(p_member_id uuid, p_year smallint) from public;
-grant execute on function public.membership_voting_eligibility(p_member_id uuid, p_year smallint) to anon, authenticated, service_role;
+grant execute on function public.membership_voting_eligibility(p_member_id uuid, p_year smallint) to authenticated;
 comment on function public.membership_voting_eligibility(p_member_id uuid, p_year smallint) is
   'Whether member may purchase voting membership: lake address required; one voting membership per address per year.';

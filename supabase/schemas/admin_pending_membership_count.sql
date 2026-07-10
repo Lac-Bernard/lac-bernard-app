@@ -15,6 +15,6 @@ AS $function$
 $function$;
 
 revoke all on function public.admin_pending_membership_count(p_year smallint) from public;
-grant execute on function public.admin_pending_membership_count(p_year smallint) to anon, authenticated, service_role;
+grant execute on function public.admin_pending_membership_count(p_year smallint) to service_role;
 comment on function public.admin_pending_membership_count(p_year smallint) is
   'Count of non-disabled members with a pending membership for p_year. Same rule as pending_f in admin_member_index — use for tab badge and activity KPI so counts cannot drift from directory pills.';

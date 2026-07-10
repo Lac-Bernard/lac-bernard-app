@@ -16,6 +16,6 @@ AS $function$
 $function$;
 
 revoke all on function public.normalize_lake_address_key(civic text, street text) from public;
-grant execute on function public.normalize_lake_address_key(civic text, street text) to anon, authenticated, service_role;
+grant execute on function public.normalize_lake_address_key(civic text, street text) to authenticated;
 comment on function public.normalize_lake_address_key(civic text, street text) is
   'Deterministic key for lake civic + street; NULL if either part empty after trim.';

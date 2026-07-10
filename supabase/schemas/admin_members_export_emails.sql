@@ -132,4 +132,4 @@ end;
 $function$;
 
 revoke all on function public.admin_members_export_emails(p_year smallint, p_membership text, p_tier text, p_member_status text, p_q text) from public;
-grant execute on function public.admin_members_export_emails(p_year smallint, p_membership text, p_tier text, p_member_status text, p_q text) to anon, authenticated, service_role;
+grant execute on function public.admin_members_export_emails(p_year smallint, p_membership text, p_tier text, p_member_status text, p_q text) to service_role;

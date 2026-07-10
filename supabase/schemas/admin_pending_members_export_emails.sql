@@ -25,6 +25,6 @@ end;
 $function$;
 
 revoke all on function public.admin_pending_members_export_emails() from public;
-grant execute on function public.admin_pending_members_export_emails() to anon, authenticated, service_role;
+grant execute on function public.admin_pending_members_export_emails() to service_role;
 comment on function public.admin_pending_members_export_emails() is
   'Comma-separated primary emails for pending memberships; requires non-empty primary email. service_role only.';

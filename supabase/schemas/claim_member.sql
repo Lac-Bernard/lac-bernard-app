@@ -39,4 +39,4 @@ end;
 $function$;
 
 revoke all on function public.claim_member() from public;
-grant execute on function public.claim_member() to anon, authenticated, service_role;
+grant execute on function public.claim_member() to authenticated;

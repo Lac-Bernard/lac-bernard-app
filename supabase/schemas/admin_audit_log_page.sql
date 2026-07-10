@@ -51,6 +51,6 @@ end;
 $function$;
 
 revoke all on function public.admin_audit_log_page(p_limit integer, p_offset integer) from public;
-grant execute on function public.admin_audit_log_page(p_limit integer, p_offset integer) to anon, authenticated, service_role;
+grant execute on function public.admin_audit_log_page(p_limit integer, p_offset integer) to service_role;
 comment on function public.admin_audit_log_page(p_limit integer, p_offset integer) is
   'Paginated audit rows newest first, with actor email from auth.users. service_role only.';

@@ -11,6 +11,6 @@ AS $function$
 $function$;
 
 revoke all on function public.membership_tier_fee_amount(p_tier text) from public;
-grant execute on function public.membership_tier_fee_amount(p_tier text) to anon, authenticated, service_role;
+grant execute on function public.membership_tier_fee_amount(p_tier text) to service_role;
 comment on function public.membership_tier_fee_amount(p_tier text) is
   'Expected annual membership dues in CAD for tier (voting 75, associate 25).';
