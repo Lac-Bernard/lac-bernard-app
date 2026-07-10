@@ -359,11 +359,13 @@ export function initAdminMemberDetail(
 						? t(strings, 'membershipStatusPending')
 						: ms.status;
 		const statusBadgeClass =
-			ms.status === 'active'
-				? 'adminDetailBadge adminDetailBadge--status adminDetailBadge--active'
-				: ms.status === 'pending'
-					? 'adminDetailBadge adminDetailBadge--status adminDetailBadge--pending'
-					: 'adminDetailBadge adminDetailBadge--status adminDetailBadge--neutral';
+			ms.complimentary
+				? 'adminDetailBadge adminDetailBadge--status adminDetailBadge--complimentary'
+				: ms.status === 'active'
+					? 'adminDetailBadge adminDetailBadge--status adminDetailBadge--active'
+					: ms.status === 'pending'
+						? 'adminDetailBadge adminDetailBadge--status adminDetailBadge--pending'
+						: 'adminDetailBadge adminDetailBadge--status adminDetailBadge--neutral';
 
 		const bd = sumYearPaymentBreakdown(ms.payments ?? [], ms.tier);
 		const remainingDues =

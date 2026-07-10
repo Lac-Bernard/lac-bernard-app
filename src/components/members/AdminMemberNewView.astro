@@ -23,6 +23,7 @@ const adminKeys = [
 	'adminAddMemberSubmit',
 	'adminAddMemberInitialPending',
 	'adminAddMemberInitialPaid',
+	'adminAddMemberInitialComplimentary',
 	'adminBreadcrumbAria',
 	'adminPrimaryEmailLabel',
 	'adminSecondaryEmailLabel',
@@ -173,6 +174,10 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
                 <label class="adminRadioRow">
                   <input type="radio" name="membership_initial" value="active_with_payment" />
                   {t.adminAddMemberInitialPaid}
+                </label>
+                <label class="adminRadioRow">
+                  <input type="radio" name="membership_initial" value="complimentary" />
+                  {t.adminAddMemberInitialComplimentary}
                 </label>
               </div>
             </div>
