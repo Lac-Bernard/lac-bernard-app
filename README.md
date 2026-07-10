@@ -90,6 +90,22 @@ For local member auth and data without touching production:
 
 Use `supabase status` for the local **API URL** and **anon key** to put in `.env`. Magic-link emails in dev are captured by the local mail UI (Inbucket), usually at `http://127.0.0.1:54324`—open the message there and click the link. Redirect URLs for the app are configured in `supabase/config.toml` under `[auth]` (defaults include `http://localhost:4321` for Astro).
 
+### Changing tables, functions, or RLS policies
+
+The database schema (tables, RLS policies, and all `public.*` functions) is declared in `supabase/schemas/*.sql` — one file per function, plus `supabase/schemas/0000_tables.sql` for tables/policies/grants. **Edit those files, not `supabase/migrations/` directly.** This is what makes PRs reviewable: a one-line change to a function shows up as a one-line diff in the schema file, instead of a brand-new `CREATE OR REPLACE FUNCTION` migration with no diff against the old body.
+
+Workflow for changing a function (e.g. `record_manual_payment`):
+
+1. Make sure local Supabase is running (`supabase start`) and up to date (`supabase db reset`).
+2. Edit `supabase/schemas/record_manual_payment.sql`.
+3. Generate the migration: `supabase db diff -f short_description_of_change`. This writes a new file under `supabase/migrations/`.
+4. Run `supabase db reset` to confirm the generated migration applies cleanly.
+5. Commit both the schema file change and the generated migration. In the PR, review the schema file diff — that's the actual behavior change. The migration file is a generated artifact; skim it for sanity but it will usually be a full function body (Postgres has no partial `ALTER FUNCTION` for the body).
+
+Adding a new table or function follows the same pattern: add a new file under `supabase/schemas/`, then run `supabase db diff -f ...`.
+
+If `supabase db diff` reports unexpected drift when you haven't touched schema files, someone likely edited a migration by hand or ran raw SQL against the local/remote DB — reconcile the schema files first (see "no schema changes found" as the baseline sanity check).
+
 **Master membership list (CSV import):** Homebrew / system Python often raises `externally-managed-environment` if you `pip install` globally. Create a **project venv** once, then install deps there:
 
 ```bash
