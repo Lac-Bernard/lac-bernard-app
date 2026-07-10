@@ -345,7 +345,6 @@ export function initAdminMemberDetail(
 		if (!ms) {
 			return `<div class="adminDetailNoMsWrap">
 				<p class="adminHint">${escapeHtml(t(strings, 'adminDetailNoMembershipForYear', { year: selectedYear }))}</p>
-				<p class="adminDetailAddMsActions"><button type="button" class="adminBtn adminBtn--outline" data-open-add-membership data-year="${selectedYear}">${escapeHtml(t(strings, 'adminAddMembershipOpen'))}</button></p>
 			</div>`;
 		}
 
@@ -374,7 +373,7 @@ export function initAdminMemberDetail(
 			:	0;
 
 		const tierScheduleMeta =
-			bd.expectedFee != null ?
+			!ms.complimentary && bd.expectedFee != null ?
 				`<p class="adminDetailTierSchedule">${escapeHtml(t(strings, 'adminDetailTierScheduleDues', { amount: fmtMoney(bd.expectedFee) }))}</p>`
 			:	'';
 
@@ -502,9 +501,7 @@ export function initAdminMemberDetail(
 
 		const upgradeRow =
 			ms.tier === 'associate' ?
-				`<div class="adminDetailUpgradeRow">
-					<button type="button" class="adminBtn adminBtn--outline" data-upgrade-to-voting data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminUpgradeToVotingBtn'))}</button>
-				</div>`
+				`<div class="adminDetailUpgradeRow"><button type="button" class="adminBtn adminBtn--outline" data-upgrade-to-voting data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminUpgradeToVotingBtn'))}</button></div>`
 			:	'';
 
 		return `<article class="adminDetailMembershipCard" data-membership-id="${escapeHtml(ms.id)}">
@@ -527,6 +524,15 @@ export function initAdminMemberDetail(
 		</article>`;
 	}
 
+	function nextOpenMembershipYear(): number {
+		const existing = new Set(allMemberships.map((m) => m.year));
+		let y = calendarYear;
+		while (existing.has(y)) {
+			y += 1;
+		}
+		return y;
+	}
+
 	function renderMembershipMount() {
 		if (!mount) return;
 		const years = getYearOptions();
@@ -545,6 +551,7 @@ export function initAdminMemberDetail(
 					${opts}
 				</select>
 			</label>
+			<button type="button" class="adminBtn adminBtn--outline adminDetailAddMembershipToolbarBtn" data-open-add-membership data-year="${nextOpenMembershipYear()}">${escapeHtml(t(strings, 'adminAddMembershipOpen'))}</button>
 		</div>
 		<div id="admin-detail-year-panel" class="adminDetailYearPanel">${renderYearPanelHtml()}</div>`;
 
