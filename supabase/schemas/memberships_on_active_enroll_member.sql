@@ -14,10 +14,10 @@ begin
 end;
 $function$;
 
-revoke all on function public.memberships_on_active_enroll_member() from public;
-grant execute on function public.memberships_on_active_enroll_member() to anon, authenticated, service_role;
 comment on function public.memberships_on_active_enroll_member() is
   'After membership becomes active: set members.status from new to enrolled.';
+
+drop trigger if exists memberships_on_active_enroll_member on public.memberships;
 
 create trigger memberships_on_active_enroll_member
   after insert or update of status on public.memberships

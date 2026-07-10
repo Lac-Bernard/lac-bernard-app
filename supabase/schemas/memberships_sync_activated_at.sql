@@ -23,8 +23,7 @@ begin
 end;
 $function$;
 
-revoke all on function public.memberships_sync_activated_at() from public;
-grant execute on function public.memberships_sync_activated_at() to anon, authenticated, service_role;
+drop trigger if exists memberships_sync_activated_at on public.memberships;
 
 create trigger memberships_sync_activated_at
   before insert or update of status, activated_at on public.memberships
