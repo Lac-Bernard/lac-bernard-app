@@ -492,7 +492,10 @@ export function initAdminMemberDetail(
 
 		const futureBadge =
 			ms.year > calendarYear ?
-				`<span class="adminDetailBadge adminDetailBadge--future">${escapeHtml(t(strings, 'adminDetailFutureBadge'))}</span>`
+				`<div class="adminDetailIdentityBlock">
+					<span class="adminDetailIdentityLabel" aria-hidden="true">&nbsp;</span>
+					<span class="adminDetailBadge adminDetailBadge--future">${escapeHtml(t(strings, 'adminDetailFutureBadge'))}</span>
+				</div>`
 			:	'';
 
 		const upgradeRow =
