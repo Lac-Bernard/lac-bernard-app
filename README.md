@@ -74,6 +74,8 @@ A bilingual (French/English) website built with Astro and TinaCMS for the Lac Be
 | `npm run db:seed:apply:reset` | Same as `db:seed:apply`, but remove prior dummy seed rows first (`ALLOW_DUMMY_SEED_RESET=1` as well). Not the same as CSV `--reset` — see `node scripts/generate-dummy-seeds.mjs --help` |
 | `npm run db:import-members-csv` | Import the association master membership CSV into Supabase (Python deps in a **venv** — see below; needs `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` in `.env`) |
 | `npm run db:import-members-csv:local` | Same, but targets the **local** Docker stack (`supabase start`); credentials come from `supabase status` |
+| `npm run test:e2e`        | Run Playwright end-to-end tests (see [End-to-end tests](#-end-to-end-tests)) |
+| `npm run test:e2e:ui`     | Run Playwright tests in interactive UI mode |
 
 If `npm run build` fails because Tina’s dev port is in use, run `npx astro build` to verify the Astro output only.
 
@@ -101,6 +103,30 @@ The npm scripts `db:import-members-csv` / `db:import-members-csv:local` use `scr
 After `supabase db reset`, run `npm run db:import-members-csv:local -- /path/to/Master_Membership_List.csv`. To wipe first, **put `--reset` after the `--`** (e.g. `npm run db:import-members-csv -- --reset ./sheet.csv`). If you write `npm run db:import-members-csv --reset ./sheet.csv`, npm never passes `--reset` to the script and old rows remain. The import uses the **service role** key; with `:local`, URL and key come from `supabase status`. For production, use `npm run db:import-members-csv` with credentials in `.env` (or a CI secret).
 
 To match a real sign-in email to a seeded member row, update `primary_email` (or `secondary_email`) in the `members` table in your local DB (Table Editor in local Studio, or SQL).
+
+## 🧪 End-to-end tests
+
+[Playwright](https://playwright.dev) tests in `e2e/` cover the sign-in → create membership → Stripe checkout → webhook activation → status shown flow, against **local Supabase** and **Stripe test mode** — nothing touches production.
+
+**One-time setup:**
+
+```bash
+npx playwright install chromium
+```
+
+**Prerequisites (every run):**
+
+1. Local Supabase running and migrated: `supabase start && supabase db reset`.
+2. `.env` has `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (from `supabase status`), and Stripe **test-mode** `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET`. The webhook secret can be any string you like locally — the webhook test signs its own synthetic events with it directly (via `Stripe.webhooks.generateTestHeaderString`), so you do **not** need `stripe listen` running for these tests.
+
+**Run:**
+
+```bash
+npm run test:e2e       # headless, starts `npm run dev` automatically if not already running
+npm run test:e2e:ui    # interactive Playwright UI mode
+```
+
+Each test seeds its own throwaway `members` row (service role, bypassing RLS) and signs in via a Supabase-generated magic link (no Inbucket needed), then deletes the auth user + member/membership/payment rows it created in `afterAll`. `e2e/webhook-fulfillment.spec.ts` creates a real (unpaid) Stripe Checkout Session via the app's own API, then posts a locally-signed `checkout.session.completed` event to `/api/stripe-webhook` and asserts the membership flips to `active` and a `payments` row is recorded.
 
 ## Google service account (Drive and Sheets)
 

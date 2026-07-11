@@ -17,7 +17,9 @@
     "db:import-members-csv": "bash scripts/run-membership-import.sh",
     "db:import-members-csv:local": "bash scripts/run-membership-import.sh --local",
     "db:sync-prod-to-local": "bash scripts/sync-prod-db-to-local.sh",
-    "docs:google-docs": "node scripts/docs-to-google-docs-html.mjs"
+    "docs:google-docs": "node scripts/docs-to-google-docs-html.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.12",
@@ -38,6 +40,7 @@
     "tinacms": "^2.9.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@tinacms/cli": "^1.12.4",
     "@types/node": "^24.10.1",
     "@types/nodemailer": "^7.0.11",
