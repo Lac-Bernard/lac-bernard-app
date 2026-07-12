@@ -1,9 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { createServerClient } from '@supabase/ssr';
-import type { Page } from '@playwright/test';
+import { request as playwrightRequest, type APIRequestContext, type Page } from '@playwright/test';
 import { e2eEnv } from './env';
 
-function serviceClient() {
+export function serviceClient() {
 	const { supabaseUrl, supabaseServiceRoleKey } = e2eEnv();
 	return createClient(supabaseUrl, supabaseServiceRoleKey, {
 		auth: { persistSession: false, autoRefreshToken: false },
@@ -26,6 +26,9 @@ export type TestMember = {
 export async function createTestMember(opts: {
 	firstName?: string;
 	lastName?: string;
+	/** Set both to make the member voting-eligible (`normalize_lake_address_key`). */
+	lakeCivicNumber?: string;
+	lakeStreetName?: string;
 }): Promise<TestMember> {
 	const email = `e2e-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
 	const supabase = serviceClient();
@@ -36,6 +39,8 @@ export async function createTestMember(opts: {
 			last_name: opts.lastName ?? 'Tester',
 			primary_email: email,
 			email_opt_in: false,
+			lake_civic_number: opts.lakeCivicNumber ?? null,
+			lake_street_name: opts.lakeStreetName ?? null,
 		})
 		.select('id')
 		.single();
@@ -43,6 +48,48 @@ export async function createTestMember(opts: {
 		throw new Error(`Failed to seed test member: ${error?.message}`);
 	}
 	return { email, memberId: data.id as string };
+}
+
+/** Sets `lake_civic_number`/`lake_street_name` on an existing test member (simulates a profile edit). */
+export async function setTestMemberLakeAddress(
+	member: TestMember,
+	lakeCivicNumber: string,
+	lakeStreetName: string,
+): Promise<void> {
+	const supabase = serviceClient();
+	const { error } = await supabase
+		.from('members')
+		.update({ lake_civic_number: lakeCivicNumber, lake_street_name: lakeStreetName })
+		.eq('id', member.memberId);
+	if (error) {
+		throw new Error(`Failed to set lake address for ${member.email}: ${error.message}`);
+	}
+}
+
+/** Grants the app-admin role (`isAppAdmin`) to a test member's auth user, creating it if needed. */
+export async function grantAdminRole(email: string): Promise<void> {
+	const supabase = serviceClient();
+	const { data: created, error: createErr } = await supabase.auth.admin.createUser({
+		email,
+		email_confirm: true,
+	});
+	if (createErr && !createErr.message.toLowerCase().includes('already been registered')) {
+		throw new Error(`Failed to create auth user for ${email}: ${createErr.message}`);
+	}
+	let userId = created?.user?.id;
+	if (!userId) {
+		const { data: userList } = await supabase.auth.admin.listUsers();
+		userId = userList?.users.find((u) => u.email === email)?.id;
+	}
+	if (!userId) {
+		throw new Error(`Could not resolve auth user id for ${email} to grant admin.`);
+	}
+	const { error: updateErr } = await supabase.auth.admin.updateUserById(userId, {
+		app_metadata: { role: 'admin' },
+	});
+	if (updateErr) {
+		throw new Error(`Failed to grant admin role to ${email}: ${updateErr.message}`);
+	}
 }
 
 /** Deletes the auth user (cascades member/memberships/payments) created for a test run. */
@@ -169,4 +216,11 @@ export async function sessionCookieHeader(email: string): Promise<string> {
 	const { accessToken, refreshToken } = await sessionForEmail(email);
 	const cookies = await cookiesForSession(accessToken, refreshToken);
 	return cookies.map((c) => `${c.name}=${c.value}`).join('; ');
+}
+
+/** A signed-in `APIRequestContext` for `email` — for testing backend contracts without a browser. */
+export async function apiContextFor(email: string): Promise<APIRequestContext> {
+	const { baseURL } = e2eEnv();
+	const cookie = await sessionCookieHeader(email);
+	return playwrightRequest.newContext({ baseURL, extraHTTPHeaders: { cookie } });
 }
