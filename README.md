@@ -106,7 +106,16 @@ To match a real sign-in email to a seeded member row, update `primary_email` (or
 
 ## 🧪 End-to-end tests
 
-[Playwright](https://playwright.dev) tests in `e2e/` cover the sign-in → create membership → Stripe checkout → webhook activation → status shown flow, against **local Supabase** and **Stripe test mode** — nothing touches production.
+[Playwright](https://playwright.dev) tests in `e2e/` cover the money-critical membership flows, against **local Supabase** and **Stripe test mode** — nothing touches production:
+
+- Sign-in → create membership → Stripe checkout → webhook activation → status shown (`membership-flow.spec.ts`, `webhook-fulfillment.spec.ts`)
+- Refunds and duplicate webhook delivery don't corrupt membership/payment state (`webhook-reversals.spec.ts`)
+- Admin actions: complimentary memberships, associate→voting upgrade + payment, offline payment recording, cancelling pending memberships, and non-admins being rejected from admin routes (`admin-membership-actions.spec.ts`)
+- Edge cases: one voting membership per lake property, no double-paying an active membership, voting eligibility unlocking when a lake address is added, signing in with no matching member row (`membership-edge-cases.spec.ts`)
+- Donations bundled with a membership payment (`donation-checkout.spec.ts`)
+- A membership imported from the legacy sheet shows up correctly on a member's first sign-in (`legacy-import-signin.spec.ts`)
+
+Only the two flows a human actually clicks through (`membership-flow.spec.ts`'s checkout redirect, and sign-in edge cases) drive a real browser; everything else — admin actions, webhooks, edge cases — talks to the app's own APIs directly through a signed-in `APIRequestContext` (see `e2e/support/testMember.ts`'s `apiContextFor`), which is faster and less flaky for backend contracts.
 
 **One-time setup:**
 

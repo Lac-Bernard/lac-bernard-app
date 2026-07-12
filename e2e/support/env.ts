@@ -19,3 +19,10 @@ export function e2eEnv() {
 		baseURL: process.env.PLAYWRIGHT_BASE_URL ?? 'http://localhost:4321',
 	};
 }
+
+/** Mirrors src/lib/members/membershipYear.ts — admin RPCs take an explicit year param. */
+export function currentMembershipYear(): number {
+	return Number(
+		new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Toronto', year: 'numeric' }).format(new Date()),
+	);
+}
