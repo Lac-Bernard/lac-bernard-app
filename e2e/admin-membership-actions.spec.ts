@@ -8,7 +8,13 @@ import {
 	serviceClient,
 	type TestMember,
 } from './support/testMember';
-import { completeStripeCheckout } from './support/stripe';
+import {
+	buildEvent,
+	completeStripeCheckout,
+	postSignedWebhookEvent,
+	sessionIdFromCheckoutUrl,
+	stripeClient,
+} from './support/stripe';
 
 let admin: TestMember;
 let members: TestMember[] = [];
@@ -129,6 +135,136 @@ test('admin removes complimentary status from a membership, reverting it to pend
 	expect(retryBody.error).toBe('not_complimentary');
 
 	await memberApi.dispose();
+	await adminApi.dispose();
+});
+
+test('a Stripe payment that lands after a membership is made complimentary is still recorded', async () => {
+	const supabaseAdmin = serviceClient();
+	const member = await newMember({ firstName: 'RaceComp', lastName: 'E2E' });
+	const memberApi = await apiContextFor(member.email);
+	const adminApi = await apiContextFor(admin.email);
+
+	const pendingRes = await memberApi.post('/api/membership/create-pending', { data: { tier: 'associate' } });
+	expect(pendingRes.ok()).toBeTruthy();
+	const { id: membershipId } = await pendingRes.json();
+
+	// Member opens checkout while the membership is still pending (allowed only for pending rows).
+	const checkoutRes = await memberApi.post('/api/membership/create-checkout-session', {
+		data: { membershipId, donationDollars: 0, donationNote: '', locale: 'en' },
+	});
+	expect(checkoutRes.ok()).toBeTruthy();
+	const { url } = await checkoutRes.json();
+	const sessionId = sessionIdFromCheckoutUrl(url);
+
+	// Admin makes it complimentary before the charge settles → membership is now active + complimentary.
+	const compRes = await adminApi.post(`/api/admin/memberships/${membershipId}/make-complimentary`);
+	expect(compRes.ok()).toBeTruthy();
+
+	// The charge settles and Stripe fires the webhook against the now-complimentary membership.
+	const stripe = stripeClient();
+	const session = await stripe.checkout.sessions.retrieve(sessionId);
+	const paidSession = {
+		...session,
+		payment_status: 'paid' as const,
+		payment_intent: `pi_test_${sessionId}`,
+	};
+	const webhookRes = await postSignedWebhookEvent(
+		memberApi,
+		buildEvent('checkout.session.completed', paidSession),
+	);
+	expect(webhookRes.status()).toBe(200);
+
+	// The payment is captured rather than dropped, and the membership stays complimentary + active.
+	const { data: payRows } = await supabaseAdmin
+		.from('payments')
+		.select('membership_amount')
+		.eq('membership_id', membershipId);
+	expect(payRows).toHaveLength(1);
+
+	const { data: row } = await supabaseAdmin
+		.from('memberships')
+		.select('status, complimentary')
+		.eq('id', membershipId)
+		.single();
+	expect(row?.status).toBe('active');
+	expect(row?.complimentary).toBe(true);
+
+	await memberApi.dispose();
+	await adminApi.dispose();
+});
+
+test('admin can record a donation on a complimentary membership without disturbing its status', async () => {
+	const supabaseAdmin = serviceClient();
+	const member = await newMember({ firstName: 'CompDonation', lastName: 'E2E' });
+	const adminApi = await apiContextFor(admin.email);
+
+	const createRes = await adminApi.post(`/api/admin/members/${member.memberId}/memberships`, {
+		data: { year: currentMembershipYear(), tier: 'associate', initial: 'complimentary' },
+	});
+	expect(createRes.ok()).toBeTruthy();
+	const { membership_id: membershipId } = await createRes.json();
+
+	const recordRes = await adminApi.post(`/api/admin/memberships/${membershipId}/record-payment`, {
+		data: { amount: 40, method: 'cheque', notes: 'e2e comp donation' },
+	});
+	expect(recordRes.ok()).toBeTruthy();
+	const recordBody = await recordRes.json();
+	// A complimentary membership has its dues waived, so the whole amount is booked as a donation.
+	expect(recordBody.membership_amount).toBe(0);
+	expect(recordBody.donation_amount).toBe(40);
+
+	const { data: payRows } = await supabaseAdmin
+		.from('payments')
+		.select('membership_amount, donation_amount')
+		.eq('membership_id', membershipId);
+	expect(payRows).toHaveLength(1);
+	expect(Number(payRows?.[0].membership_amount)).toBe(0);
+	expect(Number(payRows?.[0].donation_amount)).toBe(40);
+
+	const { data: row } = await supabaseAdmin
+		.from('memberships')
+		.select('status, complimentary')
+		.eq('id', membershipId)
+		.single();
+	expect(row?.status).toBe('active');
+	expect(row?.complimentary).toBe(true);
+
+	await adminApi.dispose();
+});
+
+test('recording a dues portion on a complimentary membership is rejected', async () => {
+	const supabaseAdmin = serviceClient();
+	const member = await newMember({ firstName: 'CompDues', lastName: 'E2E' });
+	const adminApi = await apiContextFor(admin.email);
+
+	const createRes = await adminApi.post(`/api/admin/members/${member.memberId}/memberships`, {
+		data: { year: currentMembershipYear(), tier: 'associate', initial: 'complimentary' },
+	});
+	expect(createRes.ok()).toBeTruthy();
+	const { membership_id: membershipId } = await createRes.json();
+
+	// The API route always books donations for complimentary rows, so exercise the RPC guard directly.
+	const { data: rpcResult } = await supabaseAdmin.rpc('record_manual_payment', {
+		p_membership_id: membershipId,
+		p_amount: 25,
+		p_membership_amount: 25,
+		p_donation_amount: 0,
+		p_method: 'cash',
+		p_payment_date: null,
+		p_notes: null,
+		p_donation_note: null,
+		p_reference: null,
+	});
+	const result = rpcResult as { ok?: boolean; error?: string } | null;
+	expect(result?.ok).toBe(false);
+	expect(result?.error).toBe('complimentary_membership');
+
+	const { data: payRows } = await supabaseAdmin
+		.from('payments')
+		.select('id')
+		.eq('membership_id', membershipId);
+	expect(payRows).toHaveLength(0);
+
 	await adminApi.dispose();
 });
 

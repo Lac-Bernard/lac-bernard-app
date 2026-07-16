@@ -40,10 +40,6 @@ begin
     return jsonb_build_object('ok', false, 'error', 'not_found');
   end if;
 
-  if m.complimentary then
-    return jsonb_build_object('ok', false, 'error', 'complimentary_membership');
-  end if;
-
   v_fee := public.membership_tier_fee_amount(m.tier);
   if v_fee is null then
     return jsonb_build_object('ok', false, 'error', 'invalid_tier');
@@ -54,6 +50,11 @@ begin
   where membership_id = p_membership_id;
 
   if p_membership_amount > 0 then
+    -- Complimentary memberships have their dues waived, so a dues portion is never valid.
+    -- Donations are still allowed (handled in the else branch below).
+    if m.complimentary then
+      return jsonb_build_object('ok', false, 'error', 'complimentary_membership');
+    end if;
     if m.status is distinct from 'pending' then
       return jsonb_build_object('ok', false, 'error', 'dues_only_when_pending');
     end if;
@@ -64,7 +65,9 @@ begin
     if p_donation_amount <= 0 then
       return jsonb_build_object('ok', false, 'error', 'invalid_split');
     end if;
-    if round(v_paid::numeric, 2) < round(v_fee::numeric, 2) then
+    -- Donations require dues to be settled first, except on complimentary memberships
+    -- where dues are waived (so a donation can be recorded even with no dues paid).
+    if not m.complimentary and round(v_paid::numeric, 2) < round(v_fee::numeric, 2) then
       return jsonb_build_object('ok', false, 'error', 'dues_unpaid');
     end if;
   end if;
@@ -106,4 +109,4 @@ $function$;
 revoke all on function public.record_manual_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_method text, p_payment_date date, p_notes text, p_donation_note text, p_reference text) from public;
 grant execute on function public.record_manual_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_method text, p_payment_date date, p_notes text, p_donation_note text, p_reference text) to service_role;
 comment on function public.record_manual_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_method text, p_payment_date date, p_notes text, p_donation_note text, p_reference text) is
-  'Insert manual payment with dues/donation split; rejects complimentary memberships. service_role only.';
+  'Insert manual payment with dues/donation split; allows donations on complimentary memberships but rejects any dues portion (dues are waived). service_role only.';

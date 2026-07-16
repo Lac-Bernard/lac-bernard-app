@@ -506,8 +506,10 @@ export function initAdminMemberDetail(
 			})
 			.join('');
 
+		// Complimentary memberships are 'active' and can still take a donation (dues are waived,
+		// so the manual-payment split records the full amount as a donation).
 		const recordBtn =
-			!ms.complimentary && (ms.status === 'pending' || ms.status === 'active') ?
+			ms.status === 'pending' || ms.status === 'active' ?
 				`<button type="button" class="adminBtn adminBtn--solid" data-open-payment data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminRecordPaymentBtn'))}</button>`
 			:	'';
 
