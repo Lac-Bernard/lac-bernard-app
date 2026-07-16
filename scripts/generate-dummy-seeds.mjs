@@ -556,6 +556,37 @@ function buildDataset(cy) {
 	return { members, memberships, payments, audit, cy };
 }
 
+function buildDevAdminSql() {
+	const email = process.env.DEV_ADMIN_EMAIL?.trim();
+	if (!email) return '';
+	return `
+-- Pre-seed DEV_ADMIN_EMAIL (from .env) as an admin auth user. When this person signs in via
+-- Google with the same (verified) email, Supabase Auth links the new identity to this row
+-- instead of creating a separate one, so app_metadata.role stays 'admin'. Local dev only —
+-- this file is never applied to hosted/remote projects.
+insert into auth.users (
+  instance_id, id, aud, role, email, encrypted_password,
+  email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
+  created_at, updated_at, confirmation_token, recovery_token,
+  email_change_token_new, email_change, is_sso_user, is_anonymous
+) values (
+  '00000000-0000-0000-0000-000000000000'::uuid,
+  gen_random_uuid(),
+  'authenticated', 'authenticated',
+  ${sqlText(email)},
+  NULL,
+  now(),
+  '{"role":"admin"}'::jsonb,
+  '{}'::jsonb,
+  now(), now(),
+  '', '', '', '',
+  false, false
+)
+on conflict (email) where is_sso_user = false
+do update set raw_app_meta_data = auth.users.raw_app_meta_data || '{"role":"admin"}'::jsonb;
+`;
+}
+
 function buildSeedSql(dataset) {
 	const { members, memberships, payments, audit, cy } = dataset;
 
@@ -569,7 +600,6 @@ function buildSeedSql(dataset) {
 					sqlText(m.primary_email),
 					sqlText(m.secondary_email),
 					sqlText(m.primary_phone),
-					'NULL',
 					'NULL',
 					'NULL',
 					'NULL',
@@ -642,7 +672,7 @@ insert into public.payments (membership_id, method, amount, date, notes, payment
 
 insert into public.admin_audit_log (actor_user_id, action, entity_type, entity_id, metadata) values
   ${auditValues};
-
+${buildDevAdminSql()}
 commit;
 `;
 }

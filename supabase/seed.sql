@@ -60,4 +60,29 @@ insert into public.admin_audit_log (actor_user_id, action, entity_type, entity_i
   ('00000000-0000-4000-8000-00000000c0de'::uuid, 'dummy_seed_patch_member', 'member', 'aaaaaaaa-aaaa-4aaa-8aaa-000000000003', '{"source":"dummy_seed","fields":["primary_phone"]}'::jsonb),
   ('00000000-0000-4000-8000-00000000c0de'::uuid, 'dummy_seed_view_activity', NULL, NULL, '{"source":"dummy_seed"}'::jsonb);
 
+-- Pre-seed DEV_ADMIN_EMAIL (from .env) as an admin auth user. When this person signs in via
+-- Google with the same (verified) email, Supabase Auth links the new identity to this row
+-- instead of creating a separate one, so app_metadata.role stays 'admin'. Local dev only —
+-- this file is never applied to hosted/remote projects.
+insert into auth.users (
+  instance_id, id, aud, role, email, encrypted_password,
+  email_confirmed_at, raw_app_meta_data, raw_user_meta_data,
+  created_at, updated_at, confirmation_token, recovery_token,
+  email_change_token_new, email_change, is_sso_user, is_anonymous
+) values (
+  '00000000-0000-0000-0000-000000000000'::uuid,
+  gen_random_uuid(),
+  'authenticated', 'authenticated',
+  'alex.profeit@lacbernard.ca',
+  NULL,
+  now(),
+  '{"role":"admin"}'::jsonb,
+  '{}'::jsonb,
+  now(), now(),
+  '', '', '', '',
+  false, false
+)
+on conflict (email) where is_sso_user = false
+do update set raw_app_meta_data = auth.users.raw_app_meta_data || '{"role":"admin"}'::jsonb;
+
 commit;
