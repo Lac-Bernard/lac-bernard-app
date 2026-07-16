@@ -321,6 +321,31 @@ export function initAdminMemberDetail(
 		});
 	}
 
+	function wireMakeComplimentaryButtons(root: ParentNode) {
+		root.querySelectorAll<HTMLButtonElement>('[data-make-complimentary]').forEach((b) => {
+			b.addEventListener('click', async () => {
+				const id = b.dataset.membershipId;
+				if (!id) return;
+				if (!confirm(t(strings, 'adminMakeComplimentaryConfirm'))) return;
+				setStatus(t(strings, 'adminLoading'));
+				const { ok, data } = await fetchJson<{ error?: string }>(
+					`/api/admin/memberships/${encodeURIComponent(id)}/make-complimentary`,
+					{ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' },
+				);
+				if (!ok) {
+					const code = data?.error;
+					const msg =
+						code === 'not_pending' ? t(strings, 'adminMakeComplimentaryErrorNotPending')
+						: t(strings, 'adminErrorGeneric');
+					setStatus(msg, 'error');
+					return;
+				}
+				setStatus(t(strings, 'adminMakeComplimentarySuccess'), 'success');
+				void load();
+			});
+		});
+	}
+
 	function wireAddMembershipButtons(root: ParentNode) {
 		root.querySelectorAll<HTMLButtonElement>('[data-open-add-membership]').forEach((b) => {
 			b.addEventListener('click', () => {
@@ -461,6 +486,11 @@ export function initAdminMemberDetail(
 				`<button type="button" class="adminBtn adminBtn--solid" data-open-payment data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminRecordPaymentBtn'))}</button>`
 			:	'';
 
+		const makeComplimentaryBtn =
+			!ms.complimentary && ms.status === 'pending' ?
+				`<button type="button" class="adminBtn adminBtn--outline" data-make-complimentary data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminMakeComplimentaryBtn'))}</button>`
+			:	'';
+
 		const tableOrEmpty = ms.payments?.length ?
 			`<div class="tableWrap adminDetailPaymentsTableWrap adminDetailPaymentsTableBleed"><table class="adminTable adminTable--payments">
 				<thead><tr>
@@ -478,7 +508,10 @@ export function initAdminMemberDetail(
 			</table></div>`
 		:	`<p class="adminDetailPaymentsEmpty adminDetailPaymentsEmpty--inSection">${escapeHtml(t(strings, 'adminDetailPaymentsEmpty'))}</p>`;
 
-		const recordRow = recordBtn ? `<div class="adminDetailRecordPaymentRow">${recordBtn}</div>` : '';
+		const recordRow =
+			recordBtn || makeComplimentaryBtn ?
+				`<div class="adminDetailRecordPaymentRow">${recordBtn}${makeComplimentaryBtn}</div>`
+			:	'';
 
 		const paymentsBlock = `<div class="adminDetailPaymentsSection">
 				<div class="adminDetailPaymentsSectionHead">
@@ -559,6 +592,7 @@ export function initAdminMemberDetail(
 		wireDeletePaymentButtons(mount);
 		wireAddMembershipButtons(mount);
 		wireUpgradeToVotingButtons(mount);
+		wireMakeComplimentaryButtons(mount);
 	}
 
 	if (mount) {
@@ -573,6 +607,7 @@ export function initAdminMemberDetail(
 				wireDeletePaymentButtons(panel);
 				wireAddMembershipButtons(panel);
 				wireUpgradeToVotingButtons(panel);
+				wireMakeComplimentaryButtons(panel);
 			}
 		});
 	}
