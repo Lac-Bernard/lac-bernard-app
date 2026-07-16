@@ -392,6 +392,8 @@ export const memberCopy: Record<
 		memberActiveSnapshotHeading: string;
 		memberActiveSnapshotTypeLabel: string;
 		memberActiveSnapshotFeeLabel: string;
+		/** Shown instead of the fee amount when the membership is complimentary */
+		memberActiveSnapshotFeeComplimentary: string;
 		/** One-line stats above payment list; {{count}}, {{donation}} */
 		memberActivePaymentOverview: string;
 		/** When no donation amounts this year; {{count}} */
@@ -884,6 +886,7 @@ export const memberCopy: Record<
 		memberActiveSnapshotHeading: 'Membership details',
 		memberActiveSnapshotTypeLabel: 'Type',
 		memberActiveSnapshotFeeLabel: 'Annual fee',
+		memberActiveSnapshotFeeComplimentary: 'Complimentary',
 		memberActivePaymentOverview: '{{count}} payments on file · {{donation}} in donations',
 		memberActivePaymentOverviewFeesOnly: '{{count}} payment(s) on file for this year',
 		memberActivePaymentItemTotal: 'Total',
@@ -1382,6 +1385,7 @@ export const memberCopy: Record<
 		memberActiveSnapshotHeading: 'Détails de l’adhésion',
 		memberActiveSnapshotTypeLabel: 'Type',
 		memberActiveSnapshotFeeLabel: 'Cotisation annuelle',
+		memberActiveSnapshotFeeComplimentary: 'Gracieuseté',
 		memberActivePaymentOverview: '{{count}} paiements au dossier · {{donation}} en dons',
 		memberActivePaymentOverviewFeesOnly: '{{count}} paiement(s) au dossier pour cette année',
 		memberActivePaymentItemTotal: 'Total',

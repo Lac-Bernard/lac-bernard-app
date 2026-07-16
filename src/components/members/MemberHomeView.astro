@@ -106,10 +106,9 @@ const activePaymentOverviewLine =
 					String(currentYearPayments.length),
 				);
 
-const activeTierFeeDisplay = formatMemberCad(
-	locale,
-	activeFeeCents != null ? activeFeeCents / 100 : null,
-);
+const activeTierFeeDisplay = thisYearMembership?.complimentary
+	? t.memberActiveSnapshotFeeComplimentary
+	: formatMemberCad(locale, activeFeeCents != null ? activeFeeCents / 100 : null);
 
 const showMemberActions = Boolean(member);
 const hasLakeAddress = Boolean(
