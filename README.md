@@ -126,14 +126,16 @@ npx playwright install chromium
 **Prerequisites (every run):**
 
 1. Local Supabase running and migrated: `supabase start && supabase db reset`.
-2. `.env` has `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` (from `supabase status`), and Stripe **test-mode** `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET`. The webhook secret can be any string you like locally — the webhook test signs its own synthetic events with it directly (via `Stripe.webhooks.generateTestHeaderString`), so you do **not** need `stripe listen` running for these tests.
+2. `.env` has `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (from `supabase status`), and Stripe **test-mode** `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET`. The webhook secret can be any string you like locally — the webhook test signs its own synthetic events with it directly (via `Stripe.webhooks.generateTestHeaderString`), so you do **not** need `stripe listen` running for these tests.
 
 **Run:**
 
 ```bash
-npm run test:e2e       # headless, starts `npm run dev` automatically if not already running
-npm run test:e2e:ui    # interactive Playwright UI mode
+npm test                # headless; loads .env itself, starts `npm run dev` automatically if not already running
+npm run test:e2e:ui     # interactive Playwright UI mode
 ```
+
+`playwright.config.ts` loads `.env` via `dotenv/config`, so you don't need to `source .env` first — `npm test` alone is enough as long as Supabase is running.
 
 Each test seeds its own throwaway `members` row (service role, bypassing RLS) and signs in via a Supabase-generated magic link (no Inbucket needed), then deletes the auth user + member/membership/payment rows it created in `afterAll`. `e2e/webhook-fulfillment.spec.ts` creates a real (unpaid) Stripe Checkout Session via the app's own API, then posts a locally-signed `checkout.session.completed` event to `/api/stripe-webhook` and asserts the membership flips to `active` and a `payments` row is recorded.
 
