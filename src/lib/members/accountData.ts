@@ -10,6 +10,7 @@ export type MembershipRow = {
 	year: number;
 	tier: string;
 	status: MembershipStatus;
+	complimentary: boolean;
 	created_at: string;
 };
 
@@ -56,7 +57,7 @@ export async function loadMemberAccountData(
 
 	const { data: membershipRows, error: mErr } = await supabase
 		.from('memberships')
-		.select('id, year, tier, status, created_at')
+		.select('id, year, tier, status, complimentary, created_at')
 		.eq('member_id', member.id)
 		.order('year', { ascending: false });
 
@@ -74,6 +75,7 @@ export async function loadMemberAccountData(
 		year: r.year,
 		tier: r.tier,
 		status: r.status === 'pending' ? 'pending' : 'active',
+		complimentary: Boolean(r.complimentary),
 		created_at: r.created_at,
 	}));
 
