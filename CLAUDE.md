@@ -35,6 +35,28 @@ Note: `supabase migration list` says "Connecting to remote database..." —
 that's just comparing migration history against the linked remote project
 for status reporting. It's read-only and doesn't touch the remote schema.
 
+`supabase/seed.sql` is also generated output, not hand-written — it's
+produced by `scripts/generate-dummy-seeds.mjs` (`npm run db:seed`). Edit
+the generator, not the SQL file directly; regenerate and let `supabase db
+reset` apply it. Local-only — never applied to hosted/remote projects.
+
+## Admin identity: `app_metadata.role`, not a table
+
+There is no `public.admins` table or `roles` column. Admin status lives
+entirely in Supabase Auth's `app_metadata.role` on the `auth.users` row,
+checked by `isAppAdmin()` in `src/lib/auth/admin.ts` (also accepts
+`app_metadata.admin === true` / `user_metadata.admin === true`). Grant it
+with `supabase.auth.admin.updateUserById(id, { app_metadata: { role: 'admin' } })`
+— see `scripts/grant-admin-dev.mjs` (`npm run dev:grant-admin -- <email>`)
+or `grantAdminRole()` in `e2e/support/testMember.ts`. After granting, the
+user must sign out/in (or refresh session) so the JWT picks up the change.
+
+`supabase/seed.sql` pre-seeds `DEV_ADMIN_EMAIL` (from `.env`) as a
+confirmed `auth.users` row with `app_metadata.role: admin`; signing in via
+Google with that same email auto-links to it (Supabase Auth's identity
+linking), so that account is already an admin right after `supabase db
+reset` — no manual grant needed.
+
 ## Admin RPC pattern
 
 Admin-only Postgres functions follow a consistent shape — model new ones
