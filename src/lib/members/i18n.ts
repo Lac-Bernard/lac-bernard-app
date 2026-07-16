@@ -236,6 +236,10 @@ export const memberCopy: Record<
 		adminMakeComplimentaryConfirm: string;
 		adminMakeComplimentarySuccess: string;
 		adminMakeComplimentaryErrorNotPending: string;
+		adminRemoveComplimentaryBtn: string;
+		adminRemoveComplimentaryConfirm: string;
+		adminRemoveComplimentarySuccess: string;
+		adminRemoveComplimentaryErrorNotComplimentary: string;
 		adminAddMemberErrorDuplicateYear: string;
 		adminAddMemberErrorMemberNotFound: string;
 		adminLoading: string;
@@ -713,6 +717,11 @@ export const memberCopy: Record<
 		adminMakeComplimentaryConfirm: 'Make this membership complimentary? No payment will be required and it will become active immediately.',
 		adminMakeComplimentarySuccess: 'Membership marked complimentary and activated.',
 		adminMakeComplimentaryErrorNotPending: 'This membership is no longer pending.',
+		adminRemoveComplimentaryBtn: 'Remove complimentary status',
+		adminRemoveComplimentaryConfirm:
+			'Remove complimentary status from this membership? It will revert to pending, or active if enough payments are already on file.',
+		adminRemoveComplimentarySuccess: 'Complimentary status removed.',
+		adminRemoveComplimentaryErrorNotComplimentary: 'This membership is not complimentary.',
 		adminAddMemberErrorDuplicateYear: 'This member already has a membership for that year.',
 		adminAddMemberErrorMemberNotFound: 'Member not found.',
 		adminLoading: 'Loading…',
@@ -1203,6 +1212,11 @@ export const memberCopy: Record<
 			'Rendre cette adhésion complimentaire ? Aucun paiement ne sera requis et elle deviendra active immédiatement.',
 		adminMakeComplimentarySuccess: 'Adhésion rendue complimentaire et activée.',
 		adminMakeComplimentaryErrorNotPending: 'Cette adhésion n’est plus en attente.',
+		adminRemoveComplimentaryBtn: 'Retirer le statut complimentaire',
+		adminRemoveComplimentaryConfirm:
+			'Retirer le statut complimentaire de cette adhésion ? Elle redeviendra en attente, ou active si suffisamment de paiements sont déjà enregistrés.',
+		adminRemoveComplimentarySuccess: 'Statut complimentaire retiré.',
+		adminRemoveComplimentaryErrorNotComplimentary: 'Cette adhésion n’est pas complimentaire.',
 		adminAddMemberErrorDuplicateYear: 'Ce membre a déjà une adhésion pour cette année.',
 		adminAddMemberErrorMemberNotFound: 'Membre introuvable.',
 		adminLoading: 'Chargement…',

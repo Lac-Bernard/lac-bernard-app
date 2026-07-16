@@ -346,6 +346,31 @@ export function initAdminMemberDetail(
 		});
 	}
 
+	function wireRemoveComplimentaryButtons(root: ParentNode) {
+		root.querySelectorAll<HTMLButtonElement>('[data-remove-complimentary]').forEach((b) => {
+			b.addEventListener('click', async () => {
+				const id = b.dataset.membershipId;
+				if (!id) return;
+				if (!confirm(t(strings, 'adminRemoveComplimentaryConfirm'))) return;
+				setStatus(t(strings, 'adminLoading'));
+				const { ok, data } = await fetchJson<{ error?: string }>(
+					`/api/admin/memberships/${encodeURIComponent(id)}/remove-complimentary`,
+					{ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' },
+				);
+				if (!ok) {
+					const code = data?.error;
+					const msg =
+						code === 'not_complimentary' ? t(strings, 'adminRemoveComplimentaryErrorNotComplimentary')
+						: t(strings, 'adminErrorGeneric');
+					setStatus(msg, 'error');
+					return;
+				}
+				setStatus(t(strings, 'adminRemoveComplimentarySuccess'), 'success');
+				void load();
+			});
+		});
+	}
+
 	function wireAddMembershipButtons(root: ParentNode) {
 		root.querySelectorAll<HTMLButtonElement>('[data-open-add-membership]').forEach((b) => {
 			b.addEventListener('click', () => {
@@ -486,11 +511,6 @@ export function initAdminMemberDetail(
 				`<button type="button" class="adminBtn adminBtn--solid" data-open-payment data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminRecordPaymentBtn'))}</button>`
 			:	'';
 
-		const makeComplimentaryBtn =
-			!ms.complimentary && ms.status === 'pending' ?
-				`<button type="button" class="adminBtn adminBtn--outline" data-make-complimentary data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminMakeComplimentaryBtn'))}</button>`
-			:	'';
-
 		const tableOrEmpty = ms.payments?.length ?
 			`<div class="tableWrap adminDetailPaymentsTableWrap adminDetailPaymentsTableBleed"><table class="adminTable adminTable--payments">
 				<thead><tr>
@@ -508,10 +528,7 @@ export function initAdminMemberDetail(
 			</table></div>`
 		:	`<p class="adminDetailPaymentsEmpty adminDetailPaymentsEmpty--inSection">${escapeHtml(t(strings, 'adminDetailPaymentsEmpty'))}</p>`;
 
-		const recordRow =
-			recordBtn || makeComplimentaryBtn ?
-				`<div class="adminDetailRecordPaymentRow">${recordBtn}${makeComplimentaryBtn}</div>`
-			:	'';
+		const recordRow = recordBtn ? `<div class="adminDetailRecordPaymentRow">${recordBtn}</div>` : '';
 
 		const paymentsBlock = `<div class="adminDetailPaymentsSection">
 				<div class="adminDetailPaymentsSectionHead">
@@ -532,9 +549,24 @@ export function initAdminMemberDetail(
 				</div>`
 			:	'';
 
-		const upgradeRow =
+		const upgradeToVotingBtn =
 			ms.tier === 'associate' ?
-				`<div class="adminDetailUpgradeRow"><button type="button" class="adminBtn adminBtn--outline" data-upgrade-to-voting data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminUpgradeToVotingBtn'))}</button></div>`
+				`<button type="button" class="adminBtn adminBtn--outline" data-upgrade-to-voting data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminUpgradeToVotingBtn'))}</button>`
+			:	'';
+
+		const makeComplimentaryBtn =
+			!ms.complimentary && ms.status === 'pending' ?
+				`<button type="button" class="adminBtn adminBtn--outline" data-make-complimentary data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminMakeComplimentaryBtn'))}</button>`
+			:	'';
+
+		const removeComplimentaryBtn =
+			ms.complimentary ?
+				`<button type="button" class="adminBtn adminBtn--outline" data-remove-complimentary data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminRemoveComplimentaryBtn'))}</button>`
+			:	'';
+
+		const upgradeRow =
+			upgradeToVotingBtn || makeComplimentaryBtn || removeComplimentaryBtn ?
+				`<div class="adminDetailUpgradeRow">${upgradeToVotingBtn}${makeComplimentaryBtn}${removeComplimentaryBtn}</div>`
 			:	'';
 
 		return `<article class="adminDetailMembershipCard" data-membership-id="${escapeHtml(ms.id)}">
@@ -593,6 +625,7 @@ export function initAdminMemberDetail(
 		wireAddMembershipButtons(mount);
 		wireUpgradeToVotingButtons(mount);
 		wireMakeComplimentaryButtons(mount);
+		wireRemoveComplimentaryButtons(mount);
 	}
 
 	if (mount) {
@@ -608,6 +641,7 @@ export function initAdminMemberDetail(
 				wireAddMembershipButtons(panel);
 				wireUpgradeToVotingButtons(panel);
 				wireMakeComplimentaryButtons(panel);
+				wireRemoveComplimentaryButtons(panel);
 			}
 		});
 	}

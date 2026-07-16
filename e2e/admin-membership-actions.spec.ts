@@ -90,6 +90,48 @@ test('admin converts a pending membership into a complimentary one', async () =>
 	await adminApi.dispose();
 });
 
+test('admin removes complimentary status from a membership, reverting it to pending', async () => {
+	const supabaseAdmin = serviceClient();
+	const member = await newMember({ firstName: 'UndoComp', lastName: 'E2E' });
+	const memberApi = await apiContextFor(member.email);
+	const adminApi = await apiContextFor(admin.email);
+
+	const pendingRes = await memberApi.post('/api/membership/create-pending', { data: { tier: 'associate' } });
+	expect(pendingRes.ok()).toBeTruthy();
+	const { id: membershipId } = await pendingRes.json();
+
+	const compRes = await adminApi.post(`/api/admin/memberships/${membershipId}/make-complimentary`);
+	expect(compRes.ok()).toBeTruthy();
+
+	const { data: compRow } = await supabaseAdmin
+		.from('memberships')
+		.select('status, complimentary')
+		.eq('id', membershipId)
+		.single();
+	expect(compRow?.status).toBe('active');
+	expect(compRow?.complimentary).toBe(true);
+
+	const removeRes = await adminApi.post(`/api/admin/memberships/${membershipId}/remove-complimentary`);
+	expect(removeRes.ok()).toBeTruthy();
+
+	const { data: revertedRow } = await supabaseAdmin
+		.from('memberships')
+		.select('status, complimentary')
+		.eq('id', membershipId)
+		.single();
+	// No payments were recorded while complimentary, so it reverts to pending rather than active.
+	expect(revertedRow?.status).toBe('pending');
+	expect(revertedRow?.complimentary).toBe(false);
+
+	const retryRes = await adminApi.post(`/api/admin/memberships/${membershipId}/remove-complimentary`);
+	expect(retryRes.status()).toBe(409);
+	const retryBody = await retryRes.json();
+	expect(retryBody.error).toBe('not_complimentary');
+
+	await memberApi.dispose();
+	await adminApi.dispose();
+});
+
 test('admin upgrades an associate membership to voting, then the member pays and becomes active', async () => {
 	const supabaseAdmin = serviceClient();
 	const member = await newMember({
@@ -220,6 +262,11 @@ test('a signed-in non-admin is rejected from admin membership routes', async () 
 		'/api/admin/memberships/00000000-0000-0000-0000-000000000000/make-complimentary',
 	);
 	expect(makeComplimentaryRes.status()).toBe(403);
+
+	const removeComplimentaryRes = await memberApi.post(
+		'/api/admin/memberships/00000000-0000-0000-0000-000000000000/remove-complimentary',
+	);
+	expect(removeComplimentaryRes.status()).toBe(403);
 
 	const recordPaymentRes = await memberApi.post(
 		'/api/admin/memberships/00000000-0000-0000-0000-000000000000/record-payment',
