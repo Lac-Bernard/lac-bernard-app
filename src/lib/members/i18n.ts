@@ -232,6 +232,10 @@ export const memberCopy: Record<
 		adminUpgradeToVotingConfirm: string;
 		adminUpgradeToVotingSuccess: string;
 		adminUpgradeToVotingErrorNotAssociate: string;
+		adminMakeComplimentaryBtn: string;
+		adminMakeComplimentaryConfirm: string;
+		adminMakeComplimentarySuccess: string;
+		adminMakeComplimentaryErrorNotPending: string;
 		adminAddMemberErrorDuplicateYear: string;
 		adminAddMemberErrorMemberNotFound: string;
 		adminLoading: string;
@@ -705,6 +709,10 @@ export const memberCopy: Record<
 			'Upgrade this membership to voting? Previous payments still count toward dues; the member will owe any balance.',
 		adminUpgradeToVotingSuccess: 'Membership upgraded to voting.',
 		adminUpgradeToVotingErrorNotAssociate: 'This row is not an associate membership (already voting or invalid).',
+		adminMakeComplimentaryBtn: 'Make complimentary',
+		adminMakeComplimentaryConfirm: 'Make this membership complimentary? No payment will be required and it will become active immediately.',
+		adminMakeComplimentarySuccess: 'Membership marked complimentary and activated.',
+		adminMakeComplimentaryErrorNotPending: 'This membership is no longer pending.',
 		adminAddMemberErrorDuplicateYear: 'This member already has a membership for that year.',
 		adminAddMemberErrorMemberNotFound: 'Member not found.',
 		adminLoading: 'Loading…',
@@ -1190,6 +1198,11 @@ export const memberCopy: Record<
 		adminUpgradeToVotingSuccess: 'Adhésion passée au vote.',
 		adminUpgradeToVotingErrorNotAssociate:
 			'Cette ligne n’est pas une adhésion associée (déjà vote ou invalide).',
+		adminMakeComplimentaryBtn: 'Rendre complimentaire',
+		adminMakeComplimentaryConfirm:
+			'Rendre cette adhésion complimentaire ? Aucun paiement ne sera requis et elle deviendra active immédiatement.',
+		adminMakeComplimentarySuccess: 'Adhésion rendue complimentaire et activée.',
+		adminMakeComplimentaryErrorNotPending: 'Cette adhésion n’est plus en attente.',
 		adminAddMemberErrorDuplicateYear: 'Ce membre a déjà une adhésion pour cette année.',
 		adminAddMemberErrorMemberNotFound: 'Membre introuvable.',
 		adminLoading: 'Chargement…',

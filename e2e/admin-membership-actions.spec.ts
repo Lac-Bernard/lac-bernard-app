@@ -52,6 +52,44 @@ test('admin can grant a complimentary membership and it shows as active', async 
 	await adminApi.dispose();
 });
 
+test('admin converts a pending membership into a complimentary one', async () => {
+	const supabaseAdmin = serviceClient();
+	const member = await newMember({ firstName: 'PendingComp', lastName: 'E2E' });
+	const memberApi = await apiContextFor(member.email);
+	const adminApi = await apiContextFor(admin.email);
+
+	const pendingRes = await memberApi.post('/api/membership/create-pending', { data: { tier: 'associate' } });
+	expect(pendingRes.ok()).toBeTruthy();
+	const { id: membershipId } = await pendingRes.json();
+
+	const { data: pendingRow } = await supabaseAdmin
+		.from('memberships')
+		.select('status, complimentary')
+		.eq('id', membershipId)
+		.single();
+	expect(pendingRow?.status).toBe('pending');
+	expect(pendingRow?.complimentary).toBe(false);
+
+	const compRes = await adminApi.post(`/api/admin/memberships/${membershipId}/make-complimentary`);
+	expect(compRes.ok()).toBeTruthy();
+
+	const { data: compRow } = await supabaseAdmin
+		.from('memberships')
+		.select('status, complimentary')
+		.eq('id', membershipId)
+		.single();
+	expect(compRow?.status).toBe('active');
+	expect(compRow?.complimentary).toBe(true);
+
+	const retryRes = await adminApi.post(`/api/admin/memberships/${membershipId}/make-complimentary`);
+	expect(retryRes.status()).toBe(409);
+	const retryBody = await retryRes.json();
+	expect(retryBody.error).toBe('not_pending');
+
+	await memberApi.dispose();
+	await adminApi.dispose();
+});
+
 test('admin upgrades an associate membership to voting, then the member pays and becomes active', async () => {
 	const supabaseAdmin = serviceClient();
 	const member = await newMember({
@@ -177,6 +215,11 @@ test('a signed-in non-admin is rejected from admin membership routes', async () 
 
 	const upgradeRes = await memberApi.post('/api/admin/memberships/00000000-0000-0000-0000-000000000000/upgrade-to-voting');
 	expect(upgradeRes.status()).toBe(403);
+
+	const makeComplimentaryRes = await memberApi.post(
+		'/api/admin/memberships/00000000-0000-0000-0000-000000000000/make-complimentary',
+	);
+	expect(makeComplimentaryRes.status()).toBe(403);
 
 	const recordPaymentRes = await memberApi.post(
 		'/api/admin/memberships/00000000-0000-0000-0000-000000000000/record-payment',
