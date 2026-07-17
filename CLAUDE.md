@@ -75,6 +75,43 @@ shape every time: `requireAdminSession`, call the RPC via
 `service.rpc(...)`, map `result.error` codes to HTTP statuses, then write an
 `insertAdminAudit(...)` entry on success.
 
+## Admin member index named views
+
+The admin members tab (`AdminMembershipView.astro` + `admin-member-index.ts`,
+served by `GET /api/admin/members?view=...`) has a fixed set of named views
+("voting", "pending", "lapsed", etc.) implemented as one `case v_view when
+...` branch per view inside the single Postgres function
+`admin_member_index` (`supabase/schemas/admin_member_index.sql`) — not
+separate functions or query-param filter composition.
+
+Adding a new named view means touching the view-name list/union in **all**
+of these places, or it silently 400s or falls back to the default view:
+
+- `supabase/schemas/admin_member_index.sql`: the `v_view not in (...)`
+  guard, a new CTE for the pill count, and a new `when '<view>' then ...`
+  branch in the row filter (counts and row-filter logic are separate blocks
+  that must both be updated). Generate the migration the normal way (see
+  above) — model the migration on
+  `supabase/migrations/20260705150000_admin_member_index_associate_view.sql`,
+  which replaces the whole function body.
+- `src/lib/admin/memberIndexParams.ts`: `AdminMemberIndexView` union +
+  `isView()`.
+- `src/scripts/admin-member-index.ts`: `MemberIndexView` union, the
+  `readUrlState()` literal check, the `views` array that renders pills,
+  `viewLabel()`, `metaLeftHtml()`, and `showEmptyState()`.
+- `src/lib/members/i18n.ts`: add `adminView<Name>`,
+  `adminMemberIndexMeta<Name>`, and `adminEmpty<Name>` keys to the type
+  block and to both the `en` and `fr` string tables.
+- `src/components/members/AdminMembershipView.astro`: add the new i18n keys
+  to the `adminKeys` array passed from Astro to the client script (strings
+  silently render as their raw key if forgotten here).
+
+When a view needs to dedupe on lake address, use
+`normalize_lake_address_key(lake_civic_number, lake_street_name)` (also used
+by voting-eligibility checks) rather than comparing `lake_formatted_address`
+— it's the one key that already treats Google-Places-entered and
+manually-entered addresses as equivalent.
+
 ## Tests: e2e only, API-driven
 
 There is no unit or pgTAP test layer. All backend/business-logic coverage
