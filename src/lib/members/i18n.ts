@@ -300,6 +300,7 @@ export const memberCopy: Record<
 		adminViewLapsed: string;
 		adminViewIncomplete: string;
 		adminViewAll: string;
+		adminViewDuplicate: string;
 		adminMemberIndexMetaVoting: string;
 		adminMemberIndexMetaAssociate: string;
 		adminMemberIndexMetaMailing: string;
@@ -309,6 +310,7 @@ export const memberCopy: Record<
 		adminMemberIndexMetaLapsed: string;
 		adminMemberIndexMetaIncomplete: string;
 		adminMemberIndexMetaAll: string;
+		adminMemberIndexMetaDuplicate: string;
 		adminMemberIndexMetaSearch: string;
 		adminMemberIndexEmailOptInAppend: string;
 		adminCopyEmailListOptIn: string;
@@ -332,6 +334,7 @@ export const memberCopy: Record<
 		adminEmptyLapsed: string;
 		adminEmptyIncomplete: string;
 		adminEmptyAll: string;
+		adminEmptyDuplicate: string;
 		adminSearchNoResults: string;
 		adminSearchTryDisabled: string;
 		adminSearchTryDisabledLink: string;
@@ -788,6 +791,7 @@ export const memberCopy: Record<
 		adminViewLapsed: 'Lapsed',
 		adminViewIncomplete: 'Incomplete signups',
 		adminViewAll: 'All members',
+		adminViewDuplicate: 'Duplicate lake addresses',
 		adminMemberIndexMetaVoting: '{{count}} voting members',
 		adminMemberIndexMetaAssociate: '{{count}} associate members',
 		adminMemberIndexMetaMailing: '{{count}} active members',
@@ -797,6 +801,7 @@ export const memberCopy: Record<
 		adminMemberIndexMetaLapsed: '{{count}} lapsed members',
 		adminMemberIndexMetaIncomplete: '{{count}} incomplete signups',
 		adminMemberIndexMetaAll: '{{count}} members',
+		adminMemberIndexMetaDuplicate: '{{count}} members with a duplicate lake address',
 		adminMemberIndexMetaSearch: '{{count}} results across all members',
 		adminMemberIndexEmailOptInAppend: ' · {{count}} opted in to email',
 		adminCopyEmailListOptIn: 'Copy email list (opted in)',
@@ -821,6 +826,7 @@ export const memberCopy: Record<
 		adminEmptyIncomplete:
 			'No incomplete signups — everyone who created a profile has completed a membership.',
 		adminEmptyAll: 'No member records found.',
+		adminEmptyDuplicate: 'No duplicate lake addresses found.',
 		adminSearchNoResults: 'No members match “{{query}}”.',
 		adminSearchTryDisabled: 'No results — ',
 		adminSearchTryDisabledLink: 'try including disabled members',
@@ -1285,6 +1291,7 @@ export const memberCopy: Record<
 		adminViewLapsed: 'Inactifs',
 		adminViewIncomplete: 'Inscriptions incomplètes',
 		adminViewAll: 'Tous les membres',
+		adminViewDuplicate: 'Adresses au lac en double',
 		adminMemberIndexMetaVoting: '{{count}} membres votants',
 		adminMemberIndexMetaAssociate: '{{count}} membres associés',
 		adminMemberIndexMetaMailing: '{{count}} membres actifs',
@@ -1294,6 +1301,7 @@ export const memberCopy: Record<
 		adminMemberIndexMetaLapsed: '{{count}} membres inactifs',
 		adminMemberIndexMetaIncomplete: '{{count}} inscriptions incomplètes',
 		adminMemberIndexMetaAll: '{{count}} membres',
+		adminMemberIndexMetaDuplicate: '{{count}} membres avec une adresse au lac en double',
 		adminMemberIndexMetaSearch: '{{count}} résultats parmi tous les membres',
 		adminMemberIndexEmailOptInAppend: ' · {{count}} inscrits aux courriels',
 		adminCopyEmailListOptIn: 'Copier la liste de courriels (inscrits)',
@@ -1320,6 +1328,7 @@ export const memberCopy: Record<
 		adminEmptyIncomplete:
 			'Aucune inscription incomplète — toute personne ayant créé un profil a complété une adhésion.',
 		adminEmptyAll: 'Aucun membre dans le dossier.',
+		adminEmptyDuplicate: 'Aucune adresse au lac en double trouvée.',
 		adminSearchNoResults: 'Aucun membre ne correspond à « {{query}} ».',
 		adminSearchTryDisabled: 'Aucun résultat — ',
 		adminSearchTryDisabledLink: 'essayez d’inclure les membres désactivés',

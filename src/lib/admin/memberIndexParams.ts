@@ -1,7 +1,15 @@
 import { sanitizeAdminMemberSearch } from './membersSearch';
 import { getMembershipCalendarYear } from '../members/membershipYear';
 
-export type AdminMemberIndexView = 'voting' | 'associate' | 'mailing' | 'pending' | 'lapsed' | 'incomplete' | 'all';
+export type AdminMemberIndexView =
+	| 'voting'
+	| 'associate'
+	| 'mailing'
+	| 'pending'
+	| 'lapsed'
+	| 'incomplete'
+	| 'all'
+	| 'duplicate';
 
 export type AdminMemberIndexSort = 'last_name_asc' | 'last_name_desc' | 'created_at_desc' | 'created_at_asc';
 
@@ -25,7 +33,8 @@ function isView(s: string): s is AdminMemberIndexView {
 		s === 'pending' ||
 		s === 'lapsed' ||
 		s === 'incomplete' ||
-		s === 'all'
+		s === 'all' ||
+		s === 'duplicate'
 	);
 }
 

@@ -2,7 +2,15 @@
 
 import { escapeHtml } from '../lib/admin/escapeHtml';
 
-export type MemberIndexView = 'voting' | 'associate' | 'mailing' | 'pending' | 'lapsed' | 'incomplete' | 'all';
+export type MemberIndexView =
+	| 'voting'
+	| 'associate'
+	| 'mailing'
+	| 'pending'
+	| 'lapsed'
+	| 'incomplete'
+	| 'all'
+	| 'duplicate';
 
 type AdminStrings = Record<string, string>;
 
@@ -132,6 +140,8 @@ function viewLabel(strings: AdminStrings, view: MemberIndexView): string {
 			return t(strings, 'adminViewIncomplete');
 		case 'all':
 			return t(strings, 'adminViewAll');
+		case 'duplicate':
+			return t(strings, 'adminViewDuplicate');
 		default:
 			return view;
 	}
@@ -196,7 +206,8 @@ export function initAdminMemberIndex(
 			v === 'pending' ||
 			v === 'lapsed' ||
 			v === 'incomplete' ||
-			v === 'all'
+			v === 'all' ||
+			v === 'duplicate'
 		) {
 			currentView = v;
 		} else {
@@ -269,7 +280,16 @@ export function initAdminMemberIndex(
 	function renderPills() {
 		if (!pillsRoot) return;
 		updateMailingViewDescription();
-		const views: MemberIndexView[] = ['voting', 'associate', 'mailing', 'pending', 'lapsed', 'incomplete', 'all'];
+		const views: MemberIndexView[] = [
+			'voting',
+			'associate',
+			'mailing',
+			'pending',
+			'lapsed',
+			'incomplete',
+			'all',
+			'duplicate',
+		];
 		const q = searchInput?.value.trim() ?? '';
 		const searchActive = q.length > 0;
 		pillsRoot.classList.toggle('adminMemberIndexPills--searchActive', searchActive);
@@ -328,6 +348,8 @@ export function initAdminMemberIndex(
 				return escapeHtml(t(strings, 'adminMemberIndexMetaIncomplete', { count: total }));
 			case 'all':
 				return escapeHtml(t(strings, 'adminMemberIndexMetaAll', { count: total }));
+			case 'duplicate':
+				return escapeHtml(t(strings, 'adminMemberIndexMetaDuplicate', { count: total }));
 			default:
 				return String(total);
 		}
@@ -390,6 +412,9 @@ export function initAdminMemberIndex(
 					break;
 				case 'all':
 					msg = t(strings, 'adminEmptyAll');
+					break;
+				case 'duplicate':
+					msg = t(strings, 'adminEmptyDuplicate');
 					break;
 				default:
 					msg = '';
