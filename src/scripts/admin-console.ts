@@ -3,6 +3,7 @@
 import { escapeHtml } from '../lib/admin/escapeHtml';
 import { formatAdminLocaleDate, formatAdminLocaleDateTime } from '../lib/admin/formatLocaleDate';
 import { formatAdminRelativeAgo, type AdminRelativeStrings } from '../lib/admin/formatRelativeAgo';
+import { initAdminToast } from '../lib/admin/adminToast';
 import { initAdminMemberIndex } from './admin-member-index';
 
 export type AdminConsoleStrings = Record<string, string>;
@@ -141,21 +142,6 @@ async function fetchJson<T>(url: string, init?: RequestInit): Promise<{ ok: bool
 	return { ok: res.ok, data: data as T, status: res.status };
 }
 
-let statusElGlobal: HTMLElement | null = null;
-
-function setStatusGlobal(strings: AdminConsoleStrings, msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
-	if (!statusElGlobal) return;
-	if (!msg) {
-		statusElGlobal.textContent = '';
-		statusElGlobal.removeAttribute('data-error');
-		statusElGlobal.removeAttribute('data-success');
-		return;
-	}
-	statusElGlobal.textContent = msg;
-	statusElGlobal.dataset.error = kind === 'error' ? '1' : '';
-	statusElGlobal.dataset.success = kind === 'success' ? '1' : '';
-}
-
 function methodLabel(strings: AdminConsoleStrings, m: string | null): string {
 	if (!m) return '—';
 	if (m === 'stripe') return t(strings, 'adminMethodStripe');
@@ -182,7 +168,7 @@ export function initAdminConsole(
 	const overviewMount = el<HTMLElement>('#admin-overview-mount');
 	const auditBody = el<HTMLTableSectionElement>('#admin-audit-body');
 	const pendingBadge = el<HTMLElement>('#admin-pending-badge');
-	statusElGlobal = el<HTMLElement>('#admin-status');
+	const setStatus = initAdminToast(el('#admin-toast'), el('#admin-toast-message'), el('#admin-toast-close'));
 	const tabs = document.querySelectorAll<HTMLButtonElement>('[data-admin-tab]');
 	const panels = document.querySelectorAll<HTMLElement>('[data-admin-panel]');
 
@@ -196,10 +182,6 @@ export function initAdminConsole(
 	let activityTimelineNextBefore: string | null = null;
 	let renderActivityTimelineRow: ((item: ActivityApiTimelineItem) => string) | null = null;
 	let activityTimelineLoadingMore = false;
-
-	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
-		setStatusGlobal(strings, msg, kind);
-	}
 
 	/** Must match `counts.pending` from member index + `admin_pending_membership_count` (current year, non-disabled). */
 	function setPendingBadge(count: number) {
@@ -218,7 +200,7 @@ export function initAdminConsole(
 		defaultMembershipYear,
 		adminMembersBase,
 		locale,
-		(msg, kind) => setStatusGlobal(strings, msg, kind ?? 'neutral'),
+		(msg, kind) => setStatus(msg, kind ?? 'neutral'),
 		currentHistoryUrl,
 		(url) => history.pushState({}, '', url),
 		(counts) => {

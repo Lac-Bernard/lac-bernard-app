@@ -183,6 +183,7 @@ const adminKeys = [
 	'adminRowOpenChevronAria',
 	'adminPaymentReferenceVisibleHint',
 	'adminPaymentNotesVisibleHint',
+	'adminToastClose',
 ] as const;
 
 const adminStrings = Object.fromEntries(adminKeys.map((k) => [k, t[k as keyof typeof t]])) as Record<string, string>;
@@ -225,7 +226,23 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
           </div>
         </div>
 
-        <p id="admin-status" class="adminStatus" aria-live="polite"></p>
+        <div
+          id="admin-toast"
+          class="adminToast"
+          popover="manual"
+          role="status"
+          aria-live="polite"
+        >
+          <p id="admin-toast-message" class="adminToastMessage"></p>
+          <button
+            type="button"
+            id="admin-toast-close"
+            class="adminToastClose"
+            aria-label={t.adminToastClose}
+          >
+            &times;
+          </button>
+        </div>
 
         <div data-admin-panel="overview" class="adminPanel adminCard" hidden={initialAdminTab !== 'overview'}>
           <div id="admin-overview-mount" class="adminOverviewMount"></div>
@@ -432,32 +449,6 @@ const tierLabels = { voting: t.tierGeneral, associate: t.tierAssociate };
   .adminTabBadge--pending {
     background: #faeeda;
     color: #854f0b;
-  }
-
-  .adminStatus {
-    margin: 0;
-    padding: 0.65rem 1.25rem;
-    font-size: 0.9rem;
-    line-height: 1.4;
-    border-bottom: 1px solid var(--admin-border);
-    background: rgba(72, 196, 255, 0.08);
-    color: var(--admin-text);
-  }
-
-  .adminStatus[data-error='1'] {
-    background: rgba(176, 0, 32, 0.08);
-    color: #8a1024;
-  }
-
-  .adminStatus[data-success='1'] {
-    background: rgba(34, 120, 80, 0.1);
-    color: rgba(18, 75, 50, 0.95);
-  }
-
-  .adminStatus:empty {
-    display: none;
-    padding: 0;
-    border: none;
   }
 
   .adminPanel {
