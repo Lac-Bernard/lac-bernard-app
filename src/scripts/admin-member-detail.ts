@@ -5,6 +5,7 @@ import { formatMemberPrimaryName } from '../lib/members/memberDisplayName';
 import { computeManualPaymentSplit, roundMoney } from '../lib/admin/manualPaymentSplit';
 import { MANUAL_PAYMENT_METHODS, isValidManualPaymentAmount } from '../lib/admin/manualPaymentClient';
 import { parseDonationNoteSnippet, perPaymentMembershipDonation, sumYearPaymentBreakdown } from '../lib/admin/paymentBreakdown';
+import { initAdminToast } from '../lib/admin/adminToast';
 import type { AdminConsoleStrings } from './admin-console';
 
 type MemberRow = {
@@ -119,7 +120,11 @@ export function initAdminMemberDetail(
 	numberLocale: string,
 	adminMembersTabHref: string,
 ) {
-	const statusEl = el<HTMLElement>('#admin-detail-status');
+	const setStatus = initAdminToast(
+		el('#admin-detail-toast'),
+		el('#admin-detail-toast-message'),
+		el('#admin-detail-toast-close'),
+	);
 	const mount = el<HTMLElement>('#admin-detail-memberships-mount');
 	const memberForm = el<HTMLFormElement>('#admin-member-detail-form');
 	const paymentDialog = el<HTMLDialogElement>('#admin-payment-dialog');
@@ -131,19 +136,6 @@ export function initAdminMemberDetail(
 	const savePaymentBtn = el<HTMLButtonElement>('#admin-payment-submit');
 	const addMembershipSubmitBtn = el<HTMLButtonElement>('#admin-add-membership-submit');
 	let currentMember: MemberRow | null = null;
-
-	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
-		if (!statusEl) return;
-		if (!msg) {
-			statusEl.textContent = '';
-			statusEl.removeAttribute('data-error');
-			statusEl.removeAttribute('data-success');
-			return;
-		}
-		statusEl.textContent = msg;
-		statusEl.dataset.error = kind === 'error' ? '1' : '';
-		statusEl.dataset.success = kind === 'success' ? '1' : '';
-	}
 
 	const fmtMoney = (n: number) =>
 		new Intl.NumberFormat(numberLocale, { style: 'currency', currency: 'CAD' }).format(n);
