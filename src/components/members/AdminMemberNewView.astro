@@ -35,6 +35,11 @@ const adminKeys = [
 	'adminMembershipYearLabel',
 	'adminLoading',
 	'adminErrorGeneric',
+	'adminAddMemberErrorNoLake',
+	'adminAddMemberErrorAddressTaken',
+	'adminAddMemberErrorDuplicateYear',
+	'adminAddMemberErrorMemberNotFound',
+	'adminToastClose',
 	'adminAmountLabel',
 	'adminMethodLabel',
 	'adminMethodEtransfer',
@@ -96,7 +101,23 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   <section class="section alt adminPage adminPageMemberNew">
     <div class="container adminConsole">
       <div class="adminShell">
-        <p id="admin-new-member-status" class="adminStatus" aria-live="polite"></p>
+        <div
+          id="admin-new-member-toast"
+          class="adminToast"
+          popover="manual"
+          role="status"
+          aria-live="polite"
+        >
+          <p id="admin-new-member-toast-message" class="adminToastMessage"></p>
+          <button
+            type="button"
+            id="admin-new-member-toast-close"
+            class="adminToastClose"
+            aria-label={t.adminToastClose}
+          >
+            &times;
+          </button>
+        </div>
 
         <form id="admin-new-member-form" class="adminMemberForm" aria-busy="false">
           <div class="adminPanel adminCard adminPanel--profile">
@@ -271,32 +292,6 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
     overflow: hidden;
     min-width: 0;
     max-width: 100%;
-  }
-
-  .adminStatus {
-    margin: 0;
-    padding: 0.45rem 1.15rem;
-    font-size: 0.8125rem;
-    line-height: 1.45;
-    border-bottom: 1px solid var(--admin-border);
-    background: rgba(72, 196, 255, 0.08);
-    color: var(--admin-text);
-  }
-
-  .adminStatus[data-error='1'] {
-    background: rgba(176, 0, 32, 0.08);
-    color: #8a1024;
-  }
-
-  .adminStatus[data-success='1'] {
-    background: rgba(34, 120, 80, 0.1);
-    color: rgba(18, 75, 50, 0.95);
-  }
-
-  .adminStatus:empty {
-    display: none;
-    padding: 0;
-    border: none;
   }
 
   .adminPanel {

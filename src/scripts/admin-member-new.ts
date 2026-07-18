@@ -1,6 +1,7 @@
 /** Client-side admin "add member" page. */
 
 import { MANUAL_PAYMENT_METHODS, isValidManualPaymentAmount } from '../lib/admin/manualPaymentClient';
+import { initAdminToast } from '../lib/admin/adminToast';
 import type { AdminConsoleStrings } from './admin-console';
 
 function el<T extends HTMLElement>(sel: string): T | null {
@@ -31,24 +32,16 @@ export function initAdminMemberNew(
 	adminMemberDetailBase: string,
 	calendarYear: number,
 ) {
-	const statusEl = el<HTMLElement>('#admin-new-member-status');
 	const form = el<HTMLFormElement>('#admin-new-member-form');
 	const submitBtn = el<HTMLButtonElement>('#admin-new-member-submit');
 	const createMembership = el<HTMLInputElement>('#admin-new-member-create-membership');
 	const paidBlock = el<HTMLElement>('#admin-new-member-paid-fields');
 
-	function setStatus(msg: string, kind: 'neutral' | 'error' | 'success' = 'neutral') {
-		if (!statusEl) return;
-		if (!msg) {
-			statusEl.textContent = '';
-			statusEl.removeAttribute('data-error');
-			statusEl.removeAttribute('data-success');
-			return;
-		}
-		statusEl.textContent = msg;
-		statusEl.dataset.error = kind === 'error' ? '1' : '';
-		statusEl.dataset.success = kind === 'success' ? '1' : '';
-	}
+	const setStatus = initAdminToast(
+		el('#admin-new-member-toast'),
+		el('#admin-new-member-toast-message'),
+		el('#admin-new-member-toast-close'),
+	);
 
 	function setSubmitLoading(loading: boolean) {
 		if (form) form.setAttribute('aria-busy', loading ? 'true' : 'false');
