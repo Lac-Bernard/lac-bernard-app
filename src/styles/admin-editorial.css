@@ -76,10 +76,8 @@
 	position: fixed;
 	top: 1rem;
 	left: 50%;
-	translate: -50% 0;
 	margin: 0;
 	max-width: min(32rem, calc(100vw - 2rem));
-	display: flex;
 	align-items: flex-start;
 	gap: 0.6rem;
 	padding: 0.6rem 0.75rem 0.6rem 1rem;
@@ -91,10 +89,32 @@
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 	font-size: 0.8125rem;
 	line-height: 1.45;
+	opacity: 0;
+	translate: -50% -0.5rem;
+	transition:
+		opacity 200ms ease,
+		translate 200ms ease,
+		display 200ms allow-discrete,
+		overlay 200ms allow-discrete;
 }
 
 .adminToast:popover-open {
 	display: flex;
+	opacity: 1;
+	translate: -50% 0;
+}
+
+@starting-style {
+	.adminToast:popover-open {
+		opacity: 0;
+		translate: -50% -0.5rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.adminToast {
+		transition: display 1ms allow-discrete, overlay 1ms allow-discrete;
+	}
 }
 
 .adminToast[data-kind='error'] {
