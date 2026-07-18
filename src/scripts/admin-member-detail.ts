@@ -269,7 +269,7 @@ export function initAdminMemberDetail(
 					return;
 				}
 				setStatus(t(strings, 'adminPaymentDeleted'), 'success');
-				void load();
+				void load({ silent: true });
 			});
 		});
 	}
@@ -309,7 +309,7 @@ export function initAdminMemberDetail(
 					return;
 				}
 				setStatus(t(strings, 'adminUpgradeToVotingSuccess'), 'success');
-				void load();
+				void load({ silent: true });
 			});
 		});
 	}
@@ -334,7 +334,7 @@ export function initAdminMemberDetail(
 					return;
 				}
 				setStatus(t(strings, 'adminMakeComplimentarySuccess'), 'success');
-				void load();
+				void load({ silent: true });
 			});
 		});
 	}
@@ -359,7 +359,7 @@ export function initAdminMemberDetail(
 					return;
 				}
 				setStatus(t(strings, 'adminRemoveComplimentarySuccess'), 'success');
-				void load();
+				void load({ silent: true });
 			});
 		});
 	}
@@ -642,8 +642,11 @@ export function initAdminMemberDetail(
 	}
 
 
-	async function load() {
-		setStatus(t(strings, 'adminLoading'));
+	/** `silent`: skip this function's own loading/clear status calls — used when reloading
+	 * after a mutation whose own success message (set by the caller just before) should stay
+	 * visible instead of being immediately overwritten. */
+	async function load(opts: { silent?: boolean } = {}) {
+		if (!opts.silent) setStatus(t(strings, 'adminLoading'));
 		const { ok, data } = await fetchJson<{ member?: MemberRow; memberships?: MembershipRow[]; error?: string }>(
 			`/api/admin/members/${encodeURIComponent(memberId)}/detail`,
 		);
@@ -661,7 +664,7 @@ export function initAdminMemberDetail(
 			appliedInitialYearDefault = true;
 		}
 		renderMembershipMount();
-		setStatus('');
+		if (!opts.silent) setStatus('');
 	}
 
 	memberForm?.addEventListener('submit', async (e) => {
@@ -718,7 +721,7 @@ export function initAdminMemberDetail(
 				return;
 			}
 			setStatus(t(strings, 'adminMemberSaved'), 'success');
-			void load();
+			void load({ silent: true });
 		} finally {
 			setFormSubmitLoading(memberForm, saveMemberBtn, false);
 		}
@@ -795,7 +798,7 @@ export function initAdminMemberDetail(
 			setStatus(t(strings, 'adminPaymentSaved'), 'success');
 			paymentDialog?.close();
 			form.reset();
-			void load();
+			void load({ silent: true });
 		} finally {
 			setFormSubmitLoading(form, savePaymentBtn, false);
 		}
@@ -872,7 +875,7 @@ export function initAdminMemberDetail(
 			setStatus(t(strings, 'adminMemberSaved'), 'success');
 			addMembershipDialog?.close();
 			addMembershipForm.reset();
-			void load();
+			void load({ silent: true });
 		} finally {
 			setFormSubmitLoading(addMembershipForm, addMembershipSubmitBtn, false);
 		}
