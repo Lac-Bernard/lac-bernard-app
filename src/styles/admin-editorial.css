@@ -75,8 +75,9 @@
 .adminToast {
 	position: fixed;
 	top: 1rem;
-	left: 50%;
-	margin: 0;
+	inset-inline: 0;
+	margin: 0 auto;
+	width: fit-content;
 	max-width: min(32rem, calc(100vw - 2rem));
 	align-items: flex-start;
 	gap: 0.6rem;
@@ -89,21 +90,21 @@
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 	font-size: 0.8125rem;
 	line-height: 1.45;
-	translate: -50% -100%;
+	translate: 0 -200%;
 	transition:
-		translate 200ms ease,
-		display 200ms allow-discrete,
-		overlay 200ms allow-discrete;
+		translate 220ms ease,
+		display 220ms allow-discrete,
+		overlay 220ms allow-discrete;
 }
 
 .adminToast:popover-open {
 	display: flex;
-	translate: -50% 0;
+	translate: 0 0;
 }
 
 @starting-style {
 	.adminToast:popover-open {
-		translate: -50% -100%;
+		translate: 0 -200%;
 	}
 }
 
@@ -113,7 +114,7 @@
 	}
 
 	.adminToast:popover-open {
-		translate: -50% 0;
+		translate: 0 0;
 	}
 }
 
