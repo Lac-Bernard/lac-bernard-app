@@ -117,6 +117,7 @@ export function initAdminMemberDetail(
 	memberId: string,
 	calendarYear: number,
 	numberLocale: string,
+	adminMembersTabHref: string,
 ) {
 	const statusEl = el<HTMLElement>('#admin-detail-status');
 	const mount = el<HTMLElement>('#admin-detail-memberships-mount');
@@ -747,6 +748,24 @@ export function initAdminMemberDetail(
 			return;
 		}
 		setStatus(t(strings, 'adminPromoteSuccess'), 'success');
+	});
+
+	el<HTMLButtonElement>('#admin-delete-member-btn')?.addEventListener('click', async () => {
+		if (!confirm(t(strings, 'adminDeleteMemberConfirm'))) return;
+		setStatus(t(strings, 'adminLoading'));
+		const { ok, data } = await fetchJson<{ error?: string }>(`/api/admin/members/${encodeURIComponent(memberId)}`, {
+			method: 'DELETE',
+		});
+		if (!ok) {
+			const code = data?.error;
+			const msg =
+				code === 'has_memberships' ? t(strings, 'adminDeleteMemberErrorHasMemberships')
+				: t(strings, 'adminErrorGeneric');
+			setStatus(msg, 'error');
+			return;
+		}
+		setStatus(t(strings, 'adminDeleteMemberSuccess'), 'success');
+		window.location.href = adminMembersTabHref;
 	});
 
 	el<HTMLFormElement>('#admin-payment-form')?.addEventListener('submit', async (e) => {
