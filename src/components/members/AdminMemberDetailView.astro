@@ -106,6 +106,9 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
               <button type="button" class="adminBtn adminBtn--ghost" id="admin-promote-btn" title={t.adminPromoteAdminTitle}>
                 {t.adminPromoteBtn}
               </button>
+              <button type="button" class="adminBtn adminBtn--danger" id="admin-delete-member-btn">
+                {t.adminDeleteMemberBtn}
+              </button>
             </div>
           </form>
         </div>
@@ -238,20 +241,27 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   </section>
 </MemberAppLayout>
 
-<script type="application/json" id="admin-member-detail-data" set:html={JSON.stringify({ adminStrings, tierLabels, memberId, calendarYear, numberLocale })}></script>
+<script
+  type="application/json"
+  id="admin-member-detail-data"
+  set:html={JSON.stringify({ adminStrings, tierLabels, memberId, calendarYear, numberLocale, adminMembersTabHref })}
+></script>
 <script>
   import { initAdminMemberDetail } from '../../scripts/admin-member-detail';
   const el = document.getElementById('admin-member-detail-data');
   const raw = el?.textContent;
   if (raw) {
-    const { adminStrings, tierLabels, memberId, calendarYear, numberLocale } = JSON.parse(raw) as {
+    const { adminStrings, tierLabels, memberId, calendarYear, numberLocale, adminMembersTabHref } = JSON.parse(
+      raw,
+    ) as {
       adminStrings: Record<string, string>;
       tierLabels: { voting: string; associate: string };
       memberId: string;
       calendarYear: number;
       numberLocale: string;
+      adminMembersTabHref: string;
     };
-    initAdminMemberDetail(adminStrings, tierLabels, memberId, calendarYear, numberLocale);
+    initAdminMemberDetail(adminStrings, tierLabels, memberId, calendarYear, numberLocale, adminMembersTabHref);
   }
 </script>
 

@@ -232,6 +232,10 @@ export const memberCopy: Record<
 		adminUpgradeToVotingConfirm: string;
 		adminUpgradeToVotingSuccess: string;
 		adminUpgradeToVotingErrorNotAssociate: string;
+		adminDeleteMemberBtn: string;
+		adminDeleteMemberConfirm: string;
+		adminDeleteMemberSuccess: string;
+		adminDeleteMemberErrorHasMemberships: string;
 		adminMakeComplimentaryBtn: string;
 		adminMakeComplimentaryConfirm: string;
 		adminMakeComplimentarySuccess: string;
@@ -718,6 +722,11 @@ export const memberCopy: Record<
 			'Upgrade this membership to voting? Previous payments still count toward dues; the member will owe any balance.',
 		adminUpgradeToVotingSuccess: 'Membership upgraded to voting.',
 		adminUpgradeToVotingErrorNotAssociate: 'This row is not an associate membership (already voting or invalid).',
+		adminDeleteMemberBtn: 'Delete member',
+		adminDeleteMemberConfirm:
+			'Permanently delete this member? This cannot be undone. Only members with no memberships can be deleted.',
+		adminDeleteMemberSuccess: 'Member deleted.',
+		adminDeleteMemberErrorHasMemberships: 'This member has memberships on file and cannot be deleted.',
 		adminMakeComplimentaryBtn: 'Make complimentary',
 		adminMakeComplimentaryConfirm: 'Make this membership complimentary? No payment will be required and it will become active immediately.',
 		adminMakeComplimentarySuccess: 'Membership marked complimentary and activated.',
@@ -1216,6 +1225,11 @@ export const memberCopy: Record<
 		adminUpgradeToVotingSuccess: 'Adhésion passée au vote.',
 		adminUpgradeToVotingErrorNotAssociate:
 			'Cette ligne n’est pas une adhésion associée (déjà vote ou invalide).',
+		adminDeleteMemberBtn: 'Supprimer le membre',
+		adminDeleteMemberConfirm:
+			'Supprimer définitivement ce membre? Cette action est irréversible. Seuls les membres sans adhésion peuvent être supprimés.',
+		adminDeleteMemberSuccess: 'Membre supprimé.',
+		adminDeleteMemberErrorHasMemberships: 'Ce membre a des adhésions au dossier et ne peut pas être supprimé.',
 		adminMakeComplimentaryBtn: 'Rendre complimentaire',
 		adminMakeComplimentaryConfirm:
 			'Rendre cette adhésion complimentaire ? Aucun paiement ne sera requis et elle deviendra active immédiatement.',
