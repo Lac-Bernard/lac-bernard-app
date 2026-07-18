@@ -90,32 +90,10 @@
 	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
 	font-size: 0.8125rem;
 	line-height: 1.45;
-	translate: 0 -200%;
-	transition:
-		translate 220ms ease,
-		display 220ms allow-discrete,
-		overlay 220ms allow-discrete;
 }
 
 .adminToast:popover-open {
 	display: flex;
-	translate: 0 0;
-}
-
-@starting-style {
-	.adminToast:popover-open {
-		translate: 0 -200%;
-	}
-}
-
-@media (prefers-reduced-motion: reduce) {
-	.adminToast {
-		transition: display 1ms allow-discrete, overlay 1ms allow-discrete;
-	}
-
-	.adminToast:popover-open {
-		translate: 0 0;
-	}
 }
 
 .adminToast[data-kind='error'] {
