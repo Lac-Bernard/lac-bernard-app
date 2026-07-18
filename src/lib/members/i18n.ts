@@ -248,6 +248,7 @@ export const memberCopy: Record<
 		adminAddMemberErrorMemberNotFound: string;
 		adminLoading: string;
 		adminErrorGeneric: string;
+		adminToastClose: string;
 		adminPageOf: string;
 		adminPrevPage: string;
 		adminNextPage: string;
@@ -740,6 +741,7 @@ export const memberCopy: Record<
 		adminAddMemberErrorMemberNotFound: 'Member not found.',
 		adminLoading: 'Loading…',
 		adminErrorGeneric: 'Something went wrong.',
+		adminToastClose: 'Close',
 		adminPageOf: 'Page {{page}} of {{total}}',
 		adminPrevPage: 'Previous',
 		adminNextPage: 'Next',
@@ -1244,6 +1246,7 @@ export const memberCopy: Record<
 		adminAddMemberErrorMemberNotFound: 'Membre introuvable.',
 		adminLoading: 'Chargement…',
 		adminErrorGeneric: 'Une erreur s’est produite.',
+		adminToastClose: 'Fermer',
 		adminPageOf: 'Page {{page}} sur {{total}}',
 		adminPrevPage: 'Précédent',
 		adminNextPage: 'Suivant',

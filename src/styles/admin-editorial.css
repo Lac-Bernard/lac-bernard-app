@@ -71,3 +71,66 @@
 .adminPage .adminTabBadge {
 	font-weight: 500;
 }
+
+.adminToast {
+	position: fixed;
+	top: 1rem;
+	left: 50%;
+	translate: -50% 0;
+	margin: 0;
+	max-width: min(32rem, calc(100vw - 2rem));
+	display: flex;
+	align-items: flex-start;
+	gap: 0.6rem;
+	padding: 0.6rem 0.75rem 0.6rem 1rem;
+	border: 1px solid var(--admin-border);
+	border-left: 4px solid var(--admin-border);
+	border-radius: 0.5rem;
+	background: var(--admin-surface);
+	color: var(--admin-text);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+	font-size: 0.8125rem;
+	line-height: 1.45;
+}
+
+.adminToast:popover-open {
+	display: flex;
+}
+
+.adminToast[data-kind='error'] {
+	background: #fdf0f0;
+	color: #8a1024;
+	border-color: rgba(176, 0, 32, 0.35);
+	border-left-color: #b00020;
+}
+
+.adminToast[data-kind='success'] {
+	background: #eef7f1;
+	color: rgba(18, 75, 50, 0.95);
+	border-color: rgba(34, 120, 80, 0.35);
+	border-left-color: #227850;
+}
+
+.adminToastMessage {
+	margin: 0;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.adminToastClose {
+	flex: 0 0 auto;
+	border: none;
+	background: transparent;
+	color: inherit;
+	font-size: 1.05rem;
+	line-height: 1;
+	cursor: pointer;
+	padding: 0.1rem 0.25rem;
+	margin: -0.1rem -0.25rem 0 0;
+	opacity: 0.7;
+}
+
+.adminToastClose:hover,
+.adminToastClose:focus-visible {
+	opacity: 1;
+}
