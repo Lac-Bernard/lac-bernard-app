@@ -58,6 +58,136 @@ test('admin can grant a complimentary membership and it shows as active', async 
 	await adminApi.dispose();
 });
 
+test('admin can create a member', async () => {
+	const supabaseAdmin = serviceClient();
+	const adminApi = await apiContextFor(admin.email);
+	const email = `e2e-admincreate-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
+
+	const res = await adminApi.post('/api/admin/members', {
+		data: { first_name: 'AdminCreated', last_name: 'E2E', primary_email: email },
+	});
+	expect(res.ok()).toBeTruthy();
+	const body = await res.json();
+	expect(typeof body.member?.id).toBe('string');
+	members.push({ email, memberId: body.member.id });
+
+	const { data: row } = await supabaseAdmin
+		.from('members')
+		.select('first_name, last_name, primary_email, status')
+		.eq('id', body.member.id)
+		.single();
+	expect(row?.first_name).toBe('AdminCreated');
+	expect(row?.last_name).toBe('E2E');
+	expect(row?.primary_email).toBe(email);
+	expect(row?.status).toBe('enrolled');
+
+	await adminApi.dispose();
+});
+
+test('admin creates a member and then adds a membership for them', async () => {
+	const supabaseAdmin = serviceClient();
+	const adminApi = await apiContextFor(admin.email);
+	const email = `e2e-admincreate-${Date.now()}-${Math.random().toString(36).slice(2, 8)}@example.com`;
+
+	const memberRes = await adminApi.post('/api/admin/members', {
+		data: { first_name: 'AdminCreatedWithMembership', last_name: 'E2E', primary_email: email },
+	});
+	expect(memberRes.ok()).toBeTruthy();
+	const { member } = await memberRes.json();
+	members.push({ email, memberId: member.id });
+
+	const membershipRes = await adminApi.post(`/api/admin/members/${member.id}/memberships`, {
+		data: {
+			year: currentMembershipYear(),
+			tier: 'associate',
+			initial: 'active_with_payment',
+			payment: { amount: 25, method: 'cash' },
+		},
+	});
+	expect(membershipRes.ok()).toBeTruthy();
+	const membershipBody = await membershipRes.json();
+	expect(typeof membershipBody.membership_id).toBe('string');
+	expect(typeof membershipBody.payment_id).toBe('number');
+
+	const { data: row } = await supabaseAdmin
+		.from('memberships')
+		.select('status, complimentary, member_id')
+		.eq('id', membershipBody.membership_id)
+		.single();
+	expect(row?.member_id).toBe(member.id);
+	expect(row?.status).toBe('active');
+	expect(row?.complimentary).toBe(false);
+
+	await adminApi.dispose();
+});
+
+test('admin adds a membership with a full payment to an existing member, activating it', async () => {
+	const supabaseAdmin = serviceClient();
+	const member = await newMember({ firstName: 'AdminPaid', lastName: 'E2E' });
+	const adminApi = await apiContextFor(admin.email);
+
+	const res = await adminApi.post(`/api/admin/members/${member.memberId}/memberships`, {
+		data: {
+			year: currentMembershipYear(),
+			tier: 'associate',
+			initial: 'active_with_payment',
+			payment: { amount: 25, method: 'e-transfer', notes: 'e2e admin-recorded payment' },
+		},
+	});
+	expect(res.ok()).toBeTruthy();
+	const body = await res.json();
+	expect(typeof body.membership_id).toBe('string');
+	expect(typeof body.payment_id).toBe('number');
+
+	const { data: row } = await supabaseAdmin
+		.from('memberships')
+		.select('status, complimentary')
+		.eq('id', body.membership_id)
+		.single();
+	expect(row?.status).toBe('active');
+	expect(row?.complimentary).toBe(false);
+
+	const { data: payRows } = await supabaseAdmin
+		.from('payments')
+		.select('method, amount, membership_amount, donation_amount, notes')
+		.eq('membership_id', body.membership_id);
+	expect(payRows).toHaveLength(1);
+	expect(payRows?.[0].method).toBe('e-transfer');
+	expect(Number(payRows?.[0].amount)).toBe(25);
+	expect(Number(payRows?.[0].membership_amount)).toBe(25);
+	expect(Number(payRows?.[0].donation_amount)).toBe(0);
+	expect(payRows?.[0].notes).toBe('e2e admin-recorded payment');
+
+	await adminApi.dispose();
+});
+
+test('admin adds a pending membership to an existing member, leaving it unpaid', async () => {
+	const supabaseAdmin = serviceClient();
+	const member = await newMember({ firstName: 'AdminPending', lastName: 'E2E' });
+	const adminApi = await apiContextFor(admin.email);
+
+	const res = await adminApi.post(`/api/admin/members/${member.memberId}/memberships`, {
+		data: { year: currentMembershipYear(), tier: 'associate', initial: 'pending' },
+	});
+	expect(res.ok()).toBeTruthy();
+	const body = await res.json();
+	expect(typeof body.membership_id).toBe('string');
+	expect(body.payment_id).toBeUndefined();
+
+	const { data: row } = await supabaseAdmin
+		.from('memberships')
+		.select('status, complimentary')
+		.eq('id', body.membership_id)
+		.single();
+	expect(row?.status).toBe('pending');
+	expect(row?.complimentary).toBe(false);
+
+	const { data: payRows } = await supabaseAdmin.from('payments').select('id').eq('membership_id', body.membership_id);
+	expect(payRows).toHaveLength(0);
+
+	await adminApi.dispose();
+});
+
 test('admin converts a pending membership into a complimentary one', async () => {
 	const supabaseAdmin = serviceClient();
 	const member = await newMember({ firstName: 'PendingComp', lastName: 'E2E' });
