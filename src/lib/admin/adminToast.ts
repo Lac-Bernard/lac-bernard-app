@@ -9,6 +9,8 @@ type PopoverCapableEl = HTMLElement & {
 	hidePopover?: () => void;
 };
 
+const FALLBACK_OPEN_CLASS = 'adminToast--open';
+
 export function initAdminToast(
 	toastEl: PopoverCapableEl | null,
 	messageEl: HTMLElement | null,
@@ -16,6 +18,11 @@ export function initAdminToast(
 ): (msg: string, kind?: AdminToastKind) => void {
 	const supportsPopover = typeof toastEl?.showPopover === 'function';
 	let dismissTimer: ReturnType<typeof setTimeout> | null = null;
+
+	if (toastEl && !supportsPopover) {
+		toastEl.hidden = true;
+		toastEl.classList.remove(FALLBACK_OPEN_CLASS);
+	}
 
 	function setStatus(msg: string, kind: AdminToastKind = 'neutral') {
 		if (!toastEl || !messageEl) return;
@@ -29,6 +36,7 @@ export function initAdminToast(
 				if (toastEl.matches(':popover-open')) toastEl.hidePopover?.();
 			} else {
 				toastEl.hidden = true;
+				toastEl.classList.remove(FALLBACK_OPEN_CLASS);
 			}
 			return;
 		}
@@ -37,10 +45,12 @@ export function initAdminToast(
 		toastEl.setAttribute('role', kind === 'error' ? 'alert' : 'status');
 		toastEl.setAttribute('aria-live', kind === 'error' ? 'assertive' : 'polite');
 		if (supportsPopover) {
-			if (toastEl.matches(':popover-open')) toastEl.hidePopover?.();
-			toastEl.showPopover?.();
+			// Already open: update content in place — hide+show would flash (and was
+			// only needed to re-trigger @starting-style animations, which we dropped).
+			if (!toastEl.matches(':popover-open')) toastEl.showPopover?.();
 		} else {
 			toastEl.hidden = false;
+			toastEl.classList.add(FALLBACK_OPEN_CLASS);
 		}
 		if (kind === 'success') {
 			dismissTimer = setTimeout(() => {

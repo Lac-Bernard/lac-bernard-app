@@ -175,7 +175,7 @@ export function initAdminMemberNew(
 				}
 			}
 
-			setStatus('', 'success');
+			setStatus('');
 			window.location.href = `${adminMemberDetailBase}/${encodeURIComponent(memberId)}`;
 		} finally {
 			// In the success case we leave the page; otherwise re-enable.
