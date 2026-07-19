@@ -258,14 +258,23 @@ export function initAdminMemberDetail(
 			b.addEventListener('click', async () => {
 				const pid = b.dataset.paymentId;
 				if (!pid) return;
-				if (!confirm(t(strings, 'adminDeletePaymentConfirm'))) return;
+				const confirmMsg =
+					b.dataset.method === 'stripe' ?
+						t(strings, 'adminDeletePaymentConfirmStripe', { amount: b.dataset.amount ?? '' })
+					:	t(strings, 'adminDeletePaymentConfirm');
+				if (!confirm(confirmMsg)) return;
 				setStatus(t(strings, 'adminLoading'));
 				const { ok, data } = await fetchJson<{ error?: string }>(
 					`/api/admin/members/${encodeURIComponent(memberId)}/payments/${encodeURIComponent(pid)}`,
 					{ method: 'DELETE' },
 				);
 				if (!ok) {
-					setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
+					const code = data?.error;
+					const msg =
+						code === 'stripe_refund_failed' ?
+							t(strings, 'adminDeletePaymentErrorRefundFailed')
+						:	t(strings, 'adminErrorGeneric');
+					setStatus(msg, 'error');
 					return;
 				}
 				setStatus(t(strings, 'adminPaymentDeleted'), 'success');
@@ -494,7 +503,7 @@ export function initAdminMemberDetail(
 				<td>${escapeHtml(fmtMoney(donation))}</td>
 				<td class="adminDetailTdLong">${longCell(p.notes)}</td>
 				<td class="adminDetailTdLong">${longCell(p.payment_id)}</td>
-				<td class="adminDetailTdActions"><button type="button" class="adminBtn adminBtn--danger adminBtn--table" data-delete-payment data-payment-id="${String(p.id)}">${escapeHtml(t(strings, 'adminDeletePaymentBtn'))}</button></td>
+				<td class="adminDetailTdActions"><button type="button" class="adminBtn adminBtn--danger adminBtn--table" data-delete-payment data-payment-id="${String(p.id)}" data-method="${escapeHtml(p.method ?? '')}" data-amount="${escapeHtml(p.amount != null ? fmtMoney(p.amount) : '')}">${escapeHtml(t(strings, 'adminDeletePaymentBtn'))}</button></td>
 			</tr>`;
 			})
 			.join('');

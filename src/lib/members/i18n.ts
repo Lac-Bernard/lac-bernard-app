@@ -160,6 +160,8 @@ export const memberCopy: Record<
 		adminDetailComplimentaryHint: string;
 		adminDeletePaymentBtn: string;
 		adminDeletePaymentConfirm: string;
+		adminDeletePaymentConfirmStripe: string;
+		adminDeletePaymentErrorRefundFailed: string;
 		adminPaymentDeleted: string;
 		adminDetailNoMembershipForYear: string;
 		adminDetailDonationNoteLabel: string;
@@ -652,6 +654,9 @@ export const memberCopy: Record<
 		adminDeletePaymentBtn: 'Remove',
 		adminDeletePaymentConfirm:
 			'Delete this payment? Membership status will be recalculated from remaining payments. This cannot be undone.',
+		adminDeletePaymentConfirmStripe:
+			'Delete this payment and refund {{amount}} via Stripe? Membership status will be recalculated from remaining payments. This cannot be undone.',
+		adminDeletePaymentErrorRefundFailed: 'Could not refund this payment in Stripe. Nothing was deleted.',
 		adminPaymentDeleted: 'Payment deleted.',
 		adminDetailNoMembershipForYear: 'No membership on file for {{year}}.',
 		adminDetailDonationNoteLabel: 'Donation note',
@@ -1155,6 +1160,10 @@ export const memberCopy: Record<
 		adminDeletePaymentBtn: 'Retirer',
 		adminDeletePaymentConfirm:
 			'Supprimer ce paiement? Le statut d’adhésion sera recalculé selon les paiements restants. Action irréversible.',
+		adminDeletePaymentConfirmStripe:
+			'Supprimer ce paiement et rembourser {{amount}} via Stripe? Le statut d’adhésion sera recalculé selon les paiements restants. Action irréversible.',
+		adminDeletePaymentErrorRefundFailed:
+			'Impossible de rembourser ce paiement dans Stripe. Rien n’a été supprimé.',
 		adminPaymentDeleted: 'Paiement supprimé.',
 		adminDetailNoMembershipForYear: 'Aucune adhésion au dossier pour {{year}}.',
 		adminDetailDonationNoteLabel: 'Note du don',
