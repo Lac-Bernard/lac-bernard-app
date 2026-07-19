@@ -75,6 +75,15 @@ shape every time: `requireAdminSession`, call the RPC via
 `service.rpc(...)`, map `result.error` codes to HTTP statuses, then write an
 `insertAdminAudit(...)` entry on success.
 
+The one legitimate exception is when the mutation has to call an external
+API (e.g. Stripe) before/around the DB write — that can't happen inside a
+Postgres function, so the route does the external call directly instead of
+wrapping the write in a RPC. See
+`src/pages/api/admin/members/[memberId]/payments/[paymentId].ts` (DELETE):
+it calls `stripe.refunds.create(...)` before the plain
+`DELETE FROM payments`, and only proceeds with the delete if the refund
+succeeds (or was already refunded).
+
 ## Admin member index named views
 
 The admin members tab (`AdminMembershipView.astro` + `admin-member-index.ts`,
@@ -124,3 +133,18 @@ handful of tests actually drive a `Page`. Shared helpers
 
 Run: `npm run test:e2e` (or `npm run test:e2e:ui`). Requires the local
 Supabase stack running (`supabase start`) plus Stripe test keys in `.env`.
+
+`e2e/support/stripe.ts`'s `completeStripeCheckout()` (used by most
+Stripe-touching specs) does NOT produce a real, refundable Stripe object —
+it fakes the PaymentIntent id as `pi_test_${sessionId}` and drives
+fulfillment purely by signing a synthetic `checkout.session.completed`
+webhook event, since Stripe only creates a real PaymentIntent once someone
+opens the hosted checkout page. That's fine for testing webhook/fulfillment
+logic, but any test that needs to call a real Stripe API against the
+payment (e.g. `stripe.refunds.create`) needs a genuinely confirmed
+PaymentIntent instead: `stripe.paymentIntents.create({ amount, currency:
+'cad', payment_method: 'pm_card_visa', confirm: true,
+automatic_payment_methods: { enabled: true, allow_redirects: 'never' } })`
+— `pm_card_visa` is Stripe's reusable test payment method id, so this
+resolves synchronously to `status: 'succeeded'` with no hosted UI or real
+card involved. See `e2e/admin-payment-deletion.spec.ts`.
