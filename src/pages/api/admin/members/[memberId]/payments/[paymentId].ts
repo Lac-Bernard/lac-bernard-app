@@ -1,7 +1,9 @@
 export const prerender = false;
 import type { APIRoute } from 'astro';
+import Stripe from 'stripe';
 import { insertAdminAudit } from '../../../../../../lib/admin/audit';
 import { requireAdminSession } from '../../../../../../lib/admin/session';
+import { getStripeSecretKey } from '../../../../../../lib/supabase/env';
 import { createSupabaseServiceRoleClient } from '../../../../../../lib/supabase/service';
 
 export const DELETE: APIRoute = async ({ request, cookies, params }) => {
@@ -29,7 +31,7 @@ export const DELETE: APIRoute = async ({ request, cookies, params }) => {
 
 	const { data: pay, error: payErr } = await service
 		.from('payments')
-		.select('id, membership_id, method, amount')
+		.select('id, membership_id, method, amount, payment_id')
 		.eq('id', paymentId)
 		.maybeSingle();
 
@@ -69,6 +71,27 @@ export const DELETE: APIRoute = async ({ request, cookies, params }) => {
 
 	const membershipId = pay.membership_id;
 
+	let stripeRefundId: string | null = null;
+
+	if (pay.method === 'stripe' && pay.payment_id && pay.amount != null && pay.amount > 0) {
+		try {
+			const stripe = new Stripe(getStripeSecretKey());
+			const refund = await stripe.refunds.create({ payment_intent: pay.payment_id });
+			stripeRefundId = refund.id;
+		} catch (e) {
+			const alreadyRefunded =
+				e instanceof Stripe.errors.StripeError && e.code === 'charge_already_refunded';
+			if (!alreadyRefunded) {
+				console.error('stripe.refunds.create failed for payment delete:', e);
+				const detail = e instanceof Error ? e.message : String(e);
+				return new Response(JSON.stringify({ error: 'stripe_refund_failed', detail }), {
+					status: 502,
+					headers: { 'Content-Type': 'application/json' },
+				});
+			}
+		}
+	}
+
 	const { error: delErr } = await service.from('payments').delete().eq('id', paymentId);
 
 	if (delErr) {
@@ -100,6 +123,7 @@ export const DELETE: APIRoute = async ({ request, cookies, params }) => {
 			member_id: memberId,
 			method: pay.method,
 			amount: pay.amount,
+			stripe_refund_id: stripeRefundId,
 		},
 	});
 
