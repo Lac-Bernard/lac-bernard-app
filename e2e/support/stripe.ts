@@ -95,4 +95,40 @@ export async function completeStripeCheckout(
 	return { webhookRes, paymentIntentId, sessionId };
 }
 
+/** Creates a real, immediately-succeeded test-mode PaymentIntent — no hosted Checkout UI needed. */
+export async function createRefundableTestPaymentIntent(amountCents: number) {
+	const stripe = stripeClient();
+	const pi = await stripe.paymentIntents.create({
+		amount: amountCents,
+		currency: 'cad',
+		payment_method: 'pm_card_visa',
+		confirm: true,
+		automatic_payment_methods: { enabled: true, allow_redirects: 'never' },
+	});
+	if (pi.status !== 'succeeded') {
+		throw new Error(`Expected test PaymentIntent to succeed, got status: ${pi.status}`);
+	}
+	return pi;
+}
+
+/**
+ * Polls `check` until it resolves truthy or `timeoutMs` elapses. Used to detect whether a real,
+ * externally-delivered side effect (e.g. a Stripe webhook relayed by a local forwarder) has
+ * landed, without hard-failing when the forwarder isn't running — callers should treat a `false`
+ * result as "skip", not "fail".
+ */
+export async function waitForCondition(
+	check: () => Promise<boolean>,
+	opts: { timeoutMs?: number; intervalMs?: number } = {},
+): Promise<boolean> {
+	const timeoutMs = opts.timeoutMs ?? 5000;
+	const intervalMs = opts.intervalMs ?? 500;
+	const deadline = Date.now() + timeoutMs;
+	for (;;) {
+		if (await check()) return true;
+		if (Date.now() >= deadline) return false;
+		await new Promise((resolve) => setTimeout(resolve, intervalMs));
+	}
+}
+
 export { buildEvent };

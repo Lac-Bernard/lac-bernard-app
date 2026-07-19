@@ -147,4 +147,24 @@ PaymentIntent instead: `stripe.paymentIntents.create({ amount, currency:
 automatic_payment_methods: { enabled: true, allow_redirects: 'never' } })`
 — `pm_card_visa` is Stripe's reusable test payment method id, so this
 resolves synchronously to `status: 'succeeded'` with no hosted UI or real
-card involved. See `e2e/admin-payment-deletion.spec.ts`.
+card involved. See `e2e/admin-payment-deletion.spec.ts` (now exported as
+`createRefundableTestPaymentIntent` from `e2e/support/stripe.ts`).
+
+Every Stripe-touching spec above self-signs its webhook payloads
+(`postSignedWebhookEvent`, same secret used to sign and verify) — real
+Stripe signature verification and Stripe's real event payload shapes are
+never exercised. `e2e/webhook-real-delivery.spec.ts` is the one exception:
+it issues a real `stripe.refunds.create` directly against Stripe (bypassing
+our own API) and asserts our DB only changes because a genuinely
+Stripe-signed `charge.refunded` webhook arrived — which requires a Stripe
+CLI webhook forwarder (e.g. `stripe listen --forward-to
+localhost:4321/api/stripe-webhook`) running locally with a matching
+`STRIPE_WEBHOOK_SECRET`, infrastructure nothing else in the suite needs and
+that no CI enforces. It polls briefly and self-skips with an explanatory
+message if that forwarder isn't detected, rather than failing — don't
+"fix" a skip here by chasing signature errors; start the forwarder instead.
+Equivalent real-delivery coverage for `checkout.session.completed`
+(membership activation) isn't attempted — Stripe only fires that event once
+a Checkout Session is actually paid through the hosted page, so getting a
+real signed one requires driving that UI, which nothing in this repo does
+today.
