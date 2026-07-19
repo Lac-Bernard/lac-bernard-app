@@ -92,7 +92,8 @@
 	line-height: 1.45;
 }
 
-.adminToast:popover-open {
+.adminToast:popover-open,
+.adminToast.adminToast--open {
 	display: flex;
 }
 
