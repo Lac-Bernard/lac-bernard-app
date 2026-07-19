@@ -885,5 +885,5 @@ export function initAdminMemberDetail(
 		addMembershipDialog?.close();
 	});
 
-	void load({ silent: true });
+	void load();
 }
