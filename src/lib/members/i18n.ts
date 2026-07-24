@@ -879,7 +879,7 @@ export const memberCopy: Record<
 		pendingCreateErrorNoLakeAddress:
 			'Voting membership requires a lake civic number and street on your profile.',
 		pendingCreateErrorGeneralAddressTaken:
-			'Another member at this lake address already has a voting membership for this year.',
+			"We're sorry, we're having trouble registering a voting membership for {{lakeAddress}}. Please email membership@lacbernard.ca and we'll help sort it out.",
 		noMemberForEmail:
 			'We could not find a member profile linked to this sign-in email. If you use another address on file, sign in with that email or contact the association.',
 		statusActiveTitle: 'Your {{year}} membership is active',
@@ -1391,7 +1391,7 @@ export const memberCopy: Record<
 		pendingCreateErrorNoLakeAddress:
 			'L’adhésion avec droit de vote exige un numéro civique et une rue au lac dans votre profil.',
 		pendingCreateErrorGeneralAddressTaken:
-			'Un autre membre à cette adresse au lac a déjà une adhésion avec droit de vote pour cette année.',
+			"Nous sommes désolés, nous avons du mal à inscrire une adhésion avec droit de vote pour {{lakeAddress}}. Écrivez-nous à membership@lacbernard.ca et nous vous aiderons à régler la situation.",
 		noMemberForEmail:
 			'Aucun profil membre n’est lié à cette adresse de connexion. Si vous utilisez une autre adresse dans nos dossiers, connectez-vous avec celle-ci ou communiquez avec l’association.',
 		statusActiveTitle: 'Votre adhésion {{year}} est active',
