@@ -23,7 +23,7 @@ interface Props {
 const { locale, email, currentYear, accountData, checkoutFlash = null } = Astro.props;
 const t = memberCopy[locale];
 const paths = memberPaths[locale];
-const { member, currentMemberships, historicalMemberships, currentYearPayments } = accountData;
+const { member, currentMemberships, historicalMemberships, currentYearPayments, votingAddressTaken } = accountData;
 
 function memberPaymentMethodLabel(method: string | null): string {
 	if (!method) return t.memberPaymentMethodUnknown;
@@ -127,6 +127,10 @@ const pendingCreateErrorGeneralAddressTakenResolved = t.pendingCreateErrorGenera
 	'{{lakeAddress}}',
 	lakeAddressLine,
 );
+const canSelectVoting = hasLakeAddress && !votingAddressTaken;
+const tierGeneralAddressTakenNoticeResolved = t.tierGeneralAddressTakenNotice
+	.replace('{{lakeAddress}}', lakeAddressLine)
+	.replace('{{year}}', String(currentYear));
 
 const votingCents = membershipCentsForTier('voting');
 const associateCents = membershipCentsForTier('associate');
@@ -135,9 +139,9 @@ const votingFeeCad =
 const associateFeeCad =
 	associateCents != null ? (associateCents / 100).toFixed(2) : '0.00';
 
-/** Default-checked tier on inactive card: voting when lake address exists, else associate */
-const inactiveModalTierLabel = membershipTierLabel(hasLakeAddress ? 'voting' : 'associate', locale);
-const inactiveModalFeeCad = hasLakeAddress ? votingFeeCad : associateFeeCad;
+/** Default-checked tier on inactive card: voting when it's selectable, else associate */
+const inactiveModalTierLabel = membershipTierLabel(canSelectVoting ? 'voting' : 'associate', locale);
+const inactiveModalFeeCad = canSelectVoting ? votingFeeCad : associateFeeCad;
 
 const displayEmail = member ? (member.primary_email?.trim() || email) : '';
 const memberPrimaryNameOnly = member ? formatMemberPrimaryName(member) : '';
@@ -583,9 +587,9 @@ const hasSecondaryContactInfo = Boolean(
                             type="radio"
                             name="tier"
                             value="voting"
-                            checked={hasLakeAddress}
-                            disabled={!hasLakeAddress}
-                            title={!hasLakeAddress ? t.tierGeneralBlockedLead : undefined}
+                            checked={canSelectVoting}
+                            disabled={!canSelectVoting}
+                            title={!hasLakeAddress ? t.tierGeneralBlockedLead : votingAddressTaken ? tierGeneralAddressTakenNoticeResolved : undefined}
                           />
                           <span class="tierOptionBody">
                             <span class="tierOptionTitleRow">
@@ -598,7 +602,7 @@ const hasSecondaryContactInfo = Boolean(
                           </span>
                         </label>
                         <label class="tierOption tierOptionTile">
-                          <input type="radio" name="tier" value="associate" checked={!hasLakeAddress} />
+                          <input type="radio" name="tier" value="associate" checked={!canSelectVoting} />
                           <span class="tierOptionBody">
                             <span class="tierOptionTitleRow">
                               <span class="tierOptionTitle">{t.tierAssociate}</span>
@@ -614,6 +618,9 @@ const hasSecondaryContactInfo = Boolean(
                         {t.tierGeneralBlockedLead}{' '}
                         <a class="profileEditLink" href={paths.edit}>{t.linkEditProfile}</a>
                       </p>
+                    )}
+                    {hasLakeAddress && votingAddressTaken && (
+                      <p class="tierBlockedNote">{tierGeneralAddressTakenNoticeResolved}</p>
                     )}
                     <div class="createPendingPayRow">
                       <button type="button" class="btnPrimary payCardBtn payCardBtnFull" id="open-checkout-modal">
@@ -645,7 +652,7 @@ const hasSecondaryContactInfo = Boolean(
                               <dt>{t.checkoutModalFeeLabel}</dt>
                               <dd
                                 id="checkout-modal-summary-fee"
-                                data-fee-cents={hasLakeAddress ? (votingCents ?? 0) : (associateCents ?? 0)}
+                                data-fee-cents={canSelectVoting ? (votingCents ?? 0) : (associateCents ?? 0)}
                               >
                                 {inactiveModalFeeCad} CAD
                               </dd>

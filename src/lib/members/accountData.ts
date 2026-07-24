@@ -37,6 +37,8 @@ export type MemberAccountPayload = {
 	historicalMemberships: MembershipRow[];
 	/** Payments for the current calendar year membership when that membership is active or pending; else []. */
 	currentYearPayments: MemberPaymentRow[];
+	/** Whether another current member already holds a voting membership at this member's lake address for `currentYear`. */
+	votingAddressTaken: boolean;
 };
 
 export async function loadMemberAccountData(
@@ -52,6 +54,7 @@ export async function loadMemberAccountData(
 			currentMemberships: [],
 			historicalMemberships: [],
 			currentYearPayments: [],
+			votingAddressTaken: false,
 		};
 	}
 
@@ -67,6 +70,7 @@ export async function loadMemberAccountData(
 			currentMemberships: [],
 			historicalMemberships: [],
 			currentYearPayments: [],
+			votingAddressTaken: false,
 		};
 	}
 
@@ -85,6 +89,16 @@ export async function loadMemberAccountData(
 	const historicalMemberships = mapped.filter((m) => m.year < currentYear);
 
 	const thisYear = mapped.find((m) => m.year === currentYear);
+
+	let votingAddressTaken = false;
+	if (!thisYear && member.lake_civic_number?.trim() && member.lake_street_name?.trim()) {
+		const { data: elig } = await supabase.rpc('membership_voting_eligibility', {
+			p_member_id: member.id,
+			p_year: currentYear,
+		});
+		votingAddressTaken = (elig as { error?: string } | null)?.error === 'voting_address_taken';
+	}
+
 	let currentYearPayments: MemberPaymentRow[] = [];
 	if (thisYear?.status === 'active' || thisYear?.status === 'pending') {
 		const { data: payRows, error: pErr } = await supabase
@@ -118,5 +132,5 @@ export async function loadMemberAccountData(
 		}
 	}
 
-	return { member, currentMemberships, historicalMemberships, currentYearPayments };
+	return { member, currentMemberships, historicalMemberships, currentYearPayments, votingAddressTaken };
 }

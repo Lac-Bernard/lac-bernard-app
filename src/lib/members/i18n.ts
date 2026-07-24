@@ -370,6 +370,7 @@ export const memberCopy: Record<
 		tierGeneralExplainerWithAddress: string;
 		tierAssociateExplainer: string;
 		tierGeneralBlockedLead: string;
+		tierGeneralAddressTakenNotice: string;
 		noMemberForEmail: string;
 		statusActiveTitle: string;
 		statusActiveTierLabel: string;
@@ -876,6 +877,8 @@ export const memberCopy: Record<
 			'Non-voting membership with all the other benefits.',
 		tierGeneralBlockedLead:
 			'To request voting membership, add your lake civic number and street under your profile:',
+		tierGeneralAddressTakenNotice:
+			"{{lakeAddress}} already has a voting membership registered for {{year}}. If you believe this is a mistake, please email membership@lacbernard.ca.",
 		pendingCreateErrorNoLakeAddress:
 			'Voting membership requires a lake civic number and street on your profile.',
 		pendingCreateErrorGeneralAddressTaken:
@@ -1388,6 +1391,8 @@ export const memberCopy: Record<
 			'Adhésion sans droit de vote avec tous les autres avantages.',
 		tierGeneralBlockedLead:
 			'Pour l’adhésion avec droit de vote, ajoutez le numéro civique et la rue au lac dans votre profil :',
+		tierGeneralAddressTakenNotice:
+			"{{lakeAddress}} a déjà une adhésion avec droit de vote enregistrée pour {{year}}. Si vous croyez qu'il s'agit d'une erreur, écrivez-nous à membership@lacbernard.ca.",
 		pendingCreateErrorNoLakeAddress:
 			'L’adhésion avec droit de vote exige un numéro civique et une rue au lac dans votre profil.',
 		pendingCreateErrorGeneralAddressTaken:
