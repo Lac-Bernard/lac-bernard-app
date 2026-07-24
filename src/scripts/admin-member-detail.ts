@@ -373,6 +373,31 @@ export function initAdminMemberDetail(
 		});
 	}
 
+	function wireCancelPendingButtons(root: ParentNode) {
+		root.querySelectorAll<HTMLButtonElement>('[data-cancel-pending]').forEach((b) => {
+			b.addEventListener('click', async () => {
+				const id = b.dataset.membershipId;
+				if (!id) return;
+				if (!confirm(t(strings, 'adminCancelPendingConfirm'))) return;
+				setStatus(t(strings, 'adminLoading'));
+				const { ok, data } = await fetchJson<{ error?: string }>(
+					`/api/admin/memberships/${encodeURIComponent(id)}/cancel-pending`,
+					{ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{}' },
+				);
+				if (!ok) {
+					const code = data?.error;
+					const msg =
+						code === 'not_pending' ? t(strings, 'adminCancelPendingErrorNotPending')
+						: t(strings, 'adminErrorGeneric');
+					setStatus(msg, 'error');
+					return;
+				}
+				setStatus(t(strings, 'adminCancelPendingSuccess'), 'success');
+				void load({ silent: true });
+			});
+		});
+	}
+
 	function wireAddMembershipButtons(root: ParentNode) {
 		root.querySelectorAll<HTMLButtonElement>('[data-open-add-membership]').forEach((b) => {
 			b.addEventListener('click', () => {
@@ -568,9 +593,14 @@ export function initAdminMemberDetail(
 				`<button type="button" class="adminBtn adminBtn--outline" data-remove-complimentary data-membership-id="${escapeHtml(ms.id)}">${escapeHtml(t(strings, 'adminRemoveComplimentaryBtn'))}</button>`
 			:	'';
 
+		const cancelPendingBtn =
+			ms.status === 'pending' ?
+				`<button type="button" class="adminBtn adminBtn--danger" data-cancel-pending data-membership-id="${escapeHtml(ms.id)}" aria-label="${escapeHtml(t(strings, 'adminCancelPendingAriaLabel'))}">${escapeHtml(t(strings, 'adminCancelPendingAriaLabel'))}</button>`
+			:	'';
+
 		const upgradeRow =
-			upgradeToVotingBtn || makeComplimentaryBtn || removeComplimentaryBtn ?
-				`<div class="adminDetailUpgradeRow">${upgradeToVotingBtn}${makeComplimentaryBtn}${removeComplimentaryBtn}</div>`
+			upgradeToVotingBtn || makeComplimentaryBtn || removeComplimentaryBtn || cancelPendingBtn ?
+				`<div class="adminDetailUpgradeRow">${upgradeToVotingBtn}${makeComplimentaryBtn}${removeComplimentaryBtn}${cancelPendingBtn}</div>`
 			:	'';
 
 		return `<article class="adminDetailMembershipCard" data-membership-id="${escapeHtml(ms.id)}">
@@ -630,6 +660,7 @@ export function initAdminMemberDetail(
 		wireUpgradeToVotingButtons(mount);
 		wireMakeComplimentaryButtons(mount);
 		wireRemoveComplimentaryButtons(mount);
+		wireCancelPendingButtons(mount);
 	}
 
 	if (mount) {
@@ -646,6 +677,7 @@ export function initAdminMemberDetail(
 				wireUpgradeToVotingButtons(panel);
 				wireMakeComplimentaryButtons(panel);
 				wireRemoveComplimentaryButtons(panel);
+				wireCancelPendingButtons(panel);
 			}
 		});
 	}
