@@ -159,14 +159,17 @@ test('the account page greys out voting up front when the address is already tak
 
 	await signInWithMagicLink(page, newcomer.email, '/en/membership/account');
 
-	const votingRadio = page.locator('input[name="tier"][value="voting"]');
+	const votingTile = page.locator('.tierOptionTile', { has: page.locator('input[value="voting"]') });
+	const votingRadio = votingTile.locator('input[name="tier"][value="voting"]');
 	await expect(votingRadio).toBeDisabled();
 	await expect(votingRadio).not.toBeChecked();
 
 	const associateRadio = page.locator('input[name="tier"][value="associate"]');
 	await expect(associateRadio).toBeChecked();
 
-	await expect(page.getByText('membership@lacbernard.ca')).toBeVisible();
+	// The notice lives inside the voting tile itself (like the "no lake address" explainer does),
+	// not in a separate disconnected paragraph below the tier grid.
+	await expect(votingTile.locator('.tierOptionExplainer')).toContainText('membership@lacbernard.ca');
 });
 
 test('the account page still offers voting up front for a member at a unique address', async ({ page }) => {
