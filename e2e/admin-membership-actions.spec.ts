@@ -534,6 +534,11 @@ test('a signed-in non-admin is rejected from admin membership routes', async () 
 	);
 	expect(removeComplimentaryRes.status()).toBe(403);
 
+	const cancelPendingRes = await memberApi.post(
+		'/api/admin/memberships/00000000-0000-0000-0000-000000000000/cancel-pending',
+	);
+	expect(cancelPendingRes.status()).toBe(403);
+
 	const recordPaymentRes = await memberApi.post(
 		'/api/admin/memberships/00000000-0000-0000-0000-000000000000/record-payment',
 		{ data: { amount: 25, method: 'cash' } },
