@@ -136,6 +136,54 @@ test('voting tier does not confuse genuinely different addresses despite the loo
 	await otherStreetApi.dispose();
 });
 
+test('the account page greys out voting up front when the address is already taken, without needing a failed submit', async ({ page }) => {
+	// Existing voting member at the address (Places-style formatting).
+	const existing = await newMember({
+		firstName: 'ExistingVoter',
+		lastName: 'PreCheckE2E',
+		lakeCivicNumber: '121',
+		lakeStreetName: 'Chemin de la Baie-Regatta',
+	});
+	const existingApi = await apiContextFor(existing.email);
+	const existingRes = await existingApi.post('/api/membership/create-pending', { data: { tier: 'voting' } });
+	expect(existingRes.ok()).toBeTruthy();
+	await existingApi.dispose();
+
+	// New member at the same physical address, manually typed, no membership yet this year.
+	const newcomer = await newMember({
+		firstName: 'Newcomer',
+		lastName: 'PreCheckE2E',
+		lakeCivicNumber: '121',
+		lakeStreetName: 'Baie Regatta',
+	});
+
+	await signInWithMagicLink(page, newcomer.email, '/en/membership/account');
+
+	const votingRadio = page.locator('input[name="tier"][value="voting"]');
+	await expect(votingRadio).toBeDisabled();
+	await expect(votingRadio).not.toBeChecked();
+
+	const associateRadio = page.locator('input[name="tier"][value="associate"]');
+	await expect(associateRadio).toBeChecked();
+
+	await expect(page.getByText('membership@lacbernard.ca')).toBeVisible();
+});
+
+test('the account page still offers voting up front for a member at a unique address', async ({ page }) => {
+	const member = await newMember({
+		firstName: 'UniqueVoter',
+		lastName: 'PreCheckE2E',
+		lakeCivicNumber: '55',
+		lakeStreetName: 'Chemin Bien à Moi',
+	});
+
+	await signInWithMagicLink(page, member.email, '/en/membership/account');
+
+	const votingRadio = page.locator('input[name="tier"][value="voting"]');
+	await expect(votingRadio).toBeEnabled();
+	await expect(votingRadio).toBeChecked();
+});
+
 test('a member without a lake address cannot claim voting tier until one is added', async () => {
 	const member = await newMember({ firstName: 'NoLake', lastName: 'E2E' });
 	const api = await apiContextFor(member.email);
