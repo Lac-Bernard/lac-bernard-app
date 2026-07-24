@@ -23,6 +23,31 @@ async function newMember(opts: Parameters<typeof createTestMember>[0] = {}): Pro
 	return m;
 }
 
+/**
+ * Two members at addresses that are the *same physical property* but formatted differently
+ * (manual entry vs Google Places, or just different human spelling conventions). The second
+ * member's voting purchase must still be blocked as `voting_address_taken`.
+ */
+async function expectFormatVariantsBlockVoting(
+	addressA: { civic: string; street: string },
+	addressB: { civic: string; street: string },
+): Promise<void> {
+	const first = await newMember({ firstName: 'First', lastName: 'AddressFormatE2E', lakeCivicNumber: addressA.civic, lakeStreetName: addressA.street });
+	const second = await newMember({ firstName: 'Second', lastName: 'AddressFormatE2E', lakeCivicNumber: addressB.civic, lakeStreetName: addressB.street });
+
+	const firstApi = await apiContextFor(first.email);
+	const firstRes = await firstApi.post('/api/membership/create-pending', { data: { tier: 'voting' } });
+	expect(firstRes.ok()).toBeTruthy();
+
+	const secondApi = await apiContextFor(second.email);
+	const secondRes = await secondApi.post('/api/membership/create-pending', { data: { tier: 'voting' } });
+	expect(secondRes.status()).toBe(409);
+	expect((await secondRes.json()).error).toBe('voting_address_taken');
+
+	await firstApi.dispose();
+	await secondApi.dispose();
+}
+
 test('voting tier allows only one active/pending membership per lake property per year', async () => {
 	const civic = '42';
 	const street = 'Chemin Du Partage E2E';
@@ -43,38 +68,72 @@ test('voting tier allows only one active/pending membership per lake property pe
 	await secondApi.dispose();
 });
 
-test('voting tier still blocks a second membership when one address was typed manually and the other via Google Places', async () => {
+test('voting tier still blocks a second membership when one civic number was typed manually and the other via Google Places', async () => {
 	// Same physical unit, two different capture paths: a manual entrant just types the visible
 	// civic number, while Google Places composes civic as `${subpremise}-${streetNumber}` when the
 	// address has a unit/subpremise component (see parsePlaceDetailsToLake in
-	// src/lib/places/parsePlaceDetails.ts). normalize_lake_address_key only lowercases/trims/
-	// collapses whitespace, so these two representations of the same address don't collide there.
-	const street = 'Chemin du Lac Bernard';
-	const manual = await newMember({
-		firstName: 'ManualEntry',
-		lastName: 'AddressFormatE2E',
-		lakeCivicNumber: '123A',
-		lakeStreetName: street,
-	});
-	const viaPlaces = await newMember({
-		firstName: 'PlacesEntry',
-		lastName: 'AddressFormatE2E',
-		lakeCivicNumber: 'A-123',
-		lakeStreetName: street,
-	});
+	// src/lib/places/parsePlaceDetails.ts). "123A" vs "A-123" must still collide.
+	await expectFormatVariantsBlockVoting(
+		{ civic: '123A', street: 'Chemin du Lac Bernard' },
+		{ civic: 'A-123', street: 'Chemin du Lac Bernard' },
+	);
+});
 
-	const manualApi = await apiContextFor(manual.email);
-	const manualRes = await manualApi.post('/api/membership/create-pending', { data: { tier: 'voting' } });
-	expect(manualRes.ok()).toBeTruthy();
+test('voting tier still blocks a second membership when a civic number has a leading zero', async () => {
+	// "007" and "7" describe the same civic number.
+	await expectFormatVariantsBlockVoting(
+		{ civic: '007', street: 'Chemin du Lac Bernard' },
+		{ civic: '7', street: 'Chemin du Lac Bernard' },
+	);
+});
 
-	const placesApi = await apiContextFor(viaPlaces.email);
-	const placesRes = await placesApi.post('/api/membership/create-pending', { data: { tier: 'voting' } });
-	expect(placesRes.status()).toBe(409);
-	const placesBody = await placesRes.json();
-	expect(placesBody.error).toBe('voting_address_taken');
+test('voting tier still blocks a second membership when a street name uses a hyphen vs a space', async () => {
+	// Quebec toponymy often hyphenates compound names (Places returns the official hyphenated
+	// form); a manual entrant just as often types the same name with a space instead.
+	await expectFormatVariantsBlockVoting(
+		{ civic: '12', street: 'Chemin du Lac-Bernard' },
+		{ civic: '12', street: 'Chemin du Lac Bernard' },
+	);
+});
 
-	await manualApi.dispose();
-	await placesApi.dispose();
+test('voting tier still blocks a second membership when a street name has accents vs not', async () => {
+	// Places returns the accented official form; manual entry often omits accents.
+	await expectFormatVariantsBlockVoting(
+		{ civic: '12', street: 'Chemin de la Baie Régatta' },
+		{ civic: '12', street: 'Chemin de la Baie Regatta' },
+	);
+});
+
+test('voting tier still blocks a second membership when one entry omits the generic road-type prefix', async () => {
+	// The actual production scenario: one member has civic 121 and street "Baie Regatta"
+	// (manually typed, distinctive part only), the other has civic 121 and street "Chemin de
+	// la Baie-Regatta" (Google Places' full official route name, hyphenated). Both describe the
+	// same property.
+	await expectFormatVariantsBlockVoting(
+		{ civic: '121', street: 'Baie Regatta' },
+		{ civic: '121', street: 'Chemin de la Baie-Regatta' },
+	);
+});
+
+test('voting tier does not confuse genuinely different addresses despite the looser format matching', async () => {
+	const different = await newMember({ firstName: 'Different', lastName: 'CivicE2E', lakeCivicNumber: '123', lakeStreetName: 'Chemin du Lac Bernard' });
+	const differentApi = await apiContextFor(different.email);
+	const differentRes = await differentApi.post('/api/membership/create-pending', { data: { tier: 'voting' } });
+	expect(differentRes.ok()).toBeTruthy();
+
+	const otherCivic = await newMember({ firstName: 'OtherCivic', lastName: 'CivicE2E', lakeCivicNumber: '124', lakeStreetName: 'Chemin du Lac Bernard' });
+	const otherCivicApi = await apiContextFor(otherCivic.email);
+	const otherCivicRes = await otherCivicApi.post('/api/membership/create-pending', { data: { tier: 'voting' } });
+	expect(otherCivicRes.ok()).toBeTruthy();
+
+	const otherStreet = await newMember({ firstName: 'OtherStreet', lastName: 'CivicE2E', lakeCivicNumber: '123', lakeStreetName: 'Chemin du Lac Seul' });
+	const otherStreetApi = await apiContextFor(otherStreet.email);
+	const otherStreetRes = await otherStreetApi.post('/api/membership/create-pending', { data: { tier: 'voting' } });
+	expect(otherStreetRes.ok()).toBeTruthy();
+
+	await differentApi.dispose();
+	await otherCivicApi.dispose();
+	await otherStreetApi.dispose();
 });
 
 test('a member without a lake address cannot claim voting tier until one is added', async () => {
