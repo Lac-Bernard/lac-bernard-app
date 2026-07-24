@@ -43,6 +43,40 @@ test('voting tier allows only one active/pending membership per lake property pe
 	await secondApi.dispose();
 });
 
+test('voting tier still blocks a second membership when one address was typed manually and the other via Google Places', async () => {
+	// Same physical unit, two different capture paths: a manual entrant just types the visible
+	// civic number, while Google Places composes civic as `${subpremise}-${streetNumber}` when the
+	// address has a unit/subpremise component (see parsePlaceDetailsToLake in
+	// src/lib/places/parsePlaceDetails.ts). normalize_lake_address_key only lowercases/trims/
+	// collapses whitespace, so these two representations of the same address don't collide there.
+	const street = 'Chemin du Lac Bernard';
+	const manual = await newMember({
+		firstName: 'ManualEntry',
+		lastName: 'AddressFormatE2E',
+		lakeCivicNumber: '123A',
+		lakeStreetName: street,
+	});
+	const viaPlaces = await newMember({
+		firstName: 'PlacesEntry',
+		lastName: 'AddressFormatE2E',
+		lakeCivicNumber: 'A-123',
+		lakeStreetName: street,
+	});
+
+	const manualApi = await apiContextFor(manual.email);
+	const manualRes = await manualApi.post('/api/membership/create-pending', { data: { tier: 'voting' } });
+	expect(manualRes.ok()).toBeTruthy();
+
+	const placesApi = await apiContextFor(viaPlaces.email);
+	const placesRes = await placesApi.post('/api/membership/create-pending', { data: { tier: 'voting' } });
+	expect(placesRes.status()).toBe(409);
+	const placesBody = await placesRes.json();
+	expect(placesBody.error).toBe('voting_address_taken');
+
+	await manualApi.dispose();
+	await placesApi.dispose();
+});
+
 test('a member without a lake address cannot claim voting tier until one is added', async () => {
 	const member = await newMember({ firstName: 'NoLake', lastName: 'E2E' });
 	const api = await apiContextFor(member.email);

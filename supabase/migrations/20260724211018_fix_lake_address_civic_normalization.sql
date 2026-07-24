@@ -1,3 +1,5 @@
+set check_function_bodies = off;
+
 CREATE OR REPLACE FUNCTION public.normalize_lake_address_key(civic text, street text)
  RETURNS text
  LANGUAGE sql
@@ -17,9 +19,7 @@ AS $function$
       || lower(regexp_replace(trim(street), '\s+', ' ', 'g'))
   end
   from cleaned;
-$function$;
+$function$
+;
 
-revoke all on function public.normalize_lake_address_key(civic text, street text) from public;
-grant execute on function public.normalize_lake_address_key(civic text, street text) to authenticated;
-comment on function public.normalize_lake_address_key(civic text, street text) is
-  'Deterministic key for lake civic + street: civic is canonicalized to digits-then-letters with separators stripped (so Places- and manually-entered civic numbers collide), street is lowercased/whitespace-collapsed; NULL if either part empty after trim.';
+
