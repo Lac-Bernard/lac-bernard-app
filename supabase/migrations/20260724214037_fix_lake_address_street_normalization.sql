@@ -1,6 +1,6 @@
--- Used by normalize_lake_address_key() to fold accents (e.g. "Régatta" -> "Regatta") so
--- accented Places-parsed street names collide with unaccented manually-typed ones.
-create extension if not exists unaccent with schema extensions;
+create extension if not exists "unaccent" with schema "extensions";
+
+set check_function_bodies = off;
 
 CREATE OR REPLACE FUNCTION public.normalize_lake_address_key(civic text, street text)
  RETURNS text
@@ -58,9 +58,7 @@ AS $function$
     then null
     else (select key from civic_key) || E'\x1e' || (select key from street_key)
   end;
-$function$;
+$function$
+;
 
-revoke all on function public.normalize_lake_address_key(civic text, street text) from public;
-grant execute on function public.normalize_lake_address_key(civic text, street text) to authenticated;
-comment on function public.normalize_lake_address_key(civic text, street text) is
-  'Deterministic key for lake civic + street: civic is canonicalized to digits-then-letters with separators/leading-zeros stripped; street has hyphens/accents folded and a leading generic road-type/article prefix stripped. Makes Places- and manually-entered addresses collide on the same physical property; NULL if either part empty after trim.';
+
