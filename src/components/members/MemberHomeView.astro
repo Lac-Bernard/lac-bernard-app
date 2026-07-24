@@ -597,7 +597,11 @@ const hasSecondaryContactInfo = Boolean(
                               <span class="tierOptionPriceBadge">{votingFeeCad} CAD</span>
                             </span>
                             <span class="tierOptionExplainer">
-                              {hasLakeAddress ? tierVotingExplainerWithAddressResolved : t.tierGeneralExplainer}
+                              {votingAddressTaken
+                                ? tierGeneralAddressTakenNoticeResolved
+                                : hasLakeAddress
+                                  ? tierVotingExplainerWithAddressResolved
+                                  : t.tierGeneralExplainer}
                             </span>
                           </span>
                         </label>
@@ -618,9 +622,6 @@ const hasSecondaryContactInfo = Boolean(
                         {t.tierGeneralBlockedLead}{' '}
                         <a class="profileEditLink" href={paths.edit}>{t.linkEditProfile}</a>
                       </p>
-                    )}
-                    {hasLakeAddress && votingAddressTaken && (
-                      <p class="tierBlockedNote">{tierGeneralAddressTakenNoticeResolved}</p>
                     )}
                     <div class="createPendingPayRow">
                       <button type="button" class="btnPrimary payCardBtn payCardBtnFull" id="open-checkout-modal">
