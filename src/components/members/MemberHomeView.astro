@@ -123,6 +123,10 @@ const lakeAddressLine =
 const tierVotingExplainerWithAddressResolved = lakeAddressLine
 	? t.tierGeneralExplainerWithAddress.replace('{{lakeAddress}}', lakeAddressLine)
 	: t.tierGeneralExplainer;
+const pendingCreateErrorGeneralAddressTakenResolved = t.pendingCreateErrorGeneralAddressTaken.replace(
+	'{{lakeAddress}}',
+	lakeAddressLine,
+);
 
 const votingCents = membershipCentsForTier('voting');
 const associateCents = membershipCentsForTier('associate');
@@ -792,7 +796,7 @@ const hasSecondaryContactInfo = Boolean(
       checkoutModalContinue: t.checkoutModalContinue,
       checkoutModalContinuing: t.checkoutModalContinuing,
       errNoLake: t.pendingCreateErrorNoLakeAddress,
-      errGeneralTaken: t.pendingCreateErrorGeneralAddressTaken,
+      errGeneralTaken: pendingCreateErrorGeneralAddressTakenResolved,
       tierLabelVoting: t.tierGeneral,
       tierLabelAssociate: t.tierAssociate,
       feeVotingDisplay: `${votingFeeCad} CAD`,
@@ -1031,10 +1035,8 @@ const hasSecondaryContactInfo = Boolean(
             checkoutMsg.textContent = errCheckoutInvalidDonationNote;
           } else if (data.error === 'nothing_due') {
             checkoutMsg.textContent = errCheckoutNothingDue;
-          } else if (data.error === 'no_lake_address') {
-            checkoutMsg.textContent = errNoLake;
-          } else if (data.error === 'voting_address_taken') {
-            checkoutMsg.textContent = errGeneralTaken;
+          } else if (data.error === 'no_lake_address' || data.error === 'voting_address_taken') {
+            checkoutMsg.textContent = createErrorMessage(data.error);
           } else if (data.error === 'stripe_misconfigured') {
             checkoutMsg.textContent = errCheckoutStripeMisconfigured;
           } else {
