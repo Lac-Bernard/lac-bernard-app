@@ -105,13 +105,14 @@ test('voting tier still blocks a second membership when a street name has accent
 });
 
 test('voting tier still blocks a second membership when one entry omits the generic road-type prefix', async () => {
-	// The actual production scenario: one member has civic 121 and street "Baie Regatta"
-	// (manually typed, distinctive part only), the other has civic 121 and street "Chemin de
-	// la Baie-Regatta" (Google Places' full official route name, hyphenated). Both describe the
-	// same property.
+	// Mirrors the actual production scenario (civic 121, "Baie Regatta" vs "Chemin de la
+	// Baie-Regatta") with an E2E-only street name so this doesn't collide with any real address
+	// that might exist in a local dev DB: one member has street "Baie Regatta E2E" (manually
+	// typed, distinctive part only), the other has "Chemin de la Baie-Regatta E2E" (Google
+	// Places' full official route name, hyphenated). Both describe the same property.
 	await expectFormatVariantsBlockVoting(
-		{ civic: '121', street: 'Baie Regatta' },
-		{ civic: '121', street: 'Chemin de la Baie-Regatta' },
+		{ civic: '921', street: 'Baie Regatta E2E' },
+		{ civic: '921', street: 'Chemin de la Baie-Regatta E2E' },
 	);
 });
 
@@ -137,12 +138,13 @@ test('voting tier does not confuse genuinely different addresses despite the loo
 });
 
 test('the account page greys out voting up front when the address is already taken, without needing a failed submit', async ({ page }) => {
-	// Existing voting member at the address (Places-style formatting).
+	// Existing voting member at the address (Places-style formatting). E2E-only street name so
+	// this doesn't collide with any real address that might exist in a local dev DB.
 	const existing = await newMember({
 		firstName: 'ExistingVoter',
 		lastName: 'PreCheckE2E',
-		lakeCivicNumber: '121',
-		lakeStreetName: 'Chemin de la Baie-Regatta',
+		lakeCivicNumber: '922',
+		lakeStreetName: 'Chemin de la Baie-Regatta E2E',
 	});
 	const existingApi = await apiContextFor(existing.email);
 	const existingRes = await existingApi.post('/api/membership/create-pending', { data: { tier: 'voting' } });
@@ -153,8 +155,8 @@ test('the account page greys out voting up front when the address is already tak
 	const newcomer = await newMember({
 		firstName: 'Newcomer',
 		lastName: 'PreCheckE2E',
-		lakeCivicNumber: '121',
-		lakeStreetName: 'Baie Regatta',
+		lakeCivicNumber: '922',
+		lakeStreetName: 'Baie Regatta E2E',
 	});
 
 	await signInWithMagicLink(page, newcomer.email, '/en/membership/account');
