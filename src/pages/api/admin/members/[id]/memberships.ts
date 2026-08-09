@@ -2,6 +2,8 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { insertAdminAudit } from '../../../../../lib/admin/audit';
 import { requireAdminSession } from '../../../../../lib/admin/session';
+import { membershipCentsForTier } from '../../../../../lib/membership/stripeCheckout';
+import { parseDonationCategory } from '../../../../../lib/membership/donationCategories';
 import { createSupabaseServiceRoleClient } from '../../../../../lib/supabase/service';
 
 const TIERS = new Set(['voting', 'associate']);
@@ -64,6 +66,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 	let pPaymentDate: string | null = null;
 	let pNotes: string | null = null;
 	let pReference: string | null = null;
+	let pDonationCategory: string | null = null;
 
 	if (initial === 'active_with_payment') {
 		const pay = o.payment;
@@ -112,6 +115,19 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 			}
 			pReference = r || null;
 		}
+
+		const feeCents = membershipCentsForTier(tier);
+		const feeDollars = feeCents != null ? feeCents / 100 : null;
+		const donationAmount =
+			feeDollars == null ? 0 : Math.max(0, Math.round((amount - Math.min(amount, feeDollars)) * 100) / 100);
+		const donationCategory = parseDonationCategory(p.donationCategory, { donationAmount });
+		if (donationCategory === undefined) {
+			return new Response(JSON.stringify({ error: 'invalid_donation_category' }), {
+				status: 400,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+		pDonationCategory = donationCategory;
 	}
 
 	const service = createSupabaseServiceRoleClient();
@@ -125,8 +141,8 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 		p_payment_date: pPaymentDate,
 		p_notes: pNotes,
 		p_reference: pReference,
+		p_donation_category: pDonationCategory,
 	});
-
 	if (rpcError) {
 		return new Response(JSON.stringify({ error: 'rpc_failed', detail: rpcError.message }), {
 			status: 500,

@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION public.record_manual_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_method text, p_payment_date date, p_notes text, p_donation_note text, p_reference text DEFAULT NULL::text)
+CREATE OR REPLACE FUNCTION public.record_manual_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_method text, p_payment_date date, p_notes text, p_donation_note text, p_donation_category text DEFAULT NULL::text, p_reference text DEFAULT NULL::text)
  RETURNS jsonb
  LANGUAGE plpgsql
  SECURITY DEFINER
@@ -11,6 +11,7 @@ declare
   v_paid numeric;
   v_round_total numeric;
   v_ref text;
+  v_category text;
 begin
   if p_method is null or p_method not in ('e-transfer', 'cheque', 'cash', 'unknown') then
     return jsonb_build_object('ok', false, 'error', 'invalid_method');
@@ -30,6 +31,15 @@ begin
   end if;
 
   v_ref := nullif(left(trim(coalesce(p_reference, '')), 512), '');
+
+  v_category := nullif(lower(trim(coalesce(p_donation_category, ''))), '');
+  if p_donation_amount > 0 then
+    if v_category is null or v_category not in ('environment', 'regatta', 'general') then
+      return jsonb_build_object('ok', false, 'error', 'invalid_donation_category');
+    end if;
+  else
+    v_category := null;
+  end if;
 
   select * into m
   from public.memberships
@@ -81,7 +91,8 @@ begin
     payment_id,
     membership_amount,
     donation_amount,
-    donation_note
+    donation_note,
+    donation_category
   )
   values (
     p_membership_id,
@@ -92,7 +103,8 @@ begin
     v_ref,
     p_membership_amount,
     p_donation_amount,
-    nullif(trim(p_donation_note), '')
+    nullif(trim(p_donation_note), ''),
+    v_category
   )
   returning id into new_payment_id;
 
@@ -106,7 +118,8 @@ begin
 end;
 $function$;
 
-revoke all on function public.record_manual_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_method text, p_payment_date date, p_notes text, p_donation_note text, p_reference text) from public;
-grant execute on function public.record_manual_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_method text, p_payment_date date, p_notes text, p_donation_note text, p_reference text) to service_role;
-comment on function public.record_manual_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_method text, p_payment_date date, p_notes text, p_donation_note text, p_reference text) is
-  'Insert manual payment with dues/donation split; allows donations on complimentary memberships but rejects any dues portion (dues are waived). service_role only.';
+revoke all on function public.record_manual_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_method text, p_payment_date date, p_notes text, p_donation_note text, p_donation_category text, p_reference text) from public;
+revoke execute on function public.record_manual_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_method text, p_payment_date date, p_notes text, p_donation_note text, p_donation_category text, p_reference text) from anon, authenticated;
+grant execute on function public.record_manual_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_method text, p_payment_date date, p_notes text, p_donation_note text, p_donation_category text, p_reference text) to service_role;
+comment on function public.record_manual_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_method text, p_payment_date date, p_notes text, p_donation_note text, p_donation_category text, p_reference text) is
+  'Insert manual payment with dues/donation split and optional donation_category; allows donations on complimentary memberships but rejects any dues portion (dues are waived). service_role only.';

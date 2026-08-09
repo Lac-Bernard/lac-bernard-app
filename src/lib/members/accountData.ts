@@ -23,6 +23,7 @@ export type MemberPaymentRow = {
 	membership_amount: number | null;
 	donation_amount: number | null;
 	donation_note: string | null;
+	donation_category: string | null;
 	/** Admin or system notes on the payment row (shown to the member when present). */
 	notes: string | null;
 	payment_id: string | null;
@@ -104,7 +105,7 @@ export async function loadMemberAccountData(
 		const { data: payRows, error: pErr } = await supabase
 			.from('payments')
 			.select(
-				'id, date, method, amount, membership_amount, donation_amount, donation_note, notes, payment_id, stripe_fee_cad, created_at',
+				'id, date, method, amount, membership_amount, donation_amount, donation_note, donation_category, notes, payment_id, stripe_fee_cad, created_at',
 			)
 			.eq('membership_id', thisYear.id);
 
@@ -117,6 +118,7 @@ export async function loadMemberAccountData(
 				membership_amount: r.membership_amount != null ? Number(r.membership_amount) : null,
 				donation_amount: r.donation_amount != null ? Number(r.donation_amount) : null,
 				donation_note: r.donation_note,
+				donation_category: r.donation_category ?? null,
 				notes: r.notes,
 				payment_id: r.payment_id,
 				stripe_fee_cad: r.stripe_fee_cad != null ? Number(r.stripe_fee_cad) : null,

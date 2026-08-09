@@ -9,7 +9,8 @@ export type AdminMemberIndexView =
 	| 'lapsed'
 	| 'incomplete'
 	| 'all'
-	| 'duplicate';
+	| 'duplicate'
+	| 'donors';
 
 export type AdminMemberIndexSort = 'last_name_asc' | 'last_name_desc' | 'created_at_desc' | 'created_at_asc';
 
@@ -34,7 +35,8 @@ function isView(s: string): s is AdminMemberIndexView {
 		s === 'lapsed' ||
 		s === 'incomplete' ||
 		s === 'all' ||
-		s === 'duplicate'
+		s === 'duplicate' ||
+		s === 'donors'
 	);
 }
 

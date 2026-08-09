@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION public.admin_create_membership(p_member_id uuid, p_year smallint, p_tier text, p_outcome text, p_amount numeric, p_method text, p_payment_date date, p_notes text, p_reference text DEFAULT NULL::text)
+CREATE OR REPLACE FUNCTION public.admin_create_membership(p_member_id uuid, p_year smallint, p_tier text, p_outcome text, p_amount numeric, p_method text, p_payment_date date, p_notes text, p_reference text DEFAULT NULL::text, p_donation_category text DEFAULT NULL::text)
  RETURNS jsonb
  LANGUAGE plpgsql
  SECURITY DEFINER
@@ -12,6 +12,7 @@ declare
   v_membership_amount numeric;
   v_donation_amount numeric;
   v_ref text;
+  v_category text;
 begin
   if not exists (select 1 from public.members where id = p_member_id) then
     return jsonb_build_object('ok', false, 'error', 'member_not_found');
@@ -43,6 +44,24 @@ begin
     if p_amount is null or p_amount < 0 then
       return jsonb_build_object('ok', false, 'error', 'invalid_amount');
     end if;
+
+    v_fee := public.membership_tier_fee_amount(p_tier);
+    if v_fee is null then
+      v_membership_amount := round(p_amount::numeric, 2);
+      v_donation_amount := 0;
+    else
+      v_membership_amount := round(least(p_amount::numeric, v_fee::numeric), 2);
+      v_donation_amount := round((p_amount::numeric - v_membership_amount)::numeric, 2);
+    end if;
+
+    v_category := nullif(lower(trim(coalesce(p_donation_category, ''))), '');
+    if v_donation_amount > 0 then
+      if v_category is null or v_category not in ('environment', 'regatta', 'general') then
+        return jsonb_build_object('ok', false, 'error', 'invalid_donation_category');
+      end if;
+    else
+      v_category := null;
+    end if;
   end if;
 
   v_ref := nullif(left(trim(coalesce(p_reference, '')), 512), '');
@@ -68,15 +87,6 @@ begin
     return jsonb_build_object('ok', true, 'membership_id', v_membership_id);
   end if;
 
-  v_fee := public.membership_tier_fee_amount(p_tier);
-  if v_fee is null then
-    v_membership_amount := round(p_amount::numeric, 2);
-    v_donation_amount := 0;
-  else
-    v_membership_amount := round(least(p_amount::numeric, v_fee::numeric), 2);
-    v_donation_amount := round((p_amount::numeric - v_membership_amount)::numeric, 2);
-  end if;
-
   insert into public.payments (
     membership_id,
     method,
@@ -86,7 +96,8 @@ begin
     payment_id,
     membership_amount,
     donation_amount,
-    donation_note
+    donation_note,
+    donation_category
   )
   values (
     v_membership_id,
@@ -97,7 +108,8 @@ begin
     v_ref,
     v_membership_amount,
     v_donation_amount,
-    null
+    null,
+    v_category
   )
   returning id into v_payment_id;
 
@@ -111,7 +123,8 @@ begin
 end;
 $function$;
 
-revoke all on function public.admin_create_membership(p_member_id uuid, p_year smallint, p_tier text, p_outcome text, p_amount numeric, p_method text, p_payment_date date, p_notes text, p_reference text) from public;
-grant execute on function public.admin_create_membership(p_member_id uuid, p_year smallint, p_tier text, p_outcome text, p_amount numeric, p_method text, p_payment_date date, p_notes text, p_reference text) to service_role;
-comment on function public.admin_create_membership(p_member_id uuid, p_year smallint, p_tier text, p_outcome text, p_amount numeric, p_method text, p_payment_date date, p_notes text, p_reference text) is
-  'Create membership (pending, with manual payment, or complimentary with no payment row); status sync. service_role only.';
+revoke all on function public.admin_create_membership(p_member_id uuid, p_year smallint, p_tier text, p_outcome text, p_amount numeric, p_method text, p_payment_date date, p_notes text, p_reference text, p_donation_category text) from public;
+revoke execute on function public.admin_create_membership(p_member_id uuid, p_year smallint, p_tier text, p_outcome text, p_amount numeric, p_method text, p_payment_date date, p_notes text, p_reference text, p_donation_category text) from anon, authenticated;
+grant execute on function public.admin_create_membership(p_member_id uuid, p_year smallint, p_tier text, p_outcome text, p_amount numeric, p_method text, p_payment_date date, p_notes text, p_reference text, p_donation_category text) to service_role;
+comment on function public.admin_create_membership(p_member_id uuid, p_year smallint, p_tier text, p_outcome text, p_amount numeric, p_method text, p_payment_date date, p_notes text, p_reference text, p_donation_category text) is
+  'Create membership (pending, with manual payment + optional donation_category, or complimentary with no payment row); status sync. service_role only.';

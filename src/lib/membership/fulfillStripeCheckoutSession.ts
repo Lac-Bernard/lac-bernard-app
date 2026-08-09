@@ -1,6 +1,10 @@
 import Stripe from 'stripe';
 import type { Stripe as StripeTypes } from 'stripe';
 import { captureAlert, captureException } from '../monitoring';
+import {
+	DEFAULT_DONATION_CATEGORY,
+	isDonationCategory,
+} from './donationCategories';
 import { createSupabaseServiceRoleClient } from '../supabase/service';
 import { getStripeSecretKey } from '../supabase/env';
 
@@ -103,12 +107,24 @@ export async function fulfillMembershipFromCheckoutSession(
 	const donationNote =
 		typeof donationNoteRaw === 'string' ? donationNoteRaw.trim() : '';
 
+	const donationCategoryRaw =
+		typeof metadata.donation_category === 'string'
+			? metadata.donation_category.trim().toLowerCase()
+			: '';
+	const donationCategory =
+		donationCents > 0
+			? isDonationCategory(donationCategoryRaw)
+				? donationCategoryRaw
+				: DEFAULT_DONATION_CATEGORY
+			: null;
+
 	const amountDollars = amountTotal / 100;
 	const membershipDollars = Math.round(membershipCents) / 100;
 	const donationDollars = Math.round(donationCents) / 100;
 	const notesParts = [`Stripe Checkout`, `session ${session.id}`];
 	if (donationCents > 0) {
 		notesParts.push(`donation $${(donationCents / 100).toFixed(2)} CAD`);
+		if (donationCategory) notesParts.push(`category ${donationCategory}`);
 	}
 	if (donationNote.length > 0) {
 		notesParts.push(`Donation note: ${donationNote}`);
@@ -154,6 +170,7 @@ export async function fulfillMembershipFromCheckoutSession(
 		p_stripe_payment_id: paymentIntentId,
 		p_notes: notes,
 		p_donation_note: donationNote.length > 0 ? donationNote : null,
+		p_donation_category: donationCategory,
 		p_stripe_fee_cad: stripeFeeCad,
 		p_stripe_balance_transaction_id: stripeBalanceTransactionId,
 	});

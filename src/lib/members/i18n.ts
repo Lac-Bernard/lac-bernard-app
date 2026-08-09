@@ -136,8 +136,10 @@ export const memberCopy: Record<
 		adminTableStripeFee: string;
 		adminTableDuesPortion: string;
 		adminTableDonationPortion: string;
+		adminTableDonationCategory: string;
 		adminPaymentPreviewMembership: string;
 		adminPaymentPreviewDonation: string;
+		adminPaymentDonationCategoryLabel: string;
 		adminTablePaymentDate: string;
 		adminPendingBadge: string;
 		adminDetailNoMemberships: string;
@@ -308,6 +310,7 @@ export const memberCopy: Record<
 		adminViewIncomplete: string;
 		adminViewAll: string;
 		adminViewDuplicate: string;
+		adminViewDonors: string;
 		adminMemberIndexMetaVoting: string;
 		adminMemberIndexMetaAssociate: string;
 		adminMemberIndexMetaMailing: string;
@@ -318,6 +321,7 @@ export const memberCopy: Record<
 		adminMemberIndexMetaIncomplete: string;
 		adminMemberIndexMetaAll: string;
 		adminMemberIndexMetaDuplicate: string;
+		adminMemberIndexMetaDonors: string;
 		adminMemberIndexMetaSearch: string;
 		adminMemberIndexEmailOptInAppend: string;
 		adminCopyEmailListOptIn: string;
@@ -342,6 +346,7 @@ export const memberCopy: Record<
 		adminEmptyIncomplete: string;
 		adminEmptyAll: string;
 		adminEmptyDuplicate: string;
+		adminEmptyDonors: string;
 		adminSearchNoResults: string;
 		adminSearchTryDisabled: string;
 		adminSearchTryDisabledLink: string;
@@ -412,6 +417,7 @@ export const memberCopy: Record<
 		memberActivePaymentItemTotal: string;
 		memberActivePaymentSplitMembership: string;
 		memberActivePaymentSplitDonation: string;
+		memberActivePaymentDonationCategory: string;
 		memberActivePaymentReference: string;
 		/** Expandable block for payment reference / internal record note */
 		memberPaymentSeeDetails: string;
@@ -439,6 +445,10 @@ export const memberCopy: Record<
 		payWithCard: string;
 		donationLabel: string;
 		donationHint: string;
+		donationCategoryLabel: string;
+		donationCategoryEnvironment: string;
+		donationCategoryRegatta: string;
+		donationCategoryGeneral: string;
 		donationNoteLabel: string;
 		donationNoteHint: string;
 		/** Shorter helper under the optional note field in the card checkout modal */
@@ -456,6 +466,7 @@ export const memberCopy: Record<
 		checkoutStripeMisconfigured: string;
 		checkoutInvalidDonation: string;
 		checkoutInvalidDonationNote: string;
+		checkoutInvalidDonationCategory: string;
 		checkoutErrorNothingDue: string;
 		checkoutSuccessBanner: string;
 		checkoutCancelledBanner: string;
@@ -632,8 +643,10 @@ export const memberCopy: Record<
 		adminTableStripeFee: 'Stripe fee',
 		adminTableDuesPortion: 'Dues',
 		adminTableDonationPortion: 'Donation',
+		adminTableDonationCategory: 'Donation category',
 		adminPaymentPreviewMembership: 'Toward membership: {{amount}}',
 		adminPaymentPreviewDonation: 'Donation: {{amount}}',
+		adminPaymentDonationCategoryLabel: 'Donation category',
 		adminTablePaymentDate: 'Paid',
 		adminPendingBadge: '{{count}} pending',
 		adminDetailNoMemberships: 'No membership records for this person yet.',
@@ -809,6 +822,7 @@ export const memberCopy: Record<
 		adminViewIncomplete: 'Incomplete signups',
 		adminViewAll: 'All members',
 		adminViewDuplicate: 'Duplicate lake addresses',
+		adminViewDonors: 'Donors',
 		adminMemberIndexMetaVoting: '{{count}} voting members',
 		adminMemberIndexMetaAssociate: '{{count}} associate members',
 		adminMemberIndexMetaMailing: '{{count}} active members',
@@ -819,6 +833,7 @@ export const memberCopy: Record<
 		adminMemberIndexMetaIncomplete: '{{count}} incomplete signups',
 		adminMemberIndexMetaAll: '{{count}} members',
 		adminMemberIndexMetaDuplicate: '{{count}} members with a duplicate lake address',
+		adminMemberIndexMetaDonors: '{{count}} donors',
 		adminMemberIndexMetaSearch: '{{count}} results across all members',
 		adminMemberIndexEmailOptInAppend: ' · {{count}} opted in to email',
 		adminCopyEmailListOptIn: 'Copy email list (opted in)',
@@ -844,6 +859,7 @@ export const memberCopy: Record<
 			'No incomplete signups — everyone who created a profile has completed a membership.',
 		adminEmptyAll: 'No member records found.',
 		adminEmptyDuplicate: 'No duplicate lake addresses found.',
+		adminEmptyDonors: 'No donors found for this year.',
 		adminSearchNoResults: 'No members match “{{query}}”.',
 		adminSearchTryDisabled: 'No results — ',
 		adminSearchTryDisabledLink: 'try including disabled members',
@@ -917,6 +933,7 @@ export const memberCopy: Record<
 		memberActivePaymentItemTotal: 'Total',
 		memberActivePaymentSplitMembership: 'Membership',
 		memberActivePaymentSplitDonation: 'Donation',
+		memberActivePaymentDonationCategory: 'Category',
 		memberActivePaymentReference: 'Reference',
 		memberPaymentSeeDetails: 'See details',
 		statusInactiveTitle: 'No active membership for {{year}}',
@@ -942,6 +959,10 @@ export const memberCopy: Record<
 		payWithCard: 'Pay with credit card',
 		donationLabel: 'Optional donation (CAD)',
 		donationHint: 'Add any amount to support the association, or leave at 0.',
+		donationCategoryLabel: 'Donation category',
+		donationCategoryEnvironment: 'Environment',
+		donationCategoryRegatta: 'Regatta',
+		donationCategoryGeneral: 'General',
 		donationNoteLabel: 'Note with your donation (optional)',
 		donationNoteHint: 'Shown on your payment record. Max 500 characters.',
 		checkoutModalNoteHint: 'Max 500 characters.',
@@ -957,6 +978,7 @@ export const memberCopy: Record<
 		checkoutStripeMisconfigured: 'Online payment is not configured. Please use another payment method or try again later.',
 		checkoutInvalidDonation: 'Enter a valid donation amount (0 or more, up to 50,000).',
 		checkoutInvalidDonationNote: 'Keep the note to 500 characters or fewer.',
+		checkoutInvalidDonationCategory: 'Choose a donation category.',
 		checkoutErrorNothingDue:
 			'No membership balance is due right now. If this looks wrong, contact the association.',
 		checkoutSuccessBanner:
@@ -1140,8 +1162,10 @@ export const memberCopy: Record<
 		adminTableStripeFee: 'Frais Stripe',
 		adminTableDuesPortion: 'Cotisation',
 		adminTableDonationPortion: 'Don',
+		adminTableDonationCategory: 'Catégorie de don',
 		adminPaymentPreviewMembership: 'Vers la cotisation : {{amount}}',
 		adminPaymentPreviewDonation: 'Don : {{amount}}',
+		adminPaymentDonationCategoryLabel: 'Catégorie de don',
 		adminTablePaymentDate: 'Payé',
 		adminPendingBadge: '{{count}} en attente',
 		adminDetailNoMemberships: 'Aucune adhésion dans le dossier pour le moment.',
@@ -1321,6 +1345,7 @@ export const memberCopy: Record<
 		adminViewIncomplete: 'Inscriptions incomplètes',
 		adminViewAll: 'Tous les membres',
 		adminViewDuplicate: 'Adresses au lac en double',
+		adminViewDonors: 'Donateurs',
 		adminMemberIndexMetaVoting: '{{count}} membres votants',
 		adminMemberIndexMetaAssociate: '{{count}} membres associés',
 		adminMemberIndexMetaMailing: '{{count}} membres actifs',
@@ -1331,6 +1356,7 @@ export const memberCopy: Record<
 		adminMemberIndexMetaIncomplete: '{{count}} inscriptions incomplètes',
 		adminMemberIndexMetaAll: '{{count}} membres',
 		adminMemberIndexMetaDuplicate: '{{count}} membres avec une adresse au lac en double',
+		adminMemberIndexMetaDonors: '{{count}} donateurs',
 		adminMemberIndexMetaSearch: '{{count}} résultats parmi tous les membres',
 		adminMemberIndexEmailOptInAppend: ' · {{count}} inscrits aux courriels',
 		adminCopyEmailListOptIn: 'Copier la liste de courriels (inscrits)',
@@ -1358,6 +1384,7 @@ export const memberCopy: Record<
 			'Aucune inscription incomplète — toute personne ayant créé un profil a complété une adhésion.',
 		adminEmptyAll: 'Aucun membre dans le dossier.',
 		adminEmptyDuplicate: 'Aucune adresse au lac en double trouvée.',
+		adminEmptyDonors: 'Aucun donateur trouvé pour cette année.',
 		adminSearchNoResults: 'Aucun membre ne correspond à « {{query}} ».',
 		adminSearchTryDisabled: 'Aucun résultat — ',
 		adminSearchTryDisabledLink: 'essayez d’inclure les membres désactivés',
@@ -1431,6 +1458,7 @@ export const memberCopy: Record<
 		memberActivePaymentItemTotal: 'Total',
 		memberActivePaymentSplitMembership: 'Cotisation',
 		memberActivePaymentSplitDonation: 'Don',
+		memberActivePaymentDonationCategory: 'Catégorie',
 		memberActivePaymentReference: 'Référence',
 		memberPaymentSeeDetails: 'Voir les détails',
 		statusInactiveTitle: 'Aucune adhésion active pour {{year}}',
@@ -1456,6 +1484,10 @@ export const memberCopy: Record<
 		payWithCard: 'Payer par carte de crédit',
 		donationLabel: 'Don facultatif (CAD)',
 		donationHint: 'Ajoutez un montant pour soutenir l’association, ou laissez 0.',
+		donationCategoryLabel: 'Catégorie de don',
+		donationCategoryEnvironment: 'Environnement',
+		donationCategoryRegatta: 'Régate',
+		donationCategoryGeneral: 'Général',
 		donationNoteLabel: 'Note accompagnant le don (facultatif)',
 		donationNoteHint: 'Affichée sur votre dossier de paiement. 500 caractères maximum.',
 		checkoutModalNoteHint: '500 caractères maximum.',
@@ -1472,6 +1504,7 @@ export const memberCopy: Record<
 			'Le paiement en ligne n’est pas configuré. Utilisez un autre mode de paiement ou réessayez plus tard.',
 		checkoutInvalidDonation: 'Entrez un montant de don valide (0 ou plus, jusqu’à 50 000).',
 		checkoutInvalidDonationNote: 'Limitez la note à 500 caractères ou moins.',
+		checkoutInvalidDonationCategory: 'Choisissez une catégorie de don.',
 		checkoutErrorNothingDue:
 			'Aucun solde de cotisation n’est dû pour le moment. En cas de doute, communiquez avec l’association.',
 		checkoutSuccessBanner:

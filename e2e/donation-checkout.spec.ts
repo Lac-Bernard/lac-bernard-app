@@ -23,6 +23,7 @@ test('a member can include a donation alongside their membership payment', async
 		membershipId,
 		donationDollars: 10,
 		donationNote: 'For the loons',
+		donationCategory: 'regatta',
 	});
 	expect(webhookRes.status()).toBe(200);
 
@@ -35,7 +36,7 @@ test('a member can include a donation alongside their membership payment', async
 
 	const { data: paymentRows } = await supabaseAdmin
 		.from('payments')
-		.select('amount, membership_amount, donation_amount, donation_note')
+		.select('amount, membership_amount, donation_amount, donation_note, donation_category')
 		.eq('membership_id', membershipId);
 	expect(paymentRows).toHaveLength(1);
 	const payment = paymentRows?.[0];
@@ -43,6 +44,7 @@ test('a member can include a donation alongside their membership payment', async
 	expect(payment?.donation_amount).toBe(10);
 	expect(payment?.amount).toBe(35);
 	expect(payment?.donation_note).toBe('For the loons');
+	expect(payment?.donation_category).toBe('regatta');
 
 	await api.dispose();
 });

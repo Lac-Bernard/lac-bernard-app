@@ -10,7 +10,8 @@ export type MemberIndexView =
 	| 'lapsed'
 	| 'incomplete'
 	| 'all'
-	| 'duplicate';
+	| 'duplicate'
+	| 'donors';
 
 type AdminStrings = Record<string, string>;
 
@@ -142,6 +143,8 @@ function viewLabel(strings: AdminStrings, view: MemberIndexView): string {
 			return t(strings, 'adminViewAll');
 		case 'duplicate':
 			return t(strings, 'adminViewDuplicate');
+		case 'donors':
+			return t(strings, 'adminViewDonors');
 		default:
 			return view;
 	}
@@ -207,7 +210,8 @@ export function initAdminMemberIndex(
 			v === 'lapsed' ||
 			v === 'incomplete' ||
 			v === 'all' ||
-			v === 'duplicate'
+			v === 'duplicate' ||
+			v === 'donors'
 		) {
 			currentView = v;
 		} else {
@@ -289,6 +293,7 @@ export function initAdminMemberIndex(
 			'incomplete',
 			'all',
 			'duplicate',
+			'donors',
 		];
 		const q = searchInput?.value.trim() ?? '';
 		const searchActive = q.length > 0;
@@ -350,6 +355,8 @@ export function initAdminMemberIndex(
 				return escapeHtml(t(strings, 'adminMemberIndexMetaAll', { count: total }));
 			case 'duplicate':
 				return escapeHtml(t(strings, 'adminMemberIndexMetaDuplicate', { count: total }));
+			case 'donors':
+				return escapeHtml(t(strings, 'adminMemberIndexMetaDonors', { count: total }));
 			default:
 				return String(total);
 		}
@@ -415,6 +422,9 @@ export function initAdminMemberIndex(
 					break;
 				case 'duplicate':
 					msg = t(strings, 'adminEmptyDuplicate');
+					break;
+				case 'donors':
+					msg = t(strings, 'adminEmptyDonors');
 					break;
 				default:
 					msg = '';

@@ -209,6 +209,14 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
                 <input type="number" name="payment_amount" min="0" step="0.01" class="adminInput" />
               </label>
               <label>
+                {t.adminPaymentDonationCategoryLabel}
+                <select name="payment_donation_category" class="adminInput">
+                  <option value="environment" selected>{t.donationCategoryEnvironment}</option>
+                  <option value="regatta">{t.donationCategoryRegatta}</option>
+                  <option value="general">{t.donationCategoryGeneral}</option>
+                </select>
+              </label>
+              <label>
                 {t.adminMethodLabel}
                 <select name="payment_method" class="adminInput">
                   <option value="cash">{t.adminMethodCash}</option>

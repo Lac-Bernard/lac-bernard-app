@@ -1,3 +1,7 @@
+-- Add "donors" named view: members with donation_amount > 0 on a membership for the year.
+
+set check_function_bodies = off;
+
 CREATE OR REPLACE FUNCTION public.admin_member_index(p_view text, p_year smallint, p_lapsed_since smallint, p_include_disabled boolean, p_q text, p_sort text, p_limit integer, p_offset integer)
  RETURNS jsonb
  LANGUAGE plpgsql

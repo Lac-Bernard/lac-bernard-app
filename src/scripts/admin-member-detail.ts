@@ -42,6 +42,7 @@ type PaymentRow = {
 	membership_amount?: number | null;
 	donation_amount?: number | null;
 	donation_note?: string | null;
+	donation_category?: string | null;
 	stripe_fee_cad?: number | null;
 };
 
@@ -144,20 +145,30 @@ export function initAdminMemberDetail(
 	/** After first API load, pin year to calendar year when available (without resetting on later reloads). */
 	let appliedInitialYearDefault = false;
 
+	function donationCategoryLabel(category: string | null | undefined): string {
+		if (category === 'environment') return t(strings, 'donationCategoryEnvironment');
+		if (category === 'regatta') return t(strings, 'donationCategoryRegatta');
+		if (category === 'general') return t(strings, 'donationCategoryGeneral');
+		return (category ?? '').trim();
+	}
+
 	function updatePaymentPreview() {
 		const preview = el<HTMLElement>('#admin-payment-split-preview');
+		const categoryWrap = el<HTMLElement>('#admin-payment-category-wrap');
 		const amtInput = el<HTMLInputElement>('#admin-payment-amount');
 		const mid = paymentMembershipId?.value;
 		if (!preview || !amtInput || !mid) return;
 		const ms = allMemberships.find((m) => m.id === mid);
 		if (!ms) {
 			preview.hidden = true;
+			if (categoryWrap) categoryWrap.hidden = true;
 			return;
 		}
 		const raw = parseFloat(String(amtInput.value ?? ''));
 		if (!Number.isFinite(raw) || raw <= 0) {
 			preview.hidden = true;
 			preview.textContent = '';
+			if (categoryWrap) categoryWrap.hidden = true;
 			return;
 		}
 		const sumPaid = (ms.payments ?? []).reduce((s, p) => {
@@ -177,6 +188,7 @@ export function initAdminMemberDetail(
 		)}<br />${escapeHtml(
 			t(strings, 'adminPaymentPreviewDonation', { amount: fmtMoney(split.donationAmount) }),
 		)}`;
+		if (categoryWrap) categoryWrap.hidden = !(split.donationAmount > 0);
 	}
 	let selectedYear = calendarYear;
 
@@ -519,6 +531,11 @@ export function initAdminMemberDetail(
 					Number.isFinite(Number(p.stripe_fee_cad)) ?
 						escapeHtml(fmtMoney(Number(p.stripe_fee_cad)))
 					:	'<span class="adminDetailCellEmpty">—</span>';
+				const categoryLabel = donationCategoryLabel(p.donation_category);
+				const categoryCell =
+					donation > 0.0001 && categoryLabel ?
+						escapeHtml(categoryLabel)
+					:	'<span class="adminDetailCellEmpty">—</span>';
 				return `<tr>
 				<td>${escapeHtml(formatAdminLocaleDate(p.date ?? p.created_at))}</td>
 				<td>${escapeHtml(methodLabel(strings, p.method))}</td>
@@ -526,6 +543,7 @@ export function initAdminMemberDetail(
 				<td>${feeCell}</td>
 				<td>${escapeHtml(fmtMoney(membership))}</td>
 				<td>${escapeHtml(fmtMoney(donation))}</td>
+				<td>${categoryCell}</td>
 				<td class="adminDetailTdLong">${longCell(p.notes)}</td>
 				<td class="adminDetailTdLong">${longCell(p.payment_id)}</td>
 				<td class="adminDetailTdActions"><button type="button" class="adminBtn adminBtn--danger adminBtn--table" data-delete-payment data-payment-id="${String(p.id)}" data-method="${escapeHtml(p.method ?? '')}" data-amount="${escapeHtml(p.amount != null ? fmtMoney(p.amount) : '')}">${escapeHtml(t(strings, 'adminDeletePaymentBtn'))}</button></td>
@@ -549,6 +567,7 @@ export function initAdminMemberDetail(
 					<th>${escapeHtml(t(strings, 'adminTableStripeFee'))}</th>
 					<th>${escapeHtml(t(strings, 'adminTableDuesPortion'))}</th>
 					<th>${escapeHtml(t(strings, 'adminTableDonationPortion'))}</th>
+					<th>${escapeHtml(t(strings, 'adminTableDonationCategory'))}</th>
 					<th>${escapeHtml(t(strings, 'adminNotesLabel'))}</th>
 					<th>${escapeHtml(t(strings, 'adminTablePaymentRef'))}</th>
 					<th class="adminDetailThActions">${escapeHtml(t(strings, 'adminTableActions'))}</th>
@@ -814,6 +833,7 @@ export function initAdminMemberDetail(
 		const date = String(fd.get('date') ?? '').trim();
 		const notes = String(fd.get('notes') ?? '').trim();
 		const reference = String(fd.get('reference') ?? '').trim();
+		const donationCategory = String(fd.get('donationCategory') ?? '').trim() || 'environment';
 		const mid = paymentMembershipId?.value;
 		if (!mid) return;
 		setFormSubmitLoading(form, savePaymentBtn, true);
@@ -828,6 +848,7 @@ export function initAdminMemberDetail(
 						method,
 						date: date || undefined,
 						notes: notes || undefined,
+						donationCategory,
 						...(reference ? { reference } : {}),
 					}),
 				},
@@ -853,6 +874,10 @@ export function initAdminMemberDetail(
 			preview.hidden = true;
 			preview.textContent = '';
 		}
+		const categoryWrap = el<HTMLElement>('#admin-payment-category-wrap');
+		if (categoryWrap) categoryWrap.hidden = true;
+		const categorySelect = el<HTMLSelectElement>('#admin-payment-donation-category');
+		if (categorySelect) categorySelect.value = 'environment';
 	});
 
 	el<HTMLButtonElement>('#admin-payment-cancel')?.addEventListener('click', () => {
@@ -886,9 +911,12 @@ export function initAdminMemberDetail(
 			const date = String(fd.get('payment_date') ?? '').trim();
 			const reference = String(fd.get('payment_reference') ?? '').trim();
 			const notes = String(fd.get('payment_notes') ?? '').trim();
+			const donationCategory =
+				String(fd.get('payment_donation_category') ?? '').trim() || 'environment';
 			payment = {
 				amount,
 				method,
+				donationCategory,
 				...(date ? { date } : {}),
 				...(reference ? { reference } : {}),
 				...(notes ? { notes } : {}),

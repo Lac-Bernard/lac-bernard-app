@@ -149,13 +149,14 @@ test('admin adds a membership with a full payment to an existing member, activat
 
 	const { data: payRows } = await supabaseAdmin
 		.from('payments')
-		.select('method, amount, membership_amount, donation_amount, notes')
+		.select('method, amount, membership_amount, donation_amount, donation_category, notes')
 		.eq('membership_id', body.membership_id);
 	expect(payRows).toHaveLength(1);
 	expect(payRows?.[0].method).toBe('e-transfer');
 	expect(Number(payRows?.[0].amount)).toBe(25);
 	expect(Number(payRows?.[0].membership_amount)).toBe(25);
 	expect(Number(payRows?.[0].donation_amount)).toBe(0);
+	expect(payRows?.[0].donation_category).toBeNull();
 	expect(payRows?.[0].notes).toBe('e2e admin-recorded payment');
 
 	await adminApi.dispose();
@@ -335,21 +336,28 @@ test('admin can record a donation on a complimentary membership without disturbi
 	const { membership_id: membershipId } = await createRes.json();
 
 	const recordRes = await adminApi.post(`/api/admin/memberships/${membershipId}/record-payment`, {
-		data: { amount: 40, method: 'cheque', notes: 'e2e comp donation' },
+		data: {
+			amount: 40,
+			method: 'cheque',
+			notes: 'e2e comp donation',
+			donationCategory: 'general',
+		},
 	});
 	expect(recordRes.ok()).toBeTruthy();
 	const recordBody = await recordRes.json();
 	// A complimentary membership has its dues waived, so the whole amount is booked as a donation.
 	expect(recordBody.membership_amount).toBe(0);
 	expect(recordBody.donation_amount).toBe(40);
+	expect(recordBody.donation_category).toBe('general');
 
 	const { data: payRows } = await supabaseAdmin
 		.from('payments')
-		.select('membership_amount, donation_amount')
+		.select('membership_amount, donation_amount, donation_category')
 		.eq('membership_id', membershipId);
 	expect(payRows).toHaveLength(1);
 	expect(Number(payRows?.[0].membership_amount)).toBe(0);
 	expect(Number(payRows?.[0].donation_amount)).toBe(40);
+	expect(payRows?.[0].donation_category).toBe('general');
 
 	const { data: row } = await supabaseAdmin
 		.from('memberships')

@@ -35,6 +35,13 @@ function memberPaymentMethodLabel(method: string | null): string {
 	return method;
 }
 
+function donationCategoryLabel(category: string | null | undefined): string {
+	if (category === 'environment') return t.donationCategoryEnvironment;
+	if (category === 'regatta') return t.donationCategoryRegatta;
+	if (category === 'general') return t.donationCategoryGeneral;
+	return category?.trim() || '';
+}
+
 function membershipRows(rows: typeof currentMemberships) {
 	return rows.map((row) => ({
 		...row,
@@ -306,6 +313,7 @@ const hasSecondaryContactInfo = Boolean(
                       <ul class="memberActivePaymentList">
                               {currentYearPayments.map((p) => {
                                 const donationNote = (p.donation_note ?? '').trim();
+                                const categoryLabel = donationCategoryLabel(p.donation_category);
                                 const recordNote = (p.notes ?? '').trim();
                                 const paymentRefRaw = (p.payment_id ?? '').trim();
                                 const hasPaymentTechnicalDetails = Boolean(recordNote || paymentRefRaw);
@@ -355,6 +363,12 @@ const hasSecondaryContactInfo = Boolean(
                                   </span>
                                 ) : null}
                               </div>
+                              {showDonation && categoryLabel ? (
+                                <p class="memberActivePaymentRefLine">
+                                  <span class="memberActivePaymentRefKey">{t.memberActivePaymentDonationCategory}</span>
+                                  <span class="memberActivePaymentRefVal">{categoryLabel}</span>
+                                </p>
+                              ) : null}
                               {donationNote ? (
                                 <p class="memberActivePaymentRefLine">
                                   <span class="memberActivePaymentRefKey">{t.memberPaymentsColNote}</span>
@@ -472,6 +486,23 @@ const hasSecondaryContactInfo = Boolean(
                                   />
                                   <span class="checkoutModalAmountSuffix">CAD</span>
                                 </div>
+                              </dd>
+                            </div>
+                            <div class="checkoutModalSummaryRow checkoutModalSummaryRow--donationCategory">
+                              <dt>
+                                <label for="modal-donation-category">{t.donationCategoryLabel}</label>
+                              </dt>
+                              <dd>
+                                <select
+                                  class="checkoutModalInput checkoutModalCategorySelect"
+                                  id="modal-donation-category"
+                                  name="donationCategory"
+                                  aria-label={t.donationCategoryLabel}
+                                >
+                                  <option value="environment" selected>{t.donationCategoryEnvironment}</option>
+                                  <option value="regatta">{t.donationCategoryRegatta}</option>
+                                  <option value="general">{t.donationCategoryGeneral}</option>
+                                </select>
                               </dd>
                             </div>
                             <div class="checkoutModalSummaryRow checkoutModalSummaryRow--total">
@@ -678,6 +709,23 @@ const hasSecondaryContactInfo = Boolean(
                                 </div>
                               </dd>
                             </div>
+                            <div class="checkoutModalSummaryRow checkoutModalSummaryRow--donationCategory">
+                              <dt>
+                                <label for="modal-donation-category">{t.donationCategoryLabel}</label>
+                              </dt>
+                              <dd>
+                                <select
+                                  class="checkoutModalInput checkoutModalCategorySelect"
+                                  id="modal-donation-category"
+                                  name="donationCategory"
+                                  aria-label={t.donationCategoryLabel}
+                                >
+                                  <option value="environment" selected>{t.donationCategoryEnvironment}</option>
+                                  <option value="regatta">{t.donationCategoryRegatta}</option>
+                                  <option value="general">{t.donationCategoryGeneral}</option>
+                                </select>
+                              </dd>
+                            </div>
                             <div class="checkoutModalSummaryRow checkoutModalSummaryRow--total">
                               <dt>{t.checkoutModalTotalLabel}</dt>
                               <dd id="checkout-modal-summary-total" aria-live="polite">
@@ -800,6 +848,7 @@ const hasSecondaryContactInfo = Boolean(
       errCheckoutStripeMisconfigured: t.checkoutStripeMisconfigured,
       errCheckoutInvalidDonation: t.checkoutInvalidDonation,
       errCheckoutInvalidDonationNote: t.checkoutInvalidDonationNote,
+      errCheckoutInvalidDonationCategory: t.checkoutInvalidDonationCategory,
       errCheckoutNothingDue: t.checkoutErrorNothingDue,
       checkoutModalContinue: t.checkoutModalContinue,
       checkoutModalContinuing: t.checkoutModalContinuing,
@@ -935,6 +984,7 @@ const hasSecondaryContactInfo = Boolean(
     const checkoutSubmit = document.getElementById('checkout-modal-submit');
     const checkoutSubmitLabel = checkoutSubmit?.querySelector('.checkoutModalSubmit-label');
     const donationInput = document.getElementById('modal-donation');
+    const donationCategoryInput = document.getElementById('modal-donation-category');
     const donationNoteInput = document.getElementById('modal-donation-note');
 
     function setCheckoutSubmitLoading(loading) {
@@ -993,6 +1043,9 @@ const hasSecondaryContactInfo = Boolean(
         checkoutMsg.textContent = errCheckoutInvalidDonationNote;
         return;
       }
+      const donationCategory = donationCategoryInput
+        ? String(donationCategoryInput.value ?? '').trim() || 'environment'
+        : 'environment';
 
       setCheckoutSubmitLoading(true);
       let membershipId = checkoutModalForm.getAttribute('data-membership-id')?.trim() ?? '';
@@ -1032,6 +1085,7 @@ const hasSecondaryContactInfo = Boolean(
             membershipId,
             donationDollars,
             donationNote,
+            donationCategory,
             locale: memberLocale,
           }),
         });
@@ -1039,8 +1093,10 @@ const hasSecondaryContactInfo = Boolean(
         if (!res.ok) {
           if (data.error === 'invalid_donation') {
             checkoutMsg.textContent = errCheckoutInvalidDonation;
-          } else           if (data.error === 'invalid_donation_note') {
+          } else if (data.error === 'invalid_donation_note') {
             checkoutMsg.textContent = errCheckoutInvalidDonationNote;
+          } else if (data.error === 'invalid_donation_category') {
+            checkoutMsg.textContent = errCheckoutInvalidDonationCategory;
           } else if (data.error === 'nothing_due') {
             checkoutMsg.textContent = errCheckoutNothingDue;
           } else if (data.error === 'no_lake_address' || data.error === 'voting_address_taken') {
@@ -2326,6 +2382,17 @@ const hasSecondaryContactInfo = Boolean(
   .checkoutModalDonationInput[type='number'] {
     -moz-appearance: textfield;
     appearance: textfield;
+  }
+
+  .checkoutModalCategorySelect {
+    width: 100%;
+    max-width: 14rem;
+    min-width: 8rem;
+    padding: 0.38rem 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: left;
+    border-radius: 8px;
   }
 
   .checkoutModalAmountSuffix {

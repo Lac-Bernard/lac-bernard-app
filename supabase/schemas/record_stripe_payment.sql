@@ -1,4 +1,4 @@
-CREATE OR REPLACE FUNCTION public.record_stripe_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_stripe_payment_id text, p_notes text, p_donation_note text, p_stripe_fee_cad numeric DEFAULT NULL::numeric, p_stripe_balance_transaction_id text DEFAULT NULL::text)
+CREATE OR REPLACE FUNCTION public.record_stripe_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_stripe_payment_id text, p_notes text, p_donation_note text, p_donation_category text DEFAULT NULL::text, p_stripe_fee_cad numeric DEFAULT NULL::numeric, p_stripe_balance_transaction_id text DEFAULT NULL::text)
  RETURNS jsonb
  LANGUAGE plpgsql
  SECURITY DEFINER
@@ -12,6 +12,7 @@ declare
   v_txn text;
   v_fee numeric;
   v_paid numeric;
+  v_category text;
 begin
   if p_stripe_payment_id is null or trim(p_stripe_payment_id) = '' then
     return jsonb_build_object('ok', false, 'error', 'invalid_payment_id');
@@ -57,6 +58,15 @@ begin
     return jsonb_build_object('ok', false, 'error', 'amount_split_mismatch');
   end if;
 
+  v_category := nullif(lower(trim(coalesce(p_donation_category, ''))), '');
+  if p_donation_amount > 0 then
+    if v_category is null or v_category not in ('environment', 'regatta', 'general') then
+      return jsonb_build_object('ok', false, 'error', 'invalid_donation_category');
+    end if;
+  else
+    v_category := null;
+  end if;
+
   select * into m
   from public.memberships
   where id = p_membership_id
@@ -97,6 +107,7 @@ begin
       membership_amount,
       donation_amount,
       donation_note,
+      donation_category,
       stripe_fee_cad,
       stripe_balance_transaction_id
     )
@@ -110,6 +121,7 @@ begin
       p_membership_amount,
       p_donation_amount,
       nullif(trim(p_donation_note), ''),
+      v_category,
       p_stripe_fee_cad,
       v_txn
     )
@@ -147,7 +159,8 @@ begin
 end;
 $function$;
 
-revoke all on function public.record_stripe_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_stripe_payment_id text, p_notes text, p_donation_note text, p_stripe_fee_cad numeric, p_stripe_balance_transaction_id text) from public;
-grant execute on function public.record_stripe_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_stripe_payment_id text, p_notes text, p_donation_note text, p_stripe_fee_cad numeric, p_stripe_balance_transaction_id text) to service_role;
-comment on function public.record_stripe_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_stripe_payment_id text, p_notes text, p_donation_note text, p_stripe_fee_cad numeric, p_stripe_balance_transaction_id text) is
-  'Insert Stripe payment with dues/donation split; records regardless of membership status (captures charges that land after a membership is made complimentary/active); rejects dues over tier fee (cumulative). Idempotent on payment_id. service_role only.';
+revoke all on function public.record_stripe_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_stripe_payment_id text, p_notes text, p_donation_note text, p_donation_category text, p_stripe_fee_cad numeric, p_stripe_balance_transaction_id text) from public;
+revoke execute on function public.record_stripe_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_stripe_payment_id text, p_notes text, p_donation_note text, p_donation_category text, p_stripe_fee_cad numeric, p_stripe_balance_transaction_id text) from anon, authenticated;
+grant execute on function public.record_stripe_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_stripe_payment_id text, p_notes text, p_donation_note text, p_donation_category text, p_stripe_fee_cad numeric, p_stripe_balance_transaction_id text) to service_role;
+comment on function public.record_stripe_payment(p_membership_id uuid, p_amount numeric, p_membership_amount numeric, p_donation_amount numeric, p_stripe_payment_id text, p_notes text, p_donation_note text, p_donation_category text, p_stripe_fee_cad numeric, p_stripe_balance_transaction_id text) is
+  'Insert Stripe payment with dues/donation split and optional donation_category; records regardless of membership status (captures charges that land after a membership is made complimentary/active); rejects dues over tier fee (cumulative). Idempotent on payment_id. service_role only.';

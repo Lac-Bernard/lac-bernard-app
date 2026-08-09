@@ -4,6 +4,11 @@ import Stripe from 'stripe';
 import { getPublicRequestOrigin } from '../../../lib/http/public-origin';
 import { findMemberByAuthEmail } from '../../../lib/members/memberLookup';
 import {
+	DEFAULT_DONATION_CATEGORY,
+	parseDonationCategory,
+	type DonationCategory,
+} from '../../../lib/membership/donationCategories';
+import {
 	membershipCentsForTier,
 	parseDonationDollars,
 	parseDonationNote,
@@ -12,6 +17,17 @@ import { getMembershipCalendarYear } from '../../../lib/members/membershipYear';
 import { memberPaths, membershipTierLabel, type MemberLocale } from '../../../lib/members/i18n';
 import { getStripeSecretKey } from '../../../lib/supabase/env';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
+
+function donationCategoryStripeLabel(category: DonationCategory, locale: MemberLocale): string {
+	if (locale === 'fr') {
+		if (category === 'environment') return 'Environnement';
+		if (category === 'regatta') return 'Régate';
+		return 'Général';
+	}
+	if (category === 'environment') return 'Environment';
+	if (category === 'regatta') return 'Regatta';
+	return 'General';
+}
 
 export const POST: APIRoute = async ({ request, cookies }) => {
 	let stripe: Stripe;
@@ -41,6 +57,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		membershipId?: string;
 		donationDollars?: unknown;
 		donationNote?: unknown;
+		donationCategory?: unknown;
 		locale?: string;
 	};
 	try {
@@ -73,6 +90,16 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 	const donationNote = parseDonationNote(body.donationNote);
 	if (donationNote === null) {
 		return new Response(JSON.stringify({ error: 'invalid_donation_note' }), {
+			status: 400,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
+
+	const donationCategory = parseDonationCategory(body.donationCategory, {
+		donationAmount: donationDollars,
+	});
+	if (donationCategory === undefined) {
+		return new Response(JSON.stringify({ error: 'invalid_donation_category' }), {
 			status: 400,
 			headers: { 'Content-Type': 'application/json' },
 		});
@@ -212,13 +239,16 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 	];
 
 	if (donationCents > 0) {
+		const category = donationCategory ?? DEFAULT_DONATION_CATEGORY;
 		const donationLabel = locale === 'fr' ? 'Don' : 'Donation';
+		const categoryLabel = donationCategoryStripeLabel(category, locale);
 		const noteDesc =
 			donationNote.length > 0
 				? donationNote.length > 180
 					? `${donationNote.slice(0, 177)}…`
 					: donationNote
 				: undefined;
+		const descriptionParts = [categoryLabel, noteDesc].filter(Boolean);
 		lineItems.push({
 			quantity: 1,
 			price_data: {
@@ -226,7 +256,9 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 				unit_amount: donationCents,
 				product_data: {
 					name: donationLabel,
-					...(noteDesc ? { description: noteDesc } : {}),
+					...(descriptionParts.length > 0
+						? { description: descriptionParts.join(' · ') }
+						: {}),
 				},
 			},
 		});
@@ -246,6 +278,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			membership_amount_cents: String(membershipCents),
 			donation_cents: String(donationCents),
 			donation_note: donationNote,
+			...(donationCategory ? { donation_category: donationCategory } : {}),
 		},
 		locale: locale === 'fr' ? 'fr' : 'en',
 	};

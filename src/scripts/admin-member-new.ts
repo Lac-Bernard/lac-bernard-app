@@ -148,9 +148,12 @@ export function initAdminMemberNew(
 					const date = String(fd.get('payment_date') ?? '').trim();
 					const notes = String(fd.get('payment_notes') ?? '').trim();
 					const reference = String(fd.get('payment_reference') ?? '').trim();
+					const donationCategory =
+						String(fd.get('payment_donation_category') ?? '').trim() || 'environment';
 					payment = {
 						amount,
 						method,
+						donationCategory,
 						...(date ? { date } : {}),
 						...(reference ? { reference } : {}),
 						...(notes ? { notes } : {}),

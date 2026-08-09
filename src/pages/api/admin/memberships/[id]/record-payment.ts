@@ -3,6 +3,7 @@ import type { APIRoute } from 'astro';
 import { computeManualPaymentSplit, roundMoney } from '../../../../../lib/admin/manualPaymentSplit';
 import { insertAdminAudit } from '../../../../../lib/admin/audit';
 import { requireAdminSession } from '../../../../../lib/admin/session';
+import { parseDonationCategory } from '../../../../../lib/membership/donationCategories';
 import { createSupabaseServiceRoleClient } from '../../../../../lib/supabase/service';
 
 const METHODS = new Set(['e-transfer', 'cheque', 'cash', 'unknown']);
@@ -19,7 +20,14 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 		});
 	}
 
-	let body: { amount?: unknown; method?: unknown; date?: unknown; notes?: unknown; reference?: unknown };
+	let body: {
+		amount?: unknown;
+		method?: unknown;
+		date?: unknown;
+		notes?: unknown;
+		reference?: unknown;
+		donationCategory?: unknown;
+	};
 	try {
 		body = (await request.json()) as typeof body;
 	} catch {
@@ -125,6 +133,16 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 		});
 	}
 
+	const donationCategory = parseDonationCategory(body.donationCategory, {
+		donationAmount: split.donationAmount,
+	});
+	if (donationCategory === undefined) {
+		return new Response(JSON.stringify({ error: 'invalid_donation_category' }), {
+			status: 400,
+			headers: { 'Content-Type': 'application/json' },
+		});
+	}
+
 	const { data: rpcResult, error: rpcError } = await service.rpc('record_manual_payment', {
 		p_membership_id: membershipId,
 		p_amount: roundMoney(amount),
@@ -134,6 +152,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 		p_payment_date: paymentDate,
 		p_notes: notes,
 		p_donation_note: null,
+		p_donation_category: donationCategory,
 		p_reference: reference,
 	});
 
@@ -166,6 +185,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 			amount: roundMoney(amount),
 			membership_amount: split.membershipAmount,
 			donation_amount: split.donationAmount,
+			donation_category: donationCategory,
 			method,
 			payment_id: result.payment_id,
 			...(reference ? { reference } : {}),
@@ -179,6 +199,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 			membership_id: membershipId,
 			membership_amount: split.membershipAmount,
 			donation_amount: split.donationAmount,
+			donation_category: donationCategory,
 		}),
 		{ status: 200, headers: { 'Content-Type': 'application/json' } },
 	);
