@@ -66,7 +66,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 	let pPaymentDate: string | null = null;
 	let pNotes: string | null = null;
 	let pReference: string | null = null;
-	let pDonationCategory: string | null = null;
+	let pDonationCategory: string | undefined;
 
 	if (initial === 'active_with_payment') {
 		const pay = o.payment;
@@ -127,7 +127,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 				headers: { 'Content-Type': 'application/json' },
 			});
 		}
-		pDonationCategory = donationCategory;
+		pDonationCategory = donationCategory ?? undefined;
 	}
 
 	const service = createSupabaseServiceRoleClient();
