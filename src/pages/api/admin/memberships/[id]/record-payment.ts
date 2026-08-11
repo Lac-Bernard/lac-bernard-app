@@ -4,8 +4,10 @@ import { computeManualPaymentSplit, roundMoney } from '../../../../../lib/admin/
 import { insertAdminAudit } from '../../../../../lib/admin/audit';
 import { requireAdminSession } from '../../../../../lib/admin/session';
 import { createSupabaseServiceRoleClient } from '../../../../../lib/supabase/service';
+import { DONATION_CATEGORIES } from '../../../../../lib/membership/stripeCheckout';
 
 const METHODS = new Set(['e-transfer', 'cheque', 'cash', 'unknown']);
+const DONATION_CATEGORY_SET = new Set<string>(DONATION_CATEGORIES);
 
 export const POST: APIRoute = async ({ request, cookies, params }) => {
 	const auth = await requireAdminSession(request, cookies);
@@ -19,7 +21,14 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 		});
 	}
 
-	let body: { amount?: unknown; method?: unknown; date?: unknown; notes?: unknown; reference?: unknown };
+	let body: {
+		amount?: unknown;
+		method?: unknown;
+		date?: unknown;
+		notes?: unknown;
+		reference?: unknown;
+		donationCategory?: unknown;
+	};
 	try {
 		body = (await request.json()) as typeof body;
 	} catch {
@@ -68,6 +77,18 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 			});
 		}
 		reference = r || null;
+	}
+
+	let donationCategory: string | null = null;
+	if (body.donationCategory !== undefined && body.donationCategory !== null && body.donationCategory !== '') {
+		const c = typeof body.donationCategory === 'string' ? body.donationCategory.trim() : '';
+		if (!DONATION_CATEGORY_SET.has(c)) {
+			return new Response(JSON.stringify({ error: 'invalid_donation_category' }), {
+				status: 400,
+				headers: { 'Content-Type': 'application/json' },
+			});
+		}
+		donationCategory = c;
 	}
 
 	const service = createSupabaseServiceRoleClient();
@@ -135,6 +156,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 		p_notes: notes,
 		p_donation_note: null,
 		p_reference: reference,
+		p_donation_category: donationCategory,
 	});
 
 	if (rpcError) {
@@ -169,6 +191,7 @@ export const POST: APIRoute = async ({ request, cookies, params }) => {
 			method,
 			payment_id: result.payment_id,
 			...(reference ? { reference } : {}),
+			...(donationCategory ? { donation_category: donationCategory } : {}),
 		},
 	});
 

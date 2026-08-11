@@ -335,7 +335,7 @@ test('admin can record a donation on a complimentary membership without disturbi
 	const { membership_id: membershipId } = await createRes.json();
 
 	const recordRes = await adminApi.post(`/api/admin/memberships/${membershipId}/record-payment`, {
-		data: { amount: 40, method: 'cheque', notes: 'e2e comp donation' },
+		data: { amount: 40, method: 'cheque', notes: 'e2e comp donation', donationCategory: 'general' },
 	});
 	expect(recordRes.ok()).toBeTruthy();
 	const recordBody = await recordRes.json();
@@ -345,11 +345,12 @@ test('admin can record a donation on a complimentary membership without disturbi
 
 	const { data: payRows } = await supabaseAdmin
 		.from('payments')
-		.select('membership_amount, donation_amount')
+		.select('membership_amount, donation_amount, donation_category')
 		.eq('membership_id', membershipId);
 	expect(payRows).toHaveLength(1);
 	expect(Number(payRows?.[0].membership_amount)).toBe(0);
 	expect(Number(payRows?.[0].donation_amount)).toBe(40);
+	expect(payRows?.[0].donation_category).toBe('general');
 
 	const { data: row } = await supabaseAdmin
 		.from('memberships')
@@ -394,6 +395,43 @@ test('recording a dues portion on a complimentary membership is rejected', async
 		.select('id')
 		.eq('membership_id', membershipId);
 	expect(payRows).toHaveLength(0);
+
+	await adminApi.dispose();
+});
+
+test('an invalid donation category is rejected both via the admin API and the RPC guard directly', async () => {
+	const supabaseAdmin = serviceClient();
+	const member = await newMember({ firstName: 'BadCategory', lastName: 'E2E' });
+	const adminApi = await apiContextFor(admin.email);
+
+	const createRes = await adminApi.post(`/api/admin/members/${member.memberId}/memberships`, {
+		data: { year: currentMembershipYear(), tier: 'associate', initial: 'complimentary' },
+	});
+	expect(createRes.ok()).toBeTruthy();
+	const { membership_id: membershipId } = await createRes.json();
+
+	const recordRes = await adminApi.post(`/api/admin/memberships/${membershipId}/record-payment`, {
+		data: { amount: 10, method: 'cheque', donationCategory: 'not-a-real-category' },
+	});
+	expect(recordRes.status()).toBe(400);
+	const recordBody = await recordRes.json();
+	expect(recordBody.error).toBe('invalid_donation_category');
+
+	const { data: rpcResult } = await supabaseAdmin.rpc('record_manual_payment', {
+		p_membership_id: membershipId,
+		p_amount: 10,
+		p_membership_amount: 0,
+		p_donation_amount: 10,
+		p_method: 'cash',
+		p_payment_date: null,
+		p_notes: null,
+		p_donation_note: null,
+		p_reference: null,
+		p_donation_category: 'not-a-real-category',
+	});
+	const result = rpcResult as { ok?: boolean; error?: string } | null;
+	expect(result?.ok).toBe(false);
+	expect(result?.error).toBe('invalid_donation_category');
 
 	await adminApi.dispose();
 });

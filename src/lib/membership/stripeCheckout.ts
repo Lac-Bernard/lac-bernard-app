@@ -33,3 +33,14 @@ export function parseDonationNote(raw: unknown): string | null {
 	if (t.length > MAX_DONATION_NOTE_LENGTH) return null;
 	return t;
 }
+
+export const DONATION_CATEGORIES = ['environment', 'regatta', 'general'] as const;
+export type DonationCategory = (typeof DONATION_CATEGORIES)[number];
+
+/** Parse donation category; defaults to 'environment' if absent/invalid. */
+export function parseDonationCategory(raw: unknown): DonationCategory {
+	if (typeof raw === 'string' && (DONATION_CATEGORIES as readonly string[]).includes(raw)) {
+		return raw as DonationCategory;
+	}
+	return 'environment';
+}

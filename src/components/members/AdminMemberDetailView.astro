@@ -156,6 +156,15 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
           </select>
         </label>
         <label>
+          {t.donationCategoryLabel}
+          <select name="donationCategory" class="adminInput">
+            <option value="">{t.donationCategoryUnspecified}</option>
+            <option value="environment">{t.donationCategoryEnvironment}</option>
+            <option value="regatta">{t.donationCategoryRegatta}</option>
+            <option value="general">{t.donationCategoryGeneral}</option>
+          </select>
+        </label>
+        <label>
           {t.adminDateLabel}
           <input type="date" name="date" class="adminInput" />
         </label>

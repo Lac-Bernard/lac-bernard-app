@@ -5,6 +5,7 @@ import { getPublicRequestOrigin } from '../../../lib/http/public-origin';
 import { findMemberByAuthEmail } from '../../../lib/members/memberLookup';
 import {
 	membershipCentsForTier,
+	parseDonationCategory,
 	parseDonationDollars,
 	parseDonationNote,
 } from '../../../lib/membership/stripeCheckout';
@@ -41,6 +42,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 		membershipId?: string;
 		donationDollars?: unknown;
 		donationNote?: unknown;
+		donationCategory?: unknown;
 		locale?: string;
 	};
 	try {
@@ -77,6 +79,8 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			headers: { 'Content-Type': 'application/json' },
 		});
 	}
+
+	const donationCategory = parseDonationCategory(body.donationCategory);
 
 	const member = await findMemberByAuthEmail(supabase, user.email);
 	if (!member) {
@@ -246,6 +250,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			membership_amount_cents: String(membershipCents),
 			donation_cents: String(donationCents),
 			donation_note: donationNote,
+			donation_category: donationCategory,
 		},
 		locale: locale === 'fr' ? 'fr' : 'en',
 	};

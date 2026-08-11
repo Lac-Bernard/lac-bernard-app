@@ -447,6 +447,11 @@ export const memberCopy: Record<
 		checkoutModalMembershipLabel: string;
 		checkoutModalFeeLabel: string;
 		checkoutModalDonationLabel: string;
+		donationCategoryLabel: string;
+		donationCategoryEnvironment: string;
+		donationCategoryRegatta: string;
+		donationCategoryGeneral: string;
+		donationCategoryUnspecified: string;
 		checkoutModalTotalLabel: string;
 		checkoutModalContinue: string;
 		/** Shown on the checkout modal submit control while redirecting to Stripe */
@@ -949,6 +954,11 @@ export const memberCopy: Record<
 		checkoutModalMembershipLabel: 'Membership',
 		checkoutModalFeeLabel: 'Membership fee',
 		checkoutModalDonationLabel: 'Donation (optional)',
+		donationCategoryLabel: 'Donation category',
+		donationCategoryEnvironment: 'Environment',
+		donationCategoryRegatta: 'Regatta',
+		donationCategoryGeneral: 'General',
+		donationCategoryUnspecified: 'Not specified',
 		checkoutModalTotalLabel: 'Total',
 		checkoutModalContinue: 'Continue to secure checkout',
 		checkoutModalContinuing: 'Continuing…',
@@ -1463,6 +1473,11 @@ export const memberCopy: Record<
 		checkoutModalMembershipLabel: 'Adhésion',
 		checkoutModalFeeLabel: 'Cotisation',
 		checkoutModalDonationLabel: 'Don (facultatif)',
+		donationCategoryLabel: 'Catégorie du don',
+		donationCategoryEnvironment: 'Environnement',
+		donationCategoryRegatta: 'Régate',
+		donationCategoryGeneral: 'Général',
+		donationCategoryUnspecified: 'Non précisé',
 		checkoutModalTotalLabel: 'Total',
 		checkoutModalContinue: 'Continuer vers le paiement sécurisé',
 		checkoutModalContinuing: 'Redirection…',

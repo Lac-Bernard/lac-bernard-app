@@ -115,14 +115,17 @@ create table if not exists "public"."payments" (
     "donation_note" text,
     "stripe_fee_cad" numeric(12,2),
     "stripe_balance_transaction_id" text,
+    "donation_category" text,
     constraint "payments_pkey" primary key ("id"),
     constraint "payments_membership_donation_split_check" check ((("membership_amount" >= (0)::numeric) and ("donation_amount" >= (0)::numeric) and (round(("membership_amount" + "donation_amount"), 2) = round("amount", 2)))),
-    constraint "payments_method_check" check (("method" = any (array['stripe'::text, 'e-transfer'::text, 'cheque'::text, 'cash'::text, 'unknown'::text])))
+    constraint "payments_method_check" check (("method" = any (array['stripe'::text, 'e-transfer'::text, 'cheque'::text, 'cash'::text, 'unknown'::text]))),
+    constraint "payments_donation_category_check" check ((("donation_category" is null) or ("donation_category" = any (array['environment'::text, 'regatta'::text, 'general'::text]))))
 );
 
 comment on column "public"."payments"."membership_amount" is 'Portion applied to membership dues for this membership year.';
 comment on column "public"."payments"."donation_amount" is 'Optional donation portion (same payment row as dues).';
 comment on column "public"."payments"."donation_note" is 'Optional note for the donation (e.g. Stripe checkout).';
+comment on column "public"."payments"."donation_category" is 'Optional earmark for the donation portion (environment/regatta/general). Null for payments recorded before this field existed or where no category was chosen.';
 comment on column "public"."payments"."stripe_fee_cad" is 'Total Stripe processing fee for this charge in CAD (dollars). Net to platform ≈ amount - stripe_fee_cad when set.';
 comment on column "public"."payments"."stripe_balance_transaction_id" is 'Stripe Balance Transaction id (txn_…) for the charge; optional audit trail.';
 
