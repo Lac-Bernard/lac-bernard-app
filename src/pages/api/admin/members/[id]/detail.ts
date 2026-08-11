@@ -4,7 +4,7 @@ import { requireAdminSession } from '../../../../../lib/admin/session';
 import { createSupabaseServiceRoleClient } from '../../../../../lib/supabase/service';
 
 const select =
-	'*, memberships(id, created_at, member_id, year, tier, status, complimentary, payments(id, created_at, membership_id, method, amount, date, notes, payment_id, membership_amount, donation_amount, donation_note, stripe_fee_cad, stripe_balance_transaction_id))';
+	'*, memberships(id, created_at, member_id, year, tier, status, complimentary, payments(id, created_at, membership_id, method, amount, date, notes, payment_id, membership_amount, donation_amount, donation_note, donation_category, stripe_fee_cad, stripe_balance_transaction_id))';
 
 export const GET: APIRoute = async ({ request, cookies, params }) => {
 	const auth = await requireAdminSession(request, cookies);
@@ -46,6 +46,7 @@ export const GET: APIRoute = async ({ request, cookies, params }) => {
 		membership_amount: number | null;
 		donation_amount: number | null;
 		donation_note: string | null;
+		donation_category: string | null;
 		stripe_fee_cad: number | null;
 		stripe_balance_transaction_id: string | null;
 	};

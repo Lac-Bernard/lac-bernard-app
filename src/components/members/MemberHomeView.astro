@@ -35,6 +35,13 @@ function memberPaymentMethodLabel(method: string | null): string {
 	return method;
 }
 
+function donationCategoryLabel(category: string): string {
+	if (category === 'environment') return t.donationCategoryEnvironment;
+	if (category === 'regatta') return t.donationCategoryRegatta;
+	if (category === 'general') return t.donationCategoryGeneral;
+	return category;
+}
+
 function membershipRows(rows: typeof currentMemberships) {
 	return rows.map((row) => ({
 		...row,
@@ -348,6 +355,7 @@ const hasSecondaryContactInfo = Boolean(
                                   <span class="memberActivePaymentSplitChip memberActivePaymentSplitChip--donation">
                                     <span class="memberActivePaymentSplitLabel">
                                       {t.memberActivePaymentSplitDonation}
+                                      {p.donation_category ? ` — ${donationCategoryLabel(p.donation_category)}` : ''}
                                     </span>
                                     <span class="memberActivePaymentSplitValue">
                                       {formatMemberCad(locale, p.donation_amount)}
@@ -472,6 +480,22 @@ const hasSecondaryContactInfo = Boolean(
                                   />
                                   <span class="checkoutModalAmountSuffix">CAD</span>
                                 </div>
+                              </dd>
+                            </div>
+                            <div class="checkoutModalSummaryRow checkoutModalSummaryRow--donationCategory">
+                              <dt>
+                                <label for="modal-donation-category">{t.donationCategoryLabel}</label>
+                              </dt>
+                              <dd>
+                                <select
+                                  class="checkoutModalInput checkoutModalDonationCategorySelect"
+                                  id="modal-donation-category"
+                                  name="donationCategory"
+                                >
+                                  <option value="environment" selected>{t.donationCategoryEnvironment}</option>
+                                  <option value="regatta">{t.donationCategoryRegatta}</option>
+                                  <option value="general">{t.donationCategoryGeneral}</option>
+                                </select>
                               </dd>
                             </div>
                             <div class="checkoutModalSummaryRow checkoutModalSummaryRow--total">
@@ -676,6 +700,22 @@ const hasSecondaryContactInfo = Boolean(
                                   />
                                   <span class="checkoutModalAmountSuffix">CAD</span>
                                 </div>
+                              </dd>
+                            </div>
+                            <div class="checkoutModalSummaryRow checkoutModalSummaryRow--donationCategory">
+                              <dt>
+                                <label for="modal-donation-category">{t.donationCategoryLabel}</label>
+                              </dt>
+                              <dd>
+                                <select
+                                  class="checkoutModalInput checkoutModalDonationCategorySelect"
+                                  id="modal-donation-category"
+                                  name="donationCategory"
+                                >
+                                  <option value="environment" selected>{t.donationCategoryEnvironment}</option>
+                                  <option value="regatta">{t.donationCategoryRegatta}</option>
+                                  <option value="general">{t.donationCategoryGeneral}</option>
+                                </select>
                               </dd>
                             </div>
                             <div class="checkoutModalSummaryRow checkoutModalSummaryRow--total">
@@ -936,6 +976,7 @@ const hasSecondaryContactInfo = Boolean(
     const checkoutSubmitLabel = checkoutSubmit?.querySelector('.checkoutModalSubmit-label');
     const donationInput = document.getElementById('modal-donation');
     const donationNoteInput = document.getElementById('modal-donation-note');
+    const donationCategorySelect = document.getElementById('modal-donation-category');
 
     function setCheckoutSubmitLoading(loading) {
       if (!checkoutModalForm || !checkoutSubmit) return;
@@ -993,6 +1034,7 @@ const hasSecondaryContactInfo = Boolean(
         checkoutMsg.textContent = errCheckoutInvalidDonationNote;
         return;
       }
+      const donationCategory = donationCategorySelect ? String(donationCategorySelect.value ?? 'environment') : 'environment';
 
       setCheckoutSubmitLoading(true);
       let membershipId = checkoutModalForm.getAttribute('data-membership-id')?.trim() ?? '';
@@ -1032,6 +1074,7 @@ const hasSecondaryContactInfo = Boolean(
             membershipId,
             donationDollars,
             donationNote,
+            donationCategory,
             locale: memberLocale,
           }),
         });

@@ -60,7 +60,13 @@ function buildEvent(type: string, dataObject: unknown): string {
  */
 export async function completeStripeCheckout(
 	api: APIRequestContext,
-	opts: { membershipId: string; donationDollars?: number; donationNote?: string; locale?: 'en' | 'fr' },
+	opts: {
+		membershipId: string;
+		donationDollars?: number;
+		donationNote?: string;
+		donationCategory?: string;
+		locale?: 'en' | 'fr';
+	},
 ): Promise<{ webhookRes: APIResponse; paymentIntentId: string; sessionId: string }> {
 	const stripe = stripeClient();
 
@@ -69,6 +75,7 @@ export async function completeStripeCheckout(
 			membershipId: opts.membershipId,
 			donationDollars: opts.donationDollars ?? 0,
 			donationNote: opts.donationNote ?? '',
+			...(opts.donationCategory ? { donationCategory: opts.donationCategory } : {}),
 			locale: opts.locale ?? 'en',
 		},
 	});

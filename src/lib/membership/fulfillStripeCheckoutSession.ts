@@ -3,6 +3,7 @@ import type { Stripe as StripeTypes } from 'stripe';
 import { captureAlert, captureException } from '../monitoring';
 import { createSupabaseServiceRoleClient } from '../supabase/service';
 import { getStripeSecretKey } from '../supabase/env';
+import { parseDonationCategory } from './stripeCheckout';
 
 /** CAD dollars and balance txn id from an expanded PaymentIntent (best-effort). */
 function stripeFeeFromExpandedPaymentIntent(pi: StripeTypes.PaymentIntent): {
@@ -103,6 +104,8 @@ export async function fulfillMembershipFromCheckoutSession(
 	const donationNote =
 		typeof donationNoteRaw === 'string' ? donationNoteRaw.trim() : '';
 
+	const donationCategory = parseDonationCategory(metadata.donation_category);
+
 	const amountDollars = amountTotal / 100;
 	const membershipDollars = Math.round(membershipCents) / 100;
 	const donationDollars = Math.round(donationCents) / 100;
@@ -156,6 +159,7 @@ export async function fulfillMembershipFromCheckoutSession(
 		p_donation_note: donationNote.length > 0 ? donationNote : null,
 		p_stripe_fee_cad: stripeFeeCad,
 		p_stripe_balance_transaction_id: stripeBalanceTransactionId,
+		p_donation_category: donationCategory,
 	});
 
 	if (rpcError) {
