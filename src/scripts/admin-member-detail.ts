@@ -557,10 +557,10 @@ export function initAdminMemberDetail(
 				<td>${p.amount != null ? escapeHtml(fmtMoney(p.amount)) : '<span class="adminDetailCellEmpty">—</span>'}</td>
 				<td>${feeCell}</td>
 				<td>${escapeHtml(fmtMoney(membership))}</td>
-				<td>${escapeHtml(fmtMoney(donation))}${donation > 0 ? ` <span class="adminDetailDonationCategory">(${escapeHtml(donationCategoryLabel(strings, p.donation_category))})</span>` : ''}</td>
+				<td>${escapeHtml(fmtMoney(donation))}${donation > 0 ? ` <span class="adminDetailDonationCategory">(${escapeHtml(donationCategoryLabel(strings, p.donation_category))})</span>` : ''} <button type="button" class="adminBtn adminBtn--link adminBtn--table" data-edit-payment data-payment-id="${String(p.id)}" data-donation-category="${escapeHtml(p.donation_category ?? '')}" data-donation-amount="${escapeHtml(String(p.donation_amount ?? 0))}">${escapeHtml(t(strings, 'adminEditPaymentBtn'))}</button></td>
 				<td class="adminDetailTdLong">${longCell(p.notes)}</td>
 				<td class="adminDetailTdLong">${longCell(p.payment_id)}</td>
-				<td class="adminDetailTdActions"><button type="button" class="adminBtn adminBtn--outline adminBtn--table" data-edit-payment data-payment-id="${String(p.id)}" data-donation-category="${escapeHtml(p.donation_category ?? '')}" data-donation-amount="${escapeHtml(String(p.donation_amount ?? 0))}">${escapeHtml(t(strings, 'adminEditPaymentBtn'))}</button> <button type="button" class="adminBtn adminBtn--danger adminBtn--table" data-delete-payment data-payment-id="${String(p.id)}" data-method="${escapeHtml(p.method ?? '')}" data-amount="${escapeHtml(p.amount != null ? fmtMoney(p.amount) : '')}">${escapeHtml(t(strings, 'adminDeletePaymentBtn'))}</button></td>
+				<td class="adminDetailTdActions"><button type="button" class="adminBtn adminBtn--danger adminBtn--table" data-delete-payment data-payment-id="${String(p.id)}" data-method="${escapeHtml(p.method ?? '')}" data-amount="${escapeHtml(p.amount != null ? fmtMoney(p.amount) : '')}">${escapeHtml(t(strings, 'adminDeletePaymentBtn'))}</button></td>
 			</tr>`;
 			})
 			.join('');
