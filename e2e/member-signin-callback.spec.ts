@@ -40,3 +40,18 @@ test('a disabled member is signed out and shown a friendly notice instead of sig
 	await page.goto('/en/membership/account');
 	await expect(page).toHaveURL(/\/en\/membership\/account\/sign-in/);
 });
+
+test('a normal (non-disabled) member can still sign in via the real magic-link callback', async ({ page }) => {
+	member = await createTestMember({ firstName: 'Enabled', lastName: 'Member' });
+
+	await page.goto('/en/membership/account/sign-in');
+	await page.fill('#email', member.email);
+	await page.click('#submit-btn');
+	await expect(page.locator('#form-message')).not.toHaveText('');
+
+	const verifyUrl = await waitForSignInEmailLink(member.email);
+	await page.goto(verifyUrl);
+
+	await expect(page).toHaveURL(/\/en\/membership\/account\/?(\?|$)/);
+	await expect(page.locator('#form-message')).toHaveCount(0);
+});
