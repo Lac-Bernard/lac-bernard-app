@@ -3,7 +3,7 @@ import Page from '@/layouts/Page.astro';
 import DriveFolderBrowser from '@/components/DriveFolderBrowser.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('en', 'about-archive');
+const page = await loadContentPage('en', 'about/archive');
 const title = page.frontmatter?.title ?? "Archive Portal";
 const description = page.frontmatter?.description;
 ---
