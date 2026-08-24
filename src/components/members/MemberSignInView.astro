@@ -94,6 +94,7 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
     signInAuthFailedNotice: t.signInAuthFailedNotice,
     signInNotAdminNotice: t.signInNotAdminNotice,
     signInNotAdminNoticeNoAccount: t.signInNotAdminNoticeNoAccount,
+    signInMemberDisabledNotice: t.signInMemberDisabledNotice,
   }}
 >
   /**
@@ -102,7 +103,12 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
    */
   function parseSigninErrorKindFromLocation() {
     const q = new URLSearchParams(window.location.search).get('signin_error');
-    if (q === 'link_expired' || q === 'auth_failed' || q === 'not_admin') {
+    if (
+      q === 'link_expired' ||
+      q === 'auth_failed' ||
+      q === 'not_admin' ||
+      q === 'member_disabled'
+    ) {
       return q;
     }
 
@@ -154,6 +160,8 @@ const next = safeMemberNext(Astro.url.searchParams.get('next'), locale);
       el.textContent = account
         ? signInNotAdminNotice.replace('{{account}}', account)
         : signInNotAdminNoticeNoAccount;
+    } else if (kind === 'member_disabled') {
+      el.textContent = signInMemberDisabledNotice;
     } else {
       el.textContent = kind === 'link_expired' ? signInLinkExpiredNotice : signInAuthFailedNotice;
     }

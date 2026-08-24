@@ -2,6 +2,7 @@ export const prerender = false;
 import type { APIRoute } from 'astro';
 import { createSupabaseServerClient } from '../../../lib/supabase/server';
 import { defaultMemberAccountPath, memberSignInPathForNext } from '../../../lib/members/i18n';
+import { isDisabledMember } from '../../../lib/auth/admin';
 
 function safeNextParam(value: string | null): string {
 	if (!value || !value.startsWith('/') || value.startsWith('//')) {
@@ -34,12 +35,16 @@ function isLikelyExpiredExchangeMessage(message: string): boolean {
 function redirectToSignIn(
 	redirect: (path: string) => Response,
 	next: string,
-	kind: 'link_expired' | 'auth_failed',
+	kind: 'link_expired' | 'auth_failed' | 'member_disabled',
+	account?: string,
 ): Response {
 	const base = memberSignInPathForNext(next);
 	const params = new URLSearchParams();
 	params.set('next', next);
 	params.set('signin_error', kind);
+	if (account) {
+		params.set('account', account);
+	}
 	return redirect(`${base}?${params.toString()}`);
 }
 
@@ -62,6 +67,16 @@ export const GET: APIRoute = async ({ url, request, cookies, redirect }) => {
 			return redirectToSignIn(redirect, next, 'link_expired');
 		}
 		return redirectToSignIn(redirect, next, 'auth_failed');
+	}
+
+	const {
+		data: { user },
+	} = await supabase.auth.getUser();
+
+	if (user && (await isDisabledMember(supabase, user))) {
+		const account = user.email ?? '';
+		await supabase.auth.signOut();
+		return redirectToSignIn(redirect, next, 'member_disabled', account);
 	}
 
 	return redirect(next);
