@@ -2,7 +2,7 @@
 import Page from '@/layouts/Page.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('fr', 'environment-water-sampling-2023');
+const page = await loadContentPage('fr', 'environment/water-sampling/2023');
 const title = page.frontmatter?.title ?? "Rapport sur l'échantillonnage de la qualité de l'eau 2023";
 const description = page.frontmatter?.description;
 ---

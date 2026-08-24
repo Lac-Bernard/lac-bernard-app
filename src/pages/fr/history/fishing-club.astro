@@ -3,7 +3,7 @@ import Page from '@/layouts/Page.astro';
 import DriveFolderBrowser from '@/components/DriveFolderBrowser.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('fr', 'history-fishing-club');
+const page = await loadContentPage('fr', 'history/fishing-club');
 const title = page.frontmatter?.title ?? "Club de pêche";
 const description = page.frontmatter?.description;
 ---

@@ -2,7 +2,7 @@
 import Page from '@/layouts/Page.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('en', 'community-security-emergency-contacts');
+const page = await loadContentPage('en', 'community/security/emergency-contacts');
 const title = page.frontmatter?.title ?? "Emergency Contacts";
 const description = page.frontmatter?.description;
 ---

@@ -2,7 +2,7 @@
 import Page from '@/layouts/Page.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('fr', 'community-regatta');
+const page = await loadContentPage('fr', 'community/regatta');
 const title = page.frontmatter?.title ?? "Régate annuelle";
 const description = page.frontmatter?.description;
 ---

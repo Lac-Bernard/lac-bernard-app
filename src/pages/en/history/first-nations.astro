@@ -3,7 +3,7 @@ import Page from '@/layouts/Page.astro';
 import DriveFolderBrowser from '@/components/DriveFolderBrowser.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('en', 'history-first-nations');
+const page = await loadContentPage('en', 'history/first-nations');
 const title = page.frontmatter?.title ?? "First Nations";
 const description = page.frontmatter?.description;
 ---

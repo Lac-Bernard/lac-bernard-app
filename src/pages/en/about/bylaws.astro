@@ -2,7 +2,7 @@
 import Page from '@/layouts/Page.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('en', 'about-bylaws');
+const page = await loadContentPage('en', 'about/bylaws');
 const title = page.frontmatter?.title ?? "Association Bylaws";
 const description = page.frontmatter?.description;
 ---

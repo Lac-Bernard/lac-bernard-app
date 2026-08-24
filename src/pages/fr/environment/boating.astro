@@ -2,7 +2,7 @@
 import Page from '@/layouts/Page.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('fr', 'environment-boating');
+const page = await loadContentPage('fr', 'environment/boating');
 const title = page.frontmatter?.title ?? "Boating on Lac Bernard";
 const description = page.frontmatter?.description;
 ---

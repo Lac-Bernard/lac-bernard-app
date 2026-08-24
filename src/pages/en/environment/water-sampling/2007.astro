@@ -2,7 +2,7 @@
 import Page from '@/layouts/Page.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('en', 'environment-water-sampling-2007');
+const page = await loadContentPage('en', 'environment/water-sampling/2007');
 const title = page.frontmatter?.title ?? "Water Quality Results – 2007";
 const description = page.frontmatter?.description;
 ---

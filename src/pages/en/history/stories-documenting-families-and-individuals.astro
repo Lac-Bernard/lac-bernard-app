@@ -3,7 +3,7 @@ import Page from '@/layouts/Page.astro';
 import DriveFolderBrowser from '@/components/DriveFolderBrowser.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('en', 'history-stories-families-individuals');
+const page = await loadContentPage('en', 'history/stories-families-individuals');
 const title = page.frontmatter?.title ?? "Stories: Documenting Families and Individuals";
 const description = page.frontmatter?.description;
 ---

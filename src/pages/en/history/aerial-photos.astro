@@ -3,7 +3,7 @@ import Page from '@/layouts/Page.astro';
 import DriveFolderBrowser from '@/components/DriveFolderBrowser.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('en', 'history-aerial-photos');
+const page = await loadContentPage('en', 'history/aerial-photos');
 const title = page.frontmatter?.title ?? "Aerial Photos";
 const description = page.frontmatter?.description;
 ---
