@@ -250,7 +250,7 @@ export const POST: APIRoute = async ({ request, cookies }) => {
 			membership_amount_cents: String(membershipCents),
 			donation_cents: String(donationCents),
 			donation_note: donationNote,
-			donation_category: donationCategory,
+			donation_category: donationCategory ?? '',
 		},
 		locale: locale === 'fr' ? 'fr' : 'en',
 	};

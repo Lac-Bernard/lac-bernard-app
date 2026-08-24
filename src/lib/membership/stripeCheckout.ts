@@ -37,10 +37,10 @@ export function parseDonationNote(raw: unknown): string | null {
 export const DONATION_CATEGORIES = ['environment', 'regatta', 'general'] as const;
 export type DonationCategory = (typeof DONATION_CATEGORIES)[number];
 
-/** Parse donation category; defaults to 'environment' if absent/invalid. */
-export function parseDonationCategory(raw: unknown): DonationCategory {
+/** Parse donation category; null if absent/invalid — the UI is what chooses the default, not the server. */
+export function parseDonationCategory(raw: unknown): DonationCategory | null {
 	if (typeof raw === 'string' && (DONATION_CATEGORIES as readonly string[]).includes(raw)) {
 		return raw as DonationCategory;
 	}
-	return 'environment';
+	return null;
 }

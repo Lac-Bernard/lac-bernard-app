@@ -49,7 +49,7 @@ test('a member can include a donation alongside their membership payment', async
 	await api.dispose();
 });
 
-test('donation category defaults to environment when omitted', async () => {
+test('donation category is null when omitted from the server request', async () => {
 	const defaultCategoryMember = await createTestMember({ firstName: 'DonationDefault', lastName: 'E2E' });
 	try {
 		const supabaseAdmin = serviceClient();
@@ -69,7 +69,7 @@ test('donation category defaults to environment when omitted', async () => {
 			.select('donation_category')
 			.eq('membership_id', membershipId);
 		expect(paymentRows).toHaveLength(1);
-		expect(paymentRows?.[0]?.donation_category).toBe('environment');
+		expect(paymentRows?.[0]?.donation_category).toBeNull();
 
 		await api.dispose();
 	} finally {
