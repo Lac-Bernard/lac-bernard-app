@@ -211,6 +211,40 @@ export async function signInWithMagicLink(page: Page, email: string, next = '/en
 	await page.goto(next);
 }
 
+/**
+ * Local Supabase catches outgoing dev email in Mailpit (`supabase/config.toml`'s `[inbucket]`
+ * block, port 54324 — the container image is actually Mailpit, keeping the legacy service name).
+ */
+function mailpitUrl(): string {
+	return process.env.MAILPIT_URL ?? 'http://127.0.0.1:54324';
+}
+
+/**
+ * Polls Mailpit for the most recent real sign-in email sent to `email` (via the app's own
+ * `POST /api/auth/sign-in`, which uses a real PKCE `signInWithOtp`) and returns the
+ * `.../auth/v1/verify?...` confirmation URL from its body. Navigating a `page` that already
+ * holds the PKCE code-verifier cookie (set by that same POST) to this URL exercises the real
+ * `/api/auth/callback` code-exchange end to end — unlike {@link signInWithMagicLink}, which
+ * bypasses the callback route entirely by setting session cookies directly.
+ */
+export async function waitForSignInEmailLink(email: string, timeoutMs = 10000): Promise<string> {
+	const base = mailpitUrl();
+	const deadline = Date.now() + timeoutMs;
+	while (Date.now() < deadline) {
+		const searchRes = await fetch(`${base}/api/v1/search?query=${encodeURIComponent(`to:${email}`)}`);
+		const searchData = await searchRes.json();
+		const id = searchData?.messages?.[0]?.ID;
+		if (id) {
+			const msgRes = await fetch(`${base}/api/v1/message/${id}`);
+			const msg = await msgRes.json();
+			const match = String(msg?.Text ?? '').match(/https?:\/\/\S*\/auth\/v1\/verify\?\S+/);
+			if (match) return match[0];
+		}
+		await new Promise((r) => setTimeout(r, 300));
+	}
+	throw new Error(`Timed out waiting for sign-in email to ${email} in Mailpit at ${base}`);
+}
+
 /** Same as {@link signInWithMagicLink} but for an API-only Playwright request context. */
 export async function sessionCookieHeader(email: string): Promise<string> {
 	const { accessToken, refreshToken } = await sessionForEmail(email);

@@ -72,6 +72,8 @@ export const memberCopy: Record<
 		signInNotAdminNotice: string;
 		/** Fallback of `signInNotAdminNotice` when no account identifier is available. */
 		signInNotAdminNoticeNoAccount: string;
+		/** Shown when a disabled member's sign-in is blocked (`signin_error=member_disabled`). */
+		signInMemberDisabledNotice: string;
 		adminTitle: string;
 		adminDescription: string;
 		adminHeroAria: string;
@@ -585,6 +587,8 @@ export const memberCopy: Record<
 			'You’re signed in as {{account}}, but this account doesn’t have admin access. To visit the admin area, please sign in with an admin account.',
 		signInNotAdminNoticeNoAccount:
 			'This account doesn’t have admin access. To visit the admin area, please sign in with an admin account.',
+		signInMemberDisabledNotice:
+			'This account has been disabled and can’t sign in. Please contact membership@lacbernard.ca for help.',
 		adminTitle: 'Admin | Lac Bernard Association',
 		adminDescription: 'Association administration — members and payments.',
 		adminHeroAria: 'Administration',
@@ -1104,6 +1108,8 @@ export const memberCopy: Record<
 			'Vous êtes connecté avec {{account}}, mais ce compte n’a pas accès à l’administration. Pour accéder à l’espace d’administration, connectez-vous avec un compte administrateur.',
 		signInNotAdminNoticeNoAccount:
 			'Ce compte n’a pas accès à l’administration. Pour accéder à l’espace d’administration, connectez-vous avec un compte administrateur.',
+		signInMemberDisabledNotice:
+			'Ce compte a été désactivé et ne peut pas se connecter. Veuillez contacter membership@lacbernard.ca pour obtenir de l’aide.',
 		adminTitle: 'Administration | Association du lac Bernard',
 		adminDescription: 'Administration de l’association — membres et paiements.',
 		adminHeroAria: 'Administration',
