@@ -138,11 +138,14 @@ export function initAdminMemberDetail(
 	const memberForm = el<HTMLFormElement>('#admin-member-detail-form');
 	const paymentDialog = el<HTMLDialogElement>('#admin-payment-dialog');
 	const paymentMembershipId = el<HTMLInputElement>('#admin-payment-membership-id');
+	const editPaymentDialog = el<HTMLDialogElement>('#admin-edit-payment-dialog');
+	const editPaymentId = el<HTMLInputElement>('#admin-edit-payment-id');
 	const addMembershipDialog = el<HTMLDialogElement>('#admin-add-membership-dialog');
 	const addMembershipForm = el<HTMLFormElement>('#admin-add-membership-form');
 	const addMsPaidBlock = el<HTMLElement>('#admin-add-ms-paid');
 	const saveMemberBtn = el<HTMLButtonElement>('#admin-member-save');
 	const savePaymentBtn = el<HTMLButtonElement>('#admin-payment-submit');
+	const saveEditPaymentBtn = el<HTMLButtonElement>('#admin-edit-payment-submit');
 	const addMembershipSubmitBtn = el<HTMLButtonElement>('#admin-add-membership-submit');
 	let currentMember: MemberRow | null = null;
 
@@ -288,6 +291,26 @@ export function initAdminMemberDetail(
 				}
 				setStatus(t(strings, 'adminPaymentDeleted'), 'success');
 				void load({ silent: true });
+			});
+		});
+	}
+
+	function wireEditPaymentButtons(root: ParentNode) {
+		root.querySelectorAll<HTMLButtonElement>('[data-edit-payment]').forEach((b) => {
+			b.addEventListener('click', () => {
+				const pid = b.dataset.paymentId;
+				const category = b.dataset.donationCategory ?? '';
+				const hasDonation = b.dataset.donationAmount !== '0' && b.dataset.donationAmount !== '';
+				if (!pid || !editPaymentId || !editPaymentDialog) return;
+				editPaymentId.value = pid;
+				const select = el<HTMLSelectElement>('#admin-edit-payment-donation-category');
+				const hint = el<HTMLElement>('#admin-edit-payment-zero-donation-hint');
+				if (select) {
+					select.value = hasDonation ? category : '';
+					select.disabled = !hasDonation;
+				}
+				if (hint) hint.hidden = hasDonation;
+				editPaymentDialog.showModal();
 			});
 		});
 	}
@@ -537,7 +560,7 @@ export function initAdminMemberDetail(
 				<td>${escapeHtml(fmtMoney(donation))}${donation > 0 ? ` <span class="adminDetailDonationCategory">(${escapeHtml(donationCategoryLabel(strings, p.donation_category))})</span>` : ''}</td>
 				<td class="adminDetailTdLong">${longCell(p.notes)}</td>
 				<td class="adminDetailTdLong">${longCell(p.payment_id)}</td>
-				<td class="adminDetailTdActions"><button type="button" class="adminBtn adminBtn--danger adminBtn--table" data-delete-payment data-payment-id="${String(p.id)}" data-method="${escapeHtml(p.method ?? '')}" data-amount="${escapeHtml(p.amount != null ? fmtMoney(p.amount) : '')}">${escapeHtml(t(strings, 'adminDeletePaymentBtn'))}</button></td>
+				<td class="adminDetailTdActions"><button type="button" class="adminBtn adminBtn--outline adminBtn--table" data-edit-payment data-payment-id="${String(p.id)}" data-donation-category="${escapeHtml(p.donation_category ?? '')}" data-donation-amount="${escapeHtml(String(p.donation_amount ?? 0))}">${escapeHtml(t(strings, 'adminEditPaymentBtn'))}</button> <button type="button" class="adminBtn adminBtn--danger adminBtn--table" data-delete-payment data-payment-id="${String(p.id)}" data-method="${escapeHtml(p.method ?? '')}" data-amount="${escapeHtml(p.amount != null ? fmtMoney(p.amount) : '')}">${escapeHtml(t(strings, 'adminDeletePaymentBtn'))}</button></td>
 			</tr>`;
 			})
 			.join('');
@@ -665,6 +688,7 @@ export function initAdminMemberDetail(
 
 		wirePaymentButtons(mount);
 		wireDeletePaymentButtons(mount);
+		wireEditPaymentButtons(mount);
 		wireAddMembershipButtons(mount);
 		wireUpgradeToVotingButtons(mount);
 		wireMakeComplimentaryButtons(mount);
@@ -682,6 +706,7 @@ export function initAdminMemberDetail(
 				panel.innerHTML = renderYearPanelHtml();
 				wirePaymentButtons(panel);
 				wireDeletePaymentButtons(panel);
+				wireEditPaymentButtons(panel);
 				wireAddMembershipButtons(panel);
 				wireUpgradeToVotingButtons(panel);
 				wireMakeComplimentaryButtons(panel);
@@ -868,6 +893,41 @@ export function initAdminMemberDetail(
 
 	el<HTMLButtonElement>('#admin-payment-cancel')?.addEventListener('click', () => {
 		paymentDialog?.close();
+	});
+
+	el<HTMLFormElement>('#admin-edit-payment-form')?.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		const form = e.target as HTMLFormElement;
+		if (saveEditPaymentBtn?.disabled) return;
+		const fd = new FormData(form);
+		const donationCategory = String(fd.get('donationCategory') ?? '').trim();
+		const pid = editPaymentId?.value;
+		if (!pid) return;
+		setFormSubmitLoading(form, saveEditPaymentBtn, true);
+		setStatus(t(strings, 'adminLoading'));
+		try {
+			const { ok, data } = await fetchJson<{ error?: string }>(
+				`/api/admin/members/${encodeURIComponent(memberId)}/payments/${encodeURIComponent(pid)}`,
+				{
+					method: 'PATCH',
+					body: JSON.stringify({ donationCategory: donationCategory || null }),
+				},
+			);
+			if (!ok) {
+				setStatus(data?.error ?? t(strings, 'adminErrorGeneric'), 'error');
+				return;
+			}
+			setStatus(t(strings, 'adminDonationCategoryUpdated'), 'success');
+			editPaymentDialog?.close();
+			form.reset();
+			void load({ silent: true });
+		} finally {
+			setFormSubmitLoading(form, saveEditPaymentBtn, false);
+		}
+	});
+
+	el<HTMLButtonElement>('#admin-edit-payment-cancel')?.addEventListener('click', () => {
+		editPaymentDialog?.close();
 	});
 
 	addMembershipDialog?.querySelectorAll('input[name="initial"]').forEach((r) => {
