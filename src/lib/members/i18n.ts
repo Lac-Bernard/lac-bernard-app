@@ -163,6 +163,11 @@ export const memberCopy: Record<
 		adminDeletePaymentConfirmStripe: string;
 		adminDeletePaymentErrorRefundFailed: string;
 		adminPaymentDeleted: string;
+		adminEditPaymentBtn: string;
+		adminEditDonationCategoryHeading: string;
+		adminSaveDonationCategoryBtn: string;
+		adminDonationCategoryUpdated: string;
+		adminDonationCategoryZeroDonationHint: string;
 		adminDetailNoMembershipForYear: string;
 		adminDetailDonationNoteLabel: string;
 		adminTablePaymentRef: string;
@@ -667,6 +672,11 @@ export const memberCopy: Record<
 			'Delete this payment and refund {{amount}} via Stripe? Membership status will be recalculated from remaining payments. This cannot be undone.',
 		adminDeletePaymentErrorRefundFailed: 'Could not refund this payment in Stripe. Nothing was deleted.',
 		adminPaymentDeleted: 'Payment deleted.',
+		adminEditPaymentBtn: 'Edit',
+		adminEditDonationCategoryHeading: 'Edit donation category',
+		adminSaveDonationCategoryBtn: 'Save',
+		adminDonationCategoryUpdated: 'Donation category updated.',
+		adminDonationCategoryZeroDonationHint: "This payment has no donation amount, so it can't be assigned a category.",
 		adminDetailNoMembershipForYear: 'No membership on file for {{year}}.',
 		adminDetailDonationNoteLabel: 'Donation note',
 		adminTablePaymentRef: 'Reference',
@@ -1184,6 +1194,11 @@ export const memberCopy: Record<
 		adminDeletePaymentErrorRefundFailed:
 			'Impossible de rembourser ce paiement dans Stripe. Rien n’a été supprimé.',
 		adminPaymentDeleted: 'Paiement supprimé.',
+		adminEditPaymentBtn: 'Modifier',
+		adminEditDonationCategoryHeading: 'Modifier la catégorie du don',
+		adminSaveDonationCategoryBtn: 'Enregistrer',
+		adminDonationCategoryUpdated: 'Catégorie du don mise à jour.',
+		adminDonationCategoryZeroDonationHint: 'Ce paiement n’a aucun montant de don, il ne peut donc pas avoir de catégorie.',
 		adminDetailNoMembershipForYear: 'Aucune adhésion au dossier pour {{year}}.',
 		adminDetailDonationNoteLabel: 'Note du don',
 		adminTablePaymentRef: 'Référence',

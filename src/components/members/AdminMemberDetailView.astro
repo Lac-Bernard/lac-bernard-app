@@ -188,6 +188,32 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
       </form>
     </dialog>
 
+    <dialog id="admin-edit-payment-dialog" class="adminDialog">
+      <form id="admin-edit-payment-form" class="adminPaymentForm" aria-busy="false">
+        <h3>{t.adminEditDonationCategoryHeading}</h3>
+        <input type="hidden" id="admin-edit-payment-id" value="" />
+        <label>
+          {t.donationCategoryLabel}
+          <select name="donationCategory" id="admin-edit-payment-donation-category" class="adminInput">
+            <option value="">{t.donationCategoryUnspecified}</option>
+            <option value="environment">{t.donationCategoryEnvironment}</option>
+            <option value="regatta">{t.donationCategoryRegatta}</option>
+            <option value="general">{t.donationCategoryGeneral}</option>
+          </select>
+          <p id="admin-edit-payment-zero-donation-hint" class="adminHint adminPaymentFieldHint" hidden>
+            {t.adminDonationCategoryZeroDonationHint}
+          </p>
+        </label>
+        <div class="adminDialogActions">
+          <button type="submit" class="adminBtn adminBtn--solid adminBtn--submit" id="admin-edit-payment-submit" value="default">
+            <span class="adminBtnSpinner" aria-hidden="true"></span>
+            <span class="adminBtnLabel">{t.adminSaveDonationCategoryBtn}</span>
+          </button>
+          <button type="button" class="adminBtn adminBtn--ghost" id="admin-edit-payment-cancel">{t.checkoutModalCancel}</button>
+        </div>
+      </form>
+    </dialog>
+
     <dialog id="admin-add-membership-dialog" class="adminDialog">
       <form id="admin-add-membership-form" class="adminPaymentForm" aria-busy="false">
         <h3>{t.adminAddMembershipDialogTitle}</h3>
@@ -1095,12 +1121,16 @@ const adminMembersTabHref = `${paths.admin}?tab=members`;
   .adminDetailMembershipList :global(.adminDetailTdActions) {
     vertical-align: middle;
     text-align: right;
-    width: 5.5rem;
+    width: 9.5rem;
+  }
+
+  .adminDetailMembershipList :global(.adminDetailTdActions) :global(.adminBtn) + :global(.adminBtn) {
+    margin-left: 0.4rem;
   }
 
   .adminDetailMembershipList :global(.adminDetailThActions) {
     text-align: right;
-    width: 5.5rem;
+    width: 9.5rem;
   }
 
   .adminHint {
