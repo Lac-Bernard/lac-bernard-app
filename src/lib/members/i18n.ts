@@ -308,6 +308,7 @@ export const memberCopy: Record<
 		adminViewIncomplete: string;
 		adminViewAll: string;
 		adminViewDuplicate: string;
+		adminViewUncategorizedDonors: string;
 		adminMemberIndexMetaVoting: string;
 		adminMemberIndexMetaAssociate: string;
 		adminMemberIndexMetaMailing: string;
@@ -318,6 +319,7 @@ export const memberCopy: Record<
 		adminMemberIndexMetaIncomplete: string;
 		adminMemberIndexMetaAll: string;
 		adminMemberIndexMetaDuplicate: string;
+		adminMemberIndexMetaUncategorizedDonors: string;
 		adminMemberIndexMetaSearch: string;
 		adminMemberIndexEmailOptInAppend: string;
 		adminCopyEmailListOptIn: string;
@@ -342,6 +344,7 @@ export const memberCopy: Record<
 		adminEmptyIncomplete: string;
 		adminEmptyAll: string;
 		adminEmptyDuplicate: string;
+		adminEmptyUncategorizedDonors: string;
 		adminSearchNoResults: string;
 		adminSearchTryDisabled: string;
 		adminSearchTryDisabledLink: string;
@@ -814,6 +817,7 @@ export const memberCopy: Record<
 		adminViewIncomplete: 'Incomplete signups',
 		adminViewAll: 'All members',
 		adminViewDuplicate: 'Duplicate lake addresses',
+		adminViewUncategorizedDonors: 'Uncategorized donors',
 		adminMemberIndexMetaVoting: '{{count}} voting members',
 		adminMemberIndexMetaAssociate: '{{count}} associate members',
 		adminMemberIndexMetaMailing: '{{count}} active members',
@@ -824,6 +828,7 @@ export const memberCopy: Record<
 		adminMemberIndexMetaIncomplete: '{{count}} incomplete signups',
 		adminMemberIndexMetaAll: '{{count}} members',
 		adminMemberIndexMetaDuplicate: '{{count}} members with a duplicate lake address',
+		adminMemberIndexMetaUncategorizedDonors: '{{count}} uncategorized donors',
 		adminMemberIndexMetaSearch: '{{count}} results across all members',
 		adminMemberIndexEmailOptInAppend: ' · {{count}} opted in to email',
 		adminCopyEmailListOptIn: 'Copy email list (opted in)',
@@ -849,6 +854,7 @@ export const memberCopy: Record<
 			'No incomplete signups — everyone who created a profile has completed a membership.',
 		adminEmptyAll: 'No member records found.',
 		adminEmptyDuplicate: 'No duplicate lake addresses found.',
+		adminEmptyUncategorizedDonors: 'No uncategorized donations for {{year}} yet.',
 		adminSearchNoResults: 'No members match “{{query}}”.',
 		adminSearchTryDisabled: 'No results — ',
 		adminSearchTryDisabledLink: 'try including disabled members',
@@ -1331,6 +1337,7 @@ export const memberCopy: Record<
 		adminViewIncomplete: 'Inscriptions incomplètes',
 		adminViewAll: 'Tous les membres',
 		adminViewDuplicate: 'Adresses au lac en double',
+		adminViewUncategorizedDonors: 'Dons non catégorisés',
 		adminMemberIndexMetaVoting: '{{count}} membres votants',
 		adminMemberIndexMetaAssociate: '{{count}} membres associés',
 		adminMemberIndexMetaMailing: '{{count}} membres actifs',
@@ -1341,6 +1348,7 @@ export const memberCopy: Record<
 		adminMemberIndexMetaIncomplete: '{{count}} inscriptions incomplètes',
 		adminMemberIndexMetaAll: '{{count}} membres',
 		adminMemberIndexMetaDuplicate: '{{count}} membres avec une adresse au lac en double',
+		adminMemberIndexMetaUncategorizedDonors: '{{count}} dons non catégorisés',
 		adminMemberIndexMetaSearch: '{{count}} résultats parmi tous les membres',
 		adminMemberIndexEmailOptInAppend: ' · {{count}} inscrits aux courriels',
 		adminCopyEmailListOptIn: 'Copier la liste de courriels (inscrits)',
@@ -1368,6 +1376,7 @@ export const memberCopy: Record<
 			'Aucune inscription incomplète — toute personne ayant créé un profil a complété une adhésion.',
 		adminEmptyAll: 'Aucun membre dans le dossier.',
 		adminEmptyDuplicate: 'Aucune adresse au lac en double trouvée.',
+		adminEmptyUncategorizedDonors: 'Aucun don non catégorisé pour {{year}} pour l’instant.',
 		adminSearchNoResults: 'Aucun membre ne correspond à « {{query}} ».',
 		adminSearchTryDisabled: 'Aucun résultat — ',
 		adminSearchTryDisabledLink: 'essayez d’inclure les membres désactivés',
