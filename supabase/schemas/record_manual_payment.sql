@@ -20,6 +20,10 @@ begin
     return jsonb_build_object('ok', false, 'error', 'invalid_donation_category');
   end if;
 
+  if p_donation_amount is null or p_donation_amount = 0 then
+    p_donation_category := null;
+  end if;
+
   if p_amount is null or p_amount < 0 then
     return jsonb_build_object('ok', false, 'error', 'invalid_amount');
   end if;
