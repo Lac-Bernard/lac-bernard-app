@@ -2,8 +2,8 @@
 import Page from '@/layouts/Page.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('en', 'environment/boating/shoal-marker-buoys');
-const title = page.frontmatter?.title ?? "Shoal Marker Buoys";
+const page = await loadContentPage('fr', 'environment/boating/shoal-marker-buoys');
+const title = page.frontmatter?.title ?? "Bouées marqueurs de hauts-fonds";
 const description = page.frontmatter?.description;
 ---
 
