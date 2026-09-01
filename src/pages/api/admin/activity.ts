@@ -92,9 +92,10 @@ export const GET: APIRoute = async ({ request, cookies, url }) => {
 		service.rpc('admin_pending_membership_count', { p_year: year }),
 		service
 			.from('memberships')
-			.select('id', { count: 'exact', head: true })
+			.select('id, members!inner(status)', { count: 'exact', head: true })
 			.eq('year', year)
-			.eq('status', 'active'),
+			.eq('status', 'active')
+			.neq('members.status', 'disabled'),
 		(() => {
 			let q = service
 				.from('payments')
