@@ -2,8 +2,8 @@
 import Page from '@/layouts/Page.astro';
 import { loadContentPage } from '@/utils/loadContentPage';
 
-const page = await loadContentPage('en', 'environment/boating/water-sports');
-const title = page.frontmatter?.title ?? "Boating and Water Sports Safety";
+const page = await loadContentPage('fr', 'environment/boating/water-sports');
+const title = page.frontmatter?.title ?? "Sécurité de la navigation et des sports nautiques";
 const description = page.frontmatter?.description;
 ---
 
