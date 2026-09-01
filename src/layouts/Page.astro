@@ -56,7 +56,15 @@ const environmentNav: { en: NavItem[]; fr: NavItem[] } = {
     { href: '/environment/milfoil', label: 'Eurasian Milfoil' },
     { href: '/environment/shoreline', label: 'Protecting Our Shoreline' },
     { href: '/environment/water', label: 'Protecting Our Water' },
-    { href: '/environment/boating', label: 'Boating on Lac Bernard' },
+    {
+      href: '/environment/boating',
+      label: 'Boating on Lac Bernard',
+      children: [
+        { href: '/environment/boating/shoal-marker-buoys', label: 'Shoal Marker Buoys' },
+        { href: '/environment/boating/milfoil-marker-buoys', label: 'Milfoil Marker Buoys' },
+        { href: '/environment/boating/water-sports', label: 'Boating and Water Sports Safety' },
+      ],
+    },
     { href: '/environment/wildlife', label: 'Lake Wildlife' },
   ],
   fr: [
@@ -65,7 +73,15 @@ const environmentNav: { en: NavItem[]; fr: NavItem[] } = {
     { href: '/environment/milfoil', label: 'Myriophylle à épi' },
     { href: '/environment/shoreline', label: 'Protéger notre rivage' },
     { href: '/environment/water', label: 'Protéger notre eau' },
-    { href: '/environment/boating', label: 'Navigation sur le lac Bernard' },
+    {
+      href: '/environment/boating',
+      label: 'Navigation sur le lac Bernard',
+      children: [
+        { href: '/environment/boating/shoal-marker-buoys', label: 'Bouées marqueurs de hauts-fonds' },
+        { href: '/environment/boating/milfoil-marker-buoys', label: 'Bouées marqueurs de myriophylle à épi eurasien' },
+        { href: '/environment/boating/water-sports', label: 'Sécurité de la navigation et des sports nautiques' },
+      ],
+    },
     { href: '/environment/wildlife', label: 'Faune du lac' },
   ],
 };
